@@ -1,5 +1,6 @@
+// MeResponse.java
 package ru.pulsecore.app.modules.auth.api.dto;
 
 import java.time.LocalDateTime;
 
-public record MeResponse(String id, String name, String email, LocalDateTime createdAt) {}
+public record MeResponse(String id, String name, String email, LocalDateTime createdAt, boolean admin) {}

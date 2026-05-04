@@ -1,6 +1,10 @@
 package ru.pulsecore.app.modules.auth.api;
 
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import ru.pulsecore.app.config.SecurityUser;
 import ru.pulsecore.app.modules.auth.api.dto.*;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
 import ru.pulsecore.app.modules.auth.mapping.PlayerDtoMapper;
@@ -44,7 +48,6 @@ public class AuthController {
         session.removeAttribute("pending");
         return ResponseEntity.ok(mapper.toAuthResponse(player));
     }
-
     @PostMapping(AuthApi.LOGIN)
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         var player = authenticationService.authenticate(request.getEmail(), request.getPassword());
@@ -52,21 +55,36 @@ public class AuthController {
         session.setAttribute(AuthApi.SESSION_ID, response.getId());
         session.setAttribute(AuthApi.SESSION_NAME, response.getName());
         session.setAttribute(AuthApi.SESSION_EMAIL, response.getEmail());
+
+        // 🔥 Добавить — залогинить в Spring Security
+        SecurityUser securityUser = new SecurityUser(player);
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext());
+
         return ResponseEntity.ok(response);
     }
 
+    // AuthController.java — метод me()
     @GetMapping(AuthApi.ME)
     public ResponseEntity<MeResponse> me(HttpSession session) {
         var user = getSessionUser(session);
         if (user == null) return ResponseEntity.status(401).build();
 
         LocalDateTime createdAt = null;
+        boolean isAdmin = false;
+
         if (user.id() != null) {
             var player = playerService.findById(UUID.fromString(user.id()));
-            if (player != null) createdAt = player.getCreatedAt();
+            if (player != null) {
+                createdAt = player.getCreatedAt();
+                isAdmin = player.isAdmin();
+            }
         }
 
-        return ResponseEntity.ok(new MeResponse(user.id(), user.name(), user.email(), createdAt));
+        return ResponseEntity.ok(new MeResponse(user.id(), user.name(), user.email(), createdAt, isAdmin));
     }
 
     @PostMapping(AuthApi.VERIFY_PASSWORD)

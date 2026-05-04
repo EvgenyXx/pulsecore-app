@@ -26,30 +26,31 @@ public class TournamentDiscoveryService {
     public void checkNewTournaments(UUID playerId) {
         Player user = userService.findById(playerId);
         if (user == null) {
-            log.warn("User not found for playerId={}", playerId);
+            log.warn("Player not found: {}", playerId);
             return;
         }
 
         List<TournamentDto> tournaments = finder.find(user);
-        if (tournaments.isEmpty()) return;
+        if (tournaments.isEmpty()) {
+            return;
+        }
 
         List<TournamentDto> newTournaments = filter.findNew(user, tournaments);
-        if (newTournaments.isEmpty()) return;
+        if (newTournaments.isEmpty()) {
+            return;
+        }
 
         saver.save(user, newTournaments);
 
-        // Отправка email только для новых турниров
-        if (user.getEmail() != null) {
-            for (TournamentDto tournament : newTournaments) {
-                try {
-                    mailStrategyRegistry.send(MailTypes.NEW_TOURNAMENT, user.getEmail(), tournament, user);
-                    log.info("📧 Email sent to {} for tournament {}", user.getEmail(), tournament.getId());
-                } catch (Exception e) {
-                    log.error("❌ Failed to send email to {} for tournament {}", user.getEmail(), tournament.getId(), e);
-                }
-            }
+        if (!user.isNotificationsEnabled()) {
+            log.info("🔕 Notifications disabled for {}", user.getEmail());
+            return;
         }
 
-        log.info("🔍 Discovered {} new tournaments for player={}", newTournaments.size(), user.getName());
+        newTournaments.forEach(tournament ->
+                mailStrategyRegistry.send(MailTypes.NEW_TOURNAMENT, user.getEmail(), tournament, user)
+        );
+
+        log.info("📧 Sent {} notifications to {}", newTournaments.size(), user.getEmail());
     }
 }

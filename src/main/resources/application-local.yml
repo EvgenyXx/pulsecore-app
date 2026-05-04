@@ -5,7 +5,7 @@ spring:
     username: botuser
     password: 1234
   mail:
-    host: smt17.hosting.reg.ru
+    host: sm17.hosting.reg.ru
     port: 465
     username: noreply@pulsecore-app.ru
     password: FJ3-wT5-7ye-Rfm

@@ -18,6 +18,19 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final PlayerService playerService;
 
+
+    @Transactional
+    public void deactivate(UUID playerId) {
+        Player player = playerService.getById(playerId);
+        Subscription subscription = player.getSubscription();
+        if (subscription != null) {
+            subscription.setActive(false);
+            subscriptionRepository.save(subscription);
+            log.info("❌ Подписка отключена для {}", player.getEmail());
+        }
+    }
+
+
     @Transactional
     public void activate(UUID playerId, int days) {
         Player player = playerService.getById(playerId);

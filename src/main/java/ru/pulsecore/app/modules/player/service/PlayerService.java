@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,6 +25,19 @@ public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final PasswordEncoder passwordEncoder;
+
+
+
+    public boolean isNotificationsEnabled(UUID id) {
+        return getById(id).isNotificationsEnabled();
+    }
+
+    @Transactional
+    public void setNotificationsEnabled(UUID id, boolean enabled) {
+        Player player = getById(id);
+        player.setNotificationsEnabled(enabled);
+        playerRepository.save(player);
+    }
 
     public Player getById(UUID id) {
         return playerRepository.findById(id)
@@ -91,5 +105,14 @@ public class PlayerService {
     @Transactional
     public void  deletePlayer(UUID id){
         playerRepository.deleteById(id);
+    }
+
+    public Optional<Player> findByEmail(String email) {
+        return playerRepository.findByEmail(email);
+    }
+
+    @Transactional
+    public Player save (Player player){
+        return playerRepository.save(player);
     }
 }
