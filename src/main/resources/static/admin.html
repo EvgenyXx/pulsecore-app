@@ -59,11 +59,7 @@
             width: clamp(200px, 30vw, 400px); height: clamp(200px, 30vw, 400px);
             background: rgba(20,184,166,0.10); bottom: -10%; left: -8%; animation-delay: -5s;
         }
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(25px, -25px) scale(1.08); }
-            66% { transform: translate(-15px, 20px) scale(0.95); }
-        }
+        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(25px, -25px) scale(1.08); } 66% { transform: translate(-15px, 20px) scale(0.95); } }
         .glass {
             background: rgba(16,185,129,0.08); backdrop-filter: blur(18px) saturate(120%);
             -webkit-backdrop-filter: blur(18px) saturate(120%); border: 1px solid rgba(16,185,129,0.18);
@@ -143,11 +139,41 @@
             border: 1px solid rgba(245,158,11,0.35);
         }
         .hidden { display: none; }
+        /* Mobile bottom nav */
+        .mobile-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(5,18,16,0.95); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(16,185,129,0.18);
+            z-index: 50; display: flex; justify-content: space-around;
+            padding: 8px 4px 12px 4px;
+        }
+        .mobile-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            color: #5a9078; cursor: pointer; padding: 6px 12px; border-radius: 12px;
+            font-size: 10px; transition: all 0.2s;
+        }
+        .mobile-nav-item.active { color: #34d399; background: rgba(16,185,129,0.12); }
+        .mobile-nav-item .m-icon { font-size: 20px; }
+        @media (min-width: 768px) { .mobile-nav { display: none; } }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
 
+<!-- Mobile Header -->
+<div class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500/30 flex items-center justify-center"><span class="text-lg">🛡️</span></div>
+        <div>
+            <h1 class="text-sm font-bold bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">PulseCore</h1>
+            <p class="text-xs text-emerald-400/60">Админ-панель</p>
+        </div>
+    </div>
+    <a href="/dashboard.html" class="flex items-center gap-1 text-xs text-emerald-400/60 hover:text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-lg">🏠 Дашборд</a>
+</div>
+
+<!-- Desktop Sidebar -->
 <aside class="hidden md:flex glass-nav w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-3 mb-10 px-1">
         <div class="w-11 h-11 rounded-xl bg-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/10">
@@ -160,48 +186,42 @@
     </div>
     <nav class="flex flex-col gap-1 flex-1">
         <div class="nav-item active" id="nav-subscriptions" onclick="showSection('subscriptions')">
-            <span class="nav-icon">💳</span>
-            <div><div class="font-medium text-sm">Подписки</div></div>
+            <span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписки</div></div>
         </div>
         <div class="nav-item" id="nav-roles" onclick="showSection('roles')">
-            <span class="nav-icon">👑</span>
-            <div><div class="font-medium text-sm">Роли</div></div>
+            <span class="nav-icon">👑</span><div><div class="font-medium text-sm">Роли</div></div>
         </div>
         <a href="/dashboard.html" class="nav-item mt-auto">
-            <span class="nav-icon">🏠</span>
-            <div>
-                <div class="font-medium text-sm">Дашборд</div>
-                <div class="text-xs opacity-60">Вернуться</div>
-            </div>
+            <span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Дашборд</div><div class="text-xs opacity-60">Вернуться</div></div>
         </a>
     </nav>
     <button onclick="logout()" class="flex items-center gap-2 text-gray-500 hover:text-red-400 text-sm mt-4 py-3 px-4 rounded-xl hover:bg-red-500/5 transition-colors w-full">🚪 Выйти</button>
 </aside>
 
-<main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8 lg:p-10">
+<main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8 lg:p-10 pb-24 md:pb-10">
     <div class="max-w-3xl mx-auto w-full content-panel">
 
         <!-- Подписки -->
         <div id="section-subscriptions">
-            <div class="mb-8">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">💳 Подписки</h2>
-                <p class="text-emerald-400/50 mt-1.5 text-sm">Поиск игроков и управление подписками</p>
+            <div class="mb-6">
+                <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">💳 Подписки</h2>
+                <p class="text-emerald-400/50 mt-1 text-sm">Поиск игроков и управление подписками</p>
             </div>
-            <div class="glass rounded-2xl p-5 sm:p-6 mb-5">
+            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
                 <label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label>
                 <input id="subSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('sub')">
                 <div id="subSearchResults" class="mt-3 space-y-2 hidden"></div>
             </div>
-            <div id="subSelectedPlayer" class="glass-strong rounded-2xl p-5 sm:p-6 hidden">
+            <div id="subSelectedPlayer" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
                 <div class="flex justify-between items-start mb-4 flex-wrap gap-2">
                     <div>
                         <p class="text-xs text-emerald-300/60 uppercase tracking-wider mb-1">Выбранный игрок</p>
-                        <p class="text-white font-semibold text-lg" id="subSelName"></p>
-                        <p class="text-sm text-emerald-300/40" id="subSelEmail"></p>
+                        <p class="text-white font-semibold text-base sm:text-lg" id="subSelName"></p>
+                        <p class="text-xs sm:text-sm text-emerald-300/40" id="subSelEmail"></p>
                     </div>
                     <div class="flex gap-1 flex-wrap" id="subSelBadges"></div>
                 </div>
-                <div class="flex gap-2 flex-wrap mb-2">
+                <div class="flex gap-2 flex-wrap">
                     <button onclick="giveSub(30)" class="btn btn-sm btn-primary flex-1 btn-3d">⚡ 30 дней</button>
                     <button onclick="giveSub(60)" class="btn btn-sm btn-secondary flex-1 btn-3d">💎 60 дней</button>
                     <button onclick="removeSub()" id="removeSubBtn" class="btn btn-sm btn-danger hidden">❌ Отключить</button>
@@ -212,21 +232,21 @@
 
         <!-- Роли -->
         <div id="section-roles" class="hidden">
-            <div class="mb-8">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">👑 Роли</h2>
-                <p class="text-emerald-400/50 mt-1.5 text-sm">Поиск игроков и управление ролями</p>
+            <div class="mb-6">
+                <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">👑 Роли</h2>
+                <p class="text-emerald-400/50 mt-1 text-sm">Поиск игроков и управление ролями</p>
             </div>
-            <div class="glass rounded-2xl p-5 sm:p-6 mb-5">
+            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
                 <label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label>
                 <input id="roleSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('role')">
                 <div id="roleSearchResults" class="mt-3 space-y-2 hidden"></div>
             </div>
-            <div id="roleSelectedPlayer" class="glass-strong rounded-2xl p-5 sm:p-6 hidden">
+            <div id="roleSelectedPlayer" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
                 <div class="flex justify-between items-start mb-4 flex-wrap gap-2">
                     <div>
                         <p class="text-xs text-emerald-300/60 uppercase tracking-wider mb-1">Выбранный игрок</p>
-                        <p class="text-white font-semibold text-lg" id="roleSelName"></p>
-                        <p class="text-sm text-emerald-300/40" id="roleSelEmail"></p>
+                        <p class="text-white font-semibold text-base sm:text-lg" id="roleSelName"></p>
+                        <p class="text-xs sm:text-sm text-emerald-300/40" id="roleSelEmail"></p>
                     </div>
                     <div class="flex gap-1 flex-wrap" id="roleSelBadges"></div>
                 </div>
@@ -239,6 +259,22 @@
         </div>
     </div>
 </main>
+
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-nav">
+    <div class="mobile-nav-item active" id="mob-nav-subscriptions" onclick="showSection('subscriptions')">
+        <span class="m-icon">💳</span>Подписки
+    </div>
+    <div class="mobile-nav-item" id="mob-nav-roles" onclick="showSection('roles')">
+        <span class="m-icon">👑</span>Роли
+    </div>
+    <a href="/dashboard.html" class="mobile-nav-item no-underline">
+        <span class="m-icon">🏠</span>Дашборд
+    </a>
+    <div class="mobile-nav-item" onclick="logout()">
+        <span class="m-icon">🚪</span>Выйти
+    </div>
+</div>
 
 <script>
     async function checkAdmin() {
@@ -253,12 +289,12 @@
 
     let selectedPlayerId = null;
     let playersCache = {};
-    let currentSection = 'subscriptions';
 
     function showSection(section) {
-        currentSection = section;
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById('nav-' + section).classList.add('active');
+        document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('nav-' + section)?.classList.add('active');
+        document.getElementById('mob-nav-' + section)?.classList.add('active');
         document.getElementById('section-subscriptions').classList.toggle('hidden', section !== 'subscriptions');
         document.getElementById('section-roles').classList.toggle('hidden', section !== 'roles');
     }
@@ -317,19 +353,16 @@
         const sres = await fetch(`/api/player/${selectedPlayerId}/subscription`);
         if (sres.ok) playersCache[selectedPlayerId] = await sres.json();
         const cached = playersCache[selectedPlayerId];
-
         let badgesHtml = '';
         if (cached && cached.active) {
             badgesHtml += `<span class="badge badge-sm badge-active">Подписка до ${new Date(cached.expiresAt).toLocaleDateString("ru-RU")}</span>`;
         } else {
             badgesHtml += '<span class="badge badge-sm badge-inactive">Нет подписки</span>';
         }
-
         if (section === 'sub') {
             document.getElementById('subSelBadges').innerHTML = badgesHtml;
             document.getElementById('removeSubBtn').classList.toggle('hidden', !(cached && cached.active));
         } else {
-            // Роли
             try {
                 const rolesRes = await fetch(`/api/player/${selectedPlayerId}/roles`);
                 const roles = rolesRes.ok ? await rolesRes.json() : [];
@@ -358,10 +391,7 @@
             msg.textContent = `✅ Подписка выдана на ${days} дней`;
             msg.className = "text-xs text-center mt-3 text-emerald-400";
             await refreshPlayerUI('sub');
-        } catch (e) {
-            msg.textContent = "❌ Ошибка при выдаче";
-            msg.className = "text-xs text-center mt-3 text-red-400";
-        }
+        } catch (e) { msg.textContent = "❌ Ошибка при выдаче"; msg.className = "text-xs text-center mt-3 text-red-400"; }
     }
 
     async function removeSub() {
@@ -376,10 +406,7 @@
             msg.textContent = "✅ Подписка отключена";
             msg.className = "text-xs text-center mt-3 text-emerald-400";
             await refreshPlayerUI('sub');
-        } catch (e) {
-            msg.textContent = "❌ Ошибка при отключении";
-            msg.className = "text-xs text-center mt-3 text-red-400";
-        }
+        } catch (e) { msg.textContent = "❌ Ошибка при отключении"; msg.className = "text-xs text-center mt-3 text-red-400"; }
     }
 
     async function toggleRole(roleName) {
@@ -398,10 +425,7 @@
             msg.textContent = isGrant ? `✅ Роль ${roleName} выдана` : `✅ Роль ${roleName} отозвана`;
             msg.className = "text-xs text-center mt-3 text-emerald-400";
             await refreshPlayerUI('role');
-        } catch (e) {
-            msg.textContent = "❌ Ошибка";
-            msg.className = "text-xs text-center mt-3 text-red-400";
-        }
+        } catch (e) { msg.textContent = "❌ Ошибка"; msg.className = "text-xs text-center mt-3 text-red-400"; }
     }
 
     async function logout() {

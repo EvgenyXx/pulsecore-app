@@ -68,6 +68,13 @@
         .lineup-slot.playing { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.15); }
         .info-banner { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); border-radius: 14px; padding: 14px 18px; margin-bottom: 18px; }
         .info-banner p { margin: 4px 0; line-height: 1.5; }
+        .mobile-admin-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: 1px solid rgba(16,185,129,0.4); color: #fff; font-weight: 600;
+            box-shadow: 0 4px 20px rgba(16,185,129,0.25);
+            border-left: 3px solid #34d399 !important;
+        }
+        .mobile-admin-btn:hover { background: linear-gradient(135deg, #34d399, #10b981); box-shadow: 0 8px 30px rgba(16,185,129,0.45); color: #fff; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 20px; }
@@ -117,7 +124,7 @@
         <div class="mobile-nav-item" onclick="mobileNav('addTournament', this)"><span>🔗</span> Добавить турнир</div>
         <div class="mobile-nav-item" onclick="window.location.href='/subscribe.html'"><span>💳</span> Подписка</div>
         <div class="mobile-nav-item" onclick="window.location.href='/profile.html'"><span>👤</span> Профиль</div>
-        <div class="mobile-nav-item hidden" id="mobile-nav-admin" onclick="window.location.href='/admin.html'"><span>🛡️</span> Админка</div>
+        <div class="mobile-nav-item hidden mobile-admin-btn" id="mobile-nav-admin" onclick="window.location.href='/admin.html'"><span>🛡️</span> Админка</div>
     </nav>
     <button onclick="logout()" class="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm mt-4 py-3 w-full justify-center rounded-xl bg-white/3 hover:bg-red-500/10 active:scale-95">🚪 Выйти</button>
 </div>
@@ -179,7 +186,6 @@
             document.getElementById("playerName").textContent = data.name;
             const s = document.getElementById("sidebarPlayerName"), m = document.getElementById("mobilePlayerName");
             if (s) s.textContent = data.name; if (m) m.textContent = data.name;
-            // Показать кнопку Админки только для ADMIN
             if (data.admin) {
                 document.getElementById('nav-admin')?.classList.remove('hidden');
                 document.getElementById('mobile-nav-admin')?.classList.remove('hidden');
