@@ -7,7 +7,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +43,15 @@ public class Player {
     @Builder.Default
     private boolean verified = false;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "player_roles",
+            joinColumns = @JoinColumn(name = "player_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
+
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private Subscription subscription;
 
@@ -56,7 +67,15 @@ public class Player {
     @Builder.Default
     private boolean isBlocked = false;
 
+    @Builder.Default
+    private boolean notificationsEnabled = true;
+
     public boolean hasActiveSubscription() {
         return subscription != null && subscription.isActiveNow();
+    }
+
+    public boolean isAdmin() {
+        return roles.stream().anyMatch(r -> "ADMIN".equals(r.getName())
+                || "ROLE_ADMIN".equals(r.getName()));
     }
 }

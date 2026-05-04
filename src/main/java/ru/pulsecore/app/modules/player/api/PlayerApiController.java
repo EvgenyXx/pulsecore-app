@@ -1,13 +1,16 @@
 package ru.pulsecore.app.modules.player.api;
 
+import ru.pulsecore.app.modules.player.api.dto.NotificationsStatusResponse;
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.UpdateProfileRequest;
 import ru.pulsecore.app.modules.payment.YookassaService;
 
 import ru.pulsecore.app.modules.player.api.dto.*;
+
 import ru.pulsecore.app.modules.player.domain.Subscription;
 import ru.pulsecore.app.modules.player.service.PlayerService;
 import ru.pulsecore.app.modules.player.service.PlayerStatsService;
+import ru.pulsecore.app.modules.player.service.RoleManagementService;
 import ru.pulsecore.app.modules.player.service.SubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ public class PlayerApiController {
     private final PlayerStatsService playerStatsService;
     private final SubscriptionService subscriptionService;
     private final YookassaService yookassaService;
+    private final RoleManagementService roleManagementService;
 
     @GetMapping(PlayerApi.DASHBOARD)
     public ResponseEntity<DashboardResponse> getDashboard(@PathVariable UUID id) {
@@ -73,6 +77,12 @@ public class PlayerApiController {
         return ResponseEntity.ok(new MessageResponse("Подписка активирована на " + days + " дней"));
     }
 
+    @DeleteMapping(PlayerApi.UNSUBSCRIBE)
+    public ResponseEntity<MessageResponse> unsubscribe(@PathVariable UUID id) {
+        subscriptionService.deactivate(id);
+        return ResponseEntity.ok(new MessageResponse("Подписка отключена"));
+    }
+
     @GetMapping(PlayerApi.SEARCH)
     public ResponseEntity<List<PlayerResponse>> search(@RequestParam(PlayerApi.SEARCH_PARAM) String q) {
         return ResponseEntity.ok(playerService.searchPlayers(q));
@@ -100,4 +110,39 @@ public class PlayerApiController {
         var payment = yookassaService.createPayment(id, months);
         return ResponseEntity.ok(new PaymentResponse(payment.confirmationUrl()));
     }
+
+    @PostMapping(PlayerApi.GRANT_ROLE)
+    public ResponseEntity<MessageResponse> grantRole(@PathVariable UUID id, @RequestParam String role) {
+        roleManagementService.grantRole(id, role);
+        return ResponseEntity.ok(new MessageResponse("Роль " + role + " выдана"));
+    }
+
+    @DeleteMapping(PlayerApi.REVOKE_ROLE)
+    public ResponseEntity<MessageResponse> revokeRole(@PathVariable UUID id, @RequestParam String role) {
+        roleManagementService.revokeRole(id, role);
+        return ResponseEntity.ok(new MessageResponse("Роль " + role + " отозвана"));
+    }
+
+
+    @GetMapping(PlayerApi.ROLES)
+    public ResponseEntity<List<String>> getRoles(@PathVariable UUID id) {
+        return ResponseEntity.ok(roleManagementService.getRoleNames(id));
+    }
+
+
+    @PutMapping(PlayerApi.NOTIFICATIONS)
+    public ResponseEntity<MessageResponse> toggleNotifications(
+            @PathVariable UUID id, @RequestParam boolean enabled) {
+        playerService.setNotificationsEnabled(id, enabled);
+        return ResponseEntity.ok(new MessageResponse(enabled ? "Уведомления включены" : "Уведомления отключены"));
+    }
+
+
+    @GetMapping(PlayerApi.NOTIFICATIONS_STATUS)
+    public ResponseEntity<NotificationsStatusResponse> getNotificationsStatus(@PathVariable UUID id) {
+        return ResponseEntity.ok(new NotificationsStatusResponse(playerService.isNotificationsEnabled(id)));
+    }
+
+
+
 }

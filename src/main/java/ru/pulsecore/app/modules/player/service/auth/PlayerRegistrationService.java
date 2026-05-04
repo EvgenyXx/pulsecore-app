@@ -7,6 +7,7 @@ import ru.pulsecore.app.modules.player.exception.EmailAlreadyExistsException;
 import ru.pulsecore.app.modules.player.exception.PlayerNameAlreadyExistsException;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.player.repository.SubscriptionRepository;
+import ru.pulsecore.app.modules.player.service.RoleService;
 import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
 import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
 import ru.pulsecore.app.modules.tournament.service.TournamentAutoAddService;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class PlayerRegistrationService {
@@ -27,6 +30,7 @@ public class PlayerRegistrationService {
     private final MailStrategyRegistry mailStrategyRegistry;
     private final SubscriptionRepository subscriptionRepository;
     private final TournamentAutoAddService tournamentAutoAddService;
+    private final RoleService roleService;
 
     public record Pending(String name, String email, String password, String code) {}
 
@@ -55,12 +59,14 @@ public class PlayerRegistrationService {
             throw new BadCredentialsException();
         }
 
+        var defaultRole = roleService.findRoleUser();
         Player player = playerRepository.save(Player.builder()
                 .name(pending.name())
                 .email(pending.email())
                 .password(pending.password())
                 .verified(true)
                 .createdAt(LocalDateTime.now())
+                        .roles(Set.of(defaultRole))
                 .build());
 
         Subscription trial = Subscription.builder().player(player).build();
