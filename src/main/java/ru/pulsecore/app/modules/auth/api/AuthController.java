@@ -117,7 +117,7 @@ public class AuthController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();  // ← 200 вместо 204
     }
 
     @PostMapping(AuthApi.FORGOT_PASSWORD)

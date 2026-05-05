@@ -42,13 +42,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
-                .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID", sessionProperties.getName())
-                        .permitAll()
-                );
+                .logout(AbstractHttpConfigurer::disable);  // ← ВОТ ЭТО!
 
         return http.build();
     }
