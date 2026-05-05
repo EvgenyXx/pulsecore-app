@@ -1,6 +1,11 @@
 package ru.pulsecore.app.modules.player.service.strategy;
 
 public final class MailTypes {
+
+
+    public static final String ADMIN_NEW_USER = "admin_new_user";
+    public static final String ADMIN_PAYMENT_RECEIVED = "admin_payment_received";
+
     private MailTypes() {}
 
     public static final String VERIFICATION = "verification";

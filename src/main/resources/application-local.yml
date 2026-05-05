@@ -18,6 +18,8 @@ spring:
             enable: true
 
 app:
+  admin:
+    email: evgenypavlov666@yandex.ru
   yookassa:
     shop-id: 1345414
     secret-key: live_твой_ключ
@@ -28,4 +30,5 @@ server:
   servlet:
     session:
       cookie:
+        name: PULSECORE_SESSION
         secure: false

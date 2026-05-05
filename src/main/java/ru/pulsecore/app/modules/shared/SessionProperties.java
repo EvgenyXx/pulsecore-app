@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "app.admin")
-public class AdminProperties {
-    private String email;
+@ConfigurationProperties(prefix = "server.servlet.session.cookie")
+public class SessionProperties {
+    private String name;
+    private boolean httpOnly;
+    private boolean secure;
+    private String maxAge;
 }

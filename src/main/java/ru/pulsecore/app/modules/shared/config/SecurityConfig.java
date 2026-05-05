@@ -1,5 +1,7 @@
+// SecurityConfig.java
 package ru.pulsecore.app.modules.shared.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,10 +11,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.pulsecore.app.modules.shared.SessionProperties;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final SessionProperties sessionProperties;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -26,16 +32,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                        // Публичные
                         .requestMatchers(
                                 "/", "/index.html", "/register.html",
                                 "/subscribe.html", "/profile.html", "/dashboard.html",
                                 "/img.png", "/api/auth/**", "/api/payment/webhook",
                                 "/api/player/**"
                         ).permitAll()
-                        // Админка — только ROLE_ADMIN
                         .requestMatchers("/admin.html", "/api/admin/**").hasAuthority("ROLE_ADMIN")
-                        // Остальное — авторизованным
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -43,7 +46,7 @@ public class SecurityConfig {
                         .logoutUrl("/api/auth/logout")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID", "PULSECORE_SESSION")
+                        .deleteCookies("JSESSIONID", sessionProperties.getName())
                         .permitAll()
                 );
 

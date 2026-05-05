@@ -324,8 +324,10 @@
         setTimeout(() => msgBox.classList.add("hidden"), 3000);
     }
 
-    function logout() { fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }).then(() => { window.location.href = "/"; }); }
-
+    async function logout() {
+        await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+        window.location.href = "/";
+    }
     init();
 </script>
 </body>

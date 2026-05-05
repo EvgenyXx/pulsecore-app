@@ -1,5 +1,9 @@
 package ru.pulsecore.app.modules.player.api;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ru.pulsecore.app.modules.player.api.dto.NotificationsStatusResponse;
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.UpdateProfileRequest;
@@ -18,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.pulsecore.app.modules.shared.SessionProperties;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,6 +39,7 @@ public class PlayerApiController {
     private final SubscriptionService subscriptionService;
     private final YookassaService yookassaService;
     private final RoleManagementService roleManagementService;
+    private final SessionProperties sessionProperties;
 
     @GetMapping(PlayerApi.DASHBOARD)
     public ResponseEntity<DashboardResponse> getDashboard(@PathVariable UUID id) {
@@ -100,8 +106,20 @@ public class PlayerApiController {
     }
 
     @DeleteMapping(PlayerApi.DELETE_ACCOUNT)
-    public ResponseEntity<MessageResponse> deleteAccount(@PathVariable UUID id) {
+    public ResponseEntity<MessageResponse> deleteAccount(@PathVariable UUID id,
+                                                         HttpSession session,
+                                                         HttpServletResponse response) {
         playerService.deletePlayer(id);
+
+        session.invalidate();
+        SecurityContextHolder.clearContext();
+
+        Cookie cookie = new Cookie(sessionProperties.getName(), null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
         return ResponseEntity.ok(new MessageResponse("Аккаунт удалён"));
     }
 

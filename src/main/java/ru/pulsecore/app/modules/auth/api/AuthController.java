@@ -1,6 +1,7 @@
 package ru.pulsecore.app.modules.auth.api;
 
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -41,13 +42,16 @@ public class AuthController {
     }
 
     @PostMapping(AuthApi.VERIFY_EMAIL)
-    public ResponseEntity<AuthResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequest request, HttpSession session) {
+    public ResponseEntity<AuthResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequest request,
+                                                    HttpSession session,
+                                                    HttpServletRequest httpRequest) {
         var pending = (PlayerRegistrationService.Pending) session.getAttribute("pending");
         if (pending == null) return ResponseEntity.status(400).build();
-        var player = registrationService.complete(pending, request.getCode());
+        var player = registrationService.complete(pending, request.getCode(), httpRequest);
         session.removeAttribute("pending");
         return ResponseEntity.ok(mapper.toAuthResponse(player));
     }
+
     @PostMapping(AuthApi.LOGIN)
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         var player = authenticationService.authenticate(request.getEmail(), request.getPassword());

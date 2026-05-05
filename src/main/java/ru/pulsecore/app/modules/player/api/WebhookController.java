@@ -1,6 +1,9 @@
 package ru.pulsecore.app.modules.player.api;
 
 import ru.pulsecore.app.modules.player.service.SubscriptionService;
+import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
+import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
+import ru.pulsecore.app.modules.shared.AdminProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,8 @@ import java.util.UUID;
 public class WebhookController {
 
     private final SubscriptionService subscriptionService;
+    private final MailStrategyRegistry mailStrategyRegistry;
+    private final AdminProperties adminProperties;
 
     private static final String WEBHOOK_PATH = "/api/payment/webhook";
     private static final String EVENT_SUCCEEDED = "payment.succeeded";
@@ -23,11 +28,10 @@ public class WebhookController {
     private static final String KEY_METADATA = "metadata";
     private static final String KEY_PLAYER_ID = "playerId";
     private static final String KEY_MONTHS = "months";
+    private static final String KEY_AMOUNT = "amount";
+    private static final String KEY_VALUE = "value";
+    private static final String KEY_CURRENCY = "currency";
     private static final int DAYS_PER_MONTH = 30;
-
-    private static final String RESPONSE_OK = "ok";
-    private static final String RESPONSE_IGNORED = "ignored";
-    private static final String RESPONSE_ERROR = "error";
 
     @PostMapping(WEBHOOK_PATH)
     public ResponseEntity<String> handleWebhook(@RequestBody Map<String, Object> body) {
@@ -35,15 +39,14 @@ public class WebhookController {
 
         try {
             if (!EVENT_SUCCEEDED.equals(body.get(KEY_EVENT))) {
-                return ResponseEntity.ok(RESPONSE_IGNORED);
+                return ResponseEntity.ok("ignored");
             }
 
             Map<String, Object> payment = getNestedMap(body, KEY_OBJECT);
             Map<String, Object> metadata = getNestedMap(payment, KEY_METADATA);
 
             if (!metadata.containsKey(KEY_PLAYER_ID)) {
-                log.warn("No playerId in metadata");
-                return ResponseEntity.ok(RESPONSE_IGNORED);
+                return ResponseEntity.ok("ignored");
             }
 
             UUID playerId = UUID.fromString((String) metadata.get(KEY_PLAYER_ID));
@@ -52,11 +55,21 @@ public class WebhookController {
             subscriptionService.activate(playerId, months * DAYS_PER_MONTH);
             log.info("Subscription activated: playerId={}, months={}", playerId, months);
 
-            return ResponseEntity.ok(RESPONSE_OK);
+
+            Map<String, Object> amountMap = getNestedMap(payment, KEY_AMOUNT);
+            String amount = (String) amountMap.get(KEY_VALUE);
+            String currency = (String) amountMap.get(KEY_CURRENCY);
+
+
+            mailStrategyRegistry.send(MailTypes.ADMIN_PAYMENT_RECEIVED,
+                    adminProperties.getEmail(),
+                    playerId.toString(), months, amount, currency);
+
+            return ResponseEntity.ok("ok");
 
         } catch (Exception e) {
             log.error("Webhook error", e);
-            return ResponseEntity.ok(RESPONSE_ERROR);
+            return ResponseEntity.ok("error");
         }
     }
 
