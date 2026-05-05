@@ -138,7 +138,7 @@
     async function checkAuth() {
         try {
             const res = await fetch("/api/auth/me", { credentials: "same-origin" });
-            if (res.ok) { window.location.href = "/dashboard.html"; }
+            if (res.ok) { window.location.href = "/dashboard"; }
         } catch (e) {}
     }
     checkAuth();
@@ -254,7 +254,7 @@
                 errorEl.classList.remove("hidden");
                 return;
             }
-            window.location.href = "/dashboard.html";
+            window.location.href = "/dashboard";
         } catch (e) {
             errorEl.textContent = "Ошибка соединения";
             errorEl.classList.remove("hidden");
@@ -341,7 +341,7 @@
                 return;
             }
 
-            window.location.href = "/dashboard.html";
+            window.location.href = "/dashboard";
         } catch (e) {
             errorEl.textContent = "Ошибка соединения";
             errorEl.classList.remove("hidden");

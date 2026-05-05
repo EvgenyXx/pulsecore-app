@@ -170,7 +170,7 @@
             <p class="text-xs text-emerald-400/60">Админ-панель</p>
         </div>
     </div>
-    <a href="/dashboard.html" class="flex items-center gap-1 text-xs text-emerald-400/60 hover:text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-lg">🏠 Дашборд</a>
+    <a href="/dashboard" class="flex items-center gap-1 text-xs text-emerald-400/60 hover:text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-lg">🏠 Дашборд</a>
 </div>
 
 <!-- Desktop Sidebar -->
@@ -191,7 +191,7 @@
         <div class="nav-item" id="nav-roles" onclick="showSection('roles')">
             <span class="nav-icon">👑</span><div><div class="font-medium text-sm">Роли</div></div>
         </div>
-        <a href="/dashboard.html" class="nav-item mt-auto">
+        <a href="/dashboard" class="nav-item mt-auto">
             <span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Дашборд</div><div class="text-xs opacity-60">Вернуться</div></div>
         </a>
     </nav>
@@ -268,7 +268,7 @@
     <div class="mobile-nav-item" id="mob-nav-roles" onclick="showSection('roles')">
         <span class="m-icon">👑</span>Роли
     </div>
-    <a href="/dashboard.html" class="mobile-nav-item no-underline">
+    <a href="/dashboard" class="mobile-nav-item no-underline">
         <span class="m-icon">🏠</span>Дашборд
     </a>
     <div class="mobile-nav-item" onclick="logout()">
@@ -282,7 +282,7 @@
             const res = await fetch("/api/auth/me", { credentials: "same-origin" });
             if (!res.ok) { window.location.href = "/"; return; }
             const data = await res.json();
-            if (!data.admin) { window.location.href = "/dashboard.html"; return; }
+            if (!data.admin) { window.location.href = "/dashboard"; return; }
         } catch (e) { window.location.href = "/"; }
     }
     checkAdmin();
