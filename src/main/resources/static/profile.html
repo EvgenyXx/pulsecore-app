@@ -326,8 +326,9 @@
 
     async function logout() {
         await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-        window.location.href = "/";
+        window.location.replace("/");
     }
+    function formatMoney(v) { if (v == null) return "0 ₽"; return new Intl.NumberFormat("ru-RU").format(Math.round(v)) + " ₽"; }
     init();
 </script>
 </body>

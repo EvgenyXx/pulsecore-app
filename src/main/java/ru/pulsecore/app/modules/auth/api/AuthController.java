@@ -1,7 +1,9 @@
 package ru.pulsecore.app.modules.auth.api;
 
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -18,6 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.pulsecore.app.modules.shared.SessionProperties;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -32,6 +35,7 @@ public class AuthController {
     private final PlayerPasswordResetService passwordResetService;
     private final PlayerService playerService;
     private final PlayerDtoMapper mapper;
+    private final SessionProperties sessionProperties;
 
     @PostMapping(AuthApi.REGISTER)
     public ResponseEntity<MessageResponse> register(@Valid @RequestBody RegisterRequest request, HttpSession session) {
@@ -99,9 +103,20 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse(AuthApi.OK));
     }
 
+
+
     @PostMapping(AuthApi.LOGOUT)
-    public ResponseEntity<Void> logout(HttpSession session) {
+    public ResponseEntity<Void> logout(HttpSession session, HttpServletResponse response) {
         session.invalidate();
+        SecurityContextHolder.clearContext();
+
+        Cookie cookie = new Cookie(sessionProperties.getName(), null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(sessionProperties.isSecure());
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
         return ResponseEntity.noContent().build();
     }
 
