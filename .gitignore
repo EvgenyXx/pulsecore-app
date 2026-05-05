@@ -37,4 +37,3 @@ build/
 
 # 🔴 ВАЖНО
 .env
-application-local.yml

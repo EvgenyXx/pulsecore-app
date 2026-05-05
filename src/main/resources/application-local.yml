@@ -1,14 +1,14 @@
 # application-local.yml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/botdb
-    username: botuser
-    password: 1234
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   mail:
-    host: sm17.hosting.reg.ru
-    port: 465
-    username: noreply@pulsecore-app.ru
-    password: FJ3-wT5-7ye-Rfm
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
     protocol: smtps
     properties:
       mail:
@@ -19,12 +19,12 @@ spring:
 
 app:
   admin:
-    email: evgenypavlov666@yandex.ru
+    email: ${ADMIN_EMAIL}
   yookassa:
-    shop-id: 1345414
-    secret-key: live_твой_ключ
+    shop-id: ${YOOKASSA_SHOP_ID}
+    secret-key: ${YOOKASSA_SECRET_KEY}
   mail:
-    from: PulseCore <noreply@pulsecore-app.ru>
+    from: ${MAIL_FROM}
 
 server:
   servlet:
