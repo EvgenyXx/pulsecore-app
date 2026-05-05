@@ -21,7 +21,7 @@ public class YookassaService {
     private static final String API_URL = "https://api.yookassa.ru/v3/payments";
     private static final String RETURN_URL = "https://pulsecore-app.ru/dashboard.html";
     private static final String CURRENCY = "RUB";
-    private static final Map<Integer, Integer> PRICES = Map.of(1, 100, 2, 200);
+    private static final Map<Integer, Integer> PRICES = Map.of(1, 99, 2, 149);
 
     public record PaymentResponse(String confirmationUrl, String paymentId) {}
 
