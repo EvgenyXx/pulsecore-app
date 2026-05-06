@@ -28,18 +28,15 @@ public class TournamentLinkService {
 
         ParsedResult parsed = resultService.calculateAll(link);
 
-        // турнир НЕ начался (оставляем твою старую логику)
         if (parsed.getResults() == null || parsed.getResults().isEmpty()) {
             return result(TournamentLinkStatus.NOT_STARTED, parsed);
         }
 
-        // проверка участия (ТОЛЬКО через parsed)
         boolean userExists = participationService.isUserInParsed(parsed, player.getName());
         if (!userExists) {
             return result(TournamentLinkStatus.NOT_PARTICIPATING, parsed);
         }
 
-        // проверка БД (только статус)
         TournamentEntity tournament = tournamentRepository.findByLink(link).orElse(null);
         if (tournament != null) {
             if (!tournament.isProcessed()) {
@@ -48,7 +45,6 @@ public class TournamentLinkService {
             return result(TournamentLinkStatus.FINISHED, parsed);
         }
 
-        // новый турнир
         tournament = tournamentSyncService.sync(parsed, link);
 
         tournamentResultService.processResults(
@@ -56,7 +52,8 @@ public class TournamentLinkService {
                 player,
                 tournament,
                 parsed.getNightBonus(),
-                parsed.getStatus() == TournamentStatus.FINISHED
+                parsed.getStatus() == TournamentStatus.FINISHED,
+                parsed.isHasRemoved()
         );
 
         if (parsed.getStatus() == TournamentStatus.FINISHED) {
