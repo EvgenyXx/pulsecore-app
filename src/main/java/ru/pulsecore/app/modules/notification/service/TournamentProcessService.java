@@ -1,7 +1,6 @@
 package ru.pulsecore.app.modules.notification.service;
 
 import ru.pulsecore.app.core.dto.ResultDto;
-
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.PlayerService;
@@ -21,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +33,6 @@ public class TournamentProcessService {
     private final ResultService resultService;
     private final TournamentRepository tournamentRepository;
     private final PlayerService playerService;
-
 
     @Transactional
     public void processTournament(List<PlayerNotification> notifications, ParsedResult parsed) {
@@ -57,7 +54,11 @@ public class TournamentProcessService {
             Player player = pn.getPlayer();
             if (player == null) continue;
             processed++;
-            boolean found = tournamentResultService.processResults(resultDto, player, parsed.getTournamentId(), parsed.getNightBonus(), true);
+            boolean found = tournamentResultService.processResults(
+                    resultDto, player, parsed.getTournamentId(),
+                    parsed.getNightBonus(),
+                    parsed.isFinished() || parsed.isFinalRemoved(),
+                    parsed.isHasRemoved());
             if (found) foundCount++;
         }
         tournament.setFinished(true);
@@ -84,8 +85,6 @@ public class TournamentProcessService {
         return responses;
     }
 
-
-
     private AddTournamentResponse processSingleUrl(String url, String playerId) {
         Player player = playerService.findById(UUID.fromString(playerId));
         if (player == null) throw new PlayerNotFoundException(playerId);
@@ -100,7 +99,11 @@ public class TournamentProcessService {
         tournamentRepository.findByExternalId(parsed.getTournamentId())
                 .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder().externalId(parsed.getTournamentId()).link(url).build()));
 
-        tournamentResultService.processResults(parsed.getResults(), player, parsed.getTournamentId(), parsed.getNightBonus(), parsed.isFinished());
+        tournamentResultService.processResults(
+                parsed.getResults(), player, parsed.getTournamentId(),
+                parsed.getNightBonus(),
+                parsed.isFinished() || parsed.isFinalRemoved(),
+                parsed.isHasRemoved());
 
         return AddTournamentResponse.builder().message("Турнир обработан").tournamentId(parsed.getTournamentId()).resultsCount(parsed.getResults().size()).results(parsed.getResults()).build();
     }

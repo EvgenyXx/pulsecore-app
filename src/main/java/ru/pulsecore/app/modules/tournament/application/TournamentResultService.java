@@ -1,6 +1,5 @@
 package ru.pulsecore.app.modules.tournament.application;
 
-
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.modules.shared.exception.TournamentNotFoundException;
@@ -69,7 +68,8 @@ public class TournamentResultService {
                                Player player,
                                TournamentEntity tournament,
                                double bonus,
-                               boolean isFinished) {
+                               boolean isFinished,
+                               boolean hasRemoved) {
 
         for (ResultDto r : results) {
             boolean same = isSamePlayer(player.getName(), r.getPlayer());
@@ -86,6 +86,7 @@ public class TournamentResultService {
                             .tournament(tournament)
                             .isNight(isNight)
                             .bonus(bonus)
+                            .hasRemoved(hasRemoved)
                             .build();
 
                     TournamentResultEntity saved = save(entity);
@@ -99,7 +100,8 @@ public class TournamentResultService {
                                   Player player,
                                   Long tournamentId,
                                   double bonus,
-                                  boolean isFinished) {
+                                  boolean isFinished,
+                                  boolean hasRemoved) {
 
         boolean found = false;
 
@@ -123,6 +125,7 @@ public class TournamentResultService {
                             .tournament(tournament)
                             .isNight(isNight)
                             .bonus(bonus)
+                            .hasRemoved(hasRemoved)
                             .build();
 
                     TournamentResultEntity saved = save(entity);

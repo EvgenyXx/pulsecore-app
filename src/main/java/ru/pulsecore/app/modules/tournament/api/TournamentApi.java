@@ -19,4 +19,10 @@ public class TournamentApi {
     public static final String RESP_MESSAGE = "message";
     public static final String RESP_OK = "ok";
     public static final String SEARCH_WITH_STATUS = "/search-with-status";
+
+
+    public static final String ADMIN_CALCULATE = "/admin/calculate";
+    public static final String PARAM_NAME = "name";
+    public static final String PARAM_START_DATE = "startDate";
+    public static final String PARAM_END_DATE = "endDate";
 }

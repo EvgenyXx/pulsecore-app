@@ -6,10 +6,8 @@ public enum MatchStage {
         @Override
         public boolean matches(String stage) {
             if (stage == null) return false;
-
             String s = normalize(stage);
-
-            return s.contains("финал") && !s.contains("1/2");
+            return s.contains("финал") && !s.contains("1/2") && !s.contains("за 3");
         }
     },
 
@@ -17,12 +15,17 @@ public enum MatchStage {
         @Override
         public boolean matches(String stage) {
             if (stage == null) return false;
-
             String s = normalize(stage);
+            return s.contains("1/2") || s.contains("полуфинал") || s.contains("semi");
+        }
+    },
 
-            return s.contains("1/2")
-                    || s.contains("полуфинал")
-                    || s.contains("semi");
+    THIRD_PLACE {
+        @Override
+        public boolean matches(String stage) {
+            if (stage == null) return false;
+            String s = normalize(stage);
+            return s.contains("за 3") || s.contains("3-е") || s.contains("3 место") || s.contains("третье");
         }
     };
 

@@ -156,6 +156,12 @@
         .mobile-nav-item.active { color: #34d399; background: rgba(16,185,129,0.12); }
         .mobile-nav-item .m-icon { font-size: 20px; }
         @media (min-width: 768px) { .mobile-nav { display: none; } }
+        /* Result rows */
+        .result-row { animation: fadeInUp 0.4s ease forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Spinner */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner-sm { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -190,6 +196,9 @@
         </div>
         <div class="nav-item" id="nav-roles" onclick="showSection('roles')">
             <span class="nav-icon">👑</span><div><div class="font-medium text-sm">Роли</div></div>
+        </div>
+        <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')">
+            <span class="nav-icon">🧮</span><div><div class="font-medium text-sm">Расчёт</div></div>
         </div>
         <a href="/dashboard" class="nav-item mt-auto">
             <span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Дашборд</div><div class="text-xs opacity-60">Вернуться</div></div>
@@ -257,6 +266,58 @@
                 <p id="roleMsg" class="text-xs text-center mt-3 hidden"></p>
             </div>
         </div>
+
+        <!-- Расчёт игрока -->
+        <div id="section-calculate" class="hidden">
+            <div class="mb-6">
+                <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">🧮 Расчёт игрока</h2>
+                <p class="text-emerald-400/50 mt-1 text-sm">Посчитать заработок любого игрока за период</p>
+            </div>
+            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                    <div>
+                        <label class="text-xs text-emerald-300/70 mb-1 block font-medium">🔍 Фамилия и имя</label>
+                        <input id="calcName" type="text" placeholder="павлов евгений" class="input input-bordered w-full input-glow text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-emerald-300/70 mb-1 block font-medium">📅 Дата с</label>
+                        <input id="calcStartDate" type="date" class="input input-bordered w-full input-glow text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-emerald-300/70 mb-1 block font-medium">📅 Дата по</label>
+                        <input id="calcEndDate" type="date" class="input input-bordered w-full input-glow text-white">
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mb-3">ℹ️ Если «Дата по» не указана — поиск за один день</p>
+                <button onclick="adminCalculate()" id="calcBtn" class="btn btn-admin w-full sm:w-auto">🧮 Посчитать</button>
+                <p id="calcError" class="text-red-400 text-xs mt-3 hidden"></p>
+                <div id="calcLoading" class="hidden mt-4 text-center">
+                    <div class="inline-flex items-center gap-2 text-emerald-300/80 text-sm">
+                        <span class="spinner-sm"></span> Идёт поиск и расчёт турниров...
+                    </div>
+                </div>
+            </div>
+            <div id="calcResult" class="hidden glass-strong rounded-2xl p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <div class="stat-card flex-1 text-center" style="background:rgba(255,255,255,0.025);border-radius:18px;padding:22px;border:1px solid rgba(255,255,255,0.04);">
+                        <div class="text-xs text-gray-400 mb-1">💰 Общая сумма</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-emerald-400" id="calcTotal"></div>
+                    </div>
+                    <div class="stat-card flex-1 text-center" style="background:rgba(255,255,255,0.025);border-radius:18px;padding:22px;border:1px solid rgba(255,255,255,0.04);">
+                        <div class="text-xs text-gray-400 mb-1">🎯 Турниров</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-indigo-400" id="calcCount"></div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto -mx-1">
+                    <table class="table table-sm sm:table-md w-full">
+                        <thead><tr class="text-gray-400"><th>№</th><th>Дата</th><th>Турнир</th><th>Сумма</th></tr></thead>
+                        <tbody id="calcTableBody"></tbody>
+                    </table>
+                </div>
+                <p class="text-amber-400/70 text-xs mt-2 hidden" id="calcWarning">⚠️ Подсвеченные строки — игрок снялся в финале или за 3-е место.</p>
+            </div>
+        </div>
+
     </div>
 </main>
 
@@ -267,6 +328,9 @@
     </div>
     <div class="mobile-nav-item" id="mob-nav-roles" onclick="showSection('roles')">
         <span class="m-icon">👑</span>Роли
+    </div>
+    <div class="mobile-nav-item" id="mob-nav-calculate" onclick="showSection('calculate')">
+        <span class="m-icon">🧮</span>Расчёт
     </div>
     <a href="/dashboard" class="mobile-nav-item no-underline">
         <span class="m-icon">🏠</span>Дашборд
@@ -297,6 +361,96 @@
         document.getElementById('mob-nav-' + section)?.classList.add('active');
         document.getElementById('section-subscriptions').classList.toggle('hidden', section !== 'subscriptions');
         document.getElementById('section-roles').classList.toggle('hidden', section !== 'roles');
+        document.getElementById('section-calculate').classList.toggle('hidden', section !== 'calculate');
+    }
+
+    async function adminCalculate() {
+        const name = document.getElementById('calcName').value.trim();
+        const startDate = document.getElementById('calcStartDate').value;
+        const endDate = document.getElementById('calcEndDate').value;
+        const btn = document.getElementById('calcBtn');
+        const errorEl = document.getElementById('calcError');
+        const resultEl = document.getElementById('calcResult');
+        const loadingEl = document.getElementById('calcLoading');
+        const warningEl = document.getElementById('calcWarning');
+
+        errorEl.classList.add('hidden');
+        resultEl.classList.add('hidden');
+        warningEl?.classList.add('hidden');
+
+        if (!name || !startDate) {
+            errorEl.textContent = '❌ Заполните имя и хотя бы дату начала';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-sm"></span> Считаем...';
+        btn.classList.add('opacity-70');
+        loadingEl.classList.remove('hidden');
+
+        try {
+            const res = await fetch('/api/tournament/admin/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ name, startDate, endDate: endDate || startDate })
+            });
+
+            if (!res.ok) {
+                errorEl.textContent = '❌ Ошибка сервера';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            const data = await res.json();
+
+            if (data.tournamentCount === 0) {
+                errorEl.textContent = 'ℹ️ Турниры с участием игрока не найдены за этот период';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('calcTotal').textContent = formatMoney(data.totalAmount);
+            document.getElementById('calcCount').textContent = data.tournamentCount;
+
+            let hasAnyRemoved = false;
+
+            const tbody = document.getElementById('calcTableBody');
+            tbody.innerHTML = data.tournaments.map((t, i) => {
+                let cleanDate = t.date || '—';
+                if (cleanDate.includes(' ')) cleanDate = cleanDate.split(' ')[0];
+                try { const d = new Date(cleanDate); if (!isNaN(d.getTime())) cleanDate = d.toLocaleDateString('ru-RU'); } catch(e) {}
+
+                const isRemoved = t.hasRemoved === true;
+                if (isRemoved) hasAnyRemoved = true;
+
+                const rowClass = isRemoved
+                    ? 'result-row hover:bg-white/5 border-l-2 border-amber-500/60 bg-amber-500/5'
+                    : 'result-row hover:bg-white/5';
+                const warningIcon = isRemoved
+                    ? '<span class="text-amber-400 text-xs ml-1" title="Игрок снялся в финале или за 3-е место">⚠️</span>'
+                    : '';
+
+                return `<tr class="${rowClass}" style="animation-delay:${i * 0.05}s">
+                    <td class="text-gray-400">${i + 1}</td>
+                    <td class="text-white text-sm">${cleanDate}${warningIcon}</td>
+                    <td class="text-gray-300 text-sm">${t.tournamentTitle || '—'}</td>
+                    <td class="${isRemoved ? 'text-amber-400' : 'text-emerald-400'} font-medium">${formatMoney(t.amount)}</td>
+                </tr>`;
+            }).join('');
+
+            if (hasAnyRemoved) warningEl?.classList.remove('hidden');
+            resultEl.classList.remove('hidden');
+        } catch (e) {
+            errorEl.textContent = '❌ Ошибка соединения';
+            errorEl.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '🧮 Посчитать';
+            btn.classList.remove('opacity-70');
+            loadingEl.classList.add('hidden');
+        }
     }
 
     async function searchPlayers(section) {
@@ -323,15 +477,9 @@
                 const subBadge = isActive
                     ? `<span class="badge badge-sm badge-active">Подписка до ${new Date(sub.expiresAt).toLocaleDateString("ru-RU")}</span>`
                     : '<span class="badge badge-sm badge-inactive">Нет подписки</span>';
-                return `
-                    <div class="player-card flex justify-between items-center" onclick="selectPlayer('${p.id}','${p.name.replace(/'/g, "\\'")}','${p.email.replace(/'/g, "\\'")}', '${section}')">
-                        <div>
-                            <div class="flex items-center gap-2 flex-wrap"><p class="text-white text-sm font-semibold">${p.name}</p>${subBadge}</div>
-                            <p class="text-xs text-emerald-300/30 mt-0.5">${p.email}</p>
-                        </div>
-                        <span class="text-emerald-400 text-sm flex-shrink-0 ml-2">Выбрать →</span>
-                    </div>
-                `;
+                return `<div class="player-card flex justify-between items-center" onclick="selectPlayer('${p.id}','${p.name.replace(/'/g, "\\'")}','${p.email.replace(/'/g, "\\'")}', '${section}')">
+                        <div><div class="flex items-center gap-2 flex-wrap"><p class="text-white text-sm font-semibold">${p.name}</p>${subBadge}</div><p class="text-xs text-emerald-300/30 mt-0.5">${p.email}</p></div>
+                        <span class="text-emerald-400 text-sm flex-shrink-0 ml-2">Выбрать →</span></div>`;
             }).join("");
         } catch (e) { results.innerHTML = '<p class="text-red-400 text-sm text-center py-3">❌ Ошибка загрузки</p>'; }
     }

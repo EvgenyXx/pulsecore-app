@@ -3,6 +3,8 @@ package ru.pulsecore.app.modules.tournament.api;
 
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.notification.service.TournamentProcessService;
+import ru.pulsecore.app.modules.tournament.api.dto.AdminCalculateResponse;
+import ru.pulsecore.app.modules.tournament.application.AdminCalculateService;
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentRequest;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
@@ -25,6 +27,21 @@ public class TournamentController {
     private final TournamentProcessService tournamentProcessService;
     private final TournamentSearchService tournamentSearchService;
     private final TournamentResultService tournamentResultService;
+    private final AdminCalculateService adminCalculateService;
+
+
+    @PostMapping(TournamentApi.ADMIN_CALCULATE)
+    public ResponseEntity<AdminCalculateResponse> adminCalculate(@RequestBody Map<String, String> request) {
+        String name = request.get(TournamentApi.PARAM_NAME);
+        String startDate = request.get(TournamentApi.PARAM_START_DATE);
+        String endDate = request.get(TournamentApi.PARAM_END_DATE);
+
+        if (name == null || startDate == null || endDate == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(adminCalculateService.calculate(name, startDate, endDate));
+    }
 
 
     @PostMapping(TournamentApi.ADD)
