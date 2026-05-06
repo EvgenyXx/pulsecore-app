@@ -35,12 +35,10 @@ public class PlayerStatsService {
                         .build())
                 .orElse(null);
 
-        // Ближайшие 2 дня из lineup
         LocalDate today = LocalDate.now();
         List<Lineup> lineups = lineupRepository.findByDateBetweenOrderByDateAscTimeAsc(
                 today.plusDays(1), today.plusDays(2));
 
-        // Группируем по датам
         Map<LocalDate, List<Lineup>> byDate = lineups.stream()
                 .collect(Collectors.groupingBy(Lineup::getDate, LinkedHashMap::new, Collectors.toList()));
 
@@ -57,7 +55,6 @@ public class PlayerStatsService {
                     .toList();
 
             if (!myLineups.isEmpty()) {
-                // Игрок в составе — показываем его составы
                 for (Lineup lineup : myLineups) {
                     upcomingLineups.add(UpcomingLineupDto.builder()
                             .date(lineup.getDate().toString())
@@ -69,7 +66,6 @@ public class PlayerStatsService {
                             .build());
                 }
             } else {
-                // Игрока нет ни в одном составе на эту дату
                 upcomingLineups.add(UpcomingLineupDto.builder()
                         .date(date.toString())
                         .time(null)
@@ -99,32 +95,47 @@ public class PlayerStatsService {
 
     public SumResponse getSum(UUID id, LocalDate start, LocalDate end) {
         Player player = playerService.getById(id);
-        PeriodStatsProjection stats = tournamentResultService.getStatsByPeriod(player, start, end);
-        return SumResponse.builder()
-                .playerName(player.getName())
-                .start(start.toString()).end(end.toString())
-                .sum(stats != null ? stats.getSum() : 0)
-                .average(stats != null ? stats.getAverage() : 0)
-                .minusThreePercent(stats != null ? stats.getMinusThreePercent() : 0)
-                .count(stats != null ? stats.getCount() : 0)
-                .build();
-    }
 
-    public TournamentListResponse getTournaments(UUID id, LocalDate start, LocalDate end) {
-        Player player = playerService.getById(id);
+        if (start == null && end == null) {
+            return SumResponse.builder()
+                    .playerName(player.getName())
+                    .start("").end("")
+                    .sum(0.0).average(0.0).count(0L)
+                    .tournaments(List.of())
+                    .build();
+        }
+
+        if (start == null) start = end;
+        if (end == null) end = start;
+
+        if (end.toEpochDay() - start.toEpochDay() > 90) {
+            end = start.plusDays(90);
+        }
+
+        PeriodStatsProjection stats = tournamentResultService.getStatsByPeriod(player, start, end);
         var entities = tournamentResultService.getResultsByPeriod(player, start, end);
-        List<TournamentListResponse.TournamentResultItem> tournaments = entities.stream()
-                .map(e -> TournamentListResponse.TournamentResultItem.builder()
+
+        if (entities.size() > 50) {
+            entities = entities.subList(0, 50);
+        }
+
+        List<SumResponse.TournamentItem> tournaments = entities.stream()
+                .map(e -> SumResponse.TournamentItem.builder()
                         .date(e.getDate().toString())
                         .amount(e.getAmount())
                         .resultId(e.getId())
+                        .hasRemoved(e.isHasRemoved())
                         .build())
                 .collect(Collectors.toList());
-        double sum = tournaments.stream().mapToDouble(TournamentListResponse.TournamentResultItem::getAmount).sum();
-        return TournamentListResponse.builder()
+
+        return SumResponse.builder()
                 .playerName(player.getName())
-                .start(start.toString()).end(end.toString())
-                .count(tournaments.size()).sum(sum).tournaments(tournaments)
+                .start(start.toString())
+                .end(end.toString())
+                .sum(stats != null ? stats.getSum() : 0)
+                .average(stats != null ? stats.getAverage() : 0)
+                .count(stats != null ? stats.getCount() : 0)
+                .tournaments(tournaments)
                 .build();
     }
 }

@@ -47,4 +47,7 @@ public class TournamentResultEntity {
     private boolean isNight;
 
     private Double bonus;
+
+    @Column(nullable = false)
+    private boolean hasRemoved;
 }

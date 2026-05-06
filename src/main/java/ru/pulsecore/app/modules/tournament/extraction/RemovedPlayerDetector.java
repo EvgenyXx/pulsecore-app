@@ -8,10 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-
-/*
-класс занимается определением стадии снятия игрока
- */
 @Component
 @RequiredArgsConstructor
 public class RemovedPlayerDetector {
@@ -20,74 +16,87 @@ public class RemovedPlayerDetector {
         String removedPlayer = groupRemovedPlayer;
         RemovedStage stage = RemovedStage.NONE;
 
+        // 1. Групповой этап
         if (removedPlayer != null && !removedPlayer.isBlank()) {
             stage = RemovedStage.GROUP;
-        } else {
+        }
+        // 2. Полуфинал
+        else {
             removedPlayer = detectRemovedPlayerFromSemi(matches);
             if (removedPlayer != null && !removedPlayer.isBlank()) {
                 stage = RemovedStage.SEMI_FINAL;
             }
         }
 
+        // 3. Финал
+        if (stage == RemovedStage.NONE) {
+            removedPlayer = detectCanceledMatch(matches, MatchStage.FINAL);
+            if (removedPlayer != null) {
+                stage = RemovedStage.FINAL;
+            }
+        }
+
+        // 4. Матч за 3-е место
+        if (stage == RemovedStage.NONE) {
+            removedPlayer = detectCanceledMatch(matches, MatchStage.THIRD_PLACE);
+            if (removedPlayer != null) {
+                stage = RemovedStage.THIRD_PLACE;
+            }
+        }
+
         return new RemovedResult(removedPlayer, stage);
     }
 
+    // Универсальный поиск отменённого матча по стадии
+    private String detectCanceledMatch(List<Match> matches, MatchStage targetStage) {
+        return matches.stream()
+                .filter(m -> targetStage.matches(m.getStage()))
+                .filter(this::isCanceled)
+                .findFirst()
+                .map(m -> m.getPlayer1() + " / " + m.getPlayer2())
+                .orElse(null);
+    }
+
+    // Полуфинал (особая логика)
     private String detectRemovedPlayerFromSemi(List<Match> matches) {
         List<Match> semiMatches = matches.stream()
                 .filter(m -> MatchStage.SEMI_FINAL.matches(m.getStage()))
                 .toList();
 
-        List<Match> canceledSemis = semiMatches.stream()
+        Match canceledSemi = semiMatches.stream()
                 .filter(this::isCanceled)
-                .toList();
+                .findFirst()
+                .orElse(null);
 
-        Match canceledSemi = canceledSemis.stream().findFirst().orElse(null);
-        if (canceledSemi == null) {
-            return null;
-        }
+        if (canceledSemi == null) return null;
 
-        String p1 = canceledSemi.getPlayer1();
-        String p2 = canceledSemi.getPlayer2();
-
-        String p1Norm = normalize(p1);
-        String p2Norm = normalize(p2);
+        String p1 = normalize(canceledSemi.getPlayer1());
+        String p2 = normalize(canceledSemi.getPlayer2());
 
         Match finalMatch = matches.stream()
                 .filter(m -> MatchStage.FINAL.matches(m.getStage()))
                 .findFirst()
                 .orElse(null);
 
-        if (finalMatch == null) {
-            return null;
-        }
+        if (finalMatch == null) return null;
 
         String f1 = normalize(finalMatch.getPlayer1());
         String f2 = normalize(finalMatch.getPlayer2());
 
-        if (!p1Norm.equals(f1) && !p1Norm.equals(f2)) {
-            return p1;
-        }
-
-        if (!p2Norm.equals(f1) && !p2Norm.equals(f2)) {
-            return p2;
-        }
+        if (!p1.equals(f1) && !p1.equals(f2)) return canceledSemi.getPlayer1();
+        if (!p2.equals(f1) && !p2.equals(f2)) return canceledSemi.getPlayer2();
 
         return null;
     }
 
     private boolean isCanceled(Match m) {
-        if (m.getStatus() == null) {
-            return false;
-        }
+        if (m.getStatus() == null) return false;
         String s = m.getStatus().toLowerCase();
         return s.contains("отмен") || s.contains("cancel");
     }
 
     private String normalize(String name) {
         if (name == null) return "";
-        return name.toLowerCase()
-                .replace("\u00A0", " ")
-                .replaceAll("\\s+", " ")
-                .trim();
+        return name.toLowerCase().replace("\u00A0", " ").replaceAll("\\s+", " ").trim();
     }
 }

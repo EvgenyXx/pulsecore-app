@@ -2,6 +2,7 @@ package ru.pulsecore.app.modules.player.api.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import java.util.List;
 
 @Data
 @Builder
@@ -11,6 +12,15 @@ public class SumResponse {
     private String end;
     private Double sum;
     private Double average;
-    private Double minusThreePercent;
     private Long count;
+    private List<TournamentItem> tournaments;
+
+    @Data
+    @Builder
+    public static class TournamentItem {
+        private String date;
+        private Double amount;
+        private Long resultId;
+        private boolean hasRemoved;
+    }
 }

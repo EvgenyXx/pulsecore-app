@@ -5,6 +5,7 @@ import ru.pulsecore.app.core.integration.DocumentLoader;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.MatchCalculationStrategy;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.StrategyResolver;
 import ru.pulsecore.app.modules.tournament.calculation.ResultBuilder;
+import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedStage;
 import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
@@ -42,20 +43,22 @@ public class ResultService {
         List<ResultDto> results = resultBuilder.build(matchResult, ctx);
         results.sort((a, b) -> Integer.compare(b.getTotal(), a.getTotal()));
 
-        // Единственный информативный лог — результат обработки
         if (results.isEmpty() && ctx.getTournamentStatus() != null) {
-            log.info("Tournament {}: no results (status={})",
-                    ctx.getTournamentId(), ctx.getTournamentStatus());
+            log.info("Tournament {}: no results (status={})", ctx.getTournamentId(), ctx.getTournamentStatus());
         } else {
-            log.info("Tournament {}: {} results, status={}",
-                    ctx.getTournamentId(), results.size(), ctx.getTournamentStatus());
+            log.info("Tournament {}: {} results, status={}", ctx.getTournamentId(), results.size(), ctx.getTournamentStatus());
         }
+
+        boolean hasRemoved = ctx.getRemovedStage() != null && ctx.getRemovedStage() != RemovedStage.NONE;
+        boolean isFinalRemoved = ctx.getRemovedStage() == RemovedStage.FINAL;
 
         return new ParsedResult(
                 ctx.getTournamentId(),
                 results,
                 ctx.getTournamentStatus(),
-                ctx.getNightBonus()
+                ctx.getNightBonus(),
+                hasRemoved,
+                isFinalRemoved
         );
     }
 }

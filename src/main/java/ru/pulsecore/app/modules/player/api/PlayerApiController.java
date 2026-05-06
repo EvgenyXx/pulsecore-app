@@ -54,14 +54,6 @@ public class PlayerApiController {
         return ResponseEntity.ok(playerStatsService.getSum(id, start, end));
     }
 
-    @GetMapping(PlayerApi.TOURNAMENTS)
-    public ResponseEntity<TournamentListResponse> getTournamentsById(
-            @PathVariable UUID id,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
-        return ResponseEntity.ok(playerStatsService.getTournaments(id, start, end));
-    }
-
     @PutMapping(PlayerApi.PROFILE)
     public ResponseEntity<PlayerProfileResponse> updateProfile(
             @PathVariable UUID id,
@@ -110,7 +102,6 @@ public class PlayerApiController {
                                                          HttpSession session,
                                                          HttpServletResponse response) {
         playerService.deletePlayer(id);
-
         session.invalidate();
         SecurityContextHolder.clearContext();
 
@@ -141,12 +132,10 @@ public class PlayerApiController {
         return ResponseEntity.ok(new MessageResponse("Роль " + role + " отозвана"));
     }
 
-
     @GetMapping(PlayerApi.ROLES)
     public ResponseEntity<List<String>> getRoles(@PathVariable UUID id) {
         return ResponseEntity.ok(roleManagementService.getRoleNames(id));
     }
-
 
     @PutMapping(PlayerApi.NOTIFICATIONS)
     public ResponseEntity<MessageResponse> toggleNotifications(
@@ -155,12 +144,8 @@ public class PlayerApiController {
         return ResponseEntity.ok(new MessageResponse(enabled ? "Уведомления включены" : "Уведомления отключены"));
     }
 
-
     @GetMapping(PlayerApi.NOTIFICATIONS_STATUS)
     public ResponseEntity<NotificationsStatusResponse> getNotificationsStatus(@PathVariable UUID id) {
         return ResponseEntity.ok(new NotificationsStatusResponse(playerService.isNotificationsEnabled(id)));
     }
-
-
-
 }
