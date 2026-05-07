@@ -22,7 +22,7 @@ public class PointsCalculatorFactory {
             case B -> leagueB;
             case C -> leagueC;
             case SUPER_LEAGUE -> superLeagueCalculator;
-            default -> throw new RuntimeException("Нет калькулятора для лиги: " + league);
+            default -> throw new RuntimeException("Нет калькулятора для лиги: " + league);//todo исключение
         };
     }
 }
