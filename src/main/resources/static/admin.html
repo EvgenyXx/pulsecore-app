@@ -197,6 +197,9 @@
         <div class="nav-item" id="nav-roles" onclick="showSection('roles')">
             <span class="nav-icon">👑</span><div><div class="font-medium text-sm">Роли</div></div>
         </div>
+        <div class="nav-item" id="nav-prices" onclick="showSection('prices')">
+            <span class="nav-icon">💵</span><div><div class="font-medium text-sm">Тарифы подписки</div></div>
+        </div>
         <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')">
             <span class="nav-icon">🧮</span><div><div class="font-medium text-sm">Расчёт</div></div>
         </div>
@@ -267,6 +270,31 @@
             </div>
         </div>
 
+        <!-- Цены -->
+        <div id="section-prices" class="hidden">
+            <div class="mb-6">
+                <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">💵 Управление ценами</h2>
+                <p class="text-emerald-400/50 mt-1 text-sm">Изменение стоимости подписки</p>
+            </div>
+            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="text-xs text-emerald-300/70 mb-1 block font-medium">💰 1 месяц (₽)</label>
+                        <input id="price1Input" type="number" min="1" class="input input-bordered w-full input-glow text-white text-lg font-bold">
+                    </div>
+                    <div>
+                        <label class="text-xs text-emerald-300/70 mb-1 block font-medium">💰 2 месяца (₽)</label>
+                        <input id="price2Input" type="number" min="1" class="input input-bordered w-full input-glow text-white text-lg font-bold">
+                    </div>
+                </div>
+                <div class="flex gap-3 flex-wrap">
+                    <button onclick="loadCurrentPrices()" class="btn btn-sm btn-secondary">🔄 Загрузить текущие</button>
+                    <button onclick="updatePrices()" id="updatePricesBtn" class="btn btn-admin flex-1 btn-3d">💾 Сохранить цены</button>
+                </div>
+                <p id="pricesMsg" class="text-xs text-center mt-3 hidden"></p>
+            </div>
+        </div>
+
         <!-- Расчёт игрока -->
         <div id="section-calculate" class="hidden">
             <div class="mb-6">
@@ -329,6 +357,9 @@
     <div class="mobile-nav-item" id="mob-nav-roles" onclick="showSection('roles')">
         <span class="m-icon">👑</span>Роли
     </div>
+    <div class="mobile-nav-item" id="mob-nav-prices" onclick="showSection('prices')">
+        <span class="m-icon">💵</span>Цены
+    </div>
     <div class="mobile-nav-item" id="mob-nav-calculate" onclick="showSection('calculate')">
         <span class="m-icon">🧮</span>Расчёт
     </div>
@@ -361,9 +392,69 @@
         document.getElementById('mob-nav-' + section)?.classList.add('active');
         document.getElementById('section-subscriptions').classList.toggle('hidden', section !== 'subscriptions');
         document.getElementById('section-roles').classList.toggle('hidden', section !== 'roles');
+        document.getElementById('section-prices').classList.toggle('hidden', section !== 'prices');
         document.getElementById('section-calculate').classList.toggle('hidden', section !== 'calculate');
     }
 
+    // ========== ЦЕНЫ ==========
+    async function loadCurrentPrices() {
+        const msg = document.getElementById("pricesMsg");
+        msg.classList.add("hidden");
+        try {
+            const res = await fetch("/api/prices");
+            if (!res.ok) throw new Error();
+            const prices = await res.json();
+            document.getElementById("price1Input").value = prices[1] || 0;
+            document.getElementById("price2Input").value = prices[2] || 0;
+            msg.textContent = "✅ Текущие цены загружены";
+            msg.className = "text-xs text-center mt-3 text-emerald-400";
+            msg.classList.remove("hidden");
+        } catch (e) {
+            msg.textContent = "❌ Ошибка загрузки цен";
+            msg.className = "text-xs text-center mt-3 text-red-400";
+            msg.classList.remove("hidden");
+        }
+    }
+
+    async function updatePrices() {
+        const msg = document.getElementById("pricesMsg");
+        const btn = document.getElementById("updatePricesBtn");
+        const price1 = parseInt(document.getElementById("price1Input").value);
+        const price2 = parseInt(document.getElementById("price2Input").value);
+
+        if (!price1 || !price2 || price1 < 1 || price2 < 1) {
+            msg.textContent = "❌ Введите корректные цены (больше 0)";
+            msg.className = "text-xs text-center mt-3 text-red-400";
+            msg.classList.remove("hidden");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-sm"></span> Сохраняем...';
+        msg.classList.add("hidden");
+
+        try {
+            const res = await fetch("/api/admin/prices", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                credentials: "same-origin",
+                body: JSON.stringify({ "1": price1, "2": price2 })
+            });
+            if (!res.ok) throw new Error();
+            msg.textContent = "✅ Цены обновлены: 1 мес = " + price1 + " ₽, 2 мес = " + price2 + " ₽";
+            msg.className = "text-xs text-center mt-3 text-emerald-400";
+            msg.classList.remove("hidden");
+        } catch (e) {
+            msg.textContent = "❌ Ошибка при сохранении";
+            msg.className = "text-xs text-center mt-3 text-red-400";
+            msg.classList.remove("hidden");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = "💾 Сохранить цены";
+        }
+    }
+
+    // ========== РАСЧЁТ ==========
     async function adminCalculate() {
         const name = document.getElementById('calcName').value.trim();
         const startDate = document.getElementById('calcStartDate').value;
@@ -453,6 +544,7 @@
         }
     }
 
+    // ========== ПОИСК ИГРОКОВ ==========
     async function searchPlayers(section) {
         const inputId = section === 'sub' ? 'subSearchInput' : 'roleSearchInput';
         const resultsId = section === 'sub' ? 'subSearchResults' : 'roleSearchResults';

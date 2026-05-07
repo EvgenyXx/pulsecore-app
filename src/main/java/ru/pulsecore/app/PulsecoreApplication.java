@@ -1,6 +1,7 @@
 package ru.pulsecore.app;
 
 
+import org.springframework.cache.annotation.EnableCaching;
 import ru.pulsecore.app.modules.shared.AdminProperties;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
@@ -16,11 +17,12 @@ import java.util.TimeZone;
 @EnableConfigurationProperties(AdminProperties.class)
 @EnableScheduling
 @EnableAsync
+@EnableCaching
 public class PulsecoreApplication {
 
 	public static void main(String[] args)  {
 
-		System.out.println("🔥🔥🔥 VERSION = 2 🔥🔥🔥");
+
 		SpringApplication.run(PulsecoreApplication.class, args);
 
 	}

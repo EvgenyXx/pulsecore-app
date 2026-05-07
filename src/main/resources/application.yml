@@ -1,5 +1,8 @@
-# application.yml
 spring:
+      cache:
+            type: caffeine
+            caffeine:
+                  spec: expireAfterWrite=15m
       datasource:
             url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/botdb}
             username: ${SPRING_DATASOURCE_USERNAME:botuser}
@@ -34,7 +37,6 @@ logging:
 app:
       admin:
             email: ${ADMIN_EMAIL}
-
       yookassa:
             shop-id: ${YOOKASSA_SHOP_ID}
             secret-key: ${YOOKASSA_SECRET_KEY}

@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.context.SecurityContextHolder;
+import ru.pulsecore.app.core.dto.TopPlayerProjection;
 import ru.pulsecore.app.modules.player.api.dto.NotificationsStatusResponse;
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.UpdateProfileRequest;
@@ -40,6 +41,19 @@ public class PlayerApiController {
     private final YookassaService yookassaService;
     private final RoleManagementService roleManagementService;
     private final SessionProperties sessionProperties;
+
+
+
+    @GetMapping(PlayerApi.TOP_WEEK_POSITION)
+    public ResponseEntity<TopWeekResponse> getTopWeekPosition(@PathVariable UUID id) {
+        return ResponseEntity.ok(playerStatsService.getTopWithPosition(id));
+    }
+
+
+    @GetMapping(PlayerApi.TOP_WEEK)
+    public ResponseEntity<List<TopPlayerProjection>> getTopWeek() {
+        return ResponseEntity.ok(playerStatsService.getTopPlayers());
+    }
 
     @GetMapping(PlayerApi.DASHBOARD)
     public ResponseEntity<DashboardResponse> getDashboard(@PathVariable UUID id) {
