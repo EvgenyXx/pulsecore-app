@@ -12,6 +12,8 @@ public final class PlayerApi {
     public static final String GRANT_ROLE = "/{id}/roles/grant";
     public static final String REVOKE_ROLE = "/{id}/roles/revoke";
 
+    public static final String TOP_WEEK = "/top/week";
+
     public static final String ROLES = "/{id}/roles";
     // PlayerApi.java - добавить константу
     public static final String NOTIFICATIONS = "/{id}/notifications";
@@ -26,4 +28,6 @@ public final class PlayerApi {
     public static final String TOURNAMENTS = "/{id}/tournaments";
     public static final String PROFILE = "/{id}/profile";
     public static final String CHANGE_PASSWORD = "/{id}/change-password";
+
+    public static final String TOP_WEEK_POSITION = "/{id}/top/week";
 }

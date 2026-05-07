@@ -1,6 +1,8 @@
 package ru.pulsecore.app.modules.player.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
+import ru.pulsecore.app.core.dto.TopPlayerProjection;
 import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.player.api.dto.*;
@@ -22,6 +24,42 @@ public class PlayerStatsService {
     private final TournamentResultService tournamentResultService;
     private final TournamentResultRepository tournamentResultRepository;
     private final LineupRepository lineupRepository;
+
+    public TopWeekResponse getTopWithPosition(UUID playerId) {
+        Player player = playerService.getById(playerId);
+        List<TopPlayerProjection> top5 = getTopPlayers();
+
+        LocalDate weekAgo = LocalDate.now().minusWeeks(1);
+        LocalDate today = LocalDate.now();
+        PeriodStatsProjection stats = tournamentResultService.getStatsByPeriod(player, weekAgo, today);
+
+        long position;
+        double playerSum = stats != null ? stats.getSum() : 0;
+        if (playerSum > 0) {
+            List<Object[]> allStats = tournamentResultRepository.getAllPlayerStats(weekAgo, today);
+            position = allStats.stream()
+                    .filter(r -> ((Number) r[1]).doubleValue() > playerSum)
+                    .count() + 1;
+        } else {
+            position = tournamentResultRepository.countPlayersWithEarnings(weekAgo, today) + 1;
+        }
+
+        return TopWeekResponse.builder()
+                .playerName(player.getName())
+                .playerPosition((int) position)
+                .playerTotal(playerSum)
+                .playerTournaments(stats != null ? stats.getCount() : 0)
+                .top5(top5.stream().map(p -> TopWeekResponse.TopPlayer.builder()
+                        .total(p.getTotal())
+                        .tournaments(p.getTournaments())
+                        .build()).toList())
+                .build();
+    }
+
+    @Cacheable(value = "topWeek", key = "'week'")
+    public List<TopPlayerProjection> getTopPlayers() {
+        return tournamentResultRepository.findTopPlayers(LocalDate.now().minusWeeks(1), 5);
+    }
 
     public DashboardResponse getDashboard(UUID id) {
         Player player = playerService.getById(id);

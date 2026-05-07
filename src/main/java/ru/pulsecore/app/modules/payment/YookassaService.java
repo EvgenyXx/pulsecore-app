@@ -1,3 +1,4 @@
+// src/main/java/ru/pulsecore/app/modules/payment/YookassaService.java
 package ru.pulsecore.app.modules.payment;
 
 import lombok.RequiredArgsConstructor;
@@ -16,32 +17,24 @@ import java.util.UUID;
 public class YookassaService {
 
     private final YookassaProperties props;
+    private final PriceService priceService;
     private final RestTemplate restTemplate = new RestTemplate();
 
     private static final String API_URL = "https://api.yookassa.ru/v3/payments";
     private static final String RETURN_URL = "https://pulsecore-app.ru/dashboard.html";
     private static final String CURRENCY = "RUB";
-    private static final Map<Integer, Integer> PRICES = Map.of(1, 99, 2, 149);
 
     public record PaymentResponse(String confirmationUrl, String paymentId) {}
 
     public PaymentResponse createPayment(UUID playerId, int months) {
-        validateMonths(months);
+        int amount = priceService.getPrice(months);
 
-        HttpEntity<Map<String, Object>> request = buildRequest(playerId, months);
+        HttpEntity<Map<String, Object>> request = buildRequest(playerId, months, amount);
         ResponseEntity<Map<String, Object>> response = executeRequest(request);
         return extractPaymentResponse(response);
     }
 
-    private void validateMonths(int months) {
-        if (!PRICES.containsKey(months)) {
-            throw new PaymentException("Неверный срок подписки: " + months);
-        }
-    }
-
-    private HttpEntity<Map<String, Object>> buildRequest(UUID playerId, int months) {
-        int amount = PRICES.get(months);
-
+    private HttpEntity<Map<String, Object>> buildRequest(UUID playerId, int months, int amount) {
         Map<String, Object> body = Map.of(
                 "amount", Map.of("value", String.valueOf(amount), "currency", CURRENCY),
                 "confirmation", Map.of("type", "redirect", "return_url", RETURN_URL),

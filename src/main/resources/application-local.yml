@@ -1,5 +1,8 @@
-# application-local.yml
 spring:
+  cache:
+    type: caffeine
+    caffeine:
+      spec: expireAfterWrite=15m
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
