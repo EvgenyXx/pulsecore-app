@@ -26,7 +26,7 @@ public class RemovedInGroupHandler implements RemovedPlayerHandler {
 
     @Override
     public MatchProcessingResult handle(TournamentContext ctx) {
-        System.out.println("RemovedInGroupHandler СРАБОТАЛ");
+
 
         String removed = normalize(ctx.getRemovedPlayer());
 

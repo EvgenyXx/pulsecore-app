@@ -11,4 +11,6 @@ public class DashboardResponse {
     private LastResultDto lastResult;
     private List<UpcomingLineupDto> upcomingLineups;
     private SubscriptionInfoDto subscription;
+    private String topWeekTitle;
+    private boolean hasCrown;
 }

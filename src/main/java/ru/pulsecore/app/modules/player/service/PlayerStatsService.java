@@ -29,7 +29,7 @@ public class PlayerStatsService {
         Player player = playerService.getById(playerId);
         List<TopPlayerProjection> top5 = getTopPlayers();
 
-        LocalDate weekAgo = LocalDate.now().minusWeeks(1);
+        LocalDate weekAgo = LocalDate.now().minusDays(6);
         LocalDate today = LocalDate.now();
         PeriodStatsProjection stats = tournamentResultService.getStatsByPeriod(player, weekAgo, today);
 
@@ -44,12 +44,21 @@ public class PlayerStatsService {
             position = tournamentResultRepository.countPlayersWithEarnings(weekAgo, today) + 1;
         }
 
+        String title = null;
+        boolean hasCrown = false;
+        if (position == 1) { title = "Рокфеллер"; hasCrown = true; }
+        else if (position == 2) title = "Магнат";
+        else if (position == 3) title = "Толстосум";
+
         return TopWeekResponse.builder()
                 .playerName(player.getName())
                 .playerPosition((int) position)
                 .playerTotal(playerSum)
                 .playerTournaments(stats != null ? stats.getCount() : 0)
+                .title(title)
+                .hasCrown(hasCrown)
                 .top5(top5.stream().map(p -> TopWeekResponse.TopPlayer.builder()
+                        .name(p.getName())
                         .total(p.getTotal())
                         .tournaments(p.getTournaments())
                         .build()).toList())
@@ -58,12 +67,14 @@ public class PlayerStatsService {
 
     @Cacheable(value = "topWeek", key = "'week'")
     public List<TopPlayerProjection> getTopPlayers() {
-        return tournamentResultRepository.findTopPlayers(LocalDate.now().minusWeeks(1), 5);
+        return tournamentResultRepository.findTopPlayers(LocalDate.now().minusDays(6), 5);
     }
 
     public DashboardResponse getDashboard(UUID id) {
         Player player = playerService.getById(id);
         String playerNameLower = player.getName().toLowerCase();
+
+        TopWeekResponse topWeek = getTopWithPosition(id);
 
         var lastResult = tournamentResultRepository.findTopByPlayerOrderByDateDesc(player)
                 .map(r -> LastResultDto.builder()
@@ -128,6 +139,8 @@ public class PlayerStatsService {
                 .lastResult(lastResult)
                 .upcomingLineups(upcomingLineups)
                 .subscription(subInfo)
+                .topWeekTitle(topWeek.getTitle())
+                .hasCrown(topWeek.isHasCrown())
                 .build();
     }
 
