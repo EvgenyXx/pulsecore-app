@@ -37,7 +37,7 @@
             <img src="/img.png" alt="PulseCore" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-xl mb-3 object-cover">
             <h2 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-wide">PulseCore</h2>
         </div>
-        <p class="text-xs text-indigo-200/50 mb-8 uppercase tracking-widest">личный кабинет</p>
+        <p class="text-xs text-indigo-200/50 mb-8 uppercase tracking-widest">Личный кабинет</p>
 
         <!-- Форма входа -->
         <div id="loginForm">
@@ -74,12 +74,24 @@
                 <p class="text-white font-semibold" id="verifyEmailDisplay"></p>
             </div>
             <div class="code-inputs mb-3" id="verifyCodeInputs">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
             </div>
             <p id="verifyError" class="text-error text-sm hidden mb-3"></p>
             <button onclick="verifyEmail()" id="verifyBtn" class="btn btn-primary w-full bg-gradient-to-r from-emerald-500 to-teal-600 border-0 font-semibold">Подтвердить</button>
@@ -92,7 +104,7 @@
                 <div class="text-4xl mb-2">🔑</div>
                 <p class="text-sm text-gray-300">Введите email для восстановления пароля</p>
             </div>
-            <input id="forgotEmail" type="email" placeholder="Email" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 mb-3 text-white placeholder-gray-500" autocomplete="email">
+            <label for="forgotEmail"></label><input id="forgotEmail" type="email" placeholder="Email" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 mb-3 text-white placeholder-gray-500" autocomplete="email">
             <p id="forgotError" class="text-error text-sm hidden mb-3"></p>
             <button onclick="forgotPassword()" id="forgotBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-orange-600 border-0 hover:from-amber-400 hover:to-orange-500 font-semibold">Отправить код</button>
             <button onclick="showLogin()" class="btn btn-sm w-full mt-3 bg-white/5 hover:bg-white/10 text-gray-400 border-0">← Назад ко входу</button>
@@ -106,19 +118,31 @@
                 <p class="text-white font-semibold" id="resetEmailDisplay"></p>
             </div>
             <div class="code-inputs mb-3" id="resetCodeInputs">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
+                <label>
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </label>
             </div>
             <div class="input-wrapper mb-3">
-                <input id="resetNewPassword" type="password" placeholder="Новый пароль" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 text-white placeholder-gray-500 pr-10">
+                <label for="resetNewPassword"></label><input id="resetNewPassword" type="password" placeholder="Новый пароль" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 text-white placeholder-gray-500 pr-10">
                 <button onclick="togglePassword('resetNewPassword', this)" class="toggle-password">👁️</button>
             </div>
             <div class="input-wrapper mb-3">
-                <input id="resetNewPassword2" type="password" placeholder="Повторите пароль" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 text-white placeholder-gray-500 pr-10">
+                <label for="resetNewPassword2"></label><input id="resetNewPassword2" type="password" placeholder="Повторите пароль" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 text-white placeholder-gray-500 pr-10">
                 <button onclick="togglePassword('resetNewPassword2', this)" class="toggle-password">👁️</button>
             </div>
             <p id="resetError" class="text-sm hidden mb-3"></p>
