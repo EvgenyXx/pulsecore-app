@@ -30,6 +30,13 @@ app:
       yookassa:
             shop-id: ${YOOKASSA_SHOP_ID}
             secret-key: ${YOOKASSA_SECRET_KEY}
+      masters-api:
+            url: https://masters-league.com/wp-admin/admin-ajax.php
+            method: POST
+            user-agent: Mozilla/5.0
+            action: tourslist
+            country: RUS
+            timeout: 20000
       mail:
             from: ${MAIL_FROM}
 
