@@ -49,7 +49,7 @@ public class AdminCalculateService {
             try {
                 ParsedResult parsed = resultService.calculateAll(t.getLink());
 
-                double playerAmount = parsed.getResults().stream()
+                double playerAmount = parsed.results().stream()
                         .filter(r -> r.getPlayer().toLowerCase().contains(searchName))
                         .mapToDouble(ResultDto::getTotal)
                         .sum();
@@ -61,7 +61,7 @@ public class AdminCalculateService {
                             .amount(playerAmount)
                             .tournamentTitle(t.getTitle())
                             .tournamentId(t.getId())
-                            .hasRemoved(parsed.isHasRemoved())
+                            .hasRemoved(parsed.hasRemoved())
                             .build());
                 }
             } catch (Exception e) {

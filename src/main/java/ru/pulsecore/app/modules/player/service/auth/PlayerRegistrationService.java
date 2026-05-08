@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua_parser.Client;
 import ua_parser.Parser;
 
+import java.io.Serializable;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class PlayerRegistrationService {
     private final AdminProperties adminProperties;
     private final Parser uaParser;
 
-    public record Pending(String name, String email, String password, String code) {}
+    public record Pending(String name, String email, String password, String code) implements Serializable {}
 
     public Pending initiate(String name, String email, String rawPassword) {
         String normalizedEmail = email.toLowerCase().trim();

@@ -162,4 +162,9 @@ public class PlayerApiController {
     public ResponseEntity<NotificationsStatusResponse> getNotificationsStatus(@PathVariable UUID id) {
         return ResponseEntity.ok(new NotificationsStatusResponse(playerService.isNotificationsEnabled(id)));
     }
+
+    @GetMapping(PlayerApi.TOP_WEEK_POSITION_BY_LEAGUE)
+    public ResponseEntity<TopWeekResponse> getTopWeekPositionByLeague(@PathVariable UUID id, @PathVariable String league) {
+        return ResponseEntity.ok(playerStatsService.getTopWithPositionByLeague(id, league));
+    }
 }

@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 public class ParticipationService {
 
     public boolean isUserInParsed(ParsedResult parsed, String playerName) {
-        if (parsed == null || parsed.getResults() == null) return false;
+        if (parsed == null || parsed.results() == null) return false;
 
-        return parsed.getResults().stream()
+        return parsed.results().stream()
                 .anyMatch(r ->
                         r.getPlayer() != null &&
                                 r.getPlayer().equalsIgnoreCase(playerName)

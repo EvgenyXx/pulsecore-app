@@ -28,7 +28,7 @@ public class TournamentLinkService {
 
         ParsedResult parsed = resultService.calculateAll(link);
 
-        if (parsed.getResults() == null || parsed.getResults().isEmpty()) {
+        if (parsed.results() == null || parsed.results().isEmpty()) {
             return result(TournamentLinkStatus.NOT_STARTED, parsed);
         }
 
@@ -48,15 +48,16 @@ public class TournamentLinkService {
         tournament = tournamentSyncService.sync(parsed, link);
 
         tournamentResultService.processResults(
-                parsed.getResults(),
+                parsed.results(),
                 player,
                 tournament,
-                parsed.getNightBonus(),
-                parsed.getStatus() == TournamentStatus.FINISHED,
-                parsed.isHasRemoved()
+                parsed.nightBonus(),
+                parsed.status() == TournamentStatus.FINISHED,
+                parsed.hasRemoved(),
+                parsed.league()  // ← добавить
         );
 
-        if (parsed.getStatus() == TournamentStatus.FINISHED) {
+        if (parsed.status() == TournamentStatus.FINISHED) {
             tournament.setProcessed(true);
             return result(TournamentLinkStatus.FINISHED, parsed);
         }

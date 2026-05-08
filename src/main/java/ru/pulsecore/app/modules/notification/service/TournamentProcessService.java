@@ -45,20 +45,21 @@ public class TournamentProcessService {
             log.warn("⏭ processTournament skip: tournament is null");
             return;
         }
-        log.info("🏁 process finish: tournamentId={}, users={}", parsed.getTournamentId(), notifications.size());
+        log.info("🏁 process finish: tournamentId={}, users={}", parsed.tournamentId(), notifications.size());
 
         int processed = 0, foundCount = 0;
-        List<ResultDto> resultDto = parsed.getResults();
+        List<ResultDto> resultDto = parsed.results();
 
         for (PlayerNotification pn : notifications) {
             Player player = pn.getPlayer();
             if (player == null) continue;
             processed++;
             boolean found = tournamentResultService.processResults(
-                    resultDto, player, parsed.getTournamentId(),
-                    parsed.getNightBonus(),
+                    resultDto, player, parsed.tournamentId(),
+                    parsed.nightBonus(),
                     parsed.isFinished() || parsed.isFinalRemoved(),
-                    parsed.isHasRemoved());
+                    parsed.hasRemoved(),
+                    parsed.league());
             if (found) foundCount++;
         }
         tournament.setFinished(true);
@@ -96,15 +97,16 @@ public class TournamentProcessService {
             throw new TournamentParseException(url, e);
         }
 
-        tournamentRepository.findByExternalId(parsed.getTournamentId())
-                .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder().externalId(parsed.getTournamentId()).link(url).build()));
+        tournamentRepository.findByExternalId(parsed.tournamentId())
+                .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder().externalId(parsed.tournamentId()).link(url).build()));
 
         tournamentResultService.processResults(
-                parsed.getResults(), player, parsed.getTournamentId(),
-                parsed.getNightBonus(),
+                parsed.results(), player, parsed.tournamentId(),
+                parsed.nightBonus(),
                 parsed.isFinished() || parsed.isFinalRemoved(),
-                parsed.isHasRemoved());
+                parsed.hasRemoved(),
+                parsed.league());
 
-        return AddTournamentResponse.builder().message("Турнир обработан").tournamentId(parsed.getTournamentId()).resultsCount(parsed.getResults().size()).results(parsed.getResults()).build();
+        return AddTournamentResponse.builder().message("Турнир обработан").tournamentId(parsed.tournamentId()).resultsCount(parsed.results().size()).results(parsed.results()).build();
     }
 }
