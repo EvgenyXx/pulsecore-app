@@ -49,6 +49,7 @@ app:
 server:
       servlet:
             session:
+                  timeout: 30d
                   cookie:
                         name: PULSECORE_SESSION
                         secure: false
