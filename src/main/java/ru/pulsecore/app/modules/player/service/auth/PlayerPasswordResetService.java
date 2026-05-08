@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.security.SecureRandom;
 
 @Service
@@ -20,7 +21,7 @@ public class PlayerPasswordResetService {
     private final PasswordEncoder passwordEncoder;
     private final MailStrategyRegistry mailStrategyRegistry;
 
-    public record Pending(String email, String code) {}
+    public record Pending(String email, String code) implements Serializable {}
 
     public Pending initiate(String email) {
         String normalizedEmail = email.toLowerCase().trim();

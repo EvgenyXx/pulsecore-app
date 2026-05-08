@@ -1,6 +1,7 @@
 // SecurityConfig.java
 package ru.pulsecore.app.modules.shared.config;
 
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +43,29 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
-                .logout(AbstractHttpConfigurer::disable);  // ← ВОТ ЭТО!
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            Cookie cookie = new Cookie(sessionProperties.getName(), null);
+                            cookie.setPath("/");
+                            cookie.setHttpOnly(true);
+                            cookie.setMaxAge(0);
+                            response.addCookie(cookie);
+                            response.setStatus(200);
+                        })
+                        .invalidateHttpSession(true)
+                        .deleteCookies(sessionProperties.getName())
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            Cookie cookie = new Cookie(sessionProperties.getName(), null);
+                            cookie.setPath("/");
+                            cookie.setHttpOnly(true);
+                            cookie.setMaxAge(0);
+                            response.addCookie(cookie);
+                            response.sendRedirect("/");
+                        })
+                );
 
         return http.build();
     }

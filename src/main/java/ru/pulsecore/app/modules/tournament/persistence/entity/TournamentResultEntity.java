@@ -50,4 +50,7 @@ public class TournamentResultEntity {
 
     @Column(nullable = false)
     private boolean hasRemoved;
+
+    @Column(nullable = false)
+    private String league;
 }

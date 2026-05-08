@@ -1,21 +1,11 @@
 package ru.pulsecore.app.modules.tournament.domain;
 
 import ru.pulsecore.app.core.dto.ResultDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
-public class ParsedResult {
-
-    private Long tournamentId;
-    private List<ResultDto> results;
-    private TournamentStatus status;
-    private double nightBonus;
-    private boolean hasRemoved;
-    private boolean isFinalRemoved;
+public record ParsedResult(Long tournamentId, List<ResultDto> results, TournamentStatus status, double nightBonus,
+                           boolean hasRemoved, boolean isFinalRemoved, String league) {
 
     public boolean isFinished() {
         return status != null && status.isFinished();

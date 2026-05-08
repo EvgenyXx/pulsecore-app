@@ -58,7 +58,8 @@ public class ResultService {
                 ctx.getTournamentStatus(),
                 ctx.getNightBonus(),
                 hasRemoved,
-                isFinalRemoved
+                isFinalRemoved,
+                ctx.getLeague().name()
         );
     }
 }

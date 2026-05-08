@@ -7,18 +7,7 @@
     <link rel="icon" type="image/png" href="/img.png">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    screens: {
-                        'xs': '475px', 'sm': '640px', 'md': '768px',
-                        'lg': '1024px', 'xl': '1280px', '2xl': '1536px',
-                    }
-                }
-            }
-        }
-    </script>
+    <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px','2xl':'1536px'}}}}</script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
@@ -77,6 +66,12 @@
         .amount-gold { color: #fbbf24; }
         .amount-removed { color: #f87171; }
         .title-badge { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,191,36,0.12)); border: 1px solid rgba(245,158,11,0.4); border-radius: 20px; padding: 4px 14px; font-size: 0.8rem; color: #fbbf24; font-weight: 600; white-space: nowrap; }
+        .league-tab { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; color: #9ca3af; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); transition: all 0.2s; white-space: nowrap; }
+        .league-tab:hover { color: #fbbf24; background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
+        .league-tab.active { color: #fbbf24; background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); box-shadow: 0 0 15px rgba(245,158,11,0.1); }
+        .league-tab.my-league { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.05); }
+        .topweek-close { cursor: pointer; color: #6b7280; font-size: 1.2rem; line-height: 1; padding: 4px 8px; border-radius: 8px; }
+        .topweek-close:hover { color: #f87171; background: rgba(239,68,68,0.1); }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 20px; }
@@ -95,9 +90,7 @@
     <div class="flex items-center gap-3"><img src="/img.png" alt="PulseCore" class="w-9 h-9 rounded-xl shadow-lg object-cover"><div><h1 class="text-base font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">PulseCore</h1><p id="mobilePlayerName" class="text-xs text-gray-400 leading-tight"></p></div></div>
     <button id="burgerBtn" onclick="toggleMobileMenu()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 active:scale-90 text-white text-xl">☰</button>
 </div>
-
 <div id="mobileMenuOverlay" class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden" onclick="toggleMobileMenu()"></div>
-
 <div id="mobileMenu" class="md:hidden fixed top-0 right-0 h-full w-[300px] max-w-[85vw] glass-sidebar z-50 p-5 flex flex-col transform translate-x-full transition-transform duration-300 ease-out shadow-2xl" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between mb-6"><div class="flex items-center gap-3"><img src="/img.png" alt="PulseCore" class="w-8 h-8 rounded-xl shadow-lg object-cover"><span class="font-bold text-white text-sm">PulseCore</span></div><button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 active:scale-90 text-white text-lg">✕</button></div>
     <nav class="flex flex-col gap-1.5 flex-1 overflow-y-auto">
@@ -136,10 +129,10 @@
                 <p class="text-gray-400 mt-1 sm:mt-1.5 text-xs sm:text-sm" id="subStatusText"></p>
             </div>
 
-            <div id="topWeekBanner" class="hidden mb-4 p-4 glass rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/5" onclick="loadTopWeek()">
+            <div id="topWeekBanner" class="hidden mb-4 p-4 glass rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/5" onclick="toggleTopWeek()">
                 <span class="text-2xl">🏆</span>
                 <div class="flex-1"><p class="text-sm font-semibold text-white">Топ недели</p><p class="text-xs text-gray-400" id="topWeekPreview">Нажмите чтобы посмотреть</p></div>
-                <span class="text-gray-400">→</span>
+                <span class="text-gray-400" id="topWeekArrow">▼</span>
             </div>
             <div id="topWeekPanel" class="hidden glass rounded-2xl p-5 sm:p-6 mb-6 content-panel"></div>
 
@@ -154,155 +147,135 @@
 </main>
 
 <script>
-    let playerId = null;
-    let currentPlayerName = null;
-    let tournamentCart = [];
-    let editingTournamentResultId = null;
+    let playerId = null, currentPlayerName = null, tournamentCart = [], editingTournamentResultId = null, primaryLeague = null;
 
-    function toggleMobileMenu() { const menu = document.getElementById('mobileMenu'), overlay = document.getElementById('mobileMenuOverlay'); if (menu.classList.contains('translate-x-0')) { menu.classList.remove('translate-x-0'); menu.classList.add('translate-x-full'); overlay.classList.add('hidden'); } else { menu.classList.remove('translate-x-full'); menu.classList.add('translate-x-0'); overlay.classList.remove('hidden'); } }
-    function mobileNav(action, el) { toggleMobileMenu(); document.querySelectorAll('.mobile-nav-item').forEach(i => { i.classList.remove('bg-amber-500/10', 'border-amber-500/20'); i.style.borderColor = 'transparent'; }); el.classList.add('bg-amber-500/10'); el.style.borderColor = 'rgba(245,158,11,0.2)'; if (action === 'home') goHome(); else showAction(action); }
+    function toggleMobileMenu() { const m=document.getElementById('mobileMenu'),o=document.getElementById('mobileMenuOverlay'); if(m.classList.contains('translate-x-0')){m.classList.remove('translate-x-0');m.classList.add('translate-x-full');o.classList.add('hidden');}else{m.classList.remove('translate-x-full');m.classList.add('translate-x-0');o.classList.remove('hidden');} }
+    function mobileNav(a,e){ toggleMobileMenu(); document.querySelectorAll('.mobile-nav-item').forEach(i=>{i.classList.remove('bg-amber-500/10','border-amber-500/20');i.style.borderColor='transparent';}); e.classList.add('bg-amber-500/10');e.style.borderColor='rgba(245,158,11,0.2)'; if(a==='home')goHome(); else showAction(a); }
 
     async function checkSession() {
-        try {
-            const res = await fetch("/api/auth/me", { credentials: "same-origin" });
-            if (!res.ok) { window.location.href = "/"; return; }
-            const data = await res.json();
-            playerId = data.id; currentPlayerName = data.name;
-            document.getElementById("playerName").textContent = data.name;
-            const s = document.getElementById("sidebarPlayerName"), m = document.getElementById("mobilePlayerName");
-            if (s) s.textContent = data.name; if (m) m.textContent = data.name;
-            if (data.admin) { document.getElementById('nav-admin')?.classList.remove('hidden'); document.getElementById('mobile-nav-admin')?.classList.remove('hidden'); }
-            loadDashboardWidgets();
-            loadTopWeekPreview();
-        } catch (e) { window.location.href = "/"; }
+        try { const r=await fetch("/api/auth/me",{credentials:"same-origin"}); if(!r.ok){window.location.href="/";return;} const d=await r.json(); playerId=d.id;currentPlayerName=d.name; document.getElementById("playerName").textContent=d.name; const s=document.getElementById("sidebarPlayerName"),m=document.getElementById("mobilePlayerName"); if(s)s.textContent=d.name; if(m)m.textContent=d.name; if(d.admin){document.getElementById('nav-admin')?.classList.remove('hidden');document.getElementById('mobile-nav-admin')?.classList.remove('hidden');} loadDashboardWidgets(); loadTopWeekPreview(); } catch(e){window.location.href="/";}
     }
     checkSession();
 
-    function goHome() { document.getElementById("homePage").style.display = "block"; document.getElementById("actionPage").classList.add("hidden"); highlightNav("nav-home"); loadDashboardWidgets(); }
-    function highlightNav(id) { document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active")); document.getElementById(id)?.classList.add("active"); }
+    function goHome(){ document.getElementById("homePage").style.display="block"; document.getElementById("actionPage").classList.add("hidden"); highlightNav("nav-home"); loadDashboardWidgets(); }
+    function highlightNav(id){ document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")); document.getElementById(id)?.classList.add("active"); }
 
     async function loadTopWeekPreview() {
-        try { const res = await fetch(`/api/player/${playerId}/top/week`, { credentials: "same-origin" }); if (!res.ok) return; const data = await res.json(); if (data && data.top5 && data.top5.length > 0) { document.getElementById("topWeekBanner").classList.remove("hidden"); document.getElementById("topWeekPreview").textContent = `Лидер: ${data.top5[0].name || '—'} • Вы на ${data.playerPosition} месте`; } } catch(e) {}
+        try { const r=await fetch(`/api/player/${playerId}/top/week`,{credentials:"same-origin"}); if(!r.ok)return; const d=await r.json(); if(d&&d.top5&&d.top5.length>0){document.getElementById("topWeekBanner").classList.remove("hidden"); document.getElementById("topWeekPreview").textContent=`Лидер: ${d.top5[0].name||'—'} • Вы на ${d.playerPosition} месте`;} } catch(e){}
     }
 
-    async function loadTopWeek() {
+    function toggleTopWeek() {
         const panel = document.getElementById("topWeekPanel");
-        if (!panel.classList.contains("hidden")) { panel.classList.add("hidden"); return; }
-        panel.innerHTML = `<div class="text-center py-6"><div class="spinner mx-auto mb-3"></div><p class="text-gray-400 text-sm">Загрузка...</p></div>`; panel.classList.remove("hidden");
-        try {
-            const res = await fetch(`/api/player/${playerId}/top/week`, { credentials: "same-origin" }); if (!res.ok) throw new Error();
-            const data = await res.json();
-            if (!data.top5 || data.top5.length === 0) { panel.innerHTML = `<div class="text-center py-6"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет данных за неделю</p></div>`; return; }
-            const medals = ['🥇', '🥈', '🥉'];
-            const titles = {1: '👑 Рокфеллер', 2: '💰 Магнат', 3: '💎 Толстосум'};
-            let html = `<h3 class="font-bold text-white mb-1">🏆 Топ-5 за 7 дней</h3><p class="text-gray-500 text-xs mb-3">Титул получает игрок занявший призовое место</p>`;
-            html += data.top5.map((p, i) => {
-                const prefix = i < 3 ? medals[i] : `${i+1}.`;
-                const isMe = (i + 1) === data.playerPosition;
-                const meClass = isMe ? 'bg-amber-500/10 border-l-2 border-amber-500' : '';
-                const title = i < 3 ? `<span class="text-xs text-amber-400 font-medium ml-1">· ${titles[i+1]}</span>` : '';
-                const displayName = isMe ? '👈 Вы' : (p.name || '');
-                return `<div class="flex items-center gap-3 py-2 px-3 rounded-lg ${meClass}"><span class="text-lg w-8 text-center">${prefix}</span><span class="text-white text-sm font-medium flex-1">${displayName}${title}</span><span class="text-gray-500 text-xs">${p.tournaments} тур.</span></div>`;
-            }).join("");
+        const arrow = document.getElementById("topWeekArrow");
+        if (panel.classList.contains("hidden")) {
+            loadTopWeek(null);
+            arrow.textContent = "▲";
+        } else {
+            panel.classList.add("hidden");
+            arrow.textContent = "▼";
+        }
+    }
 
-            if (data.playerPosition > 5) {
-                html += `<div class="border-t border-white/10 mt-3 pt-3 flex items-center gap-3 py-2 px-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500"><span class="text-lg w-8 text-center text-gray-400">${data.playerPosition}.</span><span class="text-white text-sm font-medium flex-1">👈 Вы</span><span class="text-gray-500 text-xs">${data.playerTournaments} тур.</span></div>`;
+    function switchLeague(league) {
+        loadTopWeek(league);
+    }
+
+    async function loadTopWeek(league) {
+        const panel = document.getElementById("topWeekPanel");
+        const url = league ? `/api/player/${playerId}/top/week/${league}` : `/api/player/${playerId}/top/week`;
+        const leagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
+        const leagueLabels = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
+
+        // Строим табы сразу — они не должны пропадать
+        let tabsHtml = `<div class="flex items-center justify-between flex-wrap gap-2 mb-3"><h3 class="font-bold text-white">🏆 Топ-5 за 7 дней</h3><div class="flex gap-1.5 flex-wrap" id="leagueTabs">`;
+        tabsHtml += `<span class="league-tab ${!league ? 'active' : ''}" onclick="switchLeague(null)">Все</span>`;
+        leagues.forEach(l => {
+            const isMyLeague = l === primaryLeague;
+            const isActive = l === league;
+            tabsHtml += `<span class="league-tab ${isActive ? 'active' : ''} ${isMyLeague ? 'my-league' : ''}" onclick="switchLeague('${l}')">${leagueLabels[l]}${isMyLeague ? ' 🔥' : ''}</span>`;
+        });
+        tabsHtml += `</div><span class="topweek-close" onclick="toggleTopWeek()">✕</span></div><p class="text-gray-500 text-xs mb-3">Титул получает игрок занявший призовое место. 🔥 — ваша лига</p>`;
+
+        panel.innerHTML = tabsHtml + `<div class="text-center py-4"></div>`;        panel.classList.remove("hidden");
+        document.getElementById("topWeekArrow").textContent = "▲";
+
+        try {
+            const res = await fetch(url, { credentials: "same-origin" });
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+
+            let contentHtml = "";
+            if (!data.top5 || data.top5.length === 0) {
+                contentHtml = `<div class="text-center py-6"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет данных за неделю</p></div>`;
+            } else {
+                const medals = ['🥇', '🥈', '🥉'];
+                const titles = league
+                    ? {}
+                    : {1: '👑 Рокфеллер', 2: '💰 Магнат', 3: '💎 Толстосум'};
+                contentHtml = data.top5.map((p, i) => {
+                    const prefix = i < 3 ? medals[i] : `${i+1}.`;
+                    const isMe = (i + 1) === data.playerPosition;
+                    const meClass = isMe ? 'bg-amber-500/10 border-l-2 border-amber-500' : '';
+                    const title = titles[i+1] ? `<span class="text-xs text-amber-400 font-medium ml-1">· ${titles[i+1]}</span>` : '';                    const displayName = (p.name || '') + (isMe ? ' 👈' : '');
+                    return `<div class="flex items-center gap-3 py-2 px-3 rounded-lg ${meClass}"><span class="text-lg w-8 text-center">${prefix}</span><span class="text-white text-sm font-medium flex-1">${displayName}${title}</span><span class="text-gray-500 text-xs">${p.tournaments} тур.</span></div>`;
+                }).join("");
+                if (data.playerPosition > 5 || (data.playerPosition > 0 && data.playerTotal === 0)) {
+                    contentHtml += `<div class="border-t border-white/10 mt-3 pt-3 flex items-center gap-3 py-2 px-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500"><span class="text-lg w-8 text-center text-gray-400">${data.playerPosition}.</span><span class="text-white text-sm font-medium flex-1">👈 Вы</span><span class="text-gray-500 text-xs">${data.playerTournaments} тур.</span></div>`;
+                }
             }
-            panel.innerHTML = html;
-        } catch(e) { panel.innerHTML = `<div class="text-center py-6"><p class="text-red-400 text-sm">❌ Ошибка загрузки</p></div>`; }
+            panel.innerHTML = tabsHtml + contentHtml;
+        } catch(e) {
+            panel.innerHTML = tabsHtml + `<div class="text-center py-6"><p class="text-red-400 text-sm">❌ Ошибка загрузки</p></div>`;
+        }
     }
 
     function loadDashboardWidgets() {
-        const widgets = document.getElementById("dashboardWidgets");
-        widgets.innerHTML = `<div class="col-span-full flex flex-col items-center py-12 sm:py-14 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
-        fetch(`/api/player/${playerId}/dashboard`, { credentials: "same-origin" }).then(res => res.json()).then(data => {
-            const nameEl = document.getElementById("playerName");
-            const proBadge = document.getElementById("proBadge");
-            const titleBadge = document.getElementById("titleBadge");
-            const subStatusText = document.getElementById("subStatusText");
-
-            nameEl.textContent = data.playerName;
-
-            if (data.topWeekTitle) {
-                const emojis = {'Рокфеллер': '👑', 'Магнат': '💰', 'Толстосум': '💎'};
-                const emoji = emojis[data.topWeekTitle] || '🏆';
-                titleBadge.textContent = `${emoji} ${data.topWeekTitle}`;
+        const widgets=document.getElementById("dashboardWidgets");
+        widgets.innerHTML=`<div class="col-span-full flex flex-col items-center py-12 sm:py-14 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
+        fetch(`/api/player/${playerId}/dashboard`,{credentials:"same-origin"}).then(r=>r.json()).then(d=>{
+            const nameEl=document.getElementById("playerName"),proBadge=document.getElementById("proBadge"),titleBadge=document.getElementById("titleBadge"),subStatusText=document.getElementById("subStatusText");
+            primaryLeague=d.primaryLeague||'A';
+            nameEl.textContent=d.playerName;
+            if(d.topWeekTitle){
+                const emojis={'Рокфеллер':'👑','Магнат':'💰','Толстосум':'💎','         Смотрящий за лигой ':'👀'};
+                titleBadge.textContent=`${emojis[d.topWeekTitle]||'🏆'} ${d.topWeekTitle}`;
                 titleBadge.classList.remove("hidden");
-            } else {
-                titleBadge.classList.add("hidden");
-            }
-
-            if (data.subscription && data.subscription.active) {
-                proBadge.classList.remove("hidden");
-                subStatusText.textContent = "Подписка до " + new Date(data.subscription.expiresAt).toLocaleDateString("ru-RU");
-            } else {
-                proBadge.classList.add("hidden");
-                subStatusText.textContent = "";
-            }
-
-            const lastResultHtml = data.lastResult
-                ? `<div class="widget-card" onclick="window.open('${data.lastResult.tournamentLink}', '_blank')"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">🏆</div><h3 class="font-bold text-base sm:text-lg text-amber-300">Последний результат</h3><p class="text-xs sm:text-sm text-gray-400 mt-1">📅 ${data.lastResult.date}</p><p class="text-2xl sm:text-3xl font-bold amount-gold mt-2 sm:mt-3">${formatMoney(data.lastResult.amount)}</p></div>`
-                : '<div class="widget-card"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">📭</div><h3 class="font-bold text-base sm:text-lg text-gray-400">Нет результатов</h3></div>';
-
-            let lineupHtml = '<div class="widget-card col-span-full"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">📅</div><h3 class="font-bold text-base sm:text-lg text-white mb-1">Ближайшие турниры</h3><p class="text-xs text-gray-500 mb-4">Составы на ближайшие дни</p>';
-            if (data.upcomingLineups && data.upcomingLineups.length > 0) {
-                let currentDate = null;
-                data.upcomingLineups.forEach(l => {
-                    if (currentDate !== l.date) {
-                        if (currentDate !== null) lineupHtml += '</div>';
-                        currentDate = l.date;
-                        const cardClass = l.isSoon ? 'soon' : 'normal';
-                        const badge = l.isSoon ? '<span class="text-xs bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full font-medium ml-2">🔜 Ближайший</span>' : '';
-                        lineupHtml += `<div class="lineup-card ${cardClass}"><div class="flex items-center justify-between mb-3"><span class="text-white font-semibold text-sm">📅 ${l.date}</span>${badge}</div>`;
-                    }
-                    if (l.inLineup) {
-                        const playersList = l.players ? l.players.split(', ').join(' • ') : '';
-                        lineupHtml += `<div class="lineup-slot playing"><div class="flex items-center justify-between flex-wrap gap-2"><span class="text-white text-sm font-medium">⏰ ${l.time}</span><span class="text-xs font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">🏆 ${l.league}</span></div><p class="text-xs text-gray-400 mt-2">👥 ${playersList}</p><p class="text-xs text-amber-400 mt-1 font-medium">✅ Вы в составе</p></div>`;
-                    } else {
-                        lineupHtml += `<div class="flex flex-col items-center py-4 text-gray-500"><span class="text-2xl mb-1">😴</span><p class="text-sm">Пока не играете</p></div>`;
-                    }
-                });
-                lineupHtml += '</div>';
-            } else {
-                lineupHtml += '<div class="flex flex-col items-center py-6 text-gray-500"><span class="text-3xl mb-2">📭</span><p class="text-sm">Составы пока не загружены</p></div>';
-            }
-            lineupHtml += '</div>';
-            widgets.innerHTML = lastResultHtml + lineupHtml;
-        }).catch(() => { widgets.innerHTML = `<div class="col-span-full text-center py-12 sm:py-14 text-gray-400">❌ Ошибка загрузки</div>`; });
+            } else { titleBadge.classList.add("hidden"); }
+            if(d.subscription&&d.subscription.active){proBadge.classList.remove("hidden");subStatusText.textContent="Подписка до "+new Date(d.subscription.expiresAt).toLocaleDateString("ru-RU");}
+            else { proBadge.classList.add("hidden");subStatusText.textContent=""; }
+            const lastResultHtml=d.lastResult?`<div class="widget-card" onclick="window.open('${d.lastResult.tournamentLink}','_blank')"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">🏆</div><h3 class="font-bold text-base sm:text-lg text-amber-300">Последний результат</h3><p class="text-xs sm:text-sm text-gray-400 mt-1">📅 ${d.lastResult.date}</p><p class="text-2xl sm:text-3xl font-bold amount-gold mt-2 sm:mt-3">${formatMoney(d.lastResult.amount)}</p></div>`:'<div class="widget-card"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">📭</div><h3 class="font-bold text-base sm:text-lg text-gray-400">Нет результатов</h3></div>';
+            let lineupHtml='<div class="widget-card col-span-full"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">📅</div><h3 class="font-bold text-base sm:text-lg text-white mb-1">Ближайшие турниры</h3><p class="text-xs text-gray-500 mb-4">Составы на ближайшие дни</p>';
+            if(d.upcomingLineups&&d.upcomingLineups.length>0){
+                let cd=null;
+                d.upcomingLineups.forEach(l=>{
+                    if(cd!==l.date){if(cd!==null)lineupHtml+='</div>';cd=l.date;const cc=l.isSoon?'soon':'normal';const bd=l.isSoon?'<span class="text-xs bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full font-medium ml-2">🔜 Ближайший</span>':'';lineupHtml+=`<div class="lineup-card ${cc}"><div class="flex items-center justify-between mb-3"><span class="text-white font-semibold text-sm">📅 ${l.date}</span>${bd}</div>`;}
+                    if(l.inLineup){const pl=l.players?l.players.split(', ').join(' • '):'';lineupHtml+=`<div class="lineup-slot playing"><div class="flex items-center justify-between flex-wrap gap-2"><span class="text-white text-sm font-medium">⏰ ${l.time}</span><span class="text-xs font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">🏆 ${l.league}</span></div><p class="text-xs text-gray-400 mt-2">👥 ${pl}</p><p class="text-xs text-amber-400 mt-1 font-medium">✅ Вы в составе</p></div>`;}
+                    else {lineupHtml+=`<div class="flex flex-col items-center py-4 text-gray-500"><span class="text-2xl mb-1">😴</span><p class="text-sm">Пока не играете</p></div>`;}
+                });lineupHtml+='</div>';
+            } else {lineupHtml+='<div class="flex flex-col items-center py-6 text-gray-500"><span class="text-3xl mb-2">📭</span><p class="text-sm">Составы пока не загружены</p></div>';}
+            lineupHtml+='</div>';widgets.innerHTML=lastResultHtml+lineupHtml;
+        }).catch(()=>{widgets.innerHTML=`<div class="col-span-full text-center py-12 sm:py-14 text-gray-400">❌ Ошибка загрузки</div>`;});
     }
 
-    function showAction(action) {
-        document.getElementById("homePage").style.display = "none"; document.getElementById("actionPage").classList.remove("hidden"); highlightNav(`nav-${action === 'addTournament' ? 'add' : action}`);
-        const content = document.getElementById("actionContent"), title = document.getElementById("actionTitle"), subtitle = document.getElementById("actionSubtitle");
-        if (action === 'sum') { title.textContent = "💰 Сумма за период"; subtitle.textContent = "Подсчёт заработка и список турниров"; content.innerHTML = `<div class="glass rounded-2xl p-6 sm:p-8 text-center" id="sumCheck"><div class="spinner mx-auto mb-4"></div><p class="text-gray-400 text-sm sm:text-base">Проверка доступа...</p></div>`; fetch(`/api/player/${playerId}/sum?start=2026-01-01&end=${new Date().toISOString().split("T")[0]}`, { credentials: "same-origin" }).then(res => { if (res.status === 402) throw { status: 402 }; document.getElementById("sumCheck").innerHTML = `<div class="info-banner"><p class="text-sm text-amber-200 font-medium mb-1">📖 Как пользоваться:</p><p class="text-xs text-gray-300">1. Выберите дату начала и дату окончания (или только одну)</p><p class="text-xs text-gray-300">2. Нажмите «Рассчитать»</p><p class="text-xs text-gray-300">3. Система покажет общую сумму и список турниров с возможностью корректировки ✏️</p><p class="text-xs text-red-300 mt-2">⚠️ Максимальный диапазон — 90 дней, максимум 50 турниров</p></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"><div><label class="text-xs sm:text-sm text-gray-400 mb-1.5 block font-medium">📅 Дата с</label><input id="dateStart" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div><div><label class="text-xs sm:text-sm text-gray-400 mb-1.5 block font-medium">📅 Дата по (необязательно)</label><input id="dateEnd" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div></div><button onclick="executeSum()" id="sumBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-yellow-600 border-0 font-semibold btn-3d">🧮 Рассчитать</button><p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p><div id="sumLoading" class="hidden mt-4 text-center"><span class="spinner-sm mr-2"></span><span class="text-amber-300/80 text-sm">Считаем...</span></div>`; }).catch(() => { document.getElementById("sumCheck").innerHTML = subscriptionBlock(); }); content.innerHTML += `<div id="actionResult" class="mt-6"></div>`; }
-        else if (action === 'addTournament') { title.textContent = "🔗 Добавить турниры"; subtitle.textContent = "Поиск по диапазону дат — авто-добавление в корзину"; content.innerHTML = `<div class="info-banner"><p class="text-sm text-amber-200 font-medium mb-1">📖 Как пользоваться:</p><p class="text-xs text-gray-300">1. Выберите диапазон дат (макс. 30 дней) и нажмите «Найти»</p><p class="text-xs text-gray-300">2. Новые турниры (🆕) попадут в корзину. Сохранённые (✓) — пропускаются</p><p class="text-xs text-gray-300">3. Нажмите «Обработать всё» — система загрузит результаты</p></div><div class="glass rounded-2xl p-5 sm:p-6 md:p-7 mb-4"><h3 class="text-white font-semibold mb-3">🔍 Поиск турниров (макс. 30 дней)</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3"><div><label class="text-xs text-gray-400 mb-1 block">Дата с</label><input id="tournamentDateStart" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div><div><label class="text-xs text-gray-400 mb-1 block">Дата по</label><input id="tournamentDateEnd" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div></div><button onclick="searchTournamentsByDateRange()" id="searchBtn" class="btn bg-amber-600 hover:bg-amber-500 text-white border-0 font-semibold w-full sm:w-auto">🔍 Найти</button><div id="tournamentList" class="mt-4 hidden"></div></div><div class="glass rounded-2xl p-5 sm:p-6 md:p-7 mb-4"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="text-white font-semibold">📋 Корзина</h3><div class="flex items-center gap-2"><span id="cartCount" class="text-xs text-gray-400">0 шт.</span><button onclick="clearCart()" class="btn btn-xs bg-gray-600 hover:bg-gray-500 text-white border-0">Очистить</button></div></div><div id="cartList" class="space-y-2 mb-3 max-h-64 overflow-y-auto"><p class="text-gray-500 text-sm text-center py-4">Корзина пуста</p></div><button onclick="processCart()" id="processCartBtn" class="btn btn-primary w-full bg-gradient-to-r from-emerald-500 to-teal-600 border-0 font-semibold btn-3d" disabled>⚡ Обработать всё</button></div><p id="addError" class="text-error text-xs sm:text-sm hidden mb-2"></p><p id="addSuccess" class="text-success text-xs sm:text-sm hidden mb-2"></p><div id="actionResult" class="mt-4"></div>`; }
+    function showAction(a){
+        document.getElementById("homePage").style.display="none";document.getElementById("actionPage").classList.remove("hidden");highlightNav(`nav-${a==='addTournament'?'add':a}`);
+        const c=document.getElementById("actionContent"),t=document.getElementById("actionTitle"),s=document.getElementById("actionSubtitle");
+        if(a==='sum'){t.textContent="💰 Сумма за период";s.textContent="Подсчёт заработка и список турниров";c.innerHTML=`<div class="glass rounded-2xl p-6 sm:p-8 text-center" id="sumCheck"><div class="spinner mx-auto mb-4"></div><p class="text-gray-400 text-sm sm:text-base">Проверка доступа...</p></div>`;fetch(`/api/player/${playerId}/sum?start=2026-01-01&end=${new Date().toISOString().split("T")[0]}`,{credentials:"same-origin"}).then(r=>{if(r.status===402)throw{status:402};document.getElementById("sumCheck").innerHTML=`<div class="info-banner"><p class="text-sm text-amber-200 font-medium mb-1">📖 Как пользоваться:</p><p class="text-xs text-gray-300">1. Выберите дату начала и дату окончания (или только одну)</p><p class="text-xs text-gray-300">2. Нажмите «Рассчитать»</p><p class="text-xs text-gray-300">3. Система покажет общую сумму и список турниров с возможностью корректировки ✏️</p><p class="text-xs text-red-300 mt-2">⚠️ Максимальный диапазон — 90 дней, максимум 50 турниров</p></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"><div><label class="text-xs sm:text-sm text-gray-400 mb-1.5 block font-medium">📅 Дата с</label><input id="dateStart" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div><div><label class="text-xs sm:text-sm text-gray-400 mb-1.5 block font-medium">📅 Дата по (необязательно)</label><input id="dateEnd" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div></div><button onclick="executeSum()" id="sumBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-yellow-600 border-0 font-semibold btn-3d">🧮 Рассчитать</button><p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p><div id="sumLoading" class="hidden mt-4 text-center"><span class="spinner-sm mr-2"></span><span class="text-amber-300/80 text-sm">Считаем...</span></div>`;}).catch(()=>{document.getElementById("sumCheck").innerHTML=subscriptionBlock();});c.innerHTML+=`<div id="actionResult" class="mt-6"></div>`;}
+        else if(a==='addTournament'){t.textContent="🔗 Добавить турниры";s.textContent="Поиск по диапазону дат — авто-добавление в корзину";c.innerHTML=`<div class="info-banner"><p class="text-sm text-amber-200 font-medium mb-1">📖 Как пользоваться:</p><p class="text-xs text-gray-300">1. Выберите диапазон дат (макс. 30 дней) и нажмите «Найти»</p><p class="text-xs text-gray-300">2. Новые турниры (🆕) попадут в корзину. Сохранённые (✓) — пропускаются</p><p class="text-xs text-gray-300">3. Нажмите «Обработать всё» — система загрузит результаты</p></div><div class="glass rounded-2xl p-5 sm:p-6 md:p-7 mb-4"><h3 class="text-white font-semibold mb-3">🔍 Поиск турниров (макс. 30 дней)</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3"><div><label class="text-xs text-gray-400 mb-1 block">Дата с</label><input id="tournamentDateStart" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div><div><label class="text-xs text-gray-400 mb-1 block">Дата по</label><input id="tournamentDateEnd" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div></div><button onclick="searchTournamentsByDateRange()" id="searchBtn" class="btn bg-amber-600 hover:bg-amber-500 text-white border-0 font-semibold w-full sm:w-auto">🔍 Найти</button><div id="tournamentList" class="mt-4 hidden"></div></div><div class="glass rounded-2xl p-5 sm:p-6 md:p-7 mb-4"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="text-white font-semibold">📋 Корзина</h3><div class="flex items-center gap-2"><span id="cartCount" class="text-xs text-gray-400">0 шт.</span><button onclick="clearCart()" class="btn btn-xs bg-gray-600 hover:bg-gray-500 text-white border-0">Очистить</button></div></div><div id="cartList" class="space-y-2 mb-3 max-h-64 overflow-y-auto"><p class="text-gray-500 text-sm text-center py-4">Корзина пуста</p></div><button onclick="processCart()" id="processCartBtn" class="btn btn-primary w-full bg-gradient-to-r from-emerald-500 to-teal-600 border-0 font-semibold btn-3d" disabled>⚡ Обработать всё</button></div><p id="addError" class="text-error text-xs sm:text-sm hidden mb-2"></p><p id="addSuccess" class="text-success text-xs sm:text-sm hidden mb-2"></p><div id="actionResult" class="mt-4"></div>`;}
     }
 
-    async function executeSum() {
-        const start = document.getElementById("dateStart").value, end = document.getElementById("dateEnd").value, btn = document.getElementById("sumBtn"), errorEl = document.getElementById("sumError"), loadingEl = document.getElementById("sumLoading"), resultEl = document.getElementById("actionResult");
-        errorEl.classList.add("hidden"); resultEl.innerHTML = ""; if (!start && !end) { errorEl.textContent = "❌ Выберите хотя бы одну дату"; errorEl.classList.remove("hidden"); return; }
-        btn.disabled = true; btn.innerHTML = '<span class="spinner-sm mr-2"></span> Считаем...'; loadingEl.classList.remove("hidden");
-        const params = new URLSearchParams(); if (start) params.append("start", start); if (end) params.append("end", end);
-        try {
-            const res = await fetch(`/api/player/${playerId}/sum?${params.toString()}`, { credentials: "same-origin" }); if (res.status === 402) { resultEl.innerHTML = subscriptionBlock(); return; } if (!res.ok) { resultEl.innerHTML = '<p class="text-red-400 text-center py-6">❌ Ошибка загрузки</p>'; return; }
-            const data = await res.json(); if (!data.tournaments || data.tournaments.length === 0) { resultEl.innerHTML = `<div class="glass rounded-2xl p-6 sm:p-8 text-center"><span class="text-4xl">📭</span><p class="text-gray-400 mt-3">Нет турниров за выбранный период</p></div>`; return; }
-            let statsHtml = `<div class="glass rounded-2xl p-5 sm:p-6 mb-6 content-panel"><h3 class="text-lg sm:text-xl font-bold mb-4">📊 Результат</h3><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4"><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">💰 Общая сумма</div><div class="text-xl sm:text-2xl font-bold amount-gold">${formatMoney(data.sum)}</div></div><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">📊 Среднее</div><div class="text-xl sm:text-2xl font-bold text-blue-400">${formatMoney(data.average)}</div></div><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">🎯 Турниров</div><div class="text-xl sm:text-2xl font-bold text-amber-400">${data.count}</div></div></div></div>`;
-            let rows = data.tournaments.map((t, i) => { let cleanDate = t.date || '—'; try { const d = new Date(cleanDate); if (!isNaN(d.getTime())) cleanDate = d.toLocaleDateString('ru-RU'); } catch(e) {} const isRemoved = t.hasRemoved === true; const rowClass = isRemoved ? 'result-row hover:bg-white/5 border-l-2 border-red-500/60 bg-red-500/5' : 'result-row hover:bg-white/5'; const warningIcon = isRemoved ? '<span class="text-red-400 text-xs ml-1" title="Игрок снялся в финале или за 3-е место. Проверьте результат.">⚠️</span>' : ''; return `<tr class="${rowClass}" style="animation-delay:${i*0.05}s"><td class="text-sm sm:text-base text-gray-400">${i+1}</td><td class="text-sm sm:text-base text-white">${cleanDate}${warningIcon}</td><td class="${isRemoved ? 'amount-removed' : 'amount-gold'} font-medium text-sm sm:text-base">${formatMoney(t.amount)}</td><td class="text-center"><button onclick='openEditTournamentModal(${t.resultId || 0}, "${cleanDate}", ${t.amount})' class="btn btn-xs bg-gray-600 hover:bg-gray-500 text-white border-0" title="Скорректировать">✏️</button></td></tr>`; }).join("");
-            resultEl.innerHTML = statsHtml + `<div class="glass rounded-2xl p-5 sm:p-6 content-panel"><h3 class="text-lg sm:text-xl font-bold mb-4">📋 Список турниров</h3><div class="overflow-x-auto -mx-1"><table class="table table-sm sm:table-md w-full"><thead><tr class="text-gray-400"><th>№</th><th>Дата</th><th>Сумма</th><th class="text-center">✏️</th></tr></thead><tbody>${rows}</tbody></table></div><p class="text-gray-500 text-xs mt-3">ℹ️ Если сумма некорректна — нажмите ✏️ и укажите верную сумму.</p><p class="text-red-400/70 text-xs mt-1">⚠️ Подсвеченные строки — игрок снялся в финале или за 3-е место, проверьте результат.</p></div>`;
-        } catch (e) { resultEl.innerHTML = '<p class="text-red-400 text-center py-6">❌ Ошибка соединения</p>'; } finally { btn.disabled = false; btn.innerHTML = '🧮 Рассчитать'; loadingEl.classList.add("hidden"); }
-    }
-
-    function openEditTournamentModal(resultId, date, amount) { editingTournamentResultId = resultId; document.getElementById("editTournamentInfo").textContent = `📅 Дата: ${date} | Текущая сумма: ${formatMoney(amount)}`; document.getElementById("editTournamentAmount").value = amount; document.getElementById("editTournamentError").classList.add("hidden"); document.getElementById("editTournamentModal").classList.remove("hidden"); }
-    function closeEditTournamentModal() { document.getElementById("editTournamentModal").classList.add("hidden"); editingTournamentResultId = null; }
-    async function saveTournamentEdit() { const errEl = document.getElementById("editTournamentError"); if (!editingTournamentResultId) { errEl.textContent = "❌ Нет данных"; errEl.classList.remove("hidden"); return; } const newAmount = parseFloat(document.getElementById("editTournamentAmount").value); if (isNaN(newAmount) || newAmount < 0) { errEl.textContent = "❌ Введите корректную сумму (>= 0)"; errEl.classList.remove("hidden"); return; } try { const res = await fetch(`/api/tournament/result/${editingTournamentResultId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ amount: newAmount, bonus: 0 }) }); if (!res.ok) { const txt = await res.text(); throw new Error(txt || 'Ошибка'); } closeEditTournamentModal(); executeSum(); } catch (e) { errEl.textContent = "❌ " + (e.message || "Ошибка сохранения"); errEl.classList.remove("hidden"); } }
-    function removeFromCart(link) { tournamentCart = tournamentCart.filter(t => t.link !== link); renderCart(); }
-    function clearCart() { tournamentCart = []; renderCart(); }
-    function renderCart() { const cartList = document.getElementById("cartList"), cartCount = document.getElementById("cartCount"), processBtn = document.getElementById("processCartBtn"); cartCount.textContent = tournamentCart.length + " шт."; processBtn.disabled = tournamentCart.length === 0; if (tournamentCart.length === 0) { cartList.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">Корзина пуста</p>'; return; } cartList.innerHTML = tournamentCart.map((t, i) => { const dateStr = t.date && t.date.date ? t.date.date.split(' ')[0] : t._date || '—'; return `<div class="glass rounded-xl p-3 flex justify-between items-center"><div class="flex-1 min-w-0"><p class="text-white text-sm font-semibold truncate">${i+1}. 🏆 ${t.title || t.league || 'Турнир'}</p><p class="text-xs text-gray-400">📅 ${dateStr}</p></div><button onclick="removeFromCart('${t.link}')" class="btn btn-xs bg-red-600/50 hover:bg-red-500 text-white border-0 ml-2">✕</button></div>`; }).join(""); }
-    async function searchTournamentsByDateRange() { const startDate = document.getElementById("tournamentDateStart").value, endDate = document.getElementById("tournamentDateEnd").value, resultDiv = document.getElementById("tournamentList"), errorEl = document.getElementById("addError"), successEl = document.getElementById("addSuccess"); errorEl.classList.add("hidden"); resultDiv.classList.add("hidden"); successEl.classList.add("hidden"); const date = startDate || endDate; if (!date) { errorEl.textContent = "❌ Выберите хотя бы одну дату"; errorEl.classList.remove("hidden"); return; } const finalStart = startDate || endDate, finalEnd = endDate || startDate; if (Math.round((new Date(finalEnd) - new Date(finalStart)) / 86400000) > 30) { errorEl.textContent = "❌ Максимальный диапазон — 30 дней"; errorEl.classList.remove("hidden"); return; } const searchBtn = document.getElementById("searchBtn"); searchBtn.disabled = true; searchBtn.innerHTML = '<span class="spinner-sm mr-2"></span> Ищем...'; const url = `/api/tournament/search-with-status?date=${finalStart}` + (startDate && endDate ? `&endDate=${finalEnd}` : ''); try { const res = await fetch(url, { credentials: "same-origin" }); if (!res.ok) throw new Error(); const items = await res.json(); let newCount = 0, savedCount = 0; for (const item of items) { const t = item.tournament; const isSaved = item.saved; if (isSaved) savedCount++; else newCount++; if (!isSaved && !tournamentCart.find(c => c.link === t.link)) { const dateStr = t.date && t.date.date ? t.date.date.split(' ')[0] : ''; tournamentCart.push({...t, _date: dateStr}); } } resultDiv.innerHTML = (!items || items.length === 0) ? `<p class="text-gray-400 text-center py-4">Турниры не найдены</p>` : `<p class="text-sm mb-2">Найдено: ${items.length} (🆕 новых: ${newCount}, ✓ сохранено: ${savedCount})</p>` + items.map(item => { const t = item.tournament; const dateStr = t.date && t.date.date ? t.date.date.split(' ')[0] : ''; const saved = item.saved; const border = saved ? 'rgba(245,158,11,0.5)' : 'rgba(239,68,68,0.5)'; const badge = saved ? '<span class="text-amber-400 text-xs ml-1">✓ сохранён</span>' : '<span class="text-red-400 text-xs ml-1">🆕 новый</span>'; return `<div class="glass rounded-xl p-3 mb-2" style="border:1px solid ${border};"><p class="text-white text-sm font-semibold">🏆 ${t.title || t.league || 'Турнир'} ${badge}</p><p class="text-xs text-gray-400">📅 ${dateStr}</p></div>`; }).join(""); resultDiv.classList.remove("hidden"); renderCart(); if (newCount > 0) { successEl.textContent = `✅ Добавлено в корзину: ${newCount}`; successEl.classList.remove("hidden"); setTimeout(() => successEl.classList.add("hidden"), 4000); } } catch (e) { errorEl.textContent = "❌ Ошибка загрузки"; errorEl.classList.remove("hidden"); } finally { searchBtn.disabled = false; searchBtn.innerHTML = "🔍 Найти"; } }
-    async function processCart() { if (tournamentCart.length === 0) return; const btn = document.getElementById("processCartBtn"), successEl = document.getElementById("addSuccess"); btn.disabled = true; btn.innerHTML = '<span class="spinner-sm mr-2"></span> Обработка...'; let added = 0, errors = 0; for (let i = 0; i < tournamentCart.length; i++) { const t = tournamentCart[i]; try { successEl.textContent = `${i+1}/${tournamentCart.length}: ${t.title || t.league || '...'}`; successEl.classList.remove("hidden"); const res = await fetch("/api/tournament/add", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ url: t.link }) }); if (res.ok) added++; else errors++; } catch (e) { errors++; } } successEl.textContent = `✅ Обработано: ${added}` + (errors > 0 ? ` (ошибок: ${errors})` : ''); tournamentCart = []; renderCart(); btn.disabled = true; btn.innerHTML = "⚡ Обработать всё"; }
-    function subscriptionBlock() { return `<div class="glass rounded-2xl p-6 sm:p-8 text-center content-panel"><div class="text-4xl sm:text-5xl mb-3 sm:mb-4">🔒</div><h3 class="text-lg sm:text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><p class="text-gray-400 text-sm sm:text-base mb-6">Оформите подписку чтобы пользоваться всеми функциями</p><button onclick="window.location.href='/subscribe'" class="btn bg-amber-500 hover:bg-amber-400 text-black border-0 font-semibold btn-3d px-8">💳 Оформить подписку</button></div>`; }
-    async function logout() { await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); window.location.replace("/"); }
-    function formatMoney(v) { if (v == null) return "0 ₽"; return new Intl.NumberFormat("ru-RU").format(Math.round(v)) + " ₽"; }
+    async function executeSum(){const start=document.getElementById("dateStart").value,end=document.getElementById("dateEnd").value,btn=document.getElementById("sumBtn"),errorEl=document.getElementById("sumError"),loadingEl=document.getElementById("sumLoading"),resultEl=document.getElementById("actionResult");errorEl.classList.add("hidden");resultEl.innerHTML="";if(!start&&!end){errorEl.textContent="❌ Выберите хотя бы одну дату";errorEl.classList.remove("hidden");return;}btn.disabled=true;btn.innerHTML='<span class="spinner-sm mr-2"></span> Считаем...';loadingEl.classList.remove("hidden");const params=new URLSearchParams();if(start)params.append("start",start);if(end)params.append("end",end);try{const r=await fetch(`/api/player/${playerId}/sum?${params.toString()}`,{credentials:"same-origin"});if(r.status===402){resultEl.innerHTML=subscriptionBlock();return;}if(!r.ok){resultEl.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка загрузки</p>';return;}const d=await r.json();if(!d.tournaments||d.tournaments.length===0){resultEl.innerHTML=`<div class="glass rounded-2xl p-6 sm:p-8 text-center"><span class="text-4xl">📭</span><p class="text-gray-400 mt-3">Нет турниров за выбранный период</p></div>`;return;}let statsHtml=`<div class="glass rounded-2xl p-5 sm:p-6 mb-6 content-panel"><h3 class="text-lg sm:text-xl font-bold mb-4">📊 Результат</h3><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4"><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">💰 Общая сумма</div><div class="text-xl sm:text-2xl font-bold amount-gold">${formatMoney(d.sum)}</div></div><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">📊 Среднее</div><div class="text-xl sm:text-2xl font-bold text-blue-400">${formatMoney(d.average)}</div></div><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">🎯 Турниров</div><div class="text-xl sm:text-2xl font-bold text-amber-400">${d.count}</div></div></div></div>`;let rows=d.tournaments.map((t,i)=>{let cleanDate=t.date||'—';try{const dt=new Date(cleanDate);if(!isNaN(dt.getTime()))cleanDate=dt.toLocaleDateString('ru-RU');}catch(e){}const isRemoved=t.hasRemoved===true;const rowClass=isRemoved?'result-row hover:bg-white/5 border-l-2 border-red-500/60 bg-red-500/5':'result-row hover:bg-white/5';const warningIcon=isRemoved?'<span class="text-red-400 text-xs ml-1" title="Игрок снялся в финале или за 3-е место. Проверьте результат.">⚠️</span>':'';return`<tr class="${rowClass}" style="animation-delay:${i*0.05}s"><td class="text-sm sm:text-base text-gray-400">${i+1}</td><td class="text-sm sm:text-base text-white">${cleanDate}${warningIcon}</td><td class="${isRemoved?'amount-removed':'amount-gold'} font-medium text-sm sm:text-base">${formatMoney(t.amount)}</td><td class="text-center"><button onclick='openEditTournamentModal(${t.resultId||0},"${cleanDate}",${t.amount})' class="btn btn-xs bg-gray-600 hover:bg-gray-500 text-white border-0" title="Скорректировать">✏️</button></td></tr>`;}).join("");resultEl.innerHTML=statsHtml+`<div class="glass rounded-2xl p-5 sm:p-6 content-panel"><h3 class="text-lg sm:text-xl font-bold mb-4">📋 Список турниров</h3><div class="overflow-x-auto -mx-1"><table class="table table-sm sm:table-md w-full"><thead><tr class="text-gray-400"><th>№</th><th>Дата</th><th>Сумма</th><th class="text-center">✏️</th></tr></thead><tbody>${rows}</tbody></table></div><p class="text-gray-500 text-xs mt-3">ℹ️ Если сумма некорректна — нажмите ✏️ и укажите верную сумму.</p><p class="text-red-400/70 text-xs mt-1">⚠️ Подсвеченные строки — игрок снялся в финале или за 3-е место, проверьте результат.</p></div>`;}catch(e){resultEl.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка соединения</p>';}finally{btn.disabled=false;btn.innerHTML='🧮 Рассчитать';loadingEl.classList.add("hidden");}}
+    function openEditTournamentModal(id,date,amount){editingTournamentResultId=id;document.getElementById("editTournamentInfo").textContent=`📅 Дата: ${date} | Текущая сумма: ${formatMoney(amount)}`;document.getElementById("editTournamentAmount").value=amount;document.getElementById("editTournamentError").classList.add("hidden");document.getElementById("editTournamentModal").classList.remove("hidden");}
+    function closeEditTournamentModal(){document.getElementById("editTournamentModal").classList.add("hidden");editingTournamentResultId=null;}
+    async function saveTournamentEdit(){const errEl=document.getElementById("editTournamentError");if(!editingTournamentResultId){errEl.textContent="❌ Нет данных";errEl.classList.remove("hidden");return;}const newAmount=parseFloat(document.getElementById("editTournamentAmount").value);if(isNaN(newAmount)||newAmount<0){errEl.textContent="❌ Введите корректную сумму (>= 0)";errEl.classList.remove("hidden");return;}try{const r=await fetch(`/api/tournament/result/${editingTournamentResultId}`,{method:"PUT",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({amount:newAmount,bonus:0})});if(!r.ok){const txt=await r.text();throw new Error(txt||'Ошибка');}closeEditTournamentModal();executeSum();}catch(e){errEl.textContent="❌ "+(e.message||"Ошибка сохранения");errEl.classList.remove("hidden");}}
+    function removeFromCart(link){tournamentCart=tournamentCart.filter(t=>t.link!==link);renderCart();}
+    function clearCart(){tournamentCart=[];renderCart();}
+    function renderCart(){const cl=document.getElementById("cartList"),cc=document.getElementById("cartCount"),pb=document.getElementById("processCartBtn");cc.textContent=tournamentCart.length+" шт.";pb.disabled=tournamentCart.length===0;if(tournamentCart.length===0){cl.innerHTML='<p class="text-gray-500 text-sm text-center py-4">Корзина пуста</p>';return;}cl.innerHTML=tournamentCart.map((t,i)=>{const ds=t.date&&t.date.date?t.date.date.split(' ')[0]:t._date||'—';return`<div class="glass rounded-xl p-3 flex justify-between items-center"><div class="flex-1 min-w-0"><p class="text-white text-sm font-semibold truncate">${i+1}. 🏆 ${t.title||t.league||'Турнир'}</p><p class="text-xs text-gray-400">📅 ${ds}</p></div><button onclick="removeFromCart('${t.link}')" class="btn btn-xs bg-red-600/50 hover:bg-red-500 text-white border-0 ml-2">✕</button></div>`;}).join("");}
+    async function searchTournamentsByDateRange(){const sd=document.getElementById("tournamentDateStart").value,ed=document.getElementById("tournamentDateEnd").value,rd=document.getElementById("tournamentList"),ee=document.getElementById("addError"),se=document.getElementById("addSuccess");ee.classList.add("hidden");rd.classList.add("hidden");se.classList.add("hidden");const date=sd||ed;if(!date){ee.textContent="❌ Выберите хотя бы одну дату";ee.classList.remove("hidden");return;}const fs=sd||ed,fe=ed||sd;if(Math.round((new Date(fe)-new Date(fs))/86400000)>30){ee.textContent="❌ Максимальный диапазон — 30 дней";ee.classList.remove("hidden");return;}const sb=document.getElementById("searchBtn");sb.disabled=true;sb.innerHTML='<span class="spinner-sm mr-2"></span> Ищем...';const url=`/api/tournament/search-with-status?date=${fs}`+(sd&&ed?`&endDate=${fe}`:'');try{const r=await fetch(url,{credentials:"same-origin"});if(!r.ok)throw new Error();const items=await r.json();let nc=0,sc=0;for(const item of items){const t=item.tournament;const isSaved=item.saved;if(isSaved)sc++;else nc++;if(!isSaved&&!tournamentCart.find(c=>c.link===t.link)){const ds=t.date&&t.date.date?t.date.date.split(' ')[0]:'';tournamentCart.push({...t,_date:ds});}}rd.innerHTML=(!items||items.length===0)?`<p class="text-gray-400 text-center py-4">Турниры не найдены</p>`:`<p class="text-sm mb-2">Найдено: ${items.length} (🆕 новых: ${nc}, ✓ сохранено: ${sc})</p>`+items.map(item=>{const t=item.tournament;const ds=t.date&&t.date.date?t.date.date.split(' ')[0]:'';const saved=item.saved;const border=saved?'rgba(245,158,11,0.5)':'rgba(239,68,68,0.5)';const badge=saved?'<span class="text-amber-400 text-xs ml-1">✓ сохранён</span>':'<span class="text-red-400 text-xs ml-1">🆕 новый</span>';return`<div class="glass rounded-xl p-3 mb-2" style="border:1px solid ${border};"><p class="text-white text-sm font-semibold">🏆 ${t.title||t.league||'Турнир'} ${badge}</p><p class="text-xs text-gray-400">📅 ${ds}</p></div>`;}).join("");rd.classList.remove("hidden");renderCart();if(nc>0){se.textContent=`✅ Добавлено в корзину: ${nc}`;se.classList.remove("hidden");setTimeout(()=>se.classList.add("hidden"),4000);}}catch(e){ee.textContent="❌ Ошибка загрузки";ee.classList.remove("hidden");}finally{sb.disabled=false;sb.innerHTML="🔍 Найти";}}
+    async function processCart(){if(tournamentCart.length===0)return;const btn=document.getElementById("processCartBtn"),se=document.getElementById("addSuccess");btn.disabled=true;btn.innerHTML='<span class="spinner-sm mr-2"></span> Обработка...';let added=0,errors=0;for(let i=0;i<tournamentCart.length;i++){const t=tournamentCart[i];try{se.textContent=`${i+1}/${tournamentCart.length}: ${t.title||t.league||'...'}`;se.classList.remove("hidden");const r=await fetch("/api/tournament/add",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({url:t.link})});if(r.ok)added++;else errors++;}catch(e){errors++;}}se.textContent=`✅ Обработано: ${added}`+(errors>0?` (ошибок: ${errors})`:'');tournamentCart=[];renderCart();btn.disabled=true;btn.innerHTML="⚡ Обработать всё";}
+    function subscriptionBlock(){return`<div class="glass rounded-2xl p-6 sm:p-8 text-center content-panel"><div class="text-4xl sm:text-5xl mb-3 sm:mb-4">🔒</div><h3 class="text-lg sm:text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><p class="text-gray-400 text-sm sm:text-base mb-6">Оформите подписку чтобы пользоваться всеми функциями</p><button onclick="window.location.href='/subscribe'" class="btn bg-amber-500 hover:bg-amber-400 text-black border-0 font-semibold btn-3d px-8">💳 Оформить подписку</button></div>`;}
+    async function logout(){await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"});window.location.replace("/");}
+    function formatMoney(v){if(v==null)return"0 ₽";return new Intl.NumberFormat("ru-RU").format(Math.round(v))+" ₽";}
 </script>
 </body>
 </html>

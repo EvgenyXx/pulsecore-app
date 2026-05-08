@@ -13,4 +13,5 @@ public class DashboardResponse {
     private SubscriptionInfoDto subscription;
     private String topWeekTitle;
     private boolean hasCrown;
+    private String primaryLeague;
 }

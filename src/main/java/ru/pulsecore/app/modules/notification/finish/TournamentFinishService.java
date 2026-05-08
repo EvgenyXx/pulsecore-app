@@ -37,7 +37,7 @@ public class TournamentFinishService {
 
 
         ParsedResult parsed = resultService.calculateAll(doc);
-        if (parsed.getStatus() != TournamentStatus.FINISHED) return false;
+        if (parsed.status() != TournamentStatus.FINISHED) return false;
 
         processService.processTournament(notifications, parsed);
 
@@ -54,7 +54,7 @@ public class TournamentFinishService {
         log.info("🏁 tournament finished: id={}, users={}, results={}",
                 t.getExternalId(),
                 notifications.size(),
-                parsed.getResults().size());
+                parsed.results().size());
 
         return true;
     }

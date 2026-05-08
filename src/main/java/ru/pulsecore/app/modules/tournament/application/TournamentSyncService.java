@@ -18,18 +18,18 @@ public class TournamentSyncService {
 
     public TournamentEntity sync(ParsedResult parsed, String link) {
         TournamentEntity t = tournamentRepository
-                .findByExternalId(parsed.getTournamentId())
+                .findByExternalId(parsed.tournamentId())
                 .orElseGet(TournamentEntity::new);
 
-        t.setExternalId(parsed.getTournamentId());
+        t.setExternalId(parsed.tournamentId());
         t.setLink(link);
 
         // ✅ корректные флаги
-       statusMapper.apply(t,parsed.getStatus());
+       statusMapper.apply(t,parsed.status());
 
         // ✅ дата
-        if (!parsed.getResults().isEmpty()) {
-            t.setDate(LocalDate.parse(parsed.getResults().get(0).getDate()));
+        if (!parsed.results().isEmpty()) {
+            t.setDate(LocalDate.parse(parsed.results().get(0).getDate()));
         }
 
         return tournamentRepository.save(t);

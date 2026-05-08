@@ -13,11 +13,10 @@ public final class PlayerApi {
     public static final String REVOKE_ROLE = "/{id}/roles/revoke";
 
     public static final String TOP_WEEK = "/top/week";
+    public static final String TOP_WEEK_LEAGUE = "/top/week/{league}";
 
     public static final String ROLES = "/{id}/roles";
-    // PlayerApi.java - добавить константу
     public static final String NOTIFICATIONS = "/{id}/notifications";
-    // PlayerApi.java
     public static final String NOTIFICATIONS_STATUS = "/{id}/notifications";
 
     private PlayerApi() {}
@@ -30,4 +29,5 @@ public final class PlayerApi {
     public static final String CHANGE_PASSWORD = "/{id}/change-password";
 
     public static final String TOP_WEEK_POSITION = "/{id}/top/week";
+    public static final String TOP_WEEK_POSITION_BY_LEAGUE = "/{id}/top/week/{league}";
 }

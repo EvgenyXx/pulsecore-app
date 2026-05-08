@@ -69,7 +69,8 @@ public class TournamentResultService {
                                TournamentEntity tournament,
                                double bonus,
                                boolean isFinished,
-                               boolean hasRemoved) {
+                               boolean hasRemoved,
+                               String league) {
 
         for (ResultDto r : results) {
             boolean same = isSamePlayer(player.getName(), r.getPlayer());
@@ -87,6 +88,7 @@ public class TournamentResultService {
                             .isNight(isNight)
                             .bonus(bonus)
                             .hasRemoved(hasRemoved)
+                            .league(league)
                             .build();
 
                     TournamentResultEntity saved = save(entity);
@@ -101,7 +103,8 @@ public class TournamentResultService {
                                   Long tournamentId,
                                   double bonus,
                                   boolean isFinished,
-                                  boolean hasRemoved) {
+                                  boolean hasRemoved,
+                                  String league) {
 
         boolean found = false;
 
@@ -126,6 +129,7 @@ public class TournamentResultService {
                             .isNight(isNight)
                             .bonus(bonus)
                             .hasRemoved(hasRemoved)
+                            .league(league)
                             .build();
 
                     TournamentResultEntity saved = save(entity);
