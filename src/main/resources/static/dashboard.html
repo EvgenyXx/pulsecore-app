@@ -187,14 +187,14 @@
         const leagueLabels = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
 
         // Строим табы сразу — они не должны пропадать
-        let tabsHtml = `<div class="flex items-center justify-between flex-wrap gap-2 mb-3"><h3 class="font-bold text-white">🏆 Топ-5 за 7 дней</h3><div class="flex gap-1.5 flex-wrap" id="leagueTabs">`;
+        let tabsHtml = `<div class="flex items-center justify-between flex-wrap gap-2 mb-3"><h3 class="font-bold text-white">🏆 Топ-5 на сегодня</h3><div class="flex gap-1.5 flex-wrap" id="leagueTabs">`;
         tabsHtml += `<span class="league-tab ${!league ? 'active' : ''}" onclick="switchLeague(null)">Все</span>`;
         leagues.forEach(l => {
             const isMyLeague = l === primaryLeague;
             const isActive = l === league;
-            tabsHtml += `<span class="league-tab ${isActive ? 'active' : ''} ${isMyLeague ? 'my-league' : ''}" onclick="switchLeague('${l}')">${leagueLabels[l]}${isMyLeague ? ' 🔥' : ''}</span>`;
+            tabsHtml += `<span class="league-tab ${isActive ? 'active' : ''} ${isMyLeague ? 'my-league' : ''}" onclick="switchLeague('${l}')">${leagueLabels[l]}${isMyLeague ? '' : ''}</span>`;
         });
-        tabsHtml += `</div><span class="topweek-close" onclick="toggleTopWeek()">✕</span></div><p class="text-gray-500 text-xs mb-3">Титул получает игрок занявший призовое место. 🔥 — ваша лига</p>`;
+        tabsHtml += `</div><span class="topweek-close" onclick="toggleTopWeek()">✕</span></div><p class="text-gray-500 text-xs mb-3"> Рейтинг по призовым за 7 дней.</p>`;
 
         panel.innerHTML = tabsHtml + `<div class="text-center py-4"></div>`;        panel.classList.remove("hidden");
         document.getElementById("topWeekArrow").textContent = "▲";

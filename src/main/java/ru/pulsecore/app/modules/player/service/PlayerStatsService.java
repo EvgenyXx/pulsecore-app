@@ -1,6 +1,5 @@
 package ru.pulsecore.app.modules.player.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import ru.pulsecore.app.core.dto.*;
 import ru.pulsecore.app.modules.lineup.domain.Lineup;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class PlayerStatsService {
 
     private final PlayerService playerService;
@@ -79,9 +77,7 @@ public class PlayerStatsService {
         List<TopPlayerProjection> top5 = tournamentResultRepository
                 .findTopByPrimaryLeague(weekAgo, league, 5);
 
-        log.info("Top-5 for league {}: {}", league, top5.stream()
-                .map(p -> p.getName() + "(" + p.getTotal() + "р, " + p.getTournaments() + "т)")
-                .collect(Collectors.joining(", ")));
+
 
         if (!league.equals(primary)) {
             return TopWeekResponse.builder()
@@ -115,7 +111,6 @@ public class PlayerStatsService {
     public String getPrimaryLeague(UUID playerId) {
         Player player = playerService.getById(playerId);
         List<String> lastLeagues = tournamentResultRepository.findLastLeagues(player);
-        log.info("Last 7 leagues for {}: {}", player.getName(), lastLeagues);
         if (lastLeagues.isEmpty()) return "A";
         return lastLeagues.stream()
                 .collect(Collectors.groupingBy(l -> l, Collectors.counting()))
