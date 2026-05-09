@@ -65,12 +65,16 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            Cookie cookie = new Cookie(sessionProperties.getName(), null);
-                            cookie.setPath("/");
-                            cookie.setHttpOnly(true);
-                            cookie.setMaxAge(0);
-                            response.addCookie(cookie);
-                            response.sendRedirect("/");
+                            if (request.getRequestURI().startsWith("/api/")) {
+                                response.sendError(403, "Forbidden");
+                            } else {
+                                Cookie cookie = new Cookie(sessionProperties.getName(), null);
+                                cookie.setPath("/");
+                                cookie.setHttpOnly(true);
+                                cookie.setMaxAge(0);
+                                response.addCookie(cookie);
+                                response.sendRedirect("/");
+                            }
                         })
                 );
 
