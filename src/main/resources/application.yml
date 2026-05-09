@@ -19,10 +19,12 @@ spring:
                               auth: true
                               starttls:
                                     enable: true
+      data:
+            redis:
+                  host: ${SPRING_REDIS_HOST:redis}
+                  port: 6379
       session:
-            store-type: jdbc
-            jdbc:
-                  initialize-schema: never
+            store-type: redis
 
 app:
       admin:
