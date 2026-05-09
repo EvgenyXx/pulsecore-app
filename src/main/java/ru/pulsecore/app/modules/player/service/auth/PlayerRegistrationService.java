@@ -67,7 +67,7 @@ public class PlayerRegistrationService {
                 .build());
 
         Subscription trial = Subscription.builder().player(player).build();
-        trial.activate(0);
+        trial.activate(7);
         subscriptionRepository.save(trial);
 
         tournamentAutoAddService.addRecentTournamentsForPlayer(player, 30);
