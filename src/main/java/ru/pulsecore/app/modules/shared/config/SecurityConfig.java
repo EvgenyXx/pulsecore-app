@@ -30,15 +30,22 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .securityContext(securityContext -> securityContext
+                        .requireExplicitSave(true)
+                )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .maximumSessions(10)
+                        .maxSessionsPreventsLogin(false)
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", "/index.html", "/register.html",
                                 "/subscribe.html", "/profile.html", "/dashboard.html",
-                                "/img.png", "/api/auth/**", "/api/payment/webhook",
-                                "/api/player/**"
+                                "/img.png", "/favicon.ico", "/robots.txt", "/error",
+                                "/api/auth/**", "/api/payment/webhook"
                         ).permitAll()
+                        .requestMatchers("/api/player/**").authenticated()
                         .requestMatchers("/admin.html", "/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
