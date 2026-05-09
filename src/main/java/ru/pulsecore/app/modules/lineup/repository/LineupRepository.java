@@ -1,14 +1,15 @@
 package ru.pulsecore.app.modules.lineup.repository;
 
-import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import ru.pulsecore.app.modules.lineup.domain.Lineup;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface LineupRepository extends JpaRepository<Lineup, Long> {
 
     Optional<Lineup> findByLeagueAndTimeAndDate(String league, String time, LocalDate date);
@@ -17,6 +18,11 @@ public interface LineupRepository extends JpaRepository<Lineup, Long> {
 
     List<Lineup> findByDateBetweenOrderByDateAscTimeAsc(LocalDate start, LocalDate end);
 
+    @Modifying
+    @Query("DELETE FROM Lineup WHERE date = :date")
+    void deleteAllByDate(@Param("date") LocalDate date);
 
-    void deleteByDateBefore(LocalDate yesterday);
+    @Modifying
+    @Query("DELETE FROM Lineup WHERE date < :date")
+    void deleteByDateBefore(@Param("date") LocalDate date);
 }

@@ -6,13 +6,15 @@ import ru.pulsecore.app.modules.lineup.mapper.LineupMapper;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
 import ru.pulsecore.app.modules.lineup.validator.TournamentValidator;
+import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.player.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,83 +25,47 @@ public class LineupService {
     private final MastersApiClient apiClient;
     private final LineupMapper mapper;
     private final TournamentValidator validator;
+    private final PlayerService playerService;
 
     @Transactional
     public void cleanupOld() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        lineupRepository.deleteByDateBefore(yesterday);
-        log.info("Cleaned lineup records before {}", yesterday);
+        lineupRepository.deleteByDateBefore(LocalDate.now().minusDays(1));
+        log.info("Cleaned old lineups");
     }
-
 
     @Transactional
     public void loadLineups() {
-        try {
-            log.info("🚀 Loading lineups...");
+        List<Player> players = playerService.getAll();
+        if (players.isEmpty()) return;
 
-            LocalDate today = LocalDate.now();
-
-            for (int i = 1; i <= 2; i++) {
-                LocalDate targetDate = today.plusDays(i);
-                loadDay(targetDate);
-            }
-
-        } catch (Exception e) {
-            log.error("❌ Error loading lineups", e);
-        }
+        LocalDate today = LocalDate.now();
+        loadDay(players, today.plusDays(1));
+        loadDay(players, today.plusDays(2));
     }
 
-    private void loadDay(LocalDate targetDate) {
-        List<TournamentDto> tournaments = apiClient.loadTournaments(targetDate.toString());
+    private void loadDay(List<Player> players, LocalDate date) {
+        List<TournamentDto> all = apiClient.loadTournaments(date.toString());
+        if (all.isEmpty()) return;
 
-        if (tournaments.isEmpty()) {
-            log.warn("⚠️ API пустой для даты {}", targetDate);
-            return;
-        }
+        Set<String> names = new HashSet<>();
+        for (Player p : players) names.add(p.getName().toLowerCase());
 
-        List<TournamentDto> filtered = tournaments.stream()
-                .filter(t -> targetDate.equals(extractDate(t)))
-                .toList();
-
-        if (filtered.isEmpty()) {
-            log.warn("⚠️ Нет составов на {}", targetDate);
-            return;
-        }
-
-        List<Lineup> existing = lineupRepository.findByDate(targetDate);
-
-        if (existing.isEmpty()) {
-            List<Lineup> list = filtered.stream()
-                    .filter(validator::isValid)
-                    .map(t -> mapper.toEntity(t, targetDate, extractTime(t)))
-                    .toList();
-
-            lineupRepository.saveAll(list);
-            log.info("✅ Сохранено {} составов на {}", list.size(), targetDate);
-        } else {
-            handleSameDay(filtered, targetDate);
-        }
-    }
-
-    private void handleSameDay(List<TournamentDto> tournaments, LocalDate date) {
-        List<TournamentDto> valid = tournaments.stream()
+        List<TournamentDto> relevant = all.stream()
+                .filter(t -> t.getPlayers().stream().anyMatch(n -> names.contains(n.toLowerCase())))
                 .filter(validator::isValid)
+                .filter(t -> date.equals(extractDate(t)))
                 .toList();
 
-        for (TournamentDto t : valid) {
-            String time = extractTime(t);
-            String players = String.join(", ", t.getPlayers());
+        if (relevant.isEmpty()) return;
 
-            Lineup lineup = lineupRepository
-                    .findByLeagueAndTimeAndDate(t.getLeague(), time, date)
-                    .orElseGet(() -> mapper.toEntity(t, date, time));
+        lineupRepository.deleteAllByDate(date);
 
-            if (!players.equals(lineup.getPlayers())) {
-                lineup.setPlayers(players);
-            }
+        List<Lineup> lineups = relevant.stream()
+                .map(t -> mapper.toEntity(t, date, extractTime(t)))
+                .toList();
 
-            lineupRepository.save(lineup);
-        }
+        lineupRepository.saveAll(lineups);
+        log.info("{} lineups for date {}", lineups.size(), date);
     }
 
     private LocalDate extractDate(TournamentDto t) {
