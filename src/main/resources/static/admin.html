@@ -481,7 +481,7 @@
         loadingEl.classList.remove('hidden');
 
         try {
-            const res = await fetch('/api/tournament/admin/calculate', {
+            const res = await fetch('/api/admin/tournaments/calculate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'same-origin',

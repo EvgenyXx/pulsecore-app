@@ -11,9 +11,7 @@ public final class AuthApi {
     public static final String VERIFY_PASSWORD = "/verify-password";
     public static final String VERIFY_EMAIL = "/verify-email";
 
-    public static final String SESSION_ID = "playerId";
-    public static final String SESSION_NAME = "playerName";
-    public static final String SESSION_EMAIL = "playerEmail";
+
 
 
 
