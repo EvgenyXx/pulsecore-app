@@ -31,7 +31,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityContext(securityContext -> securityContext
-                        .requireExplicitSave(true)
+                        .requireExplicitSave(false)
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
@@ -68,11 +68,6 @@ public class SecurityConfig {
                             if (request.getRequestURI().startsWith("/api/")) {
                                 response.sendError(403, "Forbidden");
                             } else {
-                                Cookie cookie = new Cookie(sessionProperties.getName(), null);
-                                cookie.setPath("/");
-                                cookie.setHttpOnly(true);
-                                cookie.setMaxAge(0);
-                                response.addCookie(cookie);
                                 response.sendRedirect("/");
                             }
                         })

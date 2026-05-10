@@ -44,8 +44,8 @@ public class PlayerStatsController {
     @GetMapping(PlayerApi.SUM)
     public ResponseEntity<SumResponse> getSumById(
             @PathVariable UUID id,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
         return ResponseEntity.ok(playerStatsService.getSum(id, start, end));
     }
 }
