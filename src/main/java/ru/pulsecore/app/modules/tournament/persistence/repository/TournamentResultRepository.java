@@ -25,8 +25,17 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             "    SELECT tr2.player.id FROM TournamentResultEntity tr2 " +
             "    WHERE tr2.date >= :since " +
             "    GROUP BY tr2.player.id " +
-            "    HAVING SUM(CASE WHEN tr2.league = :league THEN 1 ELSE 0 END) >= " +
-            "           SUM(CASE WHEN tr2.league != :league THEN 1 ELSE 0 END)" +
+            "    HAVING SUM(CASE WHEN tr2.league = :league THEN 1 ELSE 0 END) > " +
+            "           SUM(CASE WHEN tr2.league != :league THEN 1 ELSE 0 END) " +
+            "    OR (" +
+            "        SUM(CASE WHEN tr2.league = :league THEN 1 ELSE 0 END) = " +
+            "        SUM(CASE WHEN tr2.league != :league THEN 1 ELSE 0 END) " +
+            "        AND (" +
+            "            SELECT tr3.league FROM TournamentResultEntity tr3 " +
+            "            WHERE tr3.player = tr2.player AND tr3.date >= :since " +
+            "            ORDER BY tr3.date DESC LIMIT 1" +
+            "        ) = :league" +
+            "    )" +
             ") " +
             "GROUP BY p.id, p.name " +
             "ORDER BY total DESC " +
