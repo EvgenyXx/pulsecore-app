@@ -2,17 +2,14 @@ package ru.pulsecore.app.modules.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.payment.PriceService;
 
 import java.util.Map;
 
-@RestController
-@RequestMapping(AdminApi.BASE)
+
 @RequiredArgsConstructor
 @AdminController
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminPriceController {
 
     private final PriceService priceService;

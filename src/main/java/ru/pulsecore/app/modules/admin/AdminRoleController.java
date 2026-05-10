@@ -2,7 +2,6 @@ package ru.pulsecore.app.modules.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
@@ -11,10 +10,9 @@ import ru.pulsecore.app.modules.player.service.RoleManagementService;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping(AdminApi.BASE)
+
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+@AdminController
 public class AdminRoleController {
 
     private final RoleManagementService roleManagementService;

@@ -2,7 +2,6 @@ package ru.pulsecore.app.modules.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
 import ru.pulsecore.app.modules.player.service.SubscriptionService;
@@ -10,10 +9,7 @@ import ru.pulsecore.app.modules.player.service.SubscriptionService;
 import java.util.UUID;
 
 @AdminController
-@RestController
-@RequestMapping(AdminApi.BASE)
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminSubscriptionController {
 
     private final SubscriptionService subscriptionService;
