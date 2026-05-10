@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -16,8 +16,11 @@ services:
     image: redis:7-alpine
     container_name: redis
     restart: always
+    command: redis-server --appendonly yes --protected-mode yes --requirepass ${REDIS_PASSWORD}
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
 
   app:
     build: .
@@ -33,9 +36,10 @@ services:
       - 1.1.1.1
     environment:
       SPRING_REDIS_HOST: ${SPRING_REDIS_HOST}
+      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD}
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       YOOKASSA_SHOP_ID: ${YOOKASSA_SHOP_ID}
       YOOKASSA_SECRET_KEY: ${YOOKASSA_SECRET_KEY}
       MAIL_HOST: ${MAIL_HOST}
@@ -44,6 +48,8 @@ services:
       MAIL_PASS: ${MAIL_PASS}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       MAIL_FROM: ${MAIL_FROM}
+      MASTERS_API_URL: ${MASTERS_API_URL}
 
 volumes:
   pgdata:
+  redis_data:

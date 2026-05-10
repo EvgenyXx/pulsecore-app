@@ -23,6 +23,7 @@ spring:
             redis:
                   host: ${SPRING_REDIS_HOST:redis}
                   port: 6379
+                  password: ${SPRING_REDIS_PASSWORD:}
       session:
             store-type: redis
 
@@ -33,7 +34,7 @@ app:
             shop-id: ${YOOKASSA_SHOP_ID}
             secret-key: ${YOOKASSA_SECRET_KEY}
       masters-api:
-            url: https://masters-league.com/wp-admin/admin-ajax.php
+            url: ${MASTERS_API_URL}
             method: POST
             user-agent: Mozilla/5.0
             action: tourslist
