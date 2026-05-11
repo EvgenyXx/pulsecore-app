@@ -6,6 +6,7 @@ import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.TopPlayerProjection;
 import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;
 import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.tournament.api.dto.MonthlyIncomeProjection;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,11 +19,21 @@ import java.util.UUID;
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
 
+    @Query("SELECT CONCAT(CAST(YEAR(tr.date) AS string), '-', LPAD(CAST(MONTH(tr.date) AS string), 2, '0')) as month, " +
+            "SUM(tr.amount) as total, COUNT(tr) as count, AVG(tr.amount) as average " +
+            "FROM TournamentResultEntity tr " +
+            "WHERE tr.player = :player AND tr.date >= :since AND YEAR(tr.date) = :year " +
+            "GROUP BY YEAR(tr.date), MONTH(tr.date) " +
+            "ORDER BY MONTH(tr.date) ASC")
+    List<MonthlyIncomeProjection> getMonthlyIncome(@Param("player") Player player,
+                                                   @Param("since") LocalDate since,
+                                                   @Param("year") int year);
+
+    // ОСТАЛЬНЫЕ МЕТОДЫ БЕЗ ИЗМЕНЕНИЙ
     @Query("SELECT COALESCE(AVG(tr.amount), 0) FROM TournamentResultEntity tr " +
             "WHERE tr.player.id = :playerId AND tr.date >= :since")
     double getPlayerAverage(@Param("playerId") UUID playerId, @Param("since") LocalDate since);
 
-    // TournamentResultRepository.java — только метод getAllLeaguesStats меняется
     @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
             "FROM TournamentResultEntity tr " +
             "WHERE tr.date >= :since " +

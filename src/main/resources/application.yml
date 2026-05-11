@@ -39,7 +39,7 @@ app:
             user-agent: Mozilla/5.0
             action: tourslist
             country: RUS
-            timeout: 20000
+            timeout: 45000
       mail:
             from: ${MAIL_FROM}
             verification:

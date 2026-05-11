@@ -15,7 +15,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AnalyticsService {
+public class LeagueAverageService {
 
     private final TournamentResultRepository tournamentResultRepository;
 

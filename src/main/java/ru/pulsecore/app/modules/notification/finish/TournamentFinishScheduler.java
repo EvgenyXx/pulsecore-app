@@ -18,6 +18,7 @@ public class TournamentFinishScheduler {
 
     private final PlayerNotificationRepository repo;
     private final TournamentFinishProcessor processor;
+    private static final long REQUEST_DELAY_MS = 3000;
 
     @Scheduled(fixedRate = 420000)
     public void checkFinished() {
@@ -37,19 +38,22 @@ public class TournamentFinishScheduler {
         int finished = 0;
         int cancelled = 0;
 
-        for (Map.Entry<String, List<PlayerNotification>> entry : grouped.entrySet()) {
-            TournamentFinishProcessor.Result result =
-                    processor.process(entry.getKey(), entry.getValue());
+        List<String> links = List.copyOf(grouped.keySet());
+        for (int i = 0; i < links.size(); i++) {
+            String link = links.get(i);
+            TournamentFinishProcessor.Result result = processor.process(link, grouped.get(link));
 
             if (result == null) continue;
 
             processed++;
-
             if (result.finished()) finished++;
             if (result.cancelled()) cancelled++;
+
+            if (i < links.size() - 1) {
+                try { Thread.sleep(REQUEST_DELAY_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+            }
         }
 
-        // Логируем только если была реальная работа
         if (processed > 0) {
             log.info("FinishScheduler: processed {} tournaments, finished={}, cancelled={}",
                     processed, finished, cancelled);

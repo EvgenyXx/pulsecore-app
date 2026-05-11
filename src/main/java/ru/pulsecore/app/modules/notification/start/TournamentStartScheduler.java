@@ -20,6 +20,7 @@ public class TournamentStartScheduler {
 
     private final PlayerNotificationRepository repo;
     private final TournamentProcessor processor;
+    private static final long REQUEST_DELAY_MS = 3000;
 
     @Scheduled(fixedRate = 180000)
     @Transactional
@@ -33,10 +34,16 @@ public class TournamentStartScheduler {
                 .collect(Collectors.groupingBy(p -> p.getTournament().getLink()));
 
         int processed = 0;
+        List<String> links = List.copyOf(grouped.keySet());
 
-        for (Map.Entry<String, List<PlayerNotification>> entry : grouped.entrySet()) {
-            processor.process(entry.getKey(), entry.getValue());
+        for (int i = 0; i < links.size(); i++) {
+            String link = links.get(i);
+            processor.process(link, grouped.get(link));
             processed++;
+
+            if (i < links.size() - 1) {
+                try { Thread.sleep(REQUEST_DELAY_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+            }
         }
 
         log.info("✅ StartScheduler done: processed={}", processed);
