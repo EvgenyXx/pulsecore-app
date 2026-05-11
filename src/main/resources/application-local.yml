@@ -4,9 +4,9 @@ spring:
     caffeine:
       spec: expireAfterWrite=15m
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/botdb}
-    username: ${SPRING_DATASOURCE_USERNAME:botuser}
-    password: ${SPRING_DATASOURCE_PASSWORD:1234}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: none
@@ -47,14 +47,14 @@ app:
     shop-id: ${YOOKASSA_SHOP_ID}
     secret-key: ${YOOKASSA_SECRET_KEY}
   masters-api:
-    url: https://masters-league.com/wp-admin/admin-ajax.php
+    url: ${MASTERS_API_URL}
     method: POST
     user-agent: Mozilla/5.0
     action: tourslist
     country: RUS
     timeout: 20000
   mail:
-    from: ${MAIL_FROM:PulseCore <noreply@pulsecore-app.ru>}
+    from: ${MAIL_FROM}
     verification:
       subject: PulseCore — Код подтверждения
       text: "Ваш код подтверждения: %s\n\nВведите его в приложении."
@@ -63,6 +63,7 @@ app:
       text: "Ваш код для сброса пароля: %s\n\nЕсли вы не запрашивали сброс, проигнорируйте это письмо."
 
 server:
+  address: 0.0.0.0
   servlet:
     session:
       persistent: true
@@ -70,5 +71,5 @@ server:
       cookie:
         name: PULSECORE_SESSION
         http-only: true
-        secure: true
+        secure: false
         max-age: 14d
