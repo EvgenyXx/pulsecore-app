@@ -63,6 +63,7 @@ app:
       text: "Ваш код для сброса пароля: %s\n\nЕсли вы не запрашивали сброс, проигнорируйте это письмо."
 
 server:
+  address: 0.0.0.0
   servlet:
     session:
       persistent: true
@@ -70,5 +71,5 @@ server:
       cookie:
         name: PULSECORE_SESSION
         http-only: true
-        secure: true
+        secure: false
         max-age: 14d

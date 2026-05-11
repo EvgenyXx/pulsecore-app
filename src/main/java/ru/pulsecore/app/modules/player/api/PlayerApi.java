@@ -22,8 +22,7 @@ public final class PlayerApi {
     public static final String TOP_WEEK_POSITION_BY_LEAGUE = "/{id}/top/week/{league}";
 
     // ── SubscriptionController ────────────────
-    public static final String SUBSCRIBE = "/{id}/subscribe";
-    public static final String UNSUBSCRIBE = "/{id}/unsubscribe";
+
     public static final String SUBSCRIPTION = "/{id}/subscription";
 
     // ── PaymentController ─────────────────────
@@ -32,8 +31,10 @@ public final class PlayerApi {
     // ── WebhookController ─────────────────────
     public static final String WEBHOOK = "/api/payment/webhook";
 
-    // ── RoleController ────────────────────────
-    public static final String GRANT_ROLE = "/{id}/roles/grant";
-    public static final String REVOKE_ROLE = "/{id}/roles/revoke";
-    public static final String ROLES = "/{id}/roles";
+
+
+
+
+    //ANALYTICS
+    public static final String ANALYTICS = "/analytics";
 }

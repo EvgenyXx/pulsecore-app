@@ -39,7 +39,7 @@ public class RegistrationController {
                                                     HttpServletRequest httpRequest) {
         var pending = (PlayerRegistrationService.Pending) session.getAttribute("pending");
         if (pending == null) return ResponseEntity.status(400).build();
-        if (!pending.email().equals(request.getEmail())) return ResponseEntity.status(400).build(); // ← добавил проверку email
+        if (!pending.email().equalsIgnoreCase(request.getEmail())) return ResponseEntity.status(400).build();
         var player = registrationService.complete(pending, request.getCode(), httpRequest);
         session.removeAttribute("pending");
         return ResponseEntity.ok(mapper.toAuthResponse(player));

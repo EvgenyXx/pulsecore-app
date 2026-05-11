@@ -4,6 +4,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.TopPlayerProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,9 +13,22 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
+
+    @Query("SELECT COALESCE(AVG(tr.amount), 0) FROM TournamentResultEntity tr " +
+            "WHERE tr.player.id = :playerId AND tr.date >= :since")
+    double getPlayerAverage(@Param("playerId") UUID playerId, @Param("since") LocalDate since);
+
+    // TournamentResultRepository.java — только метод getAllLeaguesStats меняется
+    @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
+            "FROM TournamentResultEntity tr " +
+            "WHERE tr.date >= :since " +
+            "GROUP BY tr.league " +
+            "ORDER BY SUM(tr.amount) DESC")
+    List<LeagueStatProjection> getAllLeaguesStats(@Param("since") LocalDate since);
 
     @Query("SELECT p.name as name, " +
             "COALESCE((SELECT SUM(trAll.amount) FROM TournamentResultEntity trAll WHERE trAll.player = p AND trAll.date >= :since), 0) as total, " +
@@ -80,4 +94,17 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
     @Query("SELECT tr.league FROM TournamentResultEntity tr " +
             "WHERE tr.player = :player ORDER BY tr.date DESC LIMIT 7")
     List<String> findLastLeagues(@Param("player") Player player);
+
+    @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
+            "FROM TournamentResultEntity tr " +
+            "WHERE tr.player = :player " +
+            "GROUP BY tr.league " +
+            "ORDER BY SUM(tr.amount) DESC")
+    List<LeagueStatProjection> getLeagueStats(Player player);
+
+    @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
+            "FROM TournamentResultEntity tr " +
+            "GROUP BY tr.league " +
+            "ORDER BY SUM(tr.amount) DESC")
+    List<LeagueStatProjection> getAllLeaguesStats();
 }
