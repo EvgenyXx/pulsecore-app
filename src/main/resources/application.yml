@@ -7,6 +7,15 @@ spring:
             url: ${SPRING_DATASOURCE_URL}
             username: ${SPRING_DATASOURCE_USERNAME}
             password: ${SPRING_DATASOURCE_PASSWORD}
+      jpa:
+            hibernate:
+                  ddl-auto: none
+            show-sql: false
+      flyway:
+            enabled: true
+            locations: classpath:db/migration
+            baseline-on-migrate: true
+            baseline-version: 0
       mail:
             host: ${MAIL_HOST}
             port: ${MAIL_PORT}
@@ -26,6 +35,12 @@ spring:
                   password: ${SPRING_REDIS_PASSWORD:}
       session:
             store-type: redis
+
+logging:
+      level:
+            org.hibernate.SQL: warn
+            org.flywaydb: debug
+            ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
 
 app:
       admin:
