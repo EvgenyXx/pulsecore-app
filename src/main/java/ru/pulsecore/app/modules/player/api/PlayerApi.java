@@ -3,6 +3,8 @@ package ru.pulsecore.app.modules.player.api;
 public final class PlayerApi {
 
 
+    public static final String DAILY_INCOME = "/{id}/daily-income";
+
     private PlayerApi() {}
 
     public static final String MONTHLY_INCOME = "/{id}/monthly-income";

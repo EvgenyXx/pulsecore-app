@@ -30,8 +30,10 @@
         .nav-item.active { background: rgba(245,158,11,0.12); color: #fbbf24; border-left-color: #f59e0b; }
         .nav-item .nav-icon { font-size: 1.25rem; width: 24px; text-align: center; }
         .chart-card { background: var(--card); border-radius: 20px; padding: 16px 12px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
-        .chart-wrap { position: relative; height: 250px; }
-        @media (min-width: 480px) { .chart-wrap { height: 320px; } .chart-card { padding: 24px 16px; } }
+        .chart-wrap { position: relative; height: 280px; }
+        @media (min-width: 480px) { .chart-wrap { height: 340px; } .chart-card { padding: 24px 20px; } }
+        @media (min-width: 768px) { .chart-wrap { height: 420px; } }
+        @media (min-width: 1024px) { .chart-wrap { height: 460px; } }
         .avg-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 50px; padding: 6px 14px; font-size: 0.8rem; }
         .year-select { appearance: none; -webkit-appearance: none; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 8px; padding: 6px 28px 6px 10px; font-size: 0.8rem; outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23f59e0b'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
         .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,20,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.06); z-index: 50; display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; }
@@ -43,29 +45,32 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .content-panel { animation: slideIn 0.4s ease; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .daily-header { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 12px; }
+        .daily-month-title { font-size: 1.2rem; font-weight: 700; text-align: center; color: #fff; padding: 6px 20px; background: rgba(255,255,255,0.03); border-radius: 12px; }
+        .daily-stats-row { display: flex; gap: 8px; margin-top: 12px; }
+        .daily-stat { flex: 1; background: rgba(255,255,255,0.03); border-radius: 14px; padding: 12px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .daily-stat-value { font-size: 1.1rem; font-weight: 700; color: #fbbf24; }
+        .daily-stat-label { font-size: 0.6rem; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .swipe-hint { text-align: center; font-size: 0.6rem; color: #4b5563; margin-top: 8px; padding: 4px 12px; background: rgba(255,255,255,0.02); border-radius: 20px; display: inline-block; width: 100%; }
+        @media (min-width: 768px) { .swipe-hint { display: none; } }
+        .nav-arrows-desktop { display: none; }
+        @media (min-width: 768px) { .nav-arrows-desktop { display: flex; align-items: center; gap: 4px; } }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
 
-<!-- Mobile Header -->
 <div class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-amber-500/30 flex items-center justify-center"><span class="text-lg">📊</span></div>
-        <h1 class="text-sm font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1>
-    </div>
+    <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-amber-500/30 flex items-center justify-center"><span class="text-lg">📊</span></div><h1 class="text-sm font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1></div>
     <a href="/dashboard" class="flex items-center gap-1 text-xs text-amber-400/60 hover:text-amber-300 bg-amber-500/10 px-3 py-1.5 rounded-lg">🏠 На главную</a>
 </div>
 
-<!-- Desktop Sidebar -->
 <aside class="hidden md:flex glass-nav w-64 min-h-screen p-6 flex-col relative z-10 shrink-0">
-    <div class="flex items-center gap-3 mb-10 px-1">
-        <div class="w-11 h-11 rounded-xl bg-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-500/10"><span class="text-2xl">📊</span></div>
-        <div><h1 class="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1><p class="text-xs text-gray-400">Статистика</p></div>
-    </div>
+    <div class="flex items-center gap-3 mb-10 px-1"><div class="w-11 h-11 rounded-xl bg-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-500/10"><span class="text-2xl">📊</span></div><div><h1 class="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1><p class="text-xs text-gray-400">Статистика</p></div></div>
     <nav class="flex flex-col gap-1 flex-1">
         <div class="nav-item active" id="nav-league-avg" onclick="switchTab('league')"><span class="nav-icon">🏆</span><div><div class="font-medium text-sm">Средняя по лигам</div><div class="text-xs text-gray-500">Заработок по лигам</div></div></div>
         <div class="nav-item" id="nav-monthly" onclick="switchTab('monthly')"><span class="nav-icon">📅</span><div><div class="font-medium text-sm">Доход по месяцам</div><div class="text-xs text-gray-500">Динамика заработка</div></div></div>
+        <div class="nav-item" id="nav-daily" onclick="switchTab('daily')"><span class="nav-icon">📆</span><div><div class="font-medium text-sm">Доход по дням</div><div class="text-xs text-gray-500">Каждый день месяца</div></div></div>
     </nav>
     <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">На главную</div><div class="text-xs text-gray-500">Вернуться</div></div></a>
 </aside>
@@ -73,45 +78,48 @@
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8 pb-24 md:pb-10">
     <div id="loading" class="flex flex-col items-center justify-center py-32 text-gray-400"><div class="spinner mb-5"></div><p class="text-sm">Загрузка...</p></div>
 
-    <!-- Средняя по лигам -->
-    <div id="tab-league" class="hidden content-panel max-w-lg mx-auto">
+    <div id="tab-league" class="hidden content-panel max-w-2xl mx-auto">
         <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">🏆 Средняя по лигам</h2>
         <p class="text-gray-400 text-sm mb-5">Средний заработок за турнир по всем игрокам</p>
-        <div class="chart-card">
-            <div class="chart-wrap"><canvas id="leagueChart"></canvas></div>
-            <div class="flex flex-col items-center gap-1 mt-4">
-                <span class="avg-badge"><span class="text-gray-400">Ваша средняя:</span><span class="text-white font-bold" id="playerAvgPill">-</span></span>
-                <p class="text-xs text-gray-500" id="closestInfo"></p>
-            </div>
-        </div>
+        <div class="chart-card"><div class="chart-wrap"><canvas id="leagueChart"></canvas></div>
+            <div class="flex flex-col items-center gap-1 mt-4"><span class="avg-badge"><span class="text-gray-400">Ваша средняя:</span><span class="text-white font-bold" id="playerAvgPill">-</span></span><p class="text-xs text-gray-500" id="closestInfo"></p></div></div>
     </div>
 
-    <!-- Доход по месяцам -->
-    <div id="tab-monthly" class="hidden content-panel max-w-lg mx-auto">
+    <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
         <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">📅 Доход по месяцам</h2>
-        <div class="flex items-center gap-2 mb-5">
-            <span class="text-gray-400 text-sm">Динамика заработка за</span>
-            <select id="yearSelect" class="year-select" onchange="loadMonthly()"></select>
-            <span class="text-gray-400 text-sm">год</span>
+        <div class="flex items-center gap-2 mb-5"><span class="text-gray-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="loadMonthly()"></select><span class="text-gray-400 text-sm">год</span></div>
+        <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap"><canvas id="monthlyChart"></canvas></div></div>
+        <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill" style="display:none"><span class="text-gray-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
+        <p class="swipe-hint">← листай влево/вправо для смены года →</p>
+    </div>
+
+    <div id="tab-daily" class="hidden content-panel max-w-2xl mx-auto">
+        <div class="daily-header">
+            <button onclick="prevDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:1.1rem;flex-shrink:0;">←</button>
+            <span class="daily-month-title" id="dailyMonthLabel">Май 2026</span>
+            <button onclick="nextDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:1.1rem;flex-shrink:0;">→</button>
         </div>
-        <div class="chart-card">
-            <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
-            <div class="flex justify-center mt-4">
-                <span class="avg-badge" id="monthlyAvgPill" style="display:none"><span class="text-gray-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span>
-            </div>
+        <div class="chart-card" id="dailyChartCard"><div class="chart-wrap"><canvas id="dailyChart"></canvas></div></div>
+        <div class="daily-stats-row">
+            <div class="daily-stat"><div class="daily-stat-value" id="dailyTotal">0 ₽</div><div class="daily-stat-label">За месяц</div></div>
+            <div class="daily-stat"><div class="daily-stat-value" id="dailyAvg">0 ₽</div><div class="daily-stat-label">В день (сред)</div></div>
+            <div class="daily-stat"><div class="daily-stat-value" id="dailyBest">0 ₽</div><div class="daily-stat-label">Лучший день</div></div>
         </div>
+        <p class="swipe-hint">← листай влево/вправо для смены месяца →</p>
     </div>
 </main>
 
-<!-- Mobile Bottom Navigation -->
 <div class="mobile-nav">
     <div class="mobile-nav-item active" id="mob-nav-league" onclick="switchTab('league')"><span class="m-icon">🏆</span>Лиги</div>
     <div class="mobile-nav-item" id="mob-nav-monthly" onclick="switchTab('monthly')"><span class="m-icon">📅</span>Месяцы</div>
+    <div class="mobile-nav-item" id="mob-nav-daily" onclick="switchTab('daily')"><span class="m-icon">📆</span>Дни</div>
     <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Главная</a>
 </div>
 
 <script>
-    let leagueChart = null, monthlyChart = null, playerId = null;
+    let leagueChart = null, monthlyChart = null, dailyChart = null, playerId = null;
+    let dailyYear, dailyMonth, monthlyYear;
+    const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
     function switchTab(tab) {
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -120,91 +128,101 @@
         document.getElementById('mob-nav-' + tab)?.classList.add('active');
         document.getElementById('tab-league').classList.toggle('hidden', tab !== 'league');
         document.getElementById('tab-monthly').classList.toggle('hidden', tab !== 'monthly');
+        document.getElementById('tab-daily').classList.toggle('hidden', tab !== 'daily');
         if (tab === 'league') loadLeagueAvg();
-        if (tab === 'monthly') loadMonthly();
+        if (tab === 'monthly') { initMonthlyYear(); loadMonthly(); }
+        if (tab === 'daily') { initDailyMonth(); loadDaily(); }
     }
 
     async function init() {
         try {
-            const r = await fetch("/api/auth/me", { credentials: "same-origin" });
-            if (!r.ok) { window.location.href = "/"; return; }
+            const r = await fetch("/api/auth/me", { credentials: "same-origin" }); if (!r.ok) { window.location.href = "/"; return; }
             playerId = (await r.json()).id;
             document.getElementById("loading").classList.add("hidden");
-            switchTab('league');
-            populateYears();
+            initDailyMonth(); initMonthlyYear(); initSwipes(); initDesktopArrows();
+            switchTab('league'); populateYears();
         } catch (e) { document.getElementById("loading").innerHTML = '<p class="text-red-400">❌ Ошибка</p>'; }
     }
 
-    function populateYears() {
-        const sel = document.getElementById("yearSelect");
-        sel.innerHTML = '';
-        const y = new Date().getFullYear();
-        for (let i = y; i >= y - 3; i--) { const o = document.createElement("option"); o.value = i; o.textContent = i; if (i === y) o.selected = true; sel.appendChild(o); }
+    function initDesktopArrows() { const d = window.innerWidth >= 768; document.querySelectorAll('.nav-arrows-desktop').forEach(b => b.style.display = d ? 'flex' : 'none'); }
+    function initDailyMonth() { const n = new Date(); dailyYear = n.getFullYear(); dailyMonth = n.getMonth() + 1; }
+    function initMonthlyYear() { monthlyYear = new Date().getFullYear(); document.getElementById("yearSelect").value = monthlyYear; }
+    function updateDailyLabel() { document.getElementById("dailyMonthLabel").textContent = monthNames[dailyMonth-1] + ' ' + dailyYear; }
+    function prevDailyMonth() { dailyMonth--; if (dailyMonth < 1) { dailyMonth = 12; dailyYear--; } updateDailyLabel(); loadDaily(); }
+    function nextDailyMonth() { dailyMonth++; if (dailyMonth > 12) { dailyMonth = 1; dailyYear++; } updateDailyLabel(); loadDaily(); }
+    function prevMonthlyYear() { monthlyYear--; document.getElementById("yearSelect").value = monthlyYear; loadMonthly(); }
+    function nextMonthlyYear() { monthlyYear++; document.getElementById("yearSelect").value = monthlyYear; loadMonthly(); }
+
+    function initSwipes() {
+        const dA = document.getElementById('dailyChartCard');
+        if (dA) { let sx = 0; dA.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive: true}); dA.addEventListener('touchend', e => { if (!sx) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 35) { if (dx > 0) prevDailyMonth(); else nextDailyMonth(); } sx = 0; }); }
+        const mA = document.getElementById('monthlyChartCard');
+        if (mA) { let sx = 0; mA.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive: true}); mA.addEventListener('touchend', e => { if (!sx) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 35) { if (dx > 0) prevMonthlyYear(); else nextMonthlyYear(); } sx = 0; }); }
     }
+
+    function populateYears() { const s = document.getElementById("yearSelect"); s.innerHTML = ''; const y = new Date().getFullYear(); for (let i = y; i >= y - 3; i--) { const o = document.createElement("option"); o.value = i; o.textContent = i; if (i === y) o.selected = true; s.appendChild(o); } }
 
     async function loadLeagueAvg() {
         if (!playerId) return;
-        try {
-            const res = await fetch("/api/player/analytics", { credentials: "same-origin" });
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            document.getElementById("playerAvgPill").textContent = fmt(data.playerAverage);
-            if (data.closestLeague) {
-                const league = data.leagueStats.find(l => l.league === data.closestLeague);
-                if (league) {
-                    const diff = data.playerAverage - league.averageAmount;
-                    document.getElementById("closestInfo").textContent = `Вы зарабатываете на ${diff >= 0 ? '+' : ''}${fmt(Math.abs(diff))} ${diff >= 0 ? 'больше' : 'меньше'}, чем в среднем в лиге ${data.closestLeague}`;
-                }
-            }
-            buildLeagueChart(data);
+        try { const r = await fetch("/api/player/analytics", { credentials: "same-origin" }); if (!r.ok) throw new Error(); const d = await r.json();
+            document.getElementById("playerAvgPill").textContent = fmt(d.playerAverage);
+            if (d.closestLeague) { const l = d.leagueStats.find(x => x.league === d.closestLeague); if (l) { const df = d.playerAverage - l.averageAmount; document.getElementById("closestInfo").textContent = `Вы зарабатываете на ${df >= 0 ? '+' : ''}${fmt(Math.abs(df))} ${df >= 0 ? 'больше' : 'меньше'}, чем в среднем в лиге ${d.closestLeague}`; } }
+            buildLeagueChart(d);
         } catch (e) {}
     }
 
     async function loadMonthly() {
         if (!playerId) return;
-        const year = document.getElementById("yearSelect").value;
-        try {
-            const res = await fetch(`/api/player/${playerId}/monthly-income?year=${year}`, { credentials: "same-origin" });
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            buildMonthlyChart(data.months, data.overallAverage);
+        const year = document.getElementById("yearSelect").value; monthlyYear = parseInt(year);
+        try { const r = await fetch(`/api/player/${playerId}/monthly-income?year=${year}`, { credentials: "same-origin" }); if (!r.ok) throw new Error(); const d = await r.json(); buildMonthlyChart(d.months, d.overallAverage); } catch (e) {}
+    }
+
+    async function loadDaily() {
+        if (!playerId) return; updateDailyLabel();
+        try { const r = await fetch(`/api/player/${playerId}/daily-income?year=${dailyYear}&month=${dailyMonth}`, { credentials: "same-origin" }); if (!r.ok) throw new Error(); const d = await r.json(); buildDailyChart(d);
+            document.getElementById("dailyTotal").textContent = fmt(d.monthTotal); document.getElementById("dailyAvg").textContent = fmt(d.dailyAverage);
+            const best = d.days.reduce((max, x) => x.total > max.total ? x : max, {day:0,total:0});
+            document.getElementById("dailyBest").textContent = best.total > 0 ? `${best.day} числа — ${fmt(best.total)}` : '—';
         } catch (e) {}
     }
 
     function buildLeagueChart(data) {
-        if (!data?.leagueStats?.length) return;
-        if (leagueChart) leagueChart.destroy();
+        if (!data?.leagueStats?.length) return; if (leagueChart) leagueChart.destroy();
         const ctx = document.getElementById("leagueChart").getContext("2d");
-        const allLeagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
-        const colors = { 'A': '#fbbf24', 'B': '#60a5fa', 'C': '#34d399', 'D': '#c084fc', 'SUPER_LEAGUE': '#fca5a5' };
+        const all = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE']; const colors = { 'A': '#fbbf24', 'B': '#60a5fa', 'C': '#34d399', 'D': '#c084fc', 'SUPER_LEAGUE': '#fca5a5' };
         const labels = [], values = [], bgColors = [];
-        allLeagues.forEach(l => {
-            const found = data.leagueStats.find(s => s.league === l);
-            labels.push(l === 'SUPER_LEAGUE' ? 'СУПЕР' : l);
-            values.push(found ? Math.round(found.averageAmount) : 0);
-            bgColors.push(found ? colors[l] + 'DD' : 'rgba(255,255,255,0.04)');
-        });
+        all.forEach(l => { const f = data.leagueStats.find(s => s.league === l); labels.push(l === 'SUPER_LEAGUE' ? 'СУПЕР' : l); values.push(f ? Math.round(f.averageAmount) : 0); bgColors.push(f ? colors[l] + 'DD' : 'rgba(255,255,255,0.04)'); });
         leagueChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: 8, borderSkipped: false, barPercentage: 0.5 }] },
             options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1200, easing: 'easeOutBounce' },
-                plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 10 }, formatter: (v) => v > 0 ? fmt(v) : '' } },
+                plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 11 }, formatter: v => v > 0 ? fmt(v) : '' } },
                 scales: { y: { max: Math.max(...values, 1) * 1.2, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: 9 }, padding: 4 } },
                     x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 12 }, padding: 6 } } } }, plugins: [ChartDataLabels] });
     }
 
     function buildMonthlyChart(data, overallAvg) {
-        if (!data?.length) return;
-        if (monthlyChart) monthlyChart.destroy();
+        if (!data?.length) return; if (monthlyChart) monthlyChart.destroy();
         const ctx = document.getElementById("monthlyChart").getContext("2d");
         const months = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-        const labels = data.map(m => months[parseInt(m.month.split('-')[1]) - 1]);
-        const values = data.map(m => Math.round(m.total));
+        const labels = data.map(m => months[parseInt(m.month.split('-')[1]) - 1]); const values = data.map(m => Math.round(m.total));
         monthlyChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ data: values, backgroundColor: '#fbbf24CC', borderRadius: 8, borderSkipped: false, barPercentage: 0.5 }] },
             options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1200, easing: 'easeOutBounce' },
-                plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 10 }, formatter: (v) => v > 0 ? fmt(v) : '' } },
+                plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 10 }, formatter: v => v > 0 ? fmt(v) : '' } },
                 scales: { y: { beginAtZero: true, max: Math.max(...values, 1) * 1.2, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: 9 }, padding: 4 } },
                     x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 11 }, padding: 4 } } } }, plugins: [ChartDataLabels] });
-        document.getElementById("monthlyAvgPill").style.display = 'inline-flex';
-        document.getElementById("monthlyAvg").textContent = fmt(overallAvg);
+        document.getElementById("monthlyAvgPill").style.display = 'inline-flex'; document.getElementById("monthlyAvg").textContent = fmt(overallAvg);
+    }
+
+    function buildDailyChart(data) {
+        if (!data?.days?.length) return; if (dailyChart) dailyChart.destroy();
+        const ctx = document.getElementById("dailyChart").getContext("2d");
+        const labels = data.days.map(d => d.day); const values = data.days.map(d => Math.round(d.total));
+        const bgColors = data.days.map(d => d.total > 0 ? '#fbbf24DD' : 'rgba(255,255,255,0.03)');
+        const isMobile = window.innerWidth < 768;
+        dailyChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: isMobile ? 2 : 4, borderSkipped: false, barPercentage: isMobile ? 0.95 : 0.85 }] },
+            options: { responsive: true, maintainAspectRatio: false, animation: { duration: 400, easing: 'easeOutQuart' },
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw > 0 ? fmt(ctx.raw) : 'Нет дохода' } } },
+                scales: { y: { beginAtZero: true, max: Math.max(...values, 1) * 1.3, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: isMobile ? 7 : 9 }, padding: isMobile ? 2 : 6 } },
+                    x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: isMobile ? 7 : 9 }, padding: 0, maxRotation: 0, autoSkip: true, autoSkipPadding: isMobile ? 0 : 2 } } } } });
     }
 
     function fmt(v) { if (v == null) return "0 ₽"; return new Intl.NumberFormat("ru-RU").format(Math.round(v)) + " ₽"; }

@@ -39,6 +39,7 @@ logging:
   level:
     org.hibernate.SQL: warn
     org.flywaydb: debug
+    ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
 
 app:
   admin:

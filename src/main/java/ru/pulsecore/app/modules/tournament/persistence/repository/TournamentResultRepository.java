@@ -4,6 +4,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.TopPlayerProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.DailyIncomeProjection;
 import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.tournament.api.dto.MonthlyIncomeProjection;
@@ -18,6 +19,16 @@ import java.util.UUID;
 
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
+
+
+    @Query("SELECT DAY(tr.date) as day, COALESCE(SUM(tr.amount), 0) as total, COUNT(tr) as count " +
+            "FROM TournamentResultEntity tr " +
+            "WHERE tr.player = :player AND tr.date BETWEEN :start AND :end " +
+            "GROUP BY DAY(tr.date) " +
+            "ORDER BY DAY(tr.date)")
+    List<DailyIncomeProjection> getDailyIncome(@Param("player") Player player,
+                                               @Param("start") LocalDate start,
+                                               @Param("end") LocalDate end);
 
     @Query("SELECT CONCAT(CAST(YEAR(tr.date) AS string), '-', LPAD(CAST(MONTH(tr.date) AS string), 2, '0')) as month, " +
             "SUM(tr.amount) as total, COUNT(tr) as count, AVG(tr.amount) as average " +
