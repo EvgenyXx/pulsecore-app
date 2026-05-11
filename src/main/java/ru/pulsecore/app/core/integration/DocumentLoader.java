@@ -10,25 +10,20 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DocumentLoader {
 
-    private volatile long lastFailure = 0;
-    private static final long COOLDOWN = 300_000; // 5 минут
+    private static final int MAX_ATTEMPTS = 3;
+    private static final int TIMEOUT = 60_000;  // было 30_000, стало 60_000
 
     public Document load(String url) {
-        if (System.currentTimeMillis() - lastFailure < COOLDOWN) {
-            throw new SiteUnavailableException();
-        }
-
-        for (int i = 1; i <= 2; i++) {
+        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
             try {
-                Document doc = Jsoup.connect(url)
+                return Jsoup.connect(url)
                         .userAgent("Mozilla/5.0")
-                        .timeout(10_000)
+                        .timeout(TIMEOUT)
+                        .ignoreHttpErrors(true)
+                        .ignoreContentType(true)
                         .get();
-                lastFailure = 0;
-                return doc;
             } catch (java.net.SocketTimeoutException e) {
-                lastFailure = System.currentTimeMillis();
-                if (i == 2) throw new SiteUnavailableException();
+                log.warn("Timeout loading {}, attempt {}/{}", url, i, MAX_ATTEMPTS);
             } catch (Exception e) {
                 throw new SiteUnavailableException();
             }

@@ -27,23 +27,41 @@ public class MastersApiClient {
                         .method(Connection.Method.valueOf(properties.getMethod()))
                         .header("User-Agent", properties.getUserAgent())
                         .ignoreContentType(true)
-                        .timeout(15_000);
+                        .timeout(properties.getTimeout());
 
                 connection.data("action", properties.getAction());
                 connection.data("country", properties.getCountry());
                 if (date != null) connection.data("date", date);
 
                 Connection.Response res = connection.execute();
-                return mapper.readValue(res.body(), new TypeReference<>() {});
+
+                log.info("Masters API: HTTP {}, body length: {}",
+                        res.statusCode(), res.body() != null ? res.body().length() : 0);
+
+                if (res.statusCode() != 200) {
+                    String preview = res.body() != null ? res.body().substring(0, Math.min(300, res.body().length())) : "empty";
+                    log.warn("Masters API non-200: code={}, preview={}", res.statusCode(), preview);
+                    if (i == 2) return List.of();
+                    continue;
+                }
+
+                String body = res.body();
+                if (body != null && body.trim().startsWith("<")) {
+                    log.error("Masters API вернул HTML вместо JSON: {}", body.substring(0, Math.min(500, body.length())));
+                    if (i == 2) return List.of();
+                    continue;
+                }
+
+                return mapper.readValue(body, new TypeReference<>() {});
 
             } catch (java.net.SocketTimeoutException e) {
                 log.warn("Masters API timeout, attempt {}", i);
             } catch (Exception e) {
-                log.error("API error", e);
-                return List.of();
+                log.error("Masters API error: {} - {}", e.getClass().getSimpleName(), e.getMessage());
+                if (i == 2) return List.of();
             }
         }
-        log.warn("Masters API недоступен");
+        log.warn("Masters API недоступен после 2 попыток");
         return List.of();
     }
 }

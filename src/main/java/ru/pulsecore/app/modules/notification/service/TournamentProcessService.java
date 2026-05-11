@@ -34,6 +34,8 @@ public class TournamentProcessService {
     private final TournamentRepository tournamentRepository;
     private final PlayerService playerService;
 
+    private static final long REQUEST_DELAY_MS = 3000;
+
     @Transactional
     public void processTournament(List<PlayerNotification> notifications, ParsedResult parsed) {
         if (notifications == null || notifications.isEmpty()) {
@@ -75,9 +77,13 @@ public class TournamentProcessService {
         Player player = playerService.findById(UUID.fromString(playerId));
         if (player == null) throw new PlayerNotFoundException(playerId);
         List<AddTournamentResponse> responses = new ArrayList<>();
-        for (String url : urls) {
+        for (int i = 0; i < urls.size(); i++) {
+            String url = urls.get(i);
             try {
                 responses.add(processSingleUrl(url, playerId));
+                if (i < urls.size() - 1) {
+                    try { Thread.sleep(REQUEST_DELAY_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                }
             } catch (Exception e) {
                 log.error("❌ Ошибка обработки URL: {}", url, e);
                 responses.add(AddTournamentResponse.builder().message("Ошибка: " + e.getMessage()).resultsCount(0).results(List.of()).build());

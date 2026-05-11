@@ -22,59 +22,128 @@
         .bg-orb-1 { width: 500px; height: 500px; background: rgba(245,158,11,0.04); top: -15%; right: -10%; }
         .bg-orb-2 { width: 400px; height: 400px; background: rgba(251,191,36,0.04); bottom: -10%; left: -8%; animation-delay: -5s; }
         @keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(25px,-25px) scale(1.08)} 66%{transform:translate(-15px,20px) scale(0.95)} }
-        .glass-sidebar { background: rgba(10,10,20,0.85); backdrop-filter: blur(30px); border-right: 1px solid rgba(255,255,255,0.06); }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; cursor: pointer; color: #a0aab8; border-left: 3px solid transparent; transition: all 0.2s; font-size: 0.9rem; }
+        .glass { background: rgba(255,255,255,0.035); backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.07); }
+        .glass-strong { background: rgba(255,255,255,0.05); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); }
+        .glass-nav { background: rgba(10,10,20,0.85); backdrop-filter: blur(30px); border-right: 1px solid rgba(255,255,255,0.06); }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 18px; border-radius: 14px; cursor: pointer; color: #a0aab8; border-left: 3px solid transparent; transition: all 0.2s; font-size: 0.9rem; }
         .nav-item:hover { background: rgba(245,158,11,0.08); color: #fcd34d; }
         .nav-item.active { background: rgba(245,158,11,0.12); color: #fbbf24; border-left-color: #f59e0b; }
         .nav-item .nav-icon { font-size: 1.25rem; width: 24px; text-align: center; }
-        .chart-card { background: var(--card); border-radius: 24px; padding: 24px 16px 16px; border: 1px solid var(--border); backdrop-filter: blur(10px); max-width: 480px; margin: 0 auto; }
-        .chart-wrap { position: relative; height: 280px; }
-        @media (min-width: 480px) { .chart-wrap { height: 340px; } }
-        .avg-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 50px; padding: 8px 16px; font-size: 0.85rem; }
-        .spinner { width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.08); border-top-color: var(--amber); border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .chart-card { background: var(--card); border-radius: 20px; padding: 16px 12px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
+        .chart-wrap { position: relative; height: 250px; }
+        @media (min-width: 480px) { .chart-wrap { height: 320px; } .chart-card { padding: 24px 16px; } }
+        .avg-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 50px; padding: 6px 14px; font-size: 0.8rem; }
+        .year-select { appearance: none; -webkit-appearance: none; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 8px; padding: 6px 28px 6px 10px; font-size: 0.8rem; outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23f59e0b'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,20,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.06); z-index: 50; display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #a0aab8; cursor: pointer; padding: 6px 12px; border-radius: 12px; font-size: 10px; transition: all 0.2s; }
+        .mobile-nav-item.active { color: #fbbf24; background: rgba(245,158,11,0.12); }
+        .mobile-nav-item .m-icon { font-size: 20px; }
+        @media (min-width: 768px) { .mobile-nav { display: none; } }
+        .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.08); border-top-color: var(--amber); border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .content-panel { animation: slideIn 0.5s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .content-panel { animation: slideIn 0.4s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="flex min-h-screen">
+<body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
 
-<aside class="hidden md:flex glass-sidebar w-64 min-h-screen p-5 flex-col relative z-10 shrink-0">
-    <div class="flex items-center gap-3 mb-10 px-2"><img src="/img.png" alt="PulseCore" class="w-10 h-10 rounded-xl shadow-lg object-cover"><div><h1 class="text-base font-bold text-amber-400">Аналитика</h1><p class="text-xs text-gray-500">Статистика</p></div></div>
-    <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item active"><span class="nav-icon">🏆</span><div><div class="font-medium text-sm">Средняя по лигам</div><div class="text-xs text-gray-500">Заработок по лигам</div></div></div>
-    </nav>
-    <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">На главную</div></div></a>
-</aside>
-
-<div class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[#0a0a16]/95 backdrop-blur-xl border-t border-white/5 flex items-center justify-between px-4 py-2">
-    <a href="/dashboard" class="flex flex-col items-center gap-0.5 text-gray-400 hover:text-white text-xs py-1 px-3 rounded-lg"><span class="text-lg">🏠</span><span>Главная</span></a>
-    <div class="flex flex-col items-center gap-0.5 text-amber-400 text-xs py-1 px-3 rounded-lg bg-amber-400/10"><span class="text-lg">🏆</span><span>Средняя по лигам</span></div>
+<!-- Mobile Header -->
+<div class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-amber-500/30 flex items-center justify-center"><span class="text-lg">📊</span></div>
+        <h1 class="text-sm font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1>
+    </div>
+    <a href="/dashboard" class="flex items-center gap-1 text-xs text-amber-400/60 hover:text-amber-300 bg-amber-500/10 px-3 py-1.5 rounded-lg">🏠 На главную</a>
 </div>
 
-<main class="flex-1 p-4 sm:p-6 md:p-8 pb-24 md:pb-8 flex items-start justify-center">
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex glass-nav w-64 min-h-screen p-6 flex-col relative z-10 shrink-0">
+    <div class="flex items-center gap-3 mb-10 px-1">
+        <div class="w-11 h-11 rounded-xl bg-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-500/10"><span class="text-2xl">📊</span></div>
+        <div><h1 class="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1><p class="text-xs text-gray-400">Статистика</p></div>
+    </div>
+    <nav class="flex flex-col gap-1 flex-1">
+        <div class="nav-item active" id="nav-league-avg" onclick="switchTab('league')"><span class="nav-icon">🏆</span><div><div class="font-medium text-sm">Средняя по лигам</div><div class="text-xs text-gray-500">Заработок по лигам</div></div></div>
+        <div class="nav-item" id="nav-monthly" onclick="switchTab('monthly')"><span class="nav-icon">📅</span><div><div class="font-medium text-sm">Доход по месяцам</div><div class="text-xs text-gray-500">Динамика заработка</div></div></div>
+    </nav>
+    <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">На главную</div><div class="text-xs text-gray-500">Вернуться</div></div></a>
+</aside>
+
+<main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8 pb-24 md:pb-10">
     <div id="loading" class="flex flex-col items-center justify-center py-32 text-gray-400"><div class="spinner mb-5"></div><p class="text-sm">Загрузка...</p></div>
-    <div id="content" class="hidden content-panel w-full max-w-lg">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-1">🏆 Средняя по лигам</h2>
-        <p class="text-gray-400 text-sm mb-6">Средний заработок за турнир по всем игрокам</p>
+
+    <!-- Средняя по лигам -->
+    <div id="tab-league" class="hidden content-panel max-w-lg mx-auto">
+        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">🏆 Средняя по лигам</h2>
+        <p class="text-gray-400 text-sm mb-5">Средний заработок за турнир по всем игрокам</p>
         <div class="chart-card">
             <div class="chart-wrap"><canvas id="leagueChart"></canvas></div>
             <div class="flex flex-col items-center gap-1 mt-4">
                 <span class="avg-badge"><span class="text-gray-400">Ваша средняя:</span><span class="text-white font-bold" id="playerAvgPill">-</span></span>
                 <p class="text-xs text-gray-500" id="closestInfo"></p>
             </div>
-            <div class="mt-4 text-xs text-gray-500 leading-relaxed space-y-1">
-                <p>📊 График показывает средний заработок за турнир в каждой лиге за последние 30 дней.</p>
-                <p>📈 Данные обновляются автоматически — график меняется вместе с результатами игроков.</p>
+        </div>
+    </div>
+
+    <!-- Доход по месяцам -->
+    <div id="tab-monthly" class="hidden content-panel max-w-lg mx-auto">
+        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">📅 Доход по месяцам</h2>
+        <div class="flex items-center gap-2 mb-5">
+            <span class="text-gray-400 text-sm">Динамика заработка за</span>
+            <select id="yearSelect" class="year-select" onchange="loadMonthly()"></select>
+            <span class="text-gray-400 text-sm">год</span>
+        </div>
+        <div class="chart-card">
+            <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
+            <div class="flex justify-center mt-4">
+                <span class="avg-badge" id="monthlyAvgPill" style="display:none"><span class="text-gray-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span>
             </div>
         </div>
     </div>
 </main>
 
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-nav">
+    <div class="mobile-nav-item active" id="mob-nav-league" onclick="switchTab('league')"><span class="m-icon">🏆</span>Лиги</div>
+    <div class="mobile-nav-item" id="mob-nav-monthly" onclick="switchTab('monthly')"><span class="m-icon">📅</span>Месяцы</div>
+    <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Главная</a>
+</div>
+
 <script>
-    let chart = null;
+    let leagueChart = null, monthlyChart = null, playerId = null;
+
+    function switchTab(tab) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('nav-' + tab)?.classList.add('active');
+        document.getElementById('mob-nav-' + tab)?.classList.add('active');
+        document.getElementById('tab-league').classList.toggle('hidden', tab !== 'league');
+        document.getElementById('tab-monthly').classList.toggle('hidden', tab !== 'monthly');
+        if (tab === 'league') loadLeagueAvg();
+        if (tab === 'monthly') loadMonthly();
+    }
+
     async function init() {
+        try {
+            const r = await fetch("/api/auth/me", { credentials: "same-origin" });
+            if (!r.ok) { window.location.href = "/"; return; }
+            playerId = (await r.json()).id;
+            document.getElementById("loading").classList.add("hidden");
+            switchTab('league');
+            populateYears();
+        } catch (e) { document.getElementById("loading").innerHTML = '<p class="text-red-400">❌ Ошибка</p>'; }
+    }
+
+    function populateYears() {
+        const sel = document.getElementById("yearSelect");
+        sel.innerHTML = '';
+        const y = new Date().getFullYear();
+        for (let i = y; i >= y - 3; i--) { const o = document.createElement("option"); o.value = i; o.textContent = i; if (i === y) o.selected = true; sel.appendChild(o); }
+    }
+
+    async function loadLeagueAvg() {
+        if (!playerId) return;
         try {
             const res = await fetch("/api/player/analytics", { credentials: "same-origin" });
             if (!res.ok) throw new Error();
@@ -84,23 +153,27 @@
                 const league = data.leagueStats.find(l => l.league === data.closestLeague);
                 if (league) {
                     const diff = data.playerAverage - league.averageAmount;
-                    const sign = diff >= 0 ? "+" : "";
-                    const moreOrLess = diff >= 0 ? "больше" : "меньше";
-                    document.getElementById("closestInfo").textContent =
-                        `Вы зарабатываете на ${sign}${fmt(Math.abs(diff))} ${moreOrLess}, чем в среднем в лиге ${data.closestLeague}`;
+                    document.getElementById("closestInfo").textContent = `Вы зарабатываете на ${diff >= 0 ? '+' : ''}${fmt(Math.abs(diff))} ${diff >= 0 ? 'больше' : 'меньше'}, чем в среднем в лиге ${data.closestLeague}`;
                 }
             }
-            document.getElementById("loading").classList.add("hidden");
-            document.getElementById("content").classList.remove("hidden");
-            setTimeout(() => buildChart(data), 150);
-        } catch (e) {
-            document.getElementById("loading").innerHTML = '<p class="text-red-400">❌ Ошибка загрузки</p>';
-        }
+            buildLeagueChart(data);
+        } catch (e) {}
     }
 
-    function buildChart(data) {
+    async function loadMonthly() {
+        if (!playerId) return;
+        const year = document.getElementById("yearSelect").value;
+        try {
+            const res = await fetch(`/api/player/${playerId}/monthly-income?year=${year}`, { credentials: "same-origin" });
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            buildMonthlyChart(data.months, data.overallAverage);
+        } catch (e) {}
+    }
+
+    function buildLeagueChart(data) {
         if (!data?.leagueStats?.length) return;
-        if (chart) chart.destroy();
+        if (leagueChart) leagueChart.destroy();
         const ctx = document.getElementById("leagueChart").getContext("2d");
         const allLeagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
         const colors = { 'A': '#fbbf24', 'B': '#60a5fa', 'C': '#34d399', 'D': '#c084fc', 'SUPER_LEAGUE': '#fca5a5' };
@@ -111,24 +184,27 @@
             values.push(found ? Math.round(found.averageAmount) : 0);
             bgColors.push(found ? colors[l] + 'DD' : 'rgba(255,255,255,0.04)');
         });
-        const maxY = Math.max(...values, 1) * 1.2;
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: 10, borderSkipped: false, barPercentage: 0.5 }] },
-            options: {
-                responsive: true, maintainAspectRatio: false, animation: { duration: 1500, easing: 'easeOutBounce' },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { backgroundColor: '#1a1a2e', padding: 12, cornerRadius: 10, callbacks: { label: (ctx) => ' Средняя: ' + fmt(ctx.raw) } },
-                    datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 11 }, formatter: (v) => v > 0 ? fmt(v) : '' }
-                },
-                scales: {
-                    y: { max: maxY, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: 10 }, padding: 6 } },
-                    x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 13 }, padding: 8 } }
-                }
-            },
-            plugins: [ChartDataLabels]
-        });
+        leagueChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: 8, borderSkipped: false, barPercentage: 0.5 }] },
+            options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1200, easing: 'easeOutBounce' },
+                plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 10 }, formatter: (v) => v > 0 ? fmt(v) : '' } },
+                scales: { y: { max: Math.max(...values, 1) * 1.2, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: 9 }, padding: 4 } },
+                    x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 12 }, padding: 6 } } } }, plugins: [ChartDataLabels] });
+    }
+
+    function buildMonthlyChart(data, overallAvg) {
+        if (!data?.length) return;
+        if (monthlyChart) monthlyChart.destroy();
+        const ctx = document.getElementById("monthlyChart").getContext("2d");
+        const months = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+        const labels = data.map(m => months[parseInt(m.month.split('-')[1]) - 1]);
+        const values = data.map(m => Math.round(m.total));
+        monthlyChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ data: values, backgroundColor: '#fbbf24CC', borderRadius: 8, borderSkipped: false, barPercentage: 0.5 }] },
+            options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1200, easing: 'easeOutBounce' },
+                plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 10 }, formatter: (v) => v > 0 ? fmt(v) : '' } },
+                scales: { y: { beginAtZero: true, max: Math.max(...values, 1) * 1.2, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: 9 }, padding: 4 } },
+                    x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 11 }, padding: 4 } } } }, plugins: [ChartDataLabels] });
+        document.getElementById("monthlyAvgPill").style.display = 'inline-flex';
+        document.getElementById("monthlyAvg").textContent = fmt(overallAvg);
     }
 
     function fmt(v) { if (v == null) return "0 ₽"; return new Intl.NumberFormat("ru-RU").format(Math.round(v)) + " ₽"; }

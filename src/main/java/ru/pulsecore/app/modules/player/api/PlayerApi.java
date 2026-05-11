@@ -1,8 +1,11 @@
 package ru.pulsecore.app.modules.player.api;
 
 public final class PlayerApi {
+
+
     private PlayerApi() {}
 
+    public static final String MONTHLY_INCOME = "/{id}/monthly-income";
     public static final String BASE_PATH = "/api/player";
 
     // ── PlayerController ──────────────────────
