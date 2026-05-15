@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.shared;
+package ru.pulsecore.app.modules.shared.propirties;
 
 
 import lombok.Data;

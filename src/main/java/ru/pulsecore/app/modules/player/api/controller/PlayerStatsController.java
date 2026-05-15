@@ -1,14 +1,15 @@
-package ru.pulsecore.app.modules.player.api;
+package ru.pulsecore.app.modules.player.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.core.dto.TopPlayerProjection;
+import ru.pulsecore.app.modules.player.api.PlayerApi;
 import ru.pulsecore.app.modules.player.api.dto.DashboardResponse;
 import ru.pulsecore.app.modules.player.api.dto.SumResponse;
 import ru.pulsecore.app.modules.player.api.dto.TopWeekResponse;
-import ru.pulsecore.app.modules.player.service.PlayerStatsService;
+import ru.pulsecore.app.modules.player.service.analytic.PlayerStatsService;
 
 import java.time.LocalDate;
 import java.util.List;

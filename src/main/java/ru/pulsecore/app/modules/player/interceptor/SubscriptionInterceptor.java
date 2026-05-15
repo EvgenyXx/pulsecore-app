@@ -1,7 +1,7 @@
 package ru.pulsecore.app.modules.player.interceptor;
 
 import ru.pulsecore.app.config.SecurityUser;
-import ru.pulsecore.app.modules.player.service.SubscriptionService;
+import ru.pulsecore.app.modules.player.service.subscribion.SubscriptionService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

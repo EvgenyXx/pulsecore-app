@@ -1,10 +1,11 @@
-package ru.pulsecore.app.modules.player.service;
+package ru.pulsecore.app.modules.player.service.analytic;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import ru.pulsecore.app.modules.player.api.dto.DailyIncomeResponse;
 import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.tournament.api.dto.DailyIncomeProjection;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentResultRepository;
 

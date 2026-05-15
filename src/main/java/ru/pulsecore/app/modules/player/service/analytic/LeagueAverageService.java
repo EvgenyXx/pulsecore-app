@@ -1,5 +1,5 @@
 // AnalyticsService.java
-package ru.pulsecore.app.modules.player.service;
+package ru.pulsecore.app.modules.player.service.analytic;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor//todo добавить мапперы в контроллеры
 public class LeagueAverageService {
 
     private final TournamentResultRepository tournamentResultRepository;

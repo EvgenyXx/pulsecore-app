@@ -1,11 +1,12 @@
-package ru.pulsecore.app.modules.player.api;
+package ru.pulsecore.app.modules.player.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.pulsecore.app.modules.player.api.PlayerApi;
 import ru.pulsecore.app.modules.player.api.dto.SubscriptionStatusResponse;
 import ru.pulsecore.app.modules.player.domain.Subscription;
-import ru.pulsecore.app.modules.player.service.SubscriptionService;
+import ru.pulsecore.app.modules.player.service.subscribion.SubscriptionService;
 
 import java.util.UUID;
 

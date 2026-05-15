@@ -20,9 +20,7 @@ public class YookassaService {
     private final PriceService priceService;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private static final String API_URL = "https://api.yookassa.ru/v3/payments";
-    private static final String RETURN_URL = "https://pulsecore-app.ru/dashboard.html";
-    private static final String CURRENCY = "RUB";
+
 
     public record PaymentResponse(String confirmationUrl, String paymentId) {}
 
@@ -36,8 +34,8 @@ public class YookassaService {
 
     private HttpEntity<Map<String, Object>> buildRequest(UUID playerId, int months, int amount) {
         Map<String, Object> body = Map.of(
-                "amount", Map.of("value", String.valueOf(amount), "currency", CURRENCY),
-                "confirmation", Map.of("type", "redirect", "return_url", RETURN_URL),
+                "amount", Map.of("value", String.valueOf(amount), "currency", props.getCurrency()),
+                "confirmation", Map.of("type", "redirect", "return_url", props.getReturnUrl()),
                 "description", "Подписка PulseCore на " + months + " мес.",
                 "metadata", Map.of("playerId", playerId.toString(), "months", String.valueOf(months)),
                 "capture", true
@@ -60,7 +58,7 @@ public class YookassaService {
     private ResponseEntity<Map<String, Object>> executeRequest(HttpEntity<Map<String, Object>> request) {
         try {
             return restTemplate.exchange(
-                    API_URL, HttpMethod.POST, request,
+                    props.getYookassaApiUrl(), HttpMethod.POST, request,
                     (Class<Map<String, Object>>) (Class<?>) Map.class);
         } catch (Exception e) {
             log.error("YooKassa API request failed", e);

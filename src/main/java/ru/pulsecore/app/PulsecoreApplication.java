@@ -2,7 +2,7 @@ package ru.pulsecore.app;
 
 
 import org.springframework.cache.annotation.EnableCaching;
-import ru.pulsecore.app.modules.shared.AdminProperties;
+import ru.pulsecore.app.modules.shared.propirties.AdminProperties;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

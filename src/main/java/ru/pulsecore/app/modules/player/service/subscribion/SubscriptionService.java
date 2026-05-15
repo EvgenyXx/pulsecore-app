@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.service;
+package ru.pulsecore.app.modules.player.service.subscribion;
 
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.domain.Subscription;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 
 import java.util.UUID;
 

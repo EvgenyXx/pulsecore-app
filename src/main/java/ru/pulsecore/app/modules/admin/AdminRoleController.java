@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
-import ru.pulsecore.app.modules.player.service.RoleManagementService;
+import ru.pulsecore.app.modules.player.service.role.RoleManagementService;
 
 import java.util.List;
 import java.util.UUID;

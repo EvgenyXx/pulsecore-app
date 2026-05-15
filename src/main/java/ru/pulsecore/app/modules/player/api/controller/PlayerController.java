@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.api;
+package ru.pulsecore.app.modules.player.api.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,9 +10,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.UpdateProfileRequest;
+import ru.pulsecore.app.modules.player.api.PlayerApi;
 import ru.pulsecore.app.modules.player.api.dto.*;
-import ru.pulsecore.app.modules.player.service.PlayerService;
-import ru.pulsecore.app.modules.shared.SessionProperties;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
+import ru.pulsecore.app.modules.shared.propirties.SessionProperties;
 
 import java.util.List;
 import java.util.UUID;

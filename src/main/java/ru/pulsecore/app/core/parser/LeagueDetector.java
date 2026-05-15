@@ -1,5 +1,6 @@
 package ru.pulsecore.app.core.parser;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.pulsecore.app.core.model.LeagueType;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.nodes.Document;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LeagueDetector {
 
 
@@ -15,8 +17,7 @@ public class LeagueDetector {
 
         String title = doc.title();
 
-
-
+        log.info("League detection: title='{}', html length={}", title, doc.html().length());
         if (title.contains("Лига A") || title.contains("Лига А")) return LeagueType.A;
         if (title.contains("Лига В") || title.contains("Лига B")) return LeagueType.B;
         if (title.contains("Лига С") || title.contains("Лига C")) return LeagueType.C;

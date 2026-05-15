@@ -1,7 +1,7 @@
 package ru.pulsecore.app.modules.lineup.client;
 
 import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.shared.MastersApiProperties;
+import ru.pulsecore.app.modules.shared.propirties.MastersApiProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

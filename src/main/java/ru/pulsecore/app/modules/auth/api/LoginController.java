@@ -15,9 +15,9 @@ import ru.pulsecore.app.modules.auth.api.dto.AuthResponse;
 import ru.pulsecore.app.modules.auth.api.dto.LoginRequest;
 import ru.pulsecore.app.modules.auth.api.dto.MeResponse;
 import ru.pulsecore.app.modules.auth.mapping.PlayerDtoMapper;
-import ru.pulsecore.app.modules.player.service.PlayerService;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.player.service.auth.PlayerAuthenticationService;
-import ru.pulsecore.app.modules.shared.SessionProperties;
+import ru.pulsecore.app.modules.shared.propirties.SessionProperties;
 
 import java.util.UUID;
 

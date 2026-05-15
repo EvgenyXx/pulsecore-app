@@ -2,7 +2,7 @@ package ru.pulsecore.app.modules.notification.discovery;
 
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.PlayerService;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
 import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
 import lombok.RequiredArgsConstructor;

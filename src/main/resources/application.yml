@@ -43,11 +43,17 @@ logging:
             ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
 
 app:
+
+      gigachat:
+            auth-key: ${GIGACHAT_AUTH_KEY}
       admin:
             email: ${ADMIN_EMAIL}
       yookassa:
             shop-id: ${YOOKASSA_SHOP_ID}
             secret-key: ${YOOKASSA_SECRET_KEY}
+            return-url: ${YOOKASSA_RETURN_URL}
+            yookassa-api-url: ${YOOKASSA_API_URL}
+            currency: ${YOOKASSA_CURRENCY}
       masters-api:
             url: ${MASTERS_API_URL}
             method: POST
