@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PulseCore — ИИ Ассистент</title>
+    <link rel="icon" type="image/png" href="/img.png">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px','2xl':'1536px'}}}}</script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
+        * { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 100vh; min-height: 100dvh; background: #06060f; position: relative; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; touch-action: pan-y pinch-zoom; }
+        .bg-mesh { position: fixed; inset: 0; z-index: -5; background-image: radial-gradient(circle at 15% 25%, rgba(245,158,11,0.06) 0%, transparent 45%), radial-gradient(circle at 85% 75%, rgba(251,191,36,0.05) 0%, transparent 45%), radial-gradient(circle at 50% 50%, rgba(217,119,6,0.04) 0%, transparent 65%); }
+        .bg-grid { position: fixed; inset: 0; z-index: -4; opacity: 0.10; background-image: linear-gradient(rgba(245,158,11,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.06) 1px, transparent 1px); background-size: 50px 50px; }
+        @media (max-width: 767px) { .bg-grid { background-size: 32px 32px; } }
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); z-index: -3; animation: orbFloat 10s ease-in-out infinite; pointer-events: none; }
+        .bg-orb-1 { width: clamp(250px, 40vw, 500px); height: clamp(250px, 40vw, 500px); background: rgba(245,158,11,0.04); top: -15%; right: -10%; }
+        .bg-orb-2 { width: clamp(200px, 30vw, 400px); height: clamp(200px, 30vw, 400px); background: rgba(251,191,36,0.04); bottom: -10%; left: -8%; animation-delay: -5s; }
+        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(25px, -25px) scale(1.08); } 66% { transform: translate(-15px, 20px) scale(0.95); } }
+        .glass { background: rgba(255,255,255,0.035); backdrop-filter: blur(18px) saturate(120%); -webkit-backdrop-filter: blur(18px) saturate(120%); border: 1px solid rgba(255,255,255,0.07); }
+        .glass-strong { background: rgba(255,255,255,0.05); backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%); border: 1px solid rgba(255,255,255,0.1); }
+        .glass-sidebar { background: rgba(10,10,20,0.85); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border-right: 1px solid rgba(255,255,255,0.06); }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 18px; border-radius: 14px; cursor: pointer; color: #a0aab8; border-left: 3px solid transparent; user-select: none; -webkit-user-select: none; transition: all 0.2s ease; }
+        .nav-item:active { transform: scale(0.97); }
+        .nav-item:hover { background: rgba(245,158,11,0.08); color: #fcd34d; }
+        .nav-item.active { background: rgba(245,158,11,0.12); color: #fbbf24; border-left-color: #f59e0b; box-shadow: inset 0 0 20px rgba(245,158,11,0.05); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .message { max-width: 85%; padding: 10px 14px; border-radius: 14px; line-height: 1.5; font-size: 14px; animation: fadeIn 0.3s ease; word-break: break-word; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .message.user { background: linear-gradient(135deg, #667eea, #764ba2); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .message.ai { background: rgba(255,255,255,0.05); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.06); }
+        .typing-dots { display: flex; gap: 4px; padding: 6px 0; }
+        .typing-dots span { width: 7px; height: 7px; background: #f59e0b; border-radius: 50%; animation: bounce 1.4s infinite; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-8px); } }
+        .suggestion { padding: 6px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; font-size: 11px; color: #aab; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .suggestion:hover { background: rgba(245,158,11,0.15); color: #fbbf24; border-color: rgba(245,158,11,0.3); }
+        .input-glow:focus { box-shadow: 0 0 0 3px rgba(245,158,11,0.15), 0 0 20px rgba(245,158,11,0.1); border-color: rgba(251,191,36,0.6) !important; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 20px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+        * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen">
+<div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
+
+<div id="mobileHeader" class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
+    <div class="flex items-center gap-3"><img src="/img.png" alt="PulseCore" class="w-9 h-9 rounded-xl shadow-lg object-cover"><div><h1 class="text-base font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">PulseCore</h1><p class="text-xs text-gray-400">ИИ Ассистент</p></div></div>
+    <button onclick="window.location.href='/dashboard'" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 active:scale-90 text-white text-lg">←</button>
+</div>
+
+<aside class="hidden md:flex glass-sidebar w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
+    <div class="flex items-center gap-3 mb-10 px-1"><img src="/img.png" alt="PulseCore" class="w-11 h-11 rounded-xl shadow-lg object-cover"><div><h1 class="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent tracking-tight">PulseCore</h1><p class="text-xs text-gray-400">ИИ Ассистент</p></div></div>
+    <nav class="flex flex-col gap-1 flex-1">
+        <div class="nav-item" onclick="window.location.href='/dashboard'"><span class="text-lg">🏠</span><div><div class="font-medium text-sm">Дашборд</div><div class="text-xs text-gray-500">Обзор</div></div></div>
+        <div class="nav-item active"><span class="text-lg">🤖</span><div><div class="font-medium text-sm">ИИ Ассистент</div><div class="text-xs text-gray-500">Спроси о статистике</div></div></div>
+    </nav>
+    <div class="text-xs text-gray-500 text-center mt-4">Powered by GigaChat</div>
+</aside>
+
+<main class="flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10 flex items-center justify-center">
+    <div id="chatContainer" class="w-full max-w-2xl glass rounded-3xl overflow-hidden shadow-2xl flex flex-col" style="height: calc(100vh - 24px); max-height: 800px;">
+        <div class="glass-strong px-4 py-3 flex items-center gap-3 border-b border-white/5 shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-lg">🤖</div>
+            <div class="flex-1"><h2 class="font-semibold text-white text-sm">ИИ Ассистент</h2><p class="text-xs text-gray-400">Спроси о своей статистике</p></div>
+            <button onclick="window.location.href='/dashboard'" class="hidden md:flex w-8 h-8 items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-sm">←</button>
+        </div>
+
+        <div class="chat-messages" id="messages">
+            <div class="message ai">👋 Привет! Спроси меня о своей статистике.</div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 px-4 pb-2 shrink-0" id="suggestions">
+            <span class="suggestion" onclick="sendSuggestion('Сколько я заработал за 2026 год?')">📈 Заработок за 2026</span>
+        </div>
+
+        <div class="glass-strong px-3 py-2 flex gap-2 border-t border-white/5 shrink-0">
+            <input type="text" id="questionInput" placeholder="Задай вопрос..." onkeypress="if(event.key==='Enter')sendMessage()"
+                   class="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm outline-none input-glow placeholder:text-gray-500">
+            <button id="sendBtn" onclick="sendMessage()"
+                    class="w-10 h-10 bg-gradient-to-br from-amber-500 to-yellow-600 border-0 rounded-xl text-white text-lg font-bold cursor-pointer flex items-center justify-center hover:from-amber-400 hover:to-yellow-500 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">➤</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    let playerId = null;
+    const messagesDiv = document.getElementById('messages');
+    const input = document.getElementById('questionInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    async function init() {
+        try {
+            const r = await fetch("/api/auth/me", { credentials: "same-origin" });
+            if (!r.ok) { window.location.href = "/"; return; }
+            const user = await r.json();
+            playerId = user.id;
+
+            const subRes = await fetch(`/api/player/${playerId}/subscription`);
+            const subData = await subRes.json();
+            if (!subData || !subData.active) {
+                document.getElementById("chatContainer").innerHTML =
+                    `<div class="flex flex-col items-center justify-center h-full p-8 text-center">
+                        <div class="text-5xl mb-4">🔒</div>
+                        <h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3>
+                        <p class="text-gray-400 text-sm mb-6">Оформите подписку чтобы общаться с ИИ Ассистентом</p>
+                        <a href="/subscribe" class="inline-block bg-amber-500 hover:bg-amber-400 text-black font-semibold px-8 py-3 rounded-xl">💳 Оформить подписку</a>
+                        <br><a href="/dashboard" class="text-xs text-gray-500 mt-4 inline-block">← На главную</a>
+                    </div>`;
+                return;
+            }
+        } catch (e) { window.location.href = "/"; }
+    }
+
+    function scrollToBottom() { messagesDiv.scrollTop = messagesDiv.scrollHeight; }
+    function addMessage(text, type) { const div = document.createElement('div'); div.className = 'message ' + type; div.textContent = text; messagesDiv.appendChild(div); scrollToBottom(); return div; }
+    function showTyping() { const div = document.createElement('div'); div.className = 'message ai'; div.id = 'typingIndicator'; div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>'; messagesDiv.appendChild(div); scrollToBottom(); }
+    function hideTyping() { const typing = document.getElementById('typingIndicator'); if (typing) typing.remove(); }
+
+    async function sendMessage() {
+        const question = input.value.trim();
+        if (!question) return;
+        addMessage(question, 'user');
+        input.value = ''; input.focus();
+        sendBtn.disabled = true; showTyping();
+        try {
+            const response = await fetch('/api/player/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            });
+            const data = await response.json();
+            hideTyping();
+            addMessage(data.answer || 'Не смог обработать запрос.', 'ai');
+        } catch (error) { hideTyping(); addMessage('⚠️ Ошибка связи. Попробуй позже.', 'ai'); }
+        finally { sendBtn.disabled = false; }
+    }
+
+    function sendSuggestion(text) { input.value = text; sendMessage(); }
+    init();
+</script>
+</body>
+</html>

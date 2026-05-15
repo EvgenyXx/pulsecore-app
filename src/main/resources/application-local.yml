@@ -42,6 +42,9 @@ logging:
     ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
 
 app:
+
+  gigachat:
+    auth-key: ${GIGACHAT_AUTH_KEY}
   admin:
     email: ${ADMIN_EMAIL}
   yookassa:

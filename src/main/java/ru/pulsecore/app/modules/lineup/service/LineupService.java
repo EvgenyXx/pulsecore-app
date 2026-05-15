@@ -7,7 +7,7 @@ import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
 import ru.pulsecore.app.modules.lineup.validator.TournamentValidator;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.PlayerService;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

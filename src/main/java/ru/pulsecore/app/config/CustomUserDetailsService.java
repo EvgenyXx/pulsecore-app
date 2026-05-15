@@ -2,7 +2,7 @@ package ru.pulsecore.app.config;
 
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.PlayerService;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

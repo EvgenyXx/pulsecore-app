@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.service;
+package ru.pulsecore.app.modules.player.service.role;
 
 
 import jakarta.transaction.Transactional;
@@ -10,6 +10,7 @@ import ru.pulsecore.app.modules.player.domain.Role;
 import ru.pulsecore.app.modules.player.exception.RoleAlreadyGrantedException;
 import ru.pulsecore.app.modules.player.exception.RoleNotFoundException;
 import ru.pulsecore.app.modules.player.exception.RoleNotGrantedException;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 
 import java.util.List;
 import java.util.UUID;

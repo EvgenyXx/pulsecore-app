@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.service;
+package ru.pulsecore.app.modules.player.service.player;
 
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.UpdateProfileRequest;

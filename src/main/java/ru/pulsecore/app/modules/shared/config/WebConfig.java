@@ -16,7 +16,17 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(subscriptionInterceptor)
-                .addPathPatterns("/api/player/*/sum", "/api/player/*/tournaments");
+                .addPathPatterns(
+                        "/api/player/*/sum",
+                        "/api/player/*/tournaments",
+                        "/api/player/*/dashboard",
+                        "/api/player/*/top/week",
+                        "/api/player/*/top/week/*",
+                        "/api/player/chat",
+                        "/api/player/analytics",
+                        "/api/player/*/monthly-income",
+                        "/api/player/*/daily-income"
+                );
     }
 
     @Override
@@ -27,5 +37,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/register").setViewName("forward:/register.html");
         registry.addViewController("/subscribe").setViewName("forward:/subscribe.html");
         registry.addViewController("/analytics").setViewName("forward:/analytics.html");
+        registry.addViewController("/assistant").setViewName("forward:/assistant.html");
     }
 }

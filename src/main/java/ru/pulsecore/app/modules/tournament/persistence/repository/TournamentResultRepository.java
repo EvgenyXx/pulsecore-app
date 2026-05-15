@@ -14,11 +14,42 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
+
+    // Добавить в TournamentResultRepository.java:
+
+    // 1. Статистика за конкретные даты (10, 11, 12 апреля)
+    @Query("SELECT new map(CAST(t.date AS LocalDate) as date, COALESCE(SUM(t.amount), 0) as sum, COUNT(t) as count) " +
+            "FROM TournamentResultEntity t " +
+            "WHERE t.player = :player AND t.date IN :dates " +
+            "GROUP BY t.date ORDER BY t.date")
+    List<Map<String, Object>> getStatsForDates(@Param("player") Player player,
+                                               @Param("dates") List<LocalDate> dates);
+
+    // 2. Помесячная статистика (для сравнения месяцев/годов)
+    @Query("SELECT new map(YEAR(t.date) as year, MONTH(t.date) as month, " +
+            "COALESCE(SUM(t.amount), 0) as sum, COUNT(t) as count) " +
+            "FROM TournamentResultEntity t " +
+            "WHERE t.player = :player AND t.date BETWEEN :start AND :end " +
+            "GROUP BY YEAR(t.date), MONTH(t.date) ORDER BY YEAR(t.date), MONTH(t.date)")
+    List<Map<String, Object>> getMonthlyBreakdown(@Param("player") Player player,
+                                                  @Param("start") LocalDate start,
+                                                  @Param("end") LocalDate end);
+
+    // 3. Годовая статистика с разбивкой по месяцам
+    @Query("SELECT new map(YEAR(t.date) as year, COALESCE(SUM(t.amount), 0) as sum, COUNT(t) as count) " +
+            "FROM TournamentResultEntity t " +
+            "WHERE t.player = :player AND t.date BETWEEN :start AND :end " +
+            "GROUP BY YEAR(t.date) ORDER BY YEAR(t.date)")
+    List<Map<String, Object>> getYearlyBreakdown(@Param("player") Player player,
+                                                 @Param("start") LocalDate start,
+                                                 @Param("end") LocalDate end);
+
 
 
     @Query("SELECT DAY(tr.date) as day, COALESCE(SUM(tr.amount), 0) as total, COUNT(tr) as count " +

@@ -2,7 +2,7 @@ package ru.pulsecore.app.modules.notification.scheduler;
 
 import ru.pulsecore.app.modules.notification.discovery.TournamentDiscoveryService;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.PlayerService;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

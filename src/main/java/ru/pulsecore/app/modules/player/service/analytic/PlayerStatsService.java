@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.service;
+package ru.pulsecore.app.modules.player.service.analytic;
 
 import org.springframework.cache.annotation.Cacheable;
 import ru.pulsecore.app.core.dto.*;
@@ -6,6 +6,7 @@ import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.player.api.dto.*;
 import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentResultRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
-// TODO: Разбить на более мелкие сервисы:
-//       - PlayerLeagueService (getPrimaryLeague, getTopWithPositionByLeague)
-//       - PlayerDashboardService (getDashboard)
-//       - PlayerSumService (getSum)
-//       - TopWeekService (getTopWithPosition, getTopPlayers)
 
 @Service
 @RequiredArgsConstructor
@@ -56,14 +51,14 @@ public class PlayerStatsService {
         else if (position == 3) title = "Толстосум";
 
         return TopWeekResponse.builder()
-                .playerName(player.getName())
+                .playerName(capitalize(player.getName()))
                 .playerPosition((int) position)
                 .playerTotal(playerSum)
                 .playerTournaments(stats != null ? stats.getCount() : 0)
                 .title(title)
                 .hasCrown(hasCrown)
                 .top5(top5.stream().map(p -> TopWeekResponse.TopPlayer.builder()
-                        .name(p.getName()).total(p.getTotal()).tournaments(p.getTournaments()).build()).toList())
+                        .name(capitalize(p.getName())).total(p.getTotal()).tournaments(p.getTournaments()).build()).toList())
                 .build();
     }
 
@@ -77,15 +72,13 @@ public class PlayerStatsService {
         List<TopPlayerProjection> top5 = tournamentResultRepository
                 .findTopByPrimaryLeague(weekAgo, league, 5);
 
-
-
         if (!league.equals(primary)) {
             return TopWeekResponse.builder()
-                    .playerName(player.getName())
+                    .playerName(capitalize(player.getName()))
                     .playerPosition(0).playerTotal(0).playerTournaments(0)
                     .title(null).hasCrown(false)
                     .top5(top5.stream().map(p -> TopWeekResponse.TopPlayer.builder()
-                            .name(p.getName()).total(p.getTotal()).tournaments(p.getTournaments()).build()).toList())
+                            .name(capitalize(p.getName())).total(p.getTotal()).tournaments(p.getTournaments()).build()).toList())
                     .build();
         }
 
@@ -98,13 +91,13 @@ public class PlayerStatsService {
         boolean hasCrown = false;
 
         return TopWeekResponse.builder()
-                .playerName(player.getName())
+                .playerName(capitalize(player.getName()))
                 .playerPosition((int) position)
                 .playerTotal(playerSum)
                 .playerTournaments(playerCount)
                 .title(title).hasCrown(hasCrown)
                 .top5(top5.stream().map(p -> TopWeekResponse.TopPlayer.builder()
-                        .name(p.getName()).total(p.getTotal()).tournaments(p.getTournaments()).build()).toList())
+                        .name(capitalize(p.getName())).total(p.getTotal()).tournaments(p.getTournaments()).build()).toList())
                 .build();
     }
 
@@ -154,7 +147,7 @@ public class PlayerStatsService {
                     upcomingLineups.add(UpcomingLineupDto.builder()
                             .date(lineup.getDate().toString()).time(lineup.getTime())
                             .league(lineup.getLeague()).inLineup(true)
-                            .players(lineup.getPlayers()).isSoon(date.equals(soonestDate)).build());
+                            .players(capitalize(lineup.getPlayers())).isSoon(date.equals(soonestDate)).build());
                 }
             } else {
                 upcomingLineups.add(UpcomingLineupDto.builder()
@@ -169,7 +162,7 @@ public class PlayerStatsService {
                 : SubscriptionInfoDto.builder().active(false).build();
 
         return DashboardResponse.builder()
-                .playerName(player.getName()).lastResult(lastResult)
+                .playerName(capitalize(player.getName())).lastResult(lastResult)
                 .upcomingLineups(upcomingLineups).subscription(subInfo)
                 .topWeekTitle(topWeek.getTitle()).hasCrown(topWeek.isHasCrown())
                 .primaryLeague(primaryLeague).build();
@@ -178,7 +171,7 @@ public class PlayerStatsService {
     public SumResponse getSum(UUID id, LocalDate start, LocalDate end) {
         Player player = playerService.getById(id);
         if (start == null && end == null)
-            return SumResponse.builder().playerName(player.getName()).start("").end("")
+            return SumResponse.builder().playerName(capitalize(player.getName())).start("").end("")
                     .sum(0.0).average(0.0).count(0L).tournaments(List.of()).build();
         if (start == null) start = end;
         if (end == null) end = start;
@@ -195,10 +188,22 @@ public class PlayerStatsService {
                 .collect(Collectors.toList());
 
         return SumResponse.builder()
-                .playerName(player.getName()).start(start.toString()).end(end.toString())
+                .playerName(capitalize(player.getName())).start(start.toString()).end(end.toString())
                 .sum(stats != null ? stats.getSum() : 0)
                 .average(stats != null ? stats.getAverage() : 0)
                 .count(stats != null ? stats.getCount() : 0)
                 .tournaments(tournaments).build();
+    }
+
+    private String capitalize(String name) {
+        if (name == null || name.isBlank()) return name;
+        String[] parts = name.trim().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            if (!sb.isEmpty()) sb.append(" ");
+            sb.append(Character.toUpperCase(part.charAt(0)));
+            if (part.length() > 1) sb.append(part.substring(1).toLowerCase());
+        }
+        return sb.toString();
     }
 }

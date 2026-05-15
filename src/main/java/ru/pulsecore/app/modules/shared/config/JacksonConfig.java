@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.shared;
+package ru.pulsecore.app.modules.shared.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

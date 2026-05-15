@@ -49,6 +49,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       MAIL_FROM: ${MAIL_FROM}
       MASTERS_API_URL: ${MASTERS_API_URL}
+      GIGACHAT_AUTH_KEY: ${GIGACHAT_AUTH_KEY}
 
 volumes:
   pgdata:

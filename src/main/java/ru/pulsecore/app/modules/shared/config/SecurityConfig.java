@@ -13,7 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.pulsecore.app.modules.shared.SessionProperties;
+import ru.pulsecore.app.modules.shared.propirties.SessionProperties;
 
 @Configuration
 @EnableWebSecurity

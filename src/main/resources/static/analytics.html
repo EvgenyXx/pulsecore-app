@@ -87,7 +87,7 @@
 
     <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
         <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">📅 Доход по месяцам</h2>
-        <div class="flex items-center gap-2 mb-5"><span class="text-gray-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="loadMonthly()"></select><span class="text-gray-400 text-sm">год</span></div>
+        <div class="flex items-center gap-2 mb-5"><span class="text-gray-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-gray-400 text-sm">год</span></div>
         <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap"><canvas id="monthlyChart"></canvas></div></div>
         <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill" style="display:none"><span class="text-gray-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
         <p class="swipe-hint">← листай влево/вправо для смены года →</p>
@@ -136,8 +136,29 @@
 
     async function init() {
         try {
-            const r = await fetch("/api/auth/me", { credentials: "same-origin" }); if (!r.ok) { window.location.href = "/"; return; }
-            playerId = (await r.json()).id;
+            const r = await fetch("/api/auth/me", { credentials: "same-origin" });
+            if (!r.ok) { window.location.href = "/"; return; }
+            const user = await r.json();
+            playerId = user.id;
+
+            // Проверка подписки
+            const subRes = await fetch(`/api/player/${playerId}/subscription`);
+            const subData = await subRes.json();
+            if (!subData || !subData.active) {
+                // Скрываем всё и показываем только заглушку
+                document.getElementById("loading").innerHTML = "";
+                document.getElementById("loading").classList.add("hidden");
+                document.querySelector("main").innerHTML =
+                    `<div class="glass rounded-2xl p-8 text-center max-w-md mx-auto mt-20">
+                    <div class="text-5xl mb-4">🔒</div>
+                    <h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3>
+                    <p class="text-gray-400 text-sm mb-6">Оформите подписку чтобы открыть аналитику</p>
+                    <a href="/subscribe" class="inline-block bg-amber-500 hover:bg-amber-400 text-black font-semibold px-8 py-3 rounded-xl">💳 Оформить подписку</a>
+                    <br><a href="/dashboard" class="text-xs text-gray-500 mt-4 inline-block">← На главную</a>
+                </div>`;
+                return;
+            }
+
             document.getElementById("loading").classList.add("hidden");
             initDailyMonth(); initMonthlyYear(); initSwipes(); initDesktopArrows();
             switchTab('league'); populateYears();
@@ -152,6 +173,7 @@
     function nextDailyMonth() { dailyMonth++; if (dailyMonth > 12) { dailyMonth = 1; dailyYear++; } updateDailyLabel(); loadDaily(); }
     function prevMonthlyYear() { monthlyYear--; document.getElementById("yearSelect").value = monthlyYear; loadMonthly(); }
     function nextMonthlyYear() { monthlyYear++; document.getElementById("yearSelect").value = monthlyYear; loadMonthly(); }
+    function onYearChange() { monthlyYear = parseInt(document.getElementById("yearSelect").value); loadMonthly(); }
 
     function initSwipes() {
         const dA = document.getElementById('dailyChartCard');

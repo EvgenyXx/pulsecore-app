@@ -10,4 +10,7 @@ import org.springframework.stereotype.Component;
 public class YookassaProperties {
     private int shopId;
     private String secretKey;
+    private String returnUrl;
+    private String yookassaApiUrl;
+    private String currency;
 }

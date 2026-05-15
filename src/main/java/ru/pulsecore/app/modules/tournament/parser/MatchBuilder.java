@@ -28,8 +28,8 @@ public class MatchBuilder {
 
         // ✅ ВАЖНО: допускаем null score
         if (score != null) {
-            match.setScore1(score.getPlayer1());
-            match.setScore2(score.getPlayer2());
+            match.setScore1(score.player1());
+            match.setScore2(score.player2());
         } else {
             // 🔥 для отменённых матчей
             match.setScore1(0);

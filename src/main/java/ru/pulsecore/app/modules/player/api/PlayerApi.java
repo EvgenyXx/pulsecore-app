@@ -4,6 +4,7 @@ public final class PlayerApi {
 
 
     public static final String DAILY_INCOME = "/{id}/daily-income";
+    public static final String CHAT = "/chat";
 
     private PlayerApi() {}
 

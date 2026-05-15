@@ -1,9 +1,9 @@
-package ru.pulsecore.app.modules.player.service;
+package ru.pulsecore.app.modules.player.service.subscribion;
 
 
 import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
 import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
-import ru.pulsecore.app.modules.shared.AdminProperties;
+import ru.pulsecore.app.modules.shared.propirties.AdminProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

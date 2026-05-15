@@ -3,7 +3,7 @@ package ru.pulsecore.app.modules.notification.service;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.PlayerService;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
 import ru.pulsecore.app.modules.shared.exception.TournamentParseException;
 import ru.pulsecore.app.modules.shared.exception.UnauthorizedException;

@@ -26,6 +26,7 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
 
 
 
+    //todo добавить умножение турниров 31 и 1 числа в новый год
     @Override
     public StrategyType getType() {
         return StrategyType.DEFAULT;
@@ -105,7 +106,7 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
                 .trim();
     }
 
-    // Убрать:
+
 
 
     // В parseDate заменить DATE_FORMAT на DateConstants.TOURNAMENT_DATE_FORMAT:
