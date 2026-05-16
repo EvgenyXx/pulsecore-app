@@ -22,8 +22,11 @@ public class TournamentContext {
     private double nightBonus;
 
 
+
     private RemovedStage removedStage;
     private String removedPlayer;
+
+    private String time;
 
 
 }

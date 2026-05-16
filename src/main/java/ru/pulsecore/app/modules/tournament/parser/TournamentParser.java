@@ -23,6 +23,17 @@ public class TournamentParser {
         return dateElement != null ? dateElement.text() : null;
     }
 
+    public String parseTime(Document doc) {
+        Element timeElement = doc.select(HtmlSelectors.TIME).first();
+        if (timeElement != null) {
+            String time = timeElement.text().trim();
+            if (time.matches("\\d{2}:\\d{2}")) {
+                return time;
+            }
+        }
+        return null;
+    }
+
 
 
     // 🔥 ГЛАВНОЕ ИСПРАВЛЕНИЕ

@@ -179,7 +179,7 @@
             const r=await fetch(`/api/player/search?q=${encodeURIComponent(q)}`); if(!r.ok)throw new Error();
             const players=await r.json();
             const subs={};
-            await Promise.all(players.map(async p=>{ try { const sr=await fetch(`/api/player/${p.id}/subscription`); if(sr.ok){subs[p.id]=await sr.json();playersCache[p.id]=subs[p.id];} } catch(e){} }));
+            await Promise.all(players.map(async p=>{ try { const sr=await fetch(ADMIN+p.id+'/subscription'); if(sr.ok){subs[p.id]=await sr.json();playersCache[p.id]=subs[p.id];} } catch(e){} }));
             results.classList.remove("hidden");
             results.innerHTML=players.map(p=>{
                 const sub=subs[p.id];
@@ -203,7 +203,7 @@
     async function refreshPlayerUI(section){
         if(!selectedPlayerId)return;
         const p=section==='sub'?'sub':'role';
-        const sr=await fetch(`/api/player/${selectedPlayerId}/subscription`);
+        const sr=await fetch(ADMIN+selectedPlayerId+'/subscription');
         if(sr.ok)playersCache[selectedPlayerId]=await sr.json();
         const cached=playersCache[selectedPlayerId];
         let badges='';

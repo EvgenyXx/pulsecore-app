@@ -43,8 +43,10 @@ logging:
 
 app:
 
-  gigachat:
-    auth-key: ${GIGACHAT_AUTH_KEY}
+  smart:
+    key: ${SMART_API_KEY}
+    url: ${SMART_API_URL}
+
   admin:
     email: ${ADMIN_EMAIL}
   yookassa:

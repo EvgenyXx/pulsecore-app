@@ -27,16 +27,16 @@ public class ResultService {
     private final StrategyResolver strategyResolver;
     private final ResultBuilder resultBuilder;
 
-    public ParsedResult calculateAll(String url) throws Exception {
+    public ParsedResult calculateAll(String url) {
         Document doc = loader.load(url);
         return calculate(doc);
     }
 
-    public ParsedResult calculateAll(Document doc) throws Exception {
+    public ParsedResult calculateAll(Document doc) {
         return calculate(doc);
     }
 
-    private ParsedResult calculate(Document doc) throws Exception {
+    private ParsedResult calculate(Document doc) {
         TournamentContext ctx = tournamentExtractor.extract(doc);
         MatchCalculationStrategy strategy = strategyResolver.resolve(ctx);
         MatchProcessingResult matchResult = strategy.process(ctx);
@@ -59,7 +59,8 @@ public class ResultService {
                 ctx.getNightBonus(),
                 hasRemoved,
                 isFinalRemoved,
-                ctx.getLeague().name()
+                ctx.getLeague().name(),
+                ctx.getTime()
         );
     }
 }

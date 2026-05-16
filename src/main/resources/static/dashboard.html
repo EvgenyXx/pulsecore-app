@@ -231,7 +231,7 @@
             widgets.innerHTML=`<div class="col-span-full flex flex-col items-center py-12 sm:py-14 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
 
             // Сначала проверяем подписку
-            fetch(`/api/player/${playerId}/subscription`,{credentials:"same-origin"}).then(r=>r.json()).then(sub=>{
+            fetch(`/api/player/subscription`,{credentials:"same-origin"}).then(r=>r.json()).then(sub=>{
                 if(!sub || !sub.active) {
                     // Нет подписки — показываем заглушку
                     widgets.innerHTML = subscriptionBlock();

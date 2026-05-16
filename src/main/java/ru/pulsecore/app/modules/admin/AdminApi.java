@@ -16,4 +16,9 @@ public final class AdminApi {
 
 
     public static final String TOURNAMENT_CALCULATE = "/tournaments/calculate";
+
+    public static final String PLAYER_SUBSCRIPTION = "/players/{id}/subscription";  // ← ДОБАВИТЬ
+
+
+
 }

@@ -26,7 +26,7 @@ public class TournamentExtractor {
     private final TournamentStatusParser tournamentStatusParser;
     private final RemovedPlayerDetector removedPlayerDetector;
 
-    public TournamentContext extract(Document doc) throws Exception {
+    public TournamentContext extract(Document doc) {
 
         Long tournamentId = tournamentParser.parseTournamentId(doc);
         TournamentStatus status = tournamentStatusParser.parseStatus(doc);
@@ -41,6 +41,7 @@ public class TournamentExtractor {
         // REMOVED LOGIC
         // =========================
         String removedPlayer = tournamentParser.findRemovedPlayer(doc);
+        String time = tournamentParser.parseTime(doc);
 
 
         RemovedResult playerDetector = removedPlayerDetector.detect(removedPlayer,matches);
@@ -55,7 +56,8 @@ public class TournamentExtractor {
                 league,
                 nightBonus,
                 playerDetector.stage(),
-                playerDetector.player()
+                playerDetector.player(),
+                time
         );
     }
 
