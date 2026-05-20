@@ -102,7 +102,7 @@
             const user = await r.json();
             playerId = user.id;
 
-            const subRes = await fetch(`/api/player/${playerId}/subscription`);
+            const subRes = await fetch("/api/player/subscription");
             const subData = await subRes.json();
             if (!subData || !subData.active) {
                 document.getElementById("chatContainer").innerHTML =

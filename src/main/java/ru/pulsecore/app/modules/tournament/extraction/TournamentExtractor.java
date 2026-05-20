@@ -1,5 +1,8 @@
 package ru.pulsecore.app.modules.tournament.extraction;
 
+import lombok.RequiredArgsConstructor;
+import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.model.LeagueType;
 import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.core.parser.LeagueDetector;
@@ -9,9 +12,6 @@ import ru.pulsecore.app.modules.tournament.domain.TournamentStatus;
 import ru.pulsecore.app.modules.tournament.parser.MatchParser;
 import ru.pulsecore.app.modules.tournament.parser.TournamentParser;
 import ru.pulsecore.app.modules.tournament.parser.TournamentStatusParser;
-import lombok.RequiredArgsConstructor;
-import org.jsoup.nodes.Document;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class TournamentExtractor {
     private final TournamentStatusParser tournamentStatusParser;
     private final RemovedPlayerDetector removedPlayerDetector;
 
-    public TournamentContext extract(Document doc) throws Exception {
+    public TournamentContext extract(Document doc) {
 
         Long tournamentId = tournamentParser.parseTournamentId(doc);
         TournamentStatus status = tournamentStatusParser.parseStatus(doc);
@@ -41,6 +41,7 @@ public class TournamentExtractor {
         // REMOVED LOGIC
         // =========================
         String removedPlayer = tournamentParser.findRemovedPlayer(doc);
+        String time = tournamentParser.parseTime(doc);
 
 
         RemovedResult playerDetector = removedPlayerDetector.detect(removedPlayer,matches);
@@ -55,7 +56,8 @@ public class TournamentExtractor {
                 league,
                 nightBonus,
                 playerDetector.stage(),
-                playerDetector.player()
+                playerDetector.player(),
+                time
         );
     }
 

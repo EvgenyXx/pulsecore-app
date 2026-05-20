@@ -1,4 +1,36 @@
 spring:
+      security:
+            oauth2:
+                  client:
+                        registration:
+                              yandex:
+                                    client-id: ${YANDEX_CLIENT_ID}
+                                    client-secret: ${YANDEX_CLIENT_SECRET}
+                                    authorization-grant-type: authorization_code
+                                    redirect-uri: "{baseUrl}/login/oauth2/code/yandex"
+                                    scope:
+                                          - login:email
+                                          - login:info
+                                          - login:default_phone
+                              vk:
+                                    client-id: ${VK_CLIENT_ID}
+                                    client-secret: ${VK_CLIENT_SECRET}
+                                    authorization-grant-type: authorization_code
+                                    redirect-uri: "{baseUrl}/login/oauth2/code/vk"
+                                    scope:
+                                          - email
+                                          - phone
+                        provider:
+                              yandex:
+                                    authorization-uri: https://oauth.yandex.ru/authorize
+                                    token-uri: https://oauth.yandex.ru/token
+                                    user-info-uri: https://login.yandex.ru/info
+                                    user-name-attribute: id
+                              vk:
+                                    authorization-uri: https://id.vk.com/authorize
+                                    token-uri: https://id.vk.com/oauth2/auth
+                                    user-info-uri: https://id.vk.com/oauth2/user_info
+                                    user-name-attribute: user_id
       cache:
             type: caffeine
             caffeine:
@@ -35,6 +67,7 @@ spring:
                   password: ${SPRING_REDIS_PASSWORD:}
       session:
             store-type: redis
+            timeout: 30d
 
 logging:
       level:
@@ -43,9 +76,9 @@ logging:
             ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
 
 app:
-
-      gigachat:
-            auth-key: ${GIGACHAT_AUTH_KEY}
+      smart:
+            api-key: ${SMART_API_KEY}
+            api-url: ${SMART_API_URL}
       admin:
             email: ${ADMIN_EMAIL}
       yookassa:

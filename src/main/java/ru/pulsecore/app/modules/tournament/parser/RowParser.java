@@ -1,12 +1,12 @@
 package ru.pulsecore.app.modules.tournament.parser;
 
-import ru.pulsecore.app.modules.shared.HtmlSelectors;
-import ru.pulsecore.app.core.model.Match;
-import ru.pulsecore.app.modules.tournament.domain.model.Score;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.core.model.Match;
+import ru.pulsecore.app.modules.shared.HtmlSelectors;
+import ru.pulsecore.app.modules.tournament.domain.model.Score;
 
 @Component
 @RequiredArgsConstructor

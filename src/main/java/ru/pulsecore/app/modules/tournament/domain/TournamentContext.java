@@ -1,11 +1,11 @@
 package ru.pulsecore.app.modules.tournament.domain;
 
-import ru.pulsecore.app.core.model.LeagueType;
-import ru.pulsecore.app.core.model.Match;
-import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedStage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import ru.pulsecore.app.core.model.LeagueType;
+import ru.pulsecore.app.core.model.Match;
+import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedStage;
 
 import java.util.List;
 
@@ -22,8 +22,11 @@ public class TournamentContext {
     private double nightBonus;
 
 
+
     private RemovedStage removedStage;
     private String removedPlayer;
+
+    private String time;
 
 
 }

@@ -1,5 +1,9 @@
 package ru.pulsecore.app.modules.notification.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.player.domain.Player;
@@ -7,19 +11,14 @@ import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
 import ru.pulsecore.app.modules.shared.exception.TournamentParseException;
 import ru.pulsecore.app.modules.shared.exception.UnauthorizedException;
+import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
 import ru.pulsecore.app.modules.tournament.application.ResultService;
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
-import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +50,17 @@ public class TournamentProcessService {
 
         int processed = 0, foundCount = 0;
         List<ResultDto> resultDto = parsed.results();
+
+        // Обновим дату и время турнира если их нет
+        if (tournament.getDate() == null && !parsed.results().isEmpty()) {
+            String dateStr = parsed.results().get(0).getDate();
+            if (dateStr != null && !dateStr.isEmpty()) {
+                try { tournament.setDate(LocalDate.parse(dateStr)); } catch (Exception ignored) {}
+            }
+        }
+        if (tournament.getTime() == null && parsed.time() != null) {
+            tournament.setTime(parsed.time());
+        }
 
         for (PlayerNotification pn : notifications) {
             Player player = pn.getPlayer();
@@ -99,12 +109,30 @@ public class TournamentProcessService {
         ParsedResult parsed;
         try {
             parsed = resultService.calculateAll(url);
+            log.warn("🔍 PARSED: url={}, time='{}', date='{}', resultsCount={}",
+                    url, parsed.time(),
+                    parsed.results().isEmpty() ? "empty" : parsed.results().get(0).getDate(),
+                    parsed.results().size());
         } catch (Exception e) {
             throw new TournamentParseException(url, e);
         }
 
+        LocalDate tournamentDate = null;
+        if (!parsed.results().isEmpty()) {
+            String dateStr = parsed.results().get(0).getDate();
+            if (dateStr != null && !dateStr.isEmpty()) {
+                try { tournamentDate = LocalDate.parse(dateStr); } catch (Exception ignored) {}
+            }
+        }
+
+        LocalDate finalTournamentDate = tournamentDate;
         tournamentRepository.findByExternalId(parsed.tournamentId())
-                .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder().externalId(parsed.tournamentId()).link(url).build()));
+                .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder()
+                        .externalId(parsed.tournamentId())
+                        .link(url)
+                        .date(finalTournamentDate)
+                        .time(parsed.time())
+                        .build()));
 
         tournamentResultService.processResults(
                 parsed.results(), player, parsed.tournamentId(),
@@ -113,6 +141,11 @@ public class TournamentProcessService {
                 parsed.hasRemoved(),
                 parsed.league());
 
-        return AddTournamentResponse.builder().message("Турнир обработан").tournamentId(parsed.tournamentId()).resultsCount(parsed.results().size()).results(parsed.results()).build();
+        return AddTournamentResponse.builder()
+                .message("Турнир обработан")
+                .tournamentId(parsed.tournamentId())
+                .resultsCount(parsed.results().size())
+                .results(parsed.results())
+                .build();
     }
 }

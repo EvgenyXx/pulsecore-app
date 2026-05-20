@@ -1,10 +1,10 @@
 package ru.pulsecore.app.modules.tournament.application;
 
-import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.core.dto.TournamentDto;
+import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

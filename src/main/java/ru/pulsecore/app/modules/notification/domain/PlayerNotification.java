@@ -1,9 +1,9 @@
 package ru.pulsecore.app.modules.notification.domain;
 
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
-import ru.pulsecore.app.modules.player.domain.Player;
 import jakarta.persistence.*;
 import lombok.*;
+import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 
 @Entity
 @Getter

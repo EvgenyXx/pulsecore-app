@@ -12,7 +12,17 @@ import java.util.Optional;
 
 public interface LineupRepository extends JpaRepository<Lineup, Long> {
 
-    Optional<Lineup> findByLeagueAndTimeAndDate(String league, String time, LocalDate date);
+    @Modifying
+    @Query(value = """
+    INSERT INTO lineup (date, league, time, players)
+    VALUES (:date, :league, :time, :players)
+    ON CONFLICT (league, time, date) DO UPDATE SET players = EXCLUDED.players
+""", nativeQuery = true)
+    void upsertLineup(@Param("date") LocalDate date,
+                      @Param("league") String league,
+                      @Param("time") String time,
+                      @Param("players") String players);
+
 
     List<Lineup> findByDate(LocalDate date);
 

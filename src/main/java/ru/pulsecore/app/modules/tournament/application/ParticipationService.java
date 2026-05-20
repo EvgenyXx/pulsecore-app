@@ -1,7 +1,7 @@
 package ru.pulsecore.app.modules.tournament.application;
 
-import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 
 @Service
 public class ParticipationService {

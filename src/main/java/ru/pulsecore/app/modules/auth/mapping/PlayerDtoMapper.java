@@ -1,8 +1,8 @@
 package ru.pulsecore.app.modules.auth.mapping;
 
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.auth.api.dto.AuthResponse;
 import ru.pulsecore.app.modules.player.domain.Player;
-import org.springframework.stereotype.Component;
 
 @Component
 public class PlayerDtoMapper {

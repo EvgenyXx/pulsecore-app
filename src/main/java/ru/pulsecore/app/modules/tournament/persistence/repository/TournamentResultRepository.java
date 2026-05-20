@@ -1,54 +1,33 @@
 package ru.pulsecore.app.modules.tournament.persistence.repository;
 
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.TopPlayerProjection;
+import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.tournament.api.dto.DailyIncomeProjection;
 import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;
-import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.tournament.api.dto.MonthlyIncomeProjection;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
 
-    // Добавить в TournamentResultRepository.java:
+    @Modifying
 
-    // 1. Статистика за конкретные даты (10, 11, 12 апреля)
-    @Query("SELECT new map(CAST(t.date AS LocalDate) as date, COALESCE(SUM(t.amount), 0) as sum, COUNT(t) as count) " +
-            "FROM TournamentResultEntity t " +
-            "WHERE t.player = :player AND t.date IN :dates " +
-            "GROUP BY t.date ORDER BY t.date")
-    List<Map<String, Object>> getStatsForDates(@Param("player") Player player,
-                                               @Param("dates") List<LocalDate> dates);
+    @Query("DELETE FROM TournamentResultEntity t WHERE t.player.id = :playerId")
+    int deleteByPlayerId(@Param("playerId") UUID playerId);
 
-    // 2. Помесячная статистика (для сравнения месяцев/годов)
-    @Query("SELECT new map(YEAR(t.date) as year, MONTH(t.date) as month, " +
-            "COALESCE(SUM(t.amount), 0) as sum, COUNT(t) as count) " +
-            "FROM TournamentResultEntity t " +
-            "WHERE t.player = :player AND t.date BETWEEN :start AND :end " +
-            "GROUP BY YEAR(t.date), MONTH(t.date) ORDER BY YEAR(t.date), MONTH(t.date)")
-    List<Map<String, Object>> getMonthlyBreakdown(@Param("player") Player player,
-                                                  @Param("start") LocalDate start,
-                                                  @Param("end") LocalDate end);
 
-    // 3. Годовая статистика с разбивкой по месяцам
-    @Query("SELECT new map(YEAR(t.date) as year, COALESCE(SUM(t.amount), 0) as sum, COUNT(t) as count) " +
-            "FROM TournamentResultEntity t " +
-            "WHERE t.player = :player AND t.date BETWEEN :start AND :end " +
-            "GROUP BY YEAR(t.date) ORDER BY YEAR(t.date)")
-    List<Map<String, Object>> getYearlyBreakdown(@Param("player") Player player,
-                                                 @Param("start") LocalDate start,
-                                                 @Param("end") LocalDate end);
 
 
 
@@ -155,9 +134,5 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             "ORDER BY SUM(tr.amount) DESC")
     List<LeagueStatProjection> getLeagueStats(Player player);
 
-    @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
-            "FROM TournamentResultEntity tr " +
-            "GROUP BY tr.league " +
-            "ORDER BY SUM(tr.amount) DESC")
-    List<LeagueStatProjection> getAllLeaguesStats();
+
 }

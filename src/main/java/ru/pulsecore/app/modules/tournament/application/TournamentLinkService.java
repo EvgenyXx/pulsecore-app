@@ -1,16 +1,16 @@
 package ru.pulsecore.app.modules.tournament.application;
 
-import ru.pulsecore.app.core.dto.TournamentLinkResult;
-import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentLinkStatus;
-import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
-import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
-import ru.pulsecore.app.modules.tournament.domain.TournamentStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.core.dto.TournamentLinkResult;
+import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
+import ru.pulsecore.app.modules.tournament.domain.TournamentStatus;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentLinkStatus;
+import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
 
 @Service
 @RequiredArgsConstructor

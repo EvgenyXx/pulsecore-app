@@ -1,7 +1,7 @@
 package ru.pulsecore.app.modules.notification.start;
 
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 
 import java.time.LocalTime;
 import java.time.ZoneId;

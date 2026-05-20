@@ -1,7 +1,7 @@
 package ru.pulsecore.app.modules.tournament.exception;
 
-import ru.pulsecore.app.modules.shared.exception.BaseException;
 import org.springframework.http.HttpStatus;
+import ru.pulsecore.app.modules.shared.exception.BaseException;
 
 public class TournamentResultNotFoundException extends BaseException {
     public TournamentResultNotFoundException(Long id) {

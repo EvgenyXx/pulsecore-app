@@ -1,11 +1,10 @@
 package ru.pulsecore.app.modules.tournament.persistence.entity;
 
-import ru.pulsecore.app.modules.player.domain.Player;
 import jakarta.persistence.*;
 import lombok.*;
+import ru.pulsecore.app.modules.player.domain.Player;
 
 import java.time.LocalDate;
-
 
 
 @Entity

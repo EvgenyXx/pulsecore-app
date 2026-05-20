@@ -1,8 +1,8 @@
 package ru.pulsecore.app.modules.tournament.persistence.entity;
 
-import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import jakarta.persistence.*;
 import lombok.*;
+import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

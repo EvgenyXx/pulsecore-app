@@ -1,5 +1,8 @@
 package ru.pulsecore.app.modules.tournament.calculation.strategy;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.DateConstants;
 import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.core.stats.PlacementCalculator;
@@ -7,12 +10,8 @@ import ru.pulsecore.app.core.stats.PointsCalculator;
 import ru.pulsecore.app.core.stats.PointsCalculatorFactory;
 import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-
 import java.util.HashMap;
 import java.util.Map;
 

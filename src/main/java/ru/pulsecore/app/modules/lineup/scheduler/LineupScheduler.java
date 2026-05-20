@@ -1,12 +1,12 @@
 package ru.pulsecore.app.modules.lineup.scheduler;
 
-import ru.pulsecore.app.modules.lineup.service.LineupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.modules.lineup.service.LineupService;
 
 @Slf4j
 @Component

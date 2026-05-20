@@ -1,8 +1,8 @@
 package ru.pulsecore.app.core.stats;
 
-import ru.pulsecore.app.core.model.Match;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.core.model.Match;
 
 @Component
 @Slf4j

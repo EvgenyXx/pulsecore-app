@@ -140,7 +140,10 @@
 
             <div id="topWeekBanner" class="hidden mb-4 p-4 glass rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/5" onclick="toggleTopWeek()">
                 <span class="text-2xl">🏆</span>
-                <div class="flex-1"><p class="text-sm font-semibold text-white">Топ недели</p><p class="text-xs text-gray-400" id="topWeekPreview">Нажмите чтобы посмотреть</p></div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-white">Зал славы</p>
+                    <p class="text-xs text-gray-400" id="topWeekPreview">Нажмите чтобы посмотреть</p>
+                </div>
                 <span class="text-gray-400" id="topWeekArrow">▼</span>
             </div>
             <div id="topWeekPanel" class="hidden glass rounded-2xl p-5 sm:p-6 mb-6 content-panel"></div>
@@ -156,39 +159,14 @@
 
     <script>
         let playerId = null, currentPlayerName = null, tournamentCart = [], editingTournamentResultId = null, primaryLeague = null;
+        let currentPeriod = 'week'; // 'week' или 'month'
 
-        // ==================== Pull-to-Refresh ====================
+        // Pull-to-Refresh
         const ptrIndicator = document.getElementById('ptrIndicator');
         let ptrStart = 0, ptrTriggered = false;
-
-        document.addEventListener('touchstart', e => {
-            if (window.scrollY <= 2) { ptrStart = e.touches[0].clientY; ptrTriggered = false; }
-        }, {passive: true});
-
-        document.addEventListener('touchmove', e => {
-            if (ptrTriggered || ptrStart === 0 || window.scrollY > 2) return;
-            if (e.touches[0].clientY - ptrStart > 50) {
-                ptrTriggered = true;
-                ptrIndicator.innerHTML = '<span class="ptr-spin"></span> Обновление...';
-                ptrIndicator.classList.add('active');
-            }
-        }, {passive: true});
-
-        document.addEventListener('touchend', () => {
-            if (ptrTriggered) {
-                loadDashboardWidgets();
-                loadTopWeekPreview();
-                setTimeout(() => {
-                    ptrIndicator.innerHTML = '✓ Обновлено';
-                    ptrIndicator.classList.add('done');
-                    setTimeout(() => {
-                        ptrIndicator.classList.remove('active', 'done');
-                        ptrIndicator.innerHTML = '';
-                    }, 1000);
-                }, 400);
-            }
-            ptrStart = 0;
-        });
+        document.addEventListener('touchstart', e => { if (window.scrollY <= 2) { ptrStart = e.touches[0].clientY; ptrTriggered = false; } }, {passive: true});
+        document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 2) return; if (e.touches[0].clientY - ptrStart > 50) { ptrTriggered = true; ptrIndicator.innerHTML = '<span class="ptr-spin"></span> Обновление...'; ptrIndicator.classList.add('active'); } }, {passive: true});
+        document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeekPreview(); setTimeout(() => { ptrIndicator.innerHTML = '✓ Обновлено'; ptrIndicator.classList.add('done'); setTimeout(() => { ptrIndicator.classList.remove('active', 'done'); ptrIndicator.innerHTML = ''; }, 1000); }, 400); } ptrStart = 0; });
 
         function toggleMobileMenu() { const m=document.getElementById('mobileMenu'),o=document.getElementById('mobileMenuOverlay'); if(m.classList.contains('translate-x-0')){m.classList.remove('translate-x-0');m.classList.add('translate-x-full');o.classList.add('hidden');}else{m.classList.remove('translate-x-full');m.classList.add('translate-x-0');o.classList.remove('hidden');} }
         function mobileNav(a,e){ toggleMobileMenu(); document.querySelectorAll('.mobile-nav-item').forEach(i=>{i.classList.remove('bg-amber-500/10','border-amber-500/20');i.style.borderColor='transparent';}); e.classList.add('bg-amber-500/10');e.style.borderColor='rgba(245,158,11,0.2)'; if(a==='home')goHome(); else showAction(a); }
@@ -202,44 +180,103 @@
         function highlightNav(id){ document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")); document.getElementById(id)?.classList.add("active"); }
 
         async function loadTopWeekPreview() {
-            try { const r=await fetch(`/api/player/${playerId}/top/week`,{credentials:"same-origin"}); if(!r.ok)return; const d=await r.json(); if(d&&d.top5&&d.top5.length>0){document.getElementById("topWeekBanner").classList.remove("hidden"); document.getElementById("topWeekPreview").textContent=`Лидер: ${d.top5[0].name||'—'} • Вы на ${d.playerPosition} месте`;} } catch(e){}
+            try {
+                const r = await fetch(`/api/player/${playerId}/top/week`, { credentials: "same-origin" });
+                if (!r.ok) return;
+                const d = await r.json();
+                if (d && d.top5 && d.top5.length > 0) {
+                    document.getElementById("topWeekBanner").classList.remove("hidden");
+                    document.getElementById("topWeekPreview").textContent = "Нажмите чтобы посмотреть";
+                }
+            } catch (e) {}
         }
 
         function toggleTopWeek() { const panel = document.getElementById("topWeekPanel"), arrow = document.getElementById("topWeekArrow"); if (panel.classList.contains("hidden")) { loadTopWeek(null); arrow.textContent = "▲"; } else { panel.classList.add("hidden"); arrow.textContent = "▼"; } }
         function switchLeague(league) { loadTopWeek(league); }
 
+        function switchPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.period-tab[onclick="switchPeriod('${period}')"]`)?.classList.add('active');
+            const activeLeague = document.querySelector('#leagueTabs .league-tab.active');
+            const league = activeLeague && activeLeague.textContent !== 'Все' ? activeLeague.textContent : null;
+            loadTopWeek(league);
+        }
+
         async function loadTopWeek(league) {
             const panel = document.getElementById("topWeekPanel");
-            const url = league ? `/api/player/${playerId}/top/week/${league}` : `/api/player/${playerId}/top/week`;
-            const leagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'], leagueLabels = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
-            let tabsHtml = `<div class="flex items-center justify-between flex-wrap gap-2 mb-3"><h3 class="font-bold text-white">🏆 Топ-5 на сегодня</h3><div class="flex gap-1.5 flex-wrap" id="leagueTabs">`;
+            const periodLabel = currentPeriod === 'week' ? '7 дней' : '30 дней';
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            const currentMonth = monthNames[new Date().getMonth()];
+            const topTitle = currentPeriod === 'week' ? 'недели' : `за ${currentMonth}`;
+
+            // Формируем URL в зависимости от периода
+            let baseUrl;
+            if (currentPeriod === 'week') {
+                baseUrl = league
+                    ? `/api/player/${playerId}/top/week/${league}`
+                    : `/api/player/${playerId}/top/week`;
+            } else {
+                baseUrl = league
+                    ? `/api/player/${playerId}/top/month/${league}`
+                    : `/api/player/${playerId}/top/month`;
+            }
+
+            const leagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
+            const leagueLabels = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
+
+            let periodTabs = `<div class="flex gap-1.5 flex-wrap mb-3">`;
+            periodTabs += `<span class="league-tab period-tab ${currentPeriod==='week'?'active':''}" onclick="switchPeriod('week')" style="cursor:pointer">Неделя</span>`;
+            periodTabs += `<span class="league-tab period-tab ${currentPeriod==='month'?'active':''}" onclick="switchPeriod('month')" style="cursor:pointer">Месяц</span>`;
+            periodTabs += `</div>`;
+
+            let tabsHtml = `<div class="flex items-center justify-between flex-wrap gap-2 mb-3"><h3 class="font-bold text-white">🏆 Топ ${topTitle}</h3><div class="flex gap-1.5 flex-wrap" id="leagueTabs">`;
             tabsHtml += `<span class="league-tab ${!league ? 'active' : ''}" onclick="switchLeague(null)">Все</span>`;
-            leagues.forEach(l => { const isActive = l === league, isMyLeague = l === primaryLeague; tabsHtml += `<span class="league-tab ${isActive ? 'active' : ''} ${isMyLeague ? 'my-league' : ''}" onclick="switchLeague('${l}')">${leagueLabels[l]}</span>`; });
-            tabsHtml += `</div><span class="topweek-close" onclick="toggleTopWeek()">✕</span></div><p class="text-gray-500 text-xs mb-3"> Рейтинг по призовым за 7 дней.</p>`;
-            panel.innerHTML = tabsHtml + `<div class="text-center py-4"></div>`; panel.classList.remove("hidden"); document.getElementById("topWeekArrow").textContent = "▲";
+            leagues.forEach(l => {
+                const isActive = l === league, isMyLeague = l === primaryLeague;
+                tabsHtml += `<span class="league-tab ${isActive ? 'active' : ''} ${isMyLeague ? 'my-league' : ''}" onclick="switchLeague('${l}')">${leagueLabels[l]}</span>`;
+            });
+            tabsHtml += `</div><span class="topweek-close" onclick="toggleTopWeek()">✕</span></div>`;
+
+            panel.innerHTML = periodTabs + tabsHtml + `<div class="text-center py-4"><div class="spinner mx-auto"></div></div>`;
+            panel.classList.remove("hidden");
+            document.getElementById("topWeekArrow").textContent = "▲";
+
             try {
-                const res = await fetch(url, { credentials: "same-origin" }); if (!res.ok) throw new Error(); const data = await res.json();
+                const res = await fetch(baseUrl, { credentials: "same-origin" });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+
                 let contentHtml = "";
-                if (!data.top5 || data.top5.length === 0) contentHtml = `<div class="text-center py-6"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет данных за неделю</p></div>`;
-                else { const medals = ['🥇', '🥈', '🥉']; const titles = league ? {} : {1: '👑 Рокфеллер', 2: '💰 Магнат', 3: '💎 Толстосум'}; contentHtml = data.top5.map((p, i) => { const prefix = i < 3 ? medals[i] : `${i+1}.`; const isMe = (i + 1) === data.playerPosition; const meClass = isMe ? 'bg-amber-500/10 border-l-2 border-amber-500' : ''; const title = titles[i+1] ? `<span class="text-xs text-amber-400 font-medium ml-1">· ${titles[i+1]}</span>` : ''; const displayName = (p.name || '') + (isMe ? ' 👈' : ''); return `<div class="flex items-center gap-3 py-2 px-3 rounded-lg ${meClass}"><span class="text-lg w-8 text-center">${prefix}</span><span class="text-white text-sm font-medium flex-1">${displayName}${title}</span><span class="text-gray-500 text-xs">${p.tournaments} тур.</span></div>`; }).join(""); if (data.playerPosition > 5 || (data.playerPosition > 0 && data.playerTotal === 0)) contentHtml += `<div class="border-t border-white/10 mt-3 pt-3 flex items-center gap-3 py-2 px-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500"><span class="text-lg w-8 text-center text-gray-400">${data.playerPosition}.</span><span class="text-white text-sm font-medium flex-1">👈 Вы</span><span class="text-gray-500 text-xs">${data.playerTournaments} тур.</span></div>`; }
-                panel.innerHTML = tabsHtml + contentHtml;
-            } catch(e) { panel.innerHTML = tabsHtml + `<div class="text-center py-6"><p class="text-red-400 text-sm">❌ Ошибка загрузки</p></div>`; }
+                if (!data.top5 || data.top5.length === 0) {
+                    contentHtml = `<div class="text-center py-6"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет данных за ${periodLabel}</p></div>`;
+                } else {
+                    const medals = ['🥇', '🥈', '🥉'];
+                    const titles = league ? {} : {1: '👑 Рокфеллер', 2: '💰 Магнат', 3: '💎 Толстосум'};
+                    contentHtml = data.top5.map((p, i) => {
+                        const prefix = i < 3 ? medals[i] : `${i+1}.`;
+                        const isMe = (i + 1) === data.playerPosition;
+                        const meClass = isMe ? 'bg-amber-500/10 border-l-2 border-amber-500' : '';
+                        const title = titles[i+1] ? `<span class="text-xs text-amber-400 font-medium ml-1">· ${titles[i+1]}</span>` : '';
+                        const displayName = (p.name || '') + (isMe ? ' 👈' : '');
+                        return `<div class="flex items-center gap-3 py-2 px-3 rounded-lg ${meClass}"><span class="text-lg w-8 text-center">${prefix}</span><span class="text-white text-sm font-medium flex-1">${displayName}${title}</span><span class="text-gray-500 text-xs">${p.tournaments} тур.</span></div>`;
+                    }).join("");
+
+                    if (data.playerPosition > 5 || (data.playerPosition > 0 && data.playerTotal === 0)) {
+                        contentHtml += `<div class="border-t border-white/10 mt-3 pt-3 flex items-center gap-3 py-2 px-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500"><span class="text-lg w-8 text-center text-gray-400">${data.playerPosition}.</span><span class="text-white text-sm font-medium flex-1">👈 Вы</span><span class="text-gray-500 text-xs">${data.playerTournaments} тур.</span></div>`;
+                    }
+                }
+                panel.innerHTML = periodTabs + tabsHtml + contentHtml;
+            } catch(e) {
+                panel.innerHTML = periodTabs + tabsHtml + `<div class="text-center py-6"><p class="text-red-400 text-sm">❌ Ошибка загрузки</p></div>`;
+            }
         }
 
         function loadDashboardWidgets() {
             const widgets=document.getElementById("dashboardWidgets");
             widgets.innerHTML=`<div class="col-span-full flex flex-col items-center py-12 sm:py-14 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
-
-            // Сначала проверяем подписку
-            fetch(`/api/player/${playerId}/subscription`,{credentials:"same-origin"}).then(r=>r.json()).then(sub=>{
-                if(!sub || !sub.active) {
-                    // Нет подписки — показываем заглушку
-                    widgets.innerHTML = subscriptionBlock();
-                    document.getElementById("topWeekBanner").classList.add("hidden");
-                    document.getElementById("proBadge").classList.add("hidden");
-                    return;
-                }
-                // Есть подписка — загружаем дашборд
+            fetch(`/api/player/subscription`,{credentials:"same-origin"}).then(r=>r.json()).then(sub=>{
+                if(!sub || !sub.active) { widgets.innerHTML = subscriptionBlock(); document.getElementById("topWeekBanner").classList.add("hidden"); document.getElementById("proBadge").classList.add("hidden"); return; }
                 fetch(`/api/player/${playerId}/dashboard`,{credentials:"same-origin"}).then(r=>r.json()).then(d=>{
                     const nameEl=document.getElementById("playerName"),proBadge=document.getElementById("proBadge"),titleBadge=document.getElementById("titleBadge"),subStatusText=document.getElementById("subStatusText");
                     primaryLeague=d.primaryLeague||'A'; nameEl.textContent=d.playerName;
@@ -250,10 +287,7 @@
                     if(d.upcomingLineups&&d.upcomingLineups.length>0){let cd=null; d.upcomingLineups.forEach(l=>{if(cd!==l.date){if(cd!==null)lineupHtml+='</div>';cd=l.date;const cc=l.isSoon?'soon':'normal';const bd=l.isSoon?'<span class="text-xs bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full font-medium ml-2">🔜 Ближайший</span>':'';lineupHtml+=`<div class="lineup-card ${cc}"><div class="flex items-center justify-between mb-3"><span class="text-white font-semibold text-sm">📅 ${l.date}</span>${bd}</div>`;} if(l.inLineup){const pl=l.players?l.players.split(', ').join(' • '):'';lineupHtml+=`<div class="lineup-slot playing"><div class="flex items-center justify-between flex-wrap gap-2"><span class="text-white text-sm font-medium">⏰ ${l.time}</span><span class="text-xs font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">🏆 ${l.league}</span></div><p class="text-xs text-gray-400 mt-2">👥 ${pl}</p><p class="text-xs text-amber-400 mt-1 font-medium">✅ Вы в составе</p></div>`;} else {lineupHtml+=`<div class="flex flex-col items-center py-4 text-gray-500"><span class="text-2xl mb-1">😴</span><p class="text-sm">Пока не играете</p></div>`;}});lineupHtml+='</div>';} else {lineupHtml+='<div class="flex flex-col items-center py-6 text-gray-500"><span class="text-3xl mb-2">📭</span><p class="text-sm">Составы пока не загружены</p></div>';}
                     lineupHtml+='</div>';widgets.innerHTML=lastResultHtml+lineupHtml;
                 }).catch(()=>{widgets.innerHTML=`<div class="col-span-full text-center py-12 sm:py-14 text-gray-400">❌ Ошибка загрузки</div>`;});
-            }).catch(()=>{
-                // Ошибка проверки подписки — показываем заглушку
-                widgets.innerHTML = subscriptionBlock();
-            });
+            }).catch(()=>{ widgets.innerHTML = subscriptionBlock(); });
         }
 
         function showAction(a){document.getElementById("homePage").style.display="none";document.getElementById("actionPage").classList.remove("hidden");highlightNav(`nav-${a==='addTournament'?'add':a}`);const c=document.getElementById("actionContent"),t=document.getElementById("actionTitle"),s=document.getElementById("actionSubtitle");if(a==='sum'){t.textContent="💰 Сумма за период";s.textContent="Подсчёт заработка и список турниров";c.innerHTML=`<div class="glass rounded-2xl p-6 sm:p-8 text-center" id="sumCheck"><div class="spinner mx-auto mb-4"></div><p class="text-gray-400 text-sm sm:text-base">Проверка доступа...</p></div>`;fetch(`/api/player/${playerId}/sum?start=2026-01-01&end=${new Date().toISOString().split("T")[0]}`,{credentials:"same-origin"}).then(r=>{if(r.status===402)throw{status:402};document.getElementById("sumCheck").innerHTML=`<div class="info-banner"><p class="text-sm text-amber-200 font-medium mb-1">📖 Как пользоваться:</p><p class="text-xs text-gray-300">1. Выберите дату начала и дату окончания (или только одну)</p><p class="text-xs text-gray-300">2. Нажмите «Рассчитать»</p><p class="text-xs text-gray-300">3. Система покажет общую сумму и список турниров с возможностью корректировки ✏️</p><p class="text-xs text-red-300 mt-2">⚠️ Максимальный диапазон — 90 дней, максимум 50 турниров</p></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"><div><label class="text-xs sm:text-sm text-gray-400 mb-1.5 block font-medium">📅 Дата с</label><input id="dateStart" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div><div><label class="text-xs sm:text-sm text-gray-400 mb-1.5 block font-medium">📅 Дата по (необязательно)</label><input id="dateEnd" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div></div><button onclick="executeSum()" id="sumBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-yellow-600 border-0 font-semibold btn-3d">🧮 Рассчитать</button><p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p><div id="sumLoading" class="hidden mt-4 text-center"><span class="spinner-sm mr-2"></span><span class="text-amber-300/80 text-sm">Считаем...</span></div>`;}).catch(()=>{document.getElementById("sumCheck").innerHTML=subscriptionBlock();});c.innerHTML+=`<div id="actionResult" class="mt-6"></div>`;}else if(a==='addTournament'){t.textContent="🔗 Добавить турниры";s.textContent="Поиск по диапазону дат — авто-добавление в корзину";c.innerHTML=`<div class="info-banner"><p class="text-sm text-amber-200 font-medium mb-1">📖 Как пользоваться:</p><p class="text-xs text-gray-300">1. Выберите диапазон дат (макс. 30 дней) и нажмите «Найти»</p><p class="text-xs text-gray-300">2. Новые турниры (🆕) попадут в корзину. Сохранённые (✓) — пропускаются</p><p class="text-xs text-gray-300">3. Нажмите «Обработать всё» — система загрузит результаты</p></div><div class="glass rounded-2xl p-5 sm:p-6 md:p-7 mb-4"><h3 class="text-white font-semibold mb-3">🔍 Поиск турниров (макс. 30 дней)</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3"><div><label class="text-xs text-gray-400 mb-1 block">Дата с</label><input id="tournamentDateStart" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div><div><label class="text-xs text-gray-400 mb-1 block">Дата по</label><input id="tournamentDateEnd" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div></div><button onclick="searchTournamentsByDateRange()" id="searchBtn" class="btn bg-amber-600 hover:bg-amber-500 text-white border-0 font-semibold w-full sm:w-auto">🔍 Найти</button><div id="tournamentList" class="mt-4 hidden"></div></div><div class="glass rounded-2xl p-5 sm:p-6 md:p-7 mb-4"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="text-white font-semibold">📋 Корзина</h3><div class="flex items-center gap-2"><span id="cartCount" class="text-xs text-gray-400">0 шт.</span><button onclick="clearCart()" class="btn btn-xs bg-gray-600 hover:bg-gray-500 text-white border-0">Очистить</button></div></div><div id="cartList" class="space-y-2 mb-3 max-h-64 overflow-y-auto"><p class="text-gray-500 text-sm text-center py-4">Корзина пуста</p></div><button onclick="processCart()" id="processCartBtn" class="btn btn-primary w-full bg-gradient-to-r from-emerald-500 to-teal-600 border-0 font-semibold btn-3d" disabled>⚡ Обработать всё</button></div><p id="addError" class="text-error text-xs sm:text-sm hidden mb-2"></p><p id="addSuccess" class="text-success text-xs sm:text-sm hidden mb-2"></p><div id="actionResult" class="mt-4"></div>`;}}

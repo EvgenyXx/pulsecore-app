@@ -1,13 +1,13 @@
 package ru.pulsecore.app.modules.tournament.calculation.strategy.removed;
 
-import ru.pulsecore.app.modules.tournament.calculation.strategy.StrategyType;
-import ru.pulsecore.app.modules.tournament.calculation.strategy.DefaultMatchCalculationStrategy;
-import ru.pulsecore.app.modules.tournament.calculation.strategy.MatchCalculationStrategy;
-import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
-import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.modules.tournament.calculation.strategy.DefaultMatchCalculationStrategy;
+import ru.pulsecore.app.modules.tournament.calculation.strategy.MatchCalculationStrategy;
+import ru.pulsecore.app.modules.tournament.calculation.strategy.StrategyType;
+import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
+import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 
 @Component
 @RequiredArgsConstructor

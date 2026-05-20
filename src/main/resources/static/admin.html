@@ -69,7 +69,8 @@
 <aside class="hidden md:flex glass-nav w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-3 mb-10 px-1"><div class="w-11 h-11 rounded-xl bg-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/10"><span class="text-2xl">🛡️</span></div><div><h1 class="text-lg font-bold bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent tracking-tight">PulseCore</h1><p class="text-xs text-emerald-400/60">Админ-панель</p></div></div>
     <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item active" id="nav-subscriptions" onclick="showSection('subscriptions')"><span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписки</div></div></div>
+        <div class="nav-item active" id="nav-tournaments" onclick="showSection('tournaments')"><span class="nav-icon">🏆</span><div><div class="font-medium text-sm">Управление турнирами</div></div></div>
+        <div class="nav-item" id="nav-subscriptions" onclick="showSection('subscriptions')"><span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписки</div></div></div>
         <div class="nav-item" id="nav-roles" onclick="showSection('roles')"><span class="nav-icon">👑</span><div><div class="font-medium text-sm">Роли</div></div></div>
         <div class="nav-item" id="nav-prices" onclick="showSection('prices')"><span class="nav-icon">💵</span><div><div class="font-medium text-sm">Тарифы подписки</div></div></div>
         <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')"><span class="nav-icon">🧮</span><div><div class="font-medium text-sm">Расчёт</div></div></div>
@@ -81,7 +82,20 @@
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8 lg:p-10 pb-24 md:pb-10">
     <div class="max-w-3xl mx-auto w-full content-panel">
 
-        <div id="section-subscriptions">
+        <div id="section-tournaments">
+            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">🏆 Управление турнирами</h2><p class="text-emerald-400/50 mt-1 text-sm">Поиск игрока и управление его турнирами</p></div>
+            <div class="glass rounded-2xl p-4 sm:p-6 mb-5"><label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label><input id="tourSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('tour')"><div id="tourSearchResults" class="mt-3 space-y-2 hidden"></div></div>
+            <div id="tourSelectedPlayer" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
+                <div class="flex justify-between items-start mb-4 flex-wrap gap-2"><div><p class="text-xs text-emerald-300/60 uppercase tracking-wider mb-1">Выбранный игрок</p><p class="text-white font-semibold text-base sm:text-lg" id="tourSelName"></p><p class="text-xs sm:text-sm text-emerald-300/40" id="tourSelEmail"></p></div></div>
+                <div class="flex gap-3 flex-wrap">
+                    <button onclick="deletePlayerTournaments()" class="btn btn-sm btn-danger flex-1">🗑 Удалить все турниры</button>
+                    <button onclick="resyncPlayerTournaments()" class="btn btn-sm btn-primary flex-1">🔄 Перезагрузить историю</button>
+                </div>
+                <p id="tourActionsMsg" class="text-xs text-center mt-3 hidden"></p>
+            </div>
+        </div>
+
+        <div id="section-subscriptions" class="hidden">
             <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">💳 Подписки</h2><p class="text-emerald-400/50 mt-1 text-sm">Поиск игроков и управление подписками</p></div>
             <div class="glass rounded-2xl p-4 sm:p-6 mb-5"><label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label><input id="subSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('sub')"><div id="subSearchResults" class="mt-3 space-y-2 hidden"></div></div>
             <div id="subSelectedPlayer" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
@@ -130,9 +144,9 @@
 </main>
 
 <div class="mobile-nav">
-    <div class="mobile-nav-item active" id="mob-nav-subscriptions" onclick="showSection('subscriptions')"><span class="m-icon">💳</span>Подписки</div>
+    <div class="mobile-nav-item active" id="mob-nav-tournaments" onclick="showSection('tournaments')"><span class="m-icon">🏆</span>Турниры</div>
+    <div class="mobile-nav-item" id="mob-nav-subscriptions" onclick="showSection('subscriptions')"><span class="m-icon">💳</span>Подписки</div>
     <div class="mobile-nav-item" id="mob-nav-roles" onclick="showSection('roles')"><span class="m-icon">👑</span>Роли</div>
-    <div class="mobile-nav-item" id="mob-nav-prices" onclick="showSection('prices')"><span class="m-icon">💵</span>Цены</div>
     <div class="mobile-nav-item" id="mob-nav-calculate" onclick="showSection('calculate')"><span class="m-icon">🧮</span>Расчёт</div>
     <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Дашборд</a>
     <div class="mobile-nav-item" onclick="logout()"><span class="m-icon">🚪</span>Выйти</div>
@@ -153,57 +167,72 @@
         document.querySelectorAll('.mobile-nav-item').forEach(e=>e.classList.remove('active'));
         document.getElementById('nav-'+s)?.classList.add('active');
         document.getElementById('mob-nav-'+s)?.classList.add('active');
-        document.getElementById('section-subscriptions').classList.toggle('hidden', s!=='subscriptions');
-        document.getElementById('section-roles').classList.toggle('hidden', s!=='roles');
-        document.getElementById('section-prices').classList.toggle('hidden', s!=='prices');
-        document.getElementById('section-calculate').classList.toggle('hidden', s!=='calculate');
-    }
-
-    async function loadCurrentPrices() {
-        const msg=document.getElementById("pricesMsg"); msg.classList.add("hidden");
-        try { const r=await fetch("/api/prices"); if(!r.ok)throw new Error(); const p=await r.json(); document.getElementById("price1Input").value=p[1]||0; document.getElementById("price2Input").value=p[2]||0; msg.textContent="✅ Текущие цены загружены"; msg.className="text-xs text-center mt-3 text-emerald-400"; msg.classList.remove("hidden"); } catch(e){ msg.textContent="❌ Ошибка загрузки цен"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); }
-    }
-
-    async function updatePrices() {
-        const msg=document.getElementById("pricesMsg"), btn=document.getElementById("updatePricesBtn"), p1=parseInt(document.getElementById("price1Input").value), p2=parseInt(document.getElementById("price2Input").value);
-        if(!p1||!p2||p1<1||p2<1){ msg.textContent="❌ Введите корректные цены"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); return; }
-        btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Сохраняем...'; msg.classList.add("hidden");
-        try { const r=await fetch("/api/admin/prices",{method:"PUT",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({"1":p1,"2":p2})}); if(!r.ok)throw new Error(); msg.textContent="✅ Цены обновлены"; msg.className="text-xs text-center mt-3 text-emerald-400"; msg.classList.remove("hidden"); } catch(e){ msg.textContent="❌ Ошибка"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); } finally { btn.disabled=false; btn.innerHTML="💾 Сохранить цены"; }
+        ['tournaments','subscriptions','roles','prices','calculate'].forEach(sec => {
+            document.getElementById('section-'+sec).classList.toggle('hidden', sec!==s);
+        });
     }
 
     async function searchPlayers(section) {
-        const q=document.getElementById(section==='sub'?'subSearchInput':'roleSearchInput').value.trim();
-        const results=document.getElementById(section==='sub'?'subSearchResults':'roleSearchResults');
+        const inputId = section==='sub'?'subSearchInput':section==='role'?'roleSearchInput':'tourSearchInput';
+        const resultsId = section==='sub'?'subSearchResults':section==='role'?'roleSearchResults':'tourSearchResults';
+        const q=document.getElementById(inputId).value.trim();
+        const results=document.getElementById(resultsId);
         if(q.length<2){results.classList.add("hidden");return;}
         try {
             const r=await fetch(`/api/player/search?q=${encodeURIComponent(q)}`); if(!r.ok)throw new Error();
             const players=await r.json();
-            const subs={};
-            await Promise.all(players.map(async p=>{ try { const sr=await fetch(`/api/player/${p.id}/subscription`); if(sr.ok){subs[p.id]=await sr.json();playersCache[p.id]=subs[p.id];} } catch(e){} }));
             results.classList.remove("hidden");
             results.innerHTML=players.map(p=>{
-                const sub=subs[p.id];
-                const badge=sub&&sub.active?`<span class="badge badge-sm badge-active">Подписка до ${new Date(sub.expiresAt).toLocaleDateString("ru-RU")}</span>`:'<span class="badge badge-sm badge-inactive">Нет подписки</span>';
-                return `<div class="player-card flex justify-between items-center" onclick="selectPlayer('${p.id}','${p.name.replace(/'/g,"\\'")}','${p.email.replace(/'/g,"\\'")}','${section}')"><div><div class="flex items-center gap-2 flex-wrap"><p class="text-white text-sm font-semibold">${p.name}</p>${badge}</div><p class="text-xs text-emerald-300/30 mt-0.5">${p.email}</p></div><span class="text-emerald-400 text-sm flex-shrink-0 ml-2">Выбрать →</span></div>`;
+                return `<div class="player-card flex justify-between items-center" onclick="selectPlayer('${p.id}','${p.name.replace(/'/g,"\\'")}','${p.email.replace(/'/g,"\\'")}','${section}')"><div><p class="text-white text-sm font-semibold">${p.name}</p><p class="text-xs text-emerald-300/30 mt-0.5">${p.email}</p></div><span class="text-emerald-400 text-sm flex-shrink-0 ml-2">Выбрать →</span></div>`;
             }).join("");
         } catch(e){ results.innerHTML='<p class="text-red-400 text-sm text-center py-3">❌ Ошибка загрузки</p>'; }
     }
 
     function selectPlayer(id,name,email,section){
         selectedPlayerId=id;
-        const p=section==='sub'?'sub':'role';
-        document.getElementById(p+'SelName').textContent=name;
-        document.getElementById(p+'SelEmail').textContent=email;
-        document.getElementById(p+'SelectedPlayer').classList.remove('hidden');
-        document.getElementById(p+'SearchResults').classList.add('hidden');
-        document.getElementById(p+'Msg').classList.add('hidden');
-        refreshPlayerUI(section);
+        if(section==='tour'){
+            document.getElementById('tourSelName').textContent=name;
+            document.getElementById('tourSelEmail').textContent=email;
+            document.getElementById('tourSelectedPlayer').classList.remove('hidden');
+            document.getElementById('tourSearchResults').classList.add('hidden');
+            document.getElementById('tourActionsMsg').classList.add('hidden');
+        } else {
+            const p=section==='sub'?'sub':'role';
+            document.getElementById(p+'SelName').textContent=name;
+            document.getElementById(p+'SelEmail').textContent=email;
+            document.getElementById(p+'SelectedPlayer').classList.remove('hidden');
+            document.getElementById(p+'SearchResults').classList.add('hidden');
+            document.getElementById(p+'Msg').classList.add('hidden');
+            refreshPlayerUI(section);
+        }
+    }
+
+    async function deletePlayerTournaments() {
+        if(!selectedPlayerId)return;
+        const msg=document.getElementById('tourActionsMsg');
+        msg.textContent='⏳ Удаление...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
+        try{
+            const r=await fetch(`/api/admin/players/${selectedPlayerId}/tournaments`,{method:'DELETE'});
+            const d=await r.json();
+            msg.textContent=`✅ ${d.message}`; msg.className='text-xs text-center text-emerald-400';
+        }catch(e){ msg.textContent='❌ Ошибка'; msg.className='text-xs text-center text-red-400'; }
+    }
+
+    async function resyncPlayerTournaments() {
+        if(!selectedPlayerId)return;
+        const msg=document.getElementById('tourActionsMsg');
+        msg.textContent='⏳ Запуск фоновой загрузки...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
+        try{
+            const r=await fetch(`/api/admin/players/${selectedPlayerId}/tournaments/resync`,{method:'POST'});
+            const d=await r.json();
+            msg.textContent=`✅ ${d.message}`; msg.className='text-xs text-center text-emerald-400';
+        }catch(e){ msg.textContent='❌ Ошибка'; msg.className='text-xs text-center text-red-400'; }
     }
 
     async function refreshPlayerUI(section){
         if(!selectedPlayerId)return;
         const p=section==='sub'?'sub':'role';
-        const sr=await fetch(`/api/player/${selectedPlayerId}/subscription`);
+        const sr=await fetch(ADMIN+selectedPlayerId+'/subscription');
         if(sr.ok)playersCache[selectedPlayerId]=await sr.json();
         const cached=playersCache[selectedPlayerId];
         let badges='';
@@ -268,67 +297,37 @@
         const errorEl = document.getElementById('calcError');
         const resultEl = document.getElementById('calcResult');
         const loadingEl = document.getElementById('calcLoading');
-
-        errorEl.classList.add('hidden');
-        resultEl.classList.add('hidden');
-
-        if (!name || !startDate) {
-            errorEl.textContent = '❌ Заполните имя и дату начала';
-            errorEl.classList.remove('hidden');
-            return;
-        }
-
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-sm"></span> Считаем...';
-        loadingEl.classList.remove('hidden');
-
+        errorEl.classList.add('hidden'); resultEl.classList.add('hidden');
+        if (!name || !startDate) { errorEl.textContent = '❌ Заполните имя и дату начала'; errorEl.classList.remove('hidden'); return; }
+        btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Считаем...'; loadingEl.classList.remove('hidden');
         try {
-            const res = await fetch('/api/admin/tournaments/calculate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ name, startDate, endDate: endDate || startDate })
-            });
-
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-
-            if (!data.tournaments || data.tournaments.length === 0) {
-                errorEl.textContent = 'ℹ️ Турниры не найдены';
-                errorEl.classList.remove('hidden');
-                return;
-            }
-
+            const res = await fetch('/api/admin/tournaments/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ name, startDate, endDate: endDate || startDate }) });
+            if (!res.ok) throw new Error(); const data = await res.json();
+            if (!data.tournaments || data.tournaments.length === 0) { errorEl.textContent = 'ℹ️ Турниры не найдены'; errorEl.classList.remove('hidden'); return; }
             document.getElementById('calcTotal').textContent = formatMoney(data.totalAmount);
             document.getElementById('calcCount').textContent = data.tournamentCount;
-
-            let hasRemoved = false;
             const tbody = document.getElementById('calcTableBody');
             tbody.innerHTML = data.tournaments.map((t, i) => {
-                let d = t.date || '—';
-                if (d.includes(' ')) d = d.split(' ')[0];
+                let d = t.date || '—'; if (d.includes(' ')) d = d.split(' ')[0];
                 try { const dt = new Date(d); if (!isNaN(dt.getTime())) d = dt.toLocaleDateString('ru-RU'); } catch(e) {}
-                if (t.hasRemoved) hasRemoved = true;
                 const cls = t.hasRemoved ? 'result-row hover:bg-white/5 border-l-2 border-amber-500/60 bg-amber-500/5' : 'result-row hover:bg-white/5';
-                const warn = t.hasRemoved ? '<span class="text-amber-400 text-xs ml-1">⚠️</span>' : '';
-                return `<tr class="${cls}" style="animation-delay:${i*0.05}s">
-                <td class="text-gray-400">${i+1}</td>
-                <td class="text-white text-sm">${d}${warn}</td>
-                <td class="text-gray-300 text-sm">${t.tournamentTitle || '—'}</td>
-                <td class="${t.hasRemoved ? 'text-amber-400' : 'text-emerald-400'} font-medium">${formatMoney(t.amount)}</td>
-            </tr>`;
+                return `<tr class="${cls}" style="animation-delay:${i*0.05}s"><td class="text-gray-400">${i+1}</td><td class="text-white text-sm">${d}</td><td class="text-gray-300 text-sm">${t.tournamentTitle||'—'}</td><td class="${t.hasRemoved?'text-amber-400':'text-emerald-400'} font-medium">${formatMoney(t.amount)}</td></tr>`;
             }).join('');
-
-            if (hasRemoved) document.getElementById('calcWarning')?.classList.remove('hidden');
             resultEl.classList.remove('hidden');
-        } catch (e) {
-            errorEl.textContent = '❌ Ошибка';
-            errorEl.classList.remove('hidden');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '🧮 Посчитать';
-            loadingEl.classList.add('hidden');
-        }
+        } catch (e) { errorEl.textContent = '❌ Ошибка'; errorEl.classList.remove('hidden'); }
+        finally { btn.disabled = false; btn.innerHTML = '🧮 Посчитать'; loadingEl.classList.add('hidden'); }
+    }
+
+    async function loadCurrentPrices() {
+        const msg=document.getElementById("pricesMsg"); msg.classList.add("hidden");
+        try { const r=await fetch("/api/prices"); if(!r.ok)throw new Error(); const p=await r.json(); document.getElementById("price1Input").value=p[1]||0; document.getElementById("price2Input").value=p[2]||0; msg.textContent="✅ Текущие цены загружены"; msg.className="text-xs text-center mt-3 text-emerald-400"; msg.classList.remove("hidden"); } catch(e){ msg.textContent="❌ Ошибка загрузки цен"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); }
+    }
+
+    async function updatePrices() {
+        const msg=document.getElementById("pricesMsg"), btn=document.getElementById("updatePricesBtn"), p1=parseInt(document.getElementById("price1Input").value), p2=parseInt(document.getElementById("price2Input").value);
+        if(!p1||!p2||p1<1||p2<1){ msg.textContent="❌ Введите корректные цены"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); return; }
+        btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Сохраняем...'; msg.classList.add("hidden");
+        try { const r=await fetch("/api/admin/prices",{method:"PUT",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({"1":p1,"2":p2})}); if(!r.ok)throw new Error(); msg.textContent="✅ Цены обновлены"; msg.className="text-xs text-center mt-3 text-emerald-400"; msg.classList.remove("hidden"); } catch(e){ msg.textContent="❌ Ошибка"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); } finally { btn.disabled=false; btn.innerHTML="💾 Сохранить цены"; }
     }
 
     async function logout(){ await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}); window.location.replace("/"); }

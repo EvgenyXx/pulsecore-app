@@ -1,10 +1,10 @@
 package ru.pulsecore.app.modules.tournament.extraction;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.modules.tournament.calculation.MatchStage;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedStage;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

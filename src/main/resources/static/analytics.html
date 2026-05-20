@@ -141,11 +141,9 @@
             const user = await r.json();
             playerId = user.id;
 
-            // Проверка подписки
-            const subRes = await fetch(`/api/player/${playerId}/subscription`);
+            const subRes = await fetch(`/api/player/subscription`);
             const subData = await subRes.json();
             if (!subData || !subData.active) {
-                // Скрываем всё и показываем только заглушку
                 document.getElementById("loading").innerHTML = "";
                 document.getElementById("loading").classList.add("hidden");
                 document.querySelector("main").innerHTML =
@@ -186,9 +184,19 @@
 
     async function loadLeagueAvg() {
         if (!playerId) return;
-        try { const r = await fetch("/api/player/analytics", { credentials: "same-origin" }); if (!r.ok) throw new Error(); const d = await r.json();
+        try {
+            const r = await fetch("/api/player/analytics", { credentials: "same-origin" });
+            if (!r.ok) throw new Error();
+            const d = await r.json();
             document.getElementById("playerAvgPill").textContent = fmt(d.playerAverage);
-            if (d.closestLeague) { const l = d.leagueStats.find(x => x.league === d.closestLeague); if (l) { const df = d.playerAverage - l.averageAmount; document.getElementById("closestInfo").textContent = `Вы зарабатываете на ${df >= 0 ? '+' : ''}${fmt(Math.abs(df))} ${df >= 0 ? 'больше' : 'меньше'}, чем в среднем в лиге ${d.closestLeague}`; } }
+            if (d.closestLeague) {
+                const l = d.leagueStats.find(x => x.league === d.closestLeague);
+                if (l) {
+                    const df = d.playerAverage - l.averageAmount;
+                    document.getElementById("closestInfo").textContent =
+                        `Вы зарабатываете на ${df >= 0 ? '+' : ''}${fmt(Math.abs(df))} ${df >= 0 ? 'больше' : 'меньше'}, чем в среднем в лиге ${d.closestLeague}`;
+                }
+            }
             buildLeagueChart(d);
         } catch (e) {}
     }

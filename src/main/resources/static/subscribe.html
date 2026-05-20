@@ -170,7 +170,7 @@
 
     async function loadSubscription() {
         try {
-            const res = await fetch(`/api/player/${playerId}/subscription`, { credentials: "same-origin" });
+            const res = await fetch(`/api/player/subscription`, { credentials: "same-origin" });
             if (res.ok) {
                 const sub = await res.json();
                 if (sub && sub.active) {
@@ -194,8 +194,7 @@
     async function handlePay() {
         if (!selectedPlan) return;
         try {
-            const res = await fetch(`/api/player/${playerId}/pay?months=${selectedPlan}`, { method: "POST", credentials: "same-origin" });
-            const data = await res.json();
+            const res = await fetch(`/api/player/pay?months=${selectedPlan}`, { method: "POST", credentials: "same-origin" });            const data = await res.json();
             window.location.href = data.confirmationUrl;
         } catch (e) { alert("Ошибка при создании платежа"); }
     }

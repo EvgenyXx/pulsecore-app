@@ -1,11 +1,11 @@
 package ru.pulsecore.app.modules.tournament.application;
 
-import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
-import ru.pulsecore.app.modules.tournament.mapper.TournamentStatusMapper;
-import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
+import ru.pulsecore.app.modules.tournament.mapper.TournamentStatusMapper;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
+import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
 
 import java.time.LocalDate;
 

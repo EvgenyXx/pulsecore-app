@@ -1,8 +1,8 @@
 package ru.pulsecore.app.modules.lineup.mapper;
 
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.lineup.domain.Lineup;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 

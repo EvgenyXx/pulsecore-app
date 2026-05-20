@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.config.SecurityUser;
-import ru.pulsecore.app.modules.auth.api.dto.*;
+import ru.pulsecore.app.modules.auth.api.dto.ForgotPasswordRequest;
+import ru.pulsecore.app.modules.auth.api.dto.ResetPasswordRequest;
+import ru.pulsecore.app.modules.auth.api.dto.VerifyPasswordRequest;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
-import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.player.service.auth.PlayerPasswordResetService;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 
 import java.util.UUID;
 

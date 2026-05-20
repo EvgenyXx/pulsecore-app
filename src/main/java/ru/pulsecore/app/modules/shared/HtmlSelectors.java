@@ -29,6 +29,7 @@ public final class HtmlSelectors {
 
     public static final String SHORTLINK = "link[rel=shortlink]";
     public static final String DATE = "table.info_table tr:contains(Дата:) td";
+    public static final String TIME = "table.info_table th:contains(Время) + td";
 
     // ===== ИНФО ТУРНИРА =====
 
@@ -70,4 +71,7 @@ public final class HtmlSelectors {
     public static final String PLAYER_ALT = ".ml_tour_game_plr";
     public static final String SCORE_ALT = ".ml_game_res_points";
     public static final String SETS_ALT = ".ml_game_res_sets";
+
+
+
 }

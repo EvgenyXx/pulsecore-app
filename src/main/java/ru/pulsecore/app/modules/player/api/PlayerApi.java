@@ -2,45 +2,45 @@ package ru.pulsecore.app.modules.player.api;
 
 public final class PlayerApi {
 
-
-    public static final String DAILY_INCOME = "/{id}/daily-income";
-    public static final String CHAT = "/chat";
-
     private PlayerApi() {}
 
-    public static final String MONTHLY_INCOME = "/{id}/monthly-income";
     public static final String BASE_PATH = "/api/player";
 
-    // ── PlayerController ──────────────────────
-    public static final String PROFILE = "/{id}/profile";
-    public static final String CHANGE_PASSWORD = "/{id}/change-password";
+    // ── PlayerController (все через @CurrentPlayer) ──
+    public static final String PROFILE = "/profile";
+    public static final String CHANGE_PASSWORD = "/change-password";
     public static final String SEARCH = "/search";
     public static final String SEARCH_PARAM = "q";
-    public static final String DELETE_ACCOUNT = "/{id}";
-    public static final String NOTIFICATIONS = "/{id}/notifications";
-    public static final String NOTIFICATIONS_STATUS = "/{id}/notifications";
+    public static final String DELETE_ACCOUNT = "/account";
+    public static final String NOTIFICATIONS = "/notifications";
+    public static final String NOTIFICATIONS_STATUS = "/notifications/status";
 
-    // ── PlayerStatsController ─────────────────
+    // ── PlayerStatsController (пока с {id}, не трогали) ──
     public static final String DASHBOARD = "/{id}/dashboard";
     public static final String SUM = "/{id}/sum";
     public static final String TOP_WEEK = "/top/week";
     public static final String TOP_WEEK_POSITION = "/{id}/top/week";
     public static final String TOP_WEEK_POSITION_BY_LEAGUE = "/{id}/top/week/{league}";
 
-    // ── SubscriptionController ────────────────
+    // ── SubscriptionController (@CurrentPlayer) ──
+    public static final String SUBSCRIPTION = "/subscription";
 
-    public static final String SUBSCRIPTION = "/{id}/subscription";
+    // ── PaymentController (@CurrentPlayer) ──
+    public static final String PAY = "/pay";
 
-    // ── PaymentController ─────────────────────
-    public static final String PAY = "/{id}/pay";
+    // ── Analytics + AI ──
+    public static final String ANALYTICS = "/analytics";
+    public static final String CHAT = "/chat";
+    public static final String WEEKLY_ANALYSIS = "/weekly-analysis";
+    public static final String MONTHLY_INCOME = "/{id}/monthly-income";
+    public static final String DAILY_INCOME = "/{id}/daily-income";
 
-    // ── WebhookController ─────────────────────
+    // ── Webhook (отдельный) ──
     public static final String WEBHOOK = "/api/payment/webhook";
 
 
-
-
-
-    //ANALYTICS
-    public static final String ANALYTICS = "/analytics";
+    // ==================== PlayerApi.java (добавить константы) ====================
+    public static final String TOP_MONTH = "/top/month";
+    public static final String TOP_MONTH_POSITION = "/{id}/top/month";
+    public static final String TOP_MONTH_POSITION_BY_LEAGUE = "/{id}/top/month/{league}";
 }

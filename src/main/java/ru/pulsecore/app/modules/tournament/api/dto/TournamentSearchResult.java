@@ -1,8 +1,8 @@
 package ru.pulsecore.app.modules.tournament.api.dto;
 
-import ru.pulsecore.app.core.dto.TournamentDto;
 import lombok.Builder;
 import lombok.Data;
+import ru.pulsecore.app.core.dto.TournamentDto;
 
 @Data
 @Builder

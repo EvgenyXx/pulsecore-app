@@ -1,9 +1,9 @@
 package ru.pulsecore.app.core.dto;
 
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentLinkStatus;
-import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentLinkStatus;
 
 @Data
 @AllArgsConstructor

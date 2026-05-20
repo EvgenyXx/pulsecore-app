@@ -1,12 +1,13 @@
 package ru.pulsecore.app.modules.notification.finish;
 
-import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
-import ru.pulsecore.app.modules.notification.processor.TournamentFinishProcessor;
-import ru.pulsecore.app.modules.notification.repository.PlayerNotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
+import ru.pulsecore.app.modules.notification.processor.TournamentFinishProcessor;
+import ru.pulsecore.app.modules.notification.repository.PlayerNotificationRepository;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
