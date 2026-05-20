@@ -1,7 +1,6 @@
 package ru.pulsecore.app.modules.player.service.analytic.top;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.TopPlayerProjection;
@@ -34,7 +33,7 @@ public class TopWeekService {
         return LocalDate.now().with(DayOfWeek.SUNDAY);
     }
 
-    @Cacheable(value = "topWeek", key = "'week'")
+
     public List<TopPlayerProjection> getTopPlayers() {
         return tournamentResultRepository.findTopPlayers(getWeekStart(), 5);
     }
