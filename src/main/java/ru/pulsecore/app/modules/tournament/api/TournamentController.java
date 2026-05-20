@@ -4,11 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentRequest;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
 import ru.pulsecore.app.modules.tournament.api.dto.TournamentSearchResult;
 import ru.pulsecore.app.modules.tournament.service.TournamentFacade;
-import ru.pulsecore.app.core.dto.TournamentDto;
 
 import java.util.List;
 import java.util.Map;

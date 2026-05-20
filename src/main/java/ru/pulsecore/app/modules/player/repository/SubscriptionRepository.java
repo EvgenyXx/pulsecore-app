@@ -1,9 +1,9 @@
 package ru.pulsecore.app.modules.player.repository;
 
-import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.domain.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.player.domain.Subscription;
 
 import java.util.Optional;
 import java.util.UUID;

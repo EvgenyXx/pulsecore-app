@@ -1,4 +1,25 @@
 spring:
+
+
+  security:
+    oauth2:
+      client:
+        registration:
+          yandex:
+            client-id: ${YANDEX_CLIENT_ID}
+            client-secret: ${YANDEX_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/yandex"
+            scope:
+              - login:email
+              - login:info
+              - login:default_phone
+        provider:
+          yandex:
+            authorization-uri: https://oauth.yandex.ru/authorize
+            token-uri: https://oauth.yandex.ru/token
+            user-info-uri: https://login.yandex.ru/info
+            user-name-attribute: id
   cache:
     type: caffeine
     caffeine:
@@ -34,6 +55,7 @@ spring:
       port: 6379
   session:
     store-type: redis
+    timeout: 14d
 
 logging:
   level:
@@ -42,7 +64,6 @@ logging:
     ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
 
 app:
-
   smart:
     key: ${SMART_API_KEY}
     url: ${SMART_API_URL}

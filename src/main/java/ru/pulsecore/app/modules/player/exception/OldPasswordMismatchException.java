@@ -1,7 +1,7 @@
 package ru.pulsecore.app.modules.player.exception;
 
-import ru.pulsecore.app.modules.shared.exception.BaseException;
 import org.springframework.http.HttpStatus;
+import ru.pulsecore.app.modules.shared.exception.BaseException;
 
 public class OldPasswordMismatchException extends BaseException {
     public OldPasswordMismatchException() {

@@ -1,9 +1,9 @@
 package ru.pulsecore.app.modules.notification.start;
 
-import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 
 import java.util.List;
 

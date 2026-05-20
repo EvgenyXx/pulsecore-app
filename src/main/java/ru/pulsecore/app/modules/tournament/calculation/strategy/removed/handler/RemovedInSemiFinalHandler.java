@@ -1,5 +1,8 @@
 package ru.pulsecore.app.modules.tournament.calculation.strategy.removed.handler;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.modules.tournament.calculation.MatchStage;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.DefaultMatchCalculationStrategy;
@@ -7,9 +10,6 @@ import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedP
 import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedStage;
 import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

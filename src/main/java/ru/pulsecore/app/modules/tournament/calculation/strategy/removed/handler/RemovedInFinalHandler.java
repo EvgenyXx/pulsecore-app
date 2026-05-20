@@ -1,12 +1,12 @@
 package ru.pulsecore.app.modules.tournament.calculation.strategy.removed.handler;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.DefaultMatchCalculationStrategy;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedPlayerHandler;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedStage;
 import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

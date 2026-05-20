@@ -1,8 +1,8 @@
 package ru.pulsecore.app.modules.tournament.calculation.strategy;
 
-import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 
 import java.util.List;
 import java.util.Map;

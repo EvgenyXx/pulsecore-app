@@ -1,10 +1,9 @@
 package ru.pulsecore.app.config;
 
-import ru.pulsecore.app.modules.player.domain.Player;
 import lombok.Getter;
-
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import ru.pulsecore.app.modules.player.domain.Player;
 
 import java.util.stream.Collectors;
 

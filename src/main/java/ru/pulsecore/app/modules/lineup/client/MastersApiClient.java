@@ -1,7 +1,5 @@
 package ru.pulsecore.app.modules.lineup.client;
 
-import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.shared.propirties.MastersApiProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.core.dto.TournamentDto;
+import ru.pulsecore.app.modules.shared.properties.MastersApiProperties;
 
 import java.util.List;
 

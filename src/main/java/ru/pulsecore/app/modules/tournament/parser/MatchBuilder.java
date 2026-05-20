@@ -1,8 +1,8 @@
 package ru.pulsecore.app.modules.tournament.parser;
 
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.modules.tournament.domain.model.Score;
-import org.springframework.stereotype.Component;
 
 @Component
 public class MatchBuilder {

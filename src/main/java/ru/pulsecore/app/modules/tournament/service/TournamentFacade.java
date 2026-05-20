@@ -8,9 +8,8 @@ import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentRequest;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
 import ru.pulsecore.app.modules.tournament.api.dto.TournamentSearchResult;
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
-import ru.pulsecore.app.modules.tournament.service.TournamentSearchService;
-import ru.pulsecore.app.modules.shared.security.PlayerPrincipal;
-import ru.pulsecore.app.modules.shared.security.PlayerPrincipalExtractor;
+import ru.pulsecore.app.security.PlayerPrincipal;
+import ru.pulsecore.app.security.PlayerPrincipalExtractor;
 
 import java.util.List;
 

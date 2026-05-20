@@ -1,5 +1,9 @@
 package ru.pulsecore.app.modules.notification.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.player.domain.Player;
@@ -7,18 +11,12 @@ import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
 import ru.pulsecore.app.modules.shared.exception.TournamentParseException;
 import ru.pulsecore.app.modules.shared.exception.UnauthorizedException;
+import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
 import ru.pulsecore.app.modules.tournament.application.ResultService;
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
-import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

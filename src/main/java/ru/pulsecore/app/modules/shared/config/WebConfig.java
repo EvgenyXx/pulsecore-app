@@ -1,13 +1,13 @@
 package ru.pulsecore.app.modules.shared.config;
 
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import ru.pulsecore.app.modules.player.interceptor.SubscriptionInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import ru.pulsecore.app.modules.shared.security.CurrentPlayerArgumentResolver;
+import ru.pulsecore.app.modules.player.interceptor.SubscriptionInterceptor;
+import ru.pulsecore.app.security.CurrentPlayerArgumentResolver;
 
 import java.util.List;
 
@@ -43,6 +43,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/subscribe").setViewName("forward:/subscribe.html");
         registry.addViewController("/analytics").setViewName("forward:/analytics.html");
         registry.addViewController("/assistant").setViewName("forward:/assistant.html");
+        registry.addViewController("oauth-finish").setViewName("forward:/oauth-finish.html");
     }
 
 

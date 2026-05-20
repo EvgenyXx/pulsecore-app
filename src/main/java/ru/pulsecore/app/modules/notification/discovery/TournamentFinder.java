@@ -1,10 +1,10 @@
 package ru.pulsecore.app.modules.notification.discovery;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.tournament.application.UpcomingTournamentService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

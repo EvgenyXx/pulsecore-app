@@ -1,20 +1,22 @@
 package ru.pulsecore.app.modules.lineup.service;
 
-import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.lineup.domain.Lineup;
-import ru.pulsecore.app.modules.lineup.mapper.LineupMapper;
-import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
-import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
-import ru.pulsecore.app.modules.lineup.validator.TournamentValidator;
-import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.core.dto.TournamentDto;
+import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
+import ru.pulsecore.app.modules.lineup.domain.Lineup;
+import ru.pulsecore.app.modules.lineup.mapper.LineupMapper;
+import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
+import ru.pulsecore.app.modules.lineup.validator.TournamentValidator;
+import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class LineupService {
 
     @Transactional
     public void cleanupOld() {
-        lineupRepository.deleteByDateBefore(LocalDate.now().minusDays(1));
+        lineupRepository.deleteByDateBefore(LocalDate.now());
         log.info("Cleaned old lineups");
     }
 
@@ -39,6 +41,7 @@ public class LineupService {
         if (players.isEmpty()) return;
 
         LocalDate today = LocalDate.now();
+        loadDay(players, today);
         loadDay(players, today.plusDays(1));
         loadDay(players, today.plusDays(2));
     }
@@ -58,13 +61,23 @@ public class LineupService {
 
         if (relevant.isEmpty()) return;
 
-        lineupRepository.deleteAllByDate(date);
+        if (date.isAfter(LocalDate.now())) {
+            lineupRepository.deleteAllByDate(date);
+        }
 
         List<Lineup> lineups = relevant.stream()
                 .map(t -> mapper.toEntity(t, date, extractTime(t)))
                 .toList();
 
-        lineupRepository.saveAll(lineups);
+        for (Lineup lineup : lineups) {
+            lineupRepository.upsertLineup(
+                    lineup.getDate(),
+                    lineup.getLeague(),
+                    lineup.getTime(),
+                    lineup.getPlayers()
+            );
+        }
+
         log.info("{} lineups for date {}", lineups.size(), date);
     }
 

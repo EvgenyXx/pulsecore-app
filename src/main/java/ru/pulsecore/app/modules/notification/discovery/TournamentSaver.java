@@ -1,15 +1,15 @@
 package ru.pulsecore.app.modules.notification.discovery;
 
-import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.modules.notification.factory.NotificationFactory;
 import ru.pulsecore.app.modules.notification.factory.TournamentFactory;
 import ru.pulsecore.app.modules.notification.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.modules.player.domain.Player;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
+import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
 package ru.pulsecore.app.modules.notification.factory;
 
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.modules.player.domain.Player;
-import org.springframework.stereotype.Component;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 
 @Component
 public class NotificationFactory {

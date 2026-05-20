@@ -1,21 +1,24 @@
+// ==================== ResultService.java ====================
 package ru.pulsecore.app.modules.tournament.application;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.core.integration.DocumentLoader;
+import ru.pulsecore.app.core.stats.PointsCalculatorUtils;
+import ru.pulsecore.app.modules.tournament.calculation.ResultBuilder;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.MatchCalculationStrategy;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.StrategyResolver;
-import ru.pulsecore.app.modules.tournament.calculation.ResultBuilder;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.removed.RemovedStage;
 import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 import ru.pulsecore.app.modules.tournament.extraction.TournamentExtractor;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.jsoup.nodes.Document;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +44,21 @@ public class ResultService {
         MatchCalculationStrategy strategy = strategyResolver.resolve(ctx);
         MatchProcessingResult matchResult = strategy.process(ctx);
         List<ResultDto> results = resultBuilder.build(matchResult, ctx);
+
+        // Применяем праздничный бонус к итоговой сумме каждого игрока
+        LocalDate tournamentDate = null;
+        String dateStr = ctx.getDate();
+        if (dateStr != null && !dateStr.isEmpty()) {
+            tournamentDate = LocalDate.parse(dateStr);
+        }
+
+        if (tournamentDate != null) {
+            for (ResultDto result : results) {
+                int total = PointsCalculatorUtils.applyDoubleBonus(result.getTotal(), tournamentDate);
+                result.setTotal(total);
+            }
+        }
+
         results.sort((a, b) -> Integer.compare(b.getTotal(), a.getTotal()));
 
         if (results.isEmpty() && ctx.getTournamentStatus() != null) {

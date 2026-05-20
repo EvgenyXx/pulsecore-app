@@ -1,8 +1,8 @@
 package ru.pulsecore.app.core.stats;
 
-import ru.pulsecore.app.core.model.LeagueType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.core.model.LeagueType;
 
 @Component
 @RequiredArgsConstructor

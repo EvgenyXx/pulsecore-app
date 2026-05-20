@@ -81,14 +81,6 @@
     <div id="tab-league" class="hidden content-panel max-w-2xl mx-auto">
         <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">🏆 Средняя по лигам</h2>
         <p class="text-gray-400 text-sm mb-5">Средний заработок за турнир по всем игрокам</p>
-        <!-- AI Анализ недели -->
-        <div id="aiWeeklyAnalysis" class="glass rounded-2xl p-4 mb-5">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="text-lg">🤖</span>
-                <h3 class="text-white font-semibold text-sm">AI Анализ недели</h3>
-            </div>
-            <p id="aiWeeklyText" class="text-gray-300 text-sm">Загрузка...</p>
-        </div>
         <div class="chart-card"><div class="chart-wrap"><canvas id="leagueChart"></canvas></div>
             <div class="flex flex-col items-center gap-1 mt-4"><span class="avg-badge"><span class="text-gray-400">Ваша средняя:</span><span class="text-white font-bold" id="playerAvgPill">-</span></span><p class="text-xs text-gray-500" id="closestInfo"></p></div></div>
     </div>
@@ -149,11 +141,9 @@
             const user = await r.json();
             playerId = user.id;
 
-            // Проверка подписки
             const subRes = await fetch(`/api/player/subscription`);
             const subData = await subRes.json();
             if (!subData || !subData.active) {
-                // Скрываем всё и показываем только заглушку
                 document.getElementById("loading").innerHTML = "";
                 document.getElementById("loading").classList.add("hidden");
                 document.querySelector("main").innerHTML =
@@ -208,16 +198,6 @@
                 }
             }
             buildLeagueChart(d);
-
-            // AI анализ недели
-            fetch("/api/player/weekly-analysis", { credentials: "same-origin" })
-                .then(r => r.json())
-                .then(data => {
-                    document.getElementById("aiWeeklyText").textContent = data.analysis;
-                })
-                .catch(() => {
-                    document.getElementById("aiWeeklyText").textContent = "Не удалось загрузить анализ.";
-                });
         } catch (e) {}
     }
 

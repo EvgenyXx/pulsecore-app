@@ -14,7 +14,8 @@ import ru.pulsecore.app.modules.auth.api.dto.RegisterRequest;
 import ru.pulsecore.app.modules.auth.api.dto.VerifyEmailRequest;
 import ru.pulsecore.app.modules.auth.mapping.PlayerDtoMapper;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
-import ru.pulsecore.app.modules.player.service.auth.PlayerRegistrationService;
+import ru.pulsecore.app.modules.shared.service.auth.PlayerRegistrationService;
+
 
 @RestController
 @RequestMapping(AuthApi.BASE_PATH)

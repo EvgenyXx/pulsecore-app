@@ -1,16 +1,13 @@
 package ru.pulsecore.app.modules.player.domain;
 
-import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
-import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "players")
@@ -31,7 +28,7 @@ public class Player {
     @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
     @Column(unique = true, length = 10)
@@ -42,6 +39,26 @@ public class Player {
 
     @Builder.Default
     private boolean verified = false;
+
+    // ── OAuth поля ──
+    @Column(name = "oauth_provider", length = 50)
+    private String oauthProvider;
+
+    @Column(name = "oauth_id")
+    private String oauthId;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Column(name = "birthday")
+    private LocalDate birthday;
+
+    @Column(name = "gender", length = 10)
+    private String gender;
+    // ── конец OAuth ──
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -60,6 +77,8 @@ public class Player {
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlayerNotification> notifications = new ArrayList<>();
+
+
 
     private LocalDateTime createdAt;
 

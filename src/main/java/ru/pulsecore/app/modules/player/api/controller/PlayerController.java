@@ -7,10 +7,14 @@ import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.UpdateProfileRequest;
 import ru.pulsecore.app.modules.player.api.PlayerApi;
-import ru.pulsecore.app.modules.player.api.dto.*;
-import ru.pulsecore.app.modules.player.service.PlayerFacade;
-import ru.pulsecore.app.modules.shared.security.CurrentPlayer;
-import ru.pulsecore.app.modules.shared.security.PlayerPrincipal;
+import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
+import ru.pulsecore.app.modules.player.api.dto.NotificationsStatusResponse;
+import ru.pulsecore.app.modules.player.api.dto.PlayerProfileResponse;
+import ru.pulsecore.app.modules.player.api.dto.PlayerResponse;
+
+import ru.pulsecore.app.modules.player.service.player.PlayerFacade;
+import ru.pulsecore.app.security.CurrentPlayer;
+import ru.pulsecore.app.security.PlayerPrincipal;
 
 import java.util.List;
 

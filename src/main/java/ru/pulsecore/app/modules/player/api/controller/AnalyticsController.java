@@ -7,12 +7,12 @@ import ru.pulsecore.app.modules.player.api.PlayerApi;
 import ru.pulsecore.app.modules.player.api.dto.AnalyticsResponse;
 import ru.pulsecore.app.modules.player.api.dto.DailyIncomeResponse;
 import ru.pulsecore.app.modules.player.api.dto.MonthlyIncomeResponse;
-import ru.pulsecore.app.modules.player.service.analytic.AnalyticsFacade;
-import ru.pulsecore.app.modules.shared.security.CurrentPlayer;
-import ru.pulsecore.app.modules.shared.security.PlayerPrincipal;
+import ru.pulsecore.app.modules.player.service.analytic.facade.AnalyticsFacade;
+import ru.pulsecore.app.security.CurrentPlayer;
+import ru.pulsecore.app.security.PlayerPrincipal;
 
 import java.util.Map;
-import java.util.UUID;
+
 
 @RestController
 @RequestMapping(PlayerApi.BASE_PATH)
@@ -31,17 +31,17 @@ public class AnalyticsController {
 
     @GetMapping(PlayerApi.MONTHLY_INCOME)
     public ResponseEntity<MonthlyIncomeResponse> getMonthlyIncome(
-            @PathVariable UUID id,
+            @CurrentPlayer PlayerPrincipal principal,
             @RequestParam(defaultValue = "2026") int year) {
-        return ResponseEntity.ok(analyticsFacade.getMonthlyIncome(id, year));
+        return ResponseEntity.ok(analyticsFacade.getMonthlyIncome(principal.playerId(), year));
     }
 
     @GetMapping(PlayerApi.DAILY_INCOME)
     public ResponseEntity<DailyIncomeResponse> getDailyIncome(
-            @PathVariable UUID id,
+            @CurrentPlayer PlayerPrincipal principal,
             @RequestParam int year,
             @RequestParam int month) {
-        return ResponseEntity.ok(analyticsFacade.getDailyIncome(id, year, month));
+        return ResponseEntity.ok(analyticsFacade.getDailyIncome(principal.playerId(), year, month));
     }
 
     // ── AI-ассистент ──────────────────────────
@@ -52,9 +52,4 @@ public class AnalyticsController {
         return ResponseEntity.ok(analyticsFacade.chat(principal.playerId(), request.get("question")));
     }
 
-    @GetMapping(PlayerApi.WEEKLY_ANALYSIS)
-    public ResponseEntity<Map<String, String>> getWeeklyAnalysis(
-            @CurrentPlayer PlayerPrincipal principal) {
-        return ResponseEntity.ok(analyticsFacade.weeklyAnalysis(principal.playerId()));
-    }
 }

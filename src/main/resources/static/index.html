@@ -111,19 +111,15 @@
 <div class="bg-animated"></div>
 <div class="bg-grid"></div>
 
-<!-- Main Container -->
 <div class="max-w-5xl mx-auto">
 
-    <!-- Header — только суть -->
     <div class="text-center pt-8 md:pt-14 pb-6 md:pb-8">
         <img src="/img.png" alt="PulseCore" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-xl mb-5 mx-auto object-cover ring-1 ring-white/10">
         <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-indigo-300 via-purple-300 to-emerald-300 bg-clip-text text-transparent mb-3 tracking-tight leading-tight">
             PulseCore
         </h1>
-
     </div>
 
-    <!-- Auth Section -->
     <div class="max-w-md mx-auto mb-8 md:mb-10">
         <div class="card glass-card glow-primary w-full">
             <div class="card-body text-center p-5 md:p-7">
@@ -140,6 +136,25 @@
                     <button onclick="login()" class="btn btn-primary w-full bg-gradient-to-r from-indigo-500 to-purple-600 border-0 font-semibold text-sm md:text-base h-11 md:h-12">
                         Войти ✨
                     </button>
+
+                    <div class="flex items-center gap-3 my-4">
+                        <div class="flex-1 h-px bg-white/10"></div>
+                        <span class="text-xs text-gray-500">или</span>
+                        <div class="flex-1 h-px bg-white/10"></div>
+                    </div>
+
+                    <!-- Яндекс -->
+                    <a href="/oauth2/authorization/yandex" class="btn w-full h-11 md:h-12 flex items-center justify-center gap-2.5 font-semibold text-sm md:text-base border-0" style="background: #FC3F1D; color: white;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="white"/><text x="12" y="17" text-anchor="middle" font-size="16" font-weight="900" fill="#FC3F1D" font-family="Arial">Я</text></svg>
+                        Войти через Яндекс
+                    </a>
+
+                    <!-- VK -->
+                    <a href="/oauth2/authorization/vk" class="btn w-full h-11 md:h-12 flex items-center justify-center gap-2.5 font-semibold text-sm md:text-base border-0 mt-2.5" style="background: #0077FF; color: white;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="12" fill="white"/><text x="12" y="17" text-anchor="middle" font-size="16" font-weight="900" fill="#0077FF" font-family="Arial">VK</text></svg>
+                        Войти через VK ID
+                    </a>
+
                     <div class="flex justify-between items-center mt-3 px-1">
                         <span onclick="showForgot()" class="text-xs text-amber-400/80 cursor-pointer hover:text-amber-300 hover:underline font-medium">Забыли пароль?</span>
                         <span onclick="showRegister()" class="text-xs text-indigo-400/80 cursor-pointer hover:text-indigo-300 hover:underline font-medium">Регистрация</span>
@@ -166,104 +181,47 @@
 
                 <!-- Verify Email -->
                 <div id="verifyForm" class="hidden">
-                    <div class="mb-4">
-                        <div class="text-3xl mb-2">📧</div>
-                        <p class="text-xs text-gray-400 mb-0.5">Код отправлен на</p>
-                        <p class="text-white font-semibold text-sm" id="verifyEmailDisplay"></p>
-                    </div>
+                    <div class="mb-4"><div class="text-3xl mb-2">📧</div><p class="text-xs text-gray-400 mb-0.5">Код отправлен на</p><p class="text-white font-semibold text-sm" id="verifyEmailDisplay"></p></div>
                     <div class="code-inputs mb-3" id="verifyCodeInputs">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
+                        <input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric">
                     </div>
                     <p id="verifyError" class="text-red-400 text-xs hidden mb-3"></p>
-                    <button onclick="verifyEmail()" id="verifyBtn" class="btn btn-primary w-full bg-gradient-to-r from-emerald-500 to-teal-600 border-0 font-semibold text-sm md:text-base h-11">
-                        Подтвердить
-                    </button>
-                    <button onclick="showRegister()" class="btn btn-sm w-full mt-3 bg-white/5 hover:bg-white/10 text-gray-400 border-0 text-xs">
-                        ← Назад
-                    </button>
+                    <button onclick="verifyEmail()" id="verifyBtn" class="btn btn-primary w-full bg-gradient-to-r from-emerald-500 to-teal-600 border-0 font-semibold text-sm md:text-base h-11">Подтвердить</button>
+                    <button onclick="showRegister()" class="btn btn-sm w-full mt-3 bg-white/5 hover:bg-white/10 text-gray-400 border-0 text-xs">← Назад</button>
                 </div>
 
                 <!-- Forgot Password -->
                 <div id="forgotForm" class="hidden">
-                    <div class="mb-4">
-                        <div class="text-3xl mb-2">🔑</div>
-                        <p class="text-xs text-gray-400">Введите email для восстановления</p>
-                    </div>
+                    <div class="mb-4"><div class="text-3xl mb-2">🔑</div><p class="text-xs text-gray-400">Введите email для восстановления</p></div>
                     <input id="forgotEmail" type="email" placeholder="Email" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 mb-3 text-white placeholder-gray-500 text-sm md:text-base">
                     <p id="forgotError" class="text-red-400 text-xs hidden mb-3 text-left"></p>
-                    <button onclick="forgotPassword()" id="forgotBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-orange-600 border-0 font-semibold text-sm md:text-base h-11">
-                        Отправить код
-                    </button>
-                    <button onclick="showLogin()" class="btn btn-sm w-full mt-3 bg-white/5 hover:bg-white/10 text-gray-400 border-0 text-xs">
-                        ← Назад
-                    </button>
+                    <button onclick="forgotPassword()" id="forgotBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-orange-600 border-0 font-semibold text-sm md:text-base h-11">Отправить код</button>
+                    <button onclick="showLogin()" class="btn btn-sm w-full mt-3 bg-white/5 hover:bg-white/10 text-gray-400 border-0 text-xs">← Назад</button>
                 </div>
 
                 <!-- Reset Password -->
                 <div id="resetForm" class="hidden">
-                    <div class="mb-4">
-                        <div class="text-3xl mb-2">📧</div>
-                        <p class="text-xs text-gray-400 mb-0.5">Код отправлен на</p>
-                        <p class="text-white font-semibold text-sm" id="resetEmailDisplay"></p>
-                    </div>
+                    <div class="mb-4"><div class="text-3xl mb-2">📧</div><p class="text-xs text-gray-400 mb-0.5">Код отправлен на</p><p class="text-white font-semibold text-sm" id="resetEmailDisplay"></p></div>
                     <div class="code-inputs mb-3" id="resetCodeInputs">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
-                        <input type="text" maxlength="1" inputmode="numeric">
+                        <input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric"><input type="text" maxlength="1" inputmode="numeric">
                     </div>
-                    <div class="relative mb-2.5">
-                        <input id="resetNewPassword" type="password" placeholder="Новый пароль" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 text-white placeholder-gray-500 pr-10 text-sm md:text-base">
-                        <button onclick="togglePassword('resetNewPassword', this)" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-300 text-base z-5 bg-transparent border-0 p-1 leading-none">👁️</button>
-                    </div>
-                    <div class="relative mb-3">
-                        <input id="resetNewPassword2" type="password" placeholder="Повторите пароль" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 text-white placeholder-gray-500 pr-10 text-sm md:text-base">
-                        <button onclick="togglePassword('resetNewPassword2', this)" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-300 text-base z-5 bg-transparent border-0 p-1 leading-none">👁️</button>
-                    </div>
+                    <div class="relative mb-2.5"><input id="resetNewPassword" type="password" placeholder="Новый пароль" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 text-white placeholder-gray-500 pr-10 text-sm md:text-base"><button onclick="togglePassword('resetNewPassword', this)" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-300 text-base z-5 bg-transparent border-0 p-1 leading-none">👁️</button></div>
+                    <div class="relative mb-3"><input id="resetNewPassword2" type="password" placeholder="Повторите пароль" class="input input-bordered w-full bg-white/5 border-white/10 focus:border-amber-400 text-white placeholder-gray-500 pr-10 text-sm md:text-base"><button onclick="togglePassword('resetNewPassword2', this)" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-300 text-base z-5 bg-transparent border-0 p-1 leading-none">👁️</button></div>
                     <p id="resetError" class="text-xs hidden mb-3 text-left"></p>
-                    <button onclick="resetPassword()" id="resetBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-orange-600 border-0 font-semibold text-sm md:text-base h-11">
-                        Сменить пароль
-                    </button>
-                    <button onclick="showForgot()" class="btn btn-sm w-full mt-3 bg-white/5 hover:bg-white/10 text-gray-400 border-0 text-xs">
-                        ← Назад
-                    </button>
+                    <button onclick="resetPassword()" id="resetBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-orange-600 border-0 font-semibold text-sm md:text-base h-11">Сменить пароль</button>
+                    <button onclick="showForgot()" class="btn btn-sm w-full mt-3 bg-white/5 hover:bg-white/10 text-gray-400 border-0 text-xs">← Назад</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Features Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="feature-card">
-            <div class="feature-icon icon-green">🔔</div>
-            <h3 class="text-white font-bold text-sm md:text-base leading-tight">Уведомления о составе</h3>
-            <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Мгновенное оповещение, когда вас добавили в состав на ближайший турнир</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon icon-blue">💰</div>
-            <h3 class="text-white font-bold text-sm md:text-base leading-tight">Подсчёт заработка</h3>
-            <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Автоматический расчёт дохода за любой период с детализацией</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon icon-purple">📊</div>
-            <h3 class="text-white font-bold text-sm md:text-base leading-tight">Статистика и история</h3>
-            <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Полная аналитика по турнирам, лигам и результатам</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon icon-amber">📅</div>
-            <h3 class="text-white font-bold text-sm md:text-base leading-tight">Составы на ближайшие дни</h3>
-            <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Все ваши предстоящие матчи в одном удобном списке</p>
-        </div>
+        <div class="feature-card"><div class="feature-icon icon-green">🔔</div><h3 class="text-white font-bold text-sm md:text-base leading-tight">Уведомления о составе</h3><p class="text-gray-500 text-xs md:text-sm leading-relaxed">Мгновенное оповещение, когда вас добавили в состав на ближайший турнир</p></div>
+        <div class="feature-card"><div class="feature-icon icon-blue">💰</div><h3 class="text-white font-bold text-sm md:text-base leading-tight">Подсчёт заработка</h3><p class="text-gray-500 text-xs md:text-sm leading-relaxed">Автоматический расчёт дохода за любой период с детализацией</p></div>
+        <div class="feature-card"><div class="feature-icon icon-purple">📊</div><h3 class="text-white font-bold text-sm md:text-base leading-tight">Статистика и история</h3><p class="text-gray-500 text-xs md:text-sm leading-relaxed">Полная аналитика по турнирам, лигам и результатам</p></div>
+        <div class="feature-card"><div class="feature-icon icon-amber">📅</div><h3 class="text-white font-bold text-sm md:text-base leading-tight">Составы на ближайшие дни</h3><p class="text-gray-500 text-xs md:text-sm leading-relaxed">Все ваши предстоящие матчи в одном удобном списке</p></div>
     </div>
 
-    <!-- Footer -->
     <div class="text-center text-[10px] md:text-xs text-gray-600 pb-6">
         ИНН 234999508765 &nbsp;|&nbsp; На основании 422-ФЗ &nbsp;|&nbsp; <a href="https://pulsecore-app.ru" class="hover:text-gray-400 underline underline-offset-2" target="_blank" rel="noopener">pulsecore-app.ru</a>
     </div>
@@ -271,319 +229,94 @@
 
 <script>
     async function checkAuth() {
-        try {
-            const r = await fetch("/api/auth/me", { credentials: "same-origin" });
-            if (r.ok) window.location.href = "/dashboard";
-        } catch (e) {}
+        try { const r = await fetch("/api/auth/me", { credentials: "same-origin" }); if (r.ok) window.location.href = "/dashboard"; } catch (e) {}
     }
     checkAuth();
 
-    function hideAll() {
-        ["loginForm","registerForm","verifyForm","forgotForm","resetForm"].forEach(id => {
-            document.getElementById(id).classList.add("hidden");
-        });
-    }
-
-    function showLogin() {
-        hideAll();
-        document.getElementById("loginForm").classList.remove("hidden");
-        document.getElementById("loginError").classList.add("hidden");
-    }
-
-    function showRegister() {
-        hideAll();
-        document.getElementById("registerForm").classList.remove("hidden");
-        document.getElementById("regError").classList.add("hidden");
-    }
-
-    function showVerify(email) {
-        hideAll();
-        document.getElementById("verifyForm").classList.remove("hidden");
-        document.getElementById("verifyEmailDisplay").textContent = email;
-        clearCodeInputs("verifyCodeInputs");
-    }
-
-    function showForgot() {
-        hideAll();
-        document.getElementById("forgotForm").classList.remove("hidden");
-        document.getElementById("forgotError").classList.add("hidden");
-        document.getElementById("forgotEmail").value = "";
-    }
-
-    function showReset(email) {
-        hideAll();
-        document.getElementById("resetForm").classList.remove("hidden");
-        document.getElementById("resetEmailDisplay").textContent = email;
-        clearCodeInputs("resetCodeInputs");
-        document.getElementById("resetNewPassword").value = "";
-        document.getElementById("resetNewPassword2").value = "";
-        document.getElementById("resetError").classList.add("hidden");
-    }
+    function hideAll() { ["loginForm","registerForm","verifyForm","forgotForm","resetForm"].forEach(id => document.getElementById(id).classList.add("hidden")); }
+    function showLogin() { hideAll(); document.getElementById("loginForm").classList.remove("hidden"); document.getElementById("loginError").classList.add("hidden"); }
+    function showRegister() { hideAll(); document.getElementById("registerForm").classList.remove("hidden"); document.getElementById("regError").classList.add("hidden"); }
+    function showVerify(email) { hideAll(); document.getElementById("verifyForm").classList.remove("hidden"); document.getElementById("verifyEmailDisplay").textContent = email; clearCodeInputs("verifyCodeInputs"); }
+    function showForgot() { hideAll(); document.getElementById("forgotForm").classList.remove("hidden"); document.getElementById("forgotError").classList.add("hidden"); document.getElementById("forgotEmail").value = ""; }
+    function showReset(email) { hideAll(); document.getElementById("resetForm").classList.remove("hidden"); document.getElementById("resetEmailDisplay").textContent = email; clearCodeInputs("resetCodeInputs"); document.getElementById("resetNewPassword").value = ""; document.getElementById("resetNewPassword2").value = ""; document.getElementById("resetError").classList.add("hidden"); }
 
     function setupCodeInputs(id) {
-        const container = document.getElementById(id);
-        if (!container) return;
+        const container = document.getElementById(id); if (!container) return;
         const inputs = container.querySelectorAll("input");
         inputs.forEach((inp, i) => {
-            inp.addEventListener("input", (e) => {
-                let v = e.target.value.replace(/[^0-9]/g, "");
-                e.target.value = v;
-                if (v && i < inputs.length - 1) inputs[i + 1].focus();
-            });
-            inp.addEventListener("keydown", (e) => {
-                if (e.key === "Backspace" && !e.target.value && i > 0) inputs[i - 1].focus();
-            });
-            inp.addEventListener("paste", (e) => {
-                e.preventDefault();
-                let paste = (e.clipboardData || window.clipboardData).getData("text").replace(/[^0-9]/g, "").slice(0, inputs.length);
-                paste.split("").forEach((c, j) => {
-                    if (inputs[j]) inputs[j].value = c;
-                });
-            });
+            inp.addEventListener("input", (e) => { let v = e.target.value.replace(/[^0-9]/g, ""); e.target.value = v; if (v && i < inputs.length - 1) inputs[i + 1].focus(); });
+            inp.addEventListener("keydown", (e) => { if (e.key === "Backspace" && !e.target.value && i > 0) inputs[i - 1].focus(); });
+            inp.addEventListener("paste", (e) => { e.preventDefault(); let paste = (e.clipboardData || window.clipboardData).getData("text").replace(/[^0-9]/g, "").slice(0, inputs.length); paste.split("").forEach((c, j) => { if (inputs[j]) inputs[j].value = c; }); });
         });
     }
+    function getCodeFromInputs(id) { const container = document.getElementById(id); if (!container) return ""; return Array.from(container.querySelectorAll("input")).map(i => i.value).join(""); }
+    function clearCodeInputs(id) { const container = document.getElementById(id); if (!container) return; container.querySelectorAll("input").forEach(i => i.value = ""); if (container.querySelector("input")) container.querySelector("input").focus(); }
+    setupCodeInputs("verifyCodeInputs"); setupCodeInputs("resetCodeInputs");
 
-    function getCodeFromInputs(id) {
-        const container = document.getElementById(id);
-        if (!container) return "";
-        return Array.from(container.querySelectorAll("input")).map(i => i.value).join("");
-    }
-
-    function clearCodeInputs(id) {
-        const container = document.getElementById(id);
-        if (!container) return;
-        const inputs = container.querySelectorAll("input");
-        inputs.forEach(i => i.value = "");
-        if (inputs.length > 0) inputs[0].focus();
-    }
-
-    setupCodeInputs("verifyCodeInputs");
-    setupCodeInputs("resetCodeInputs");
-
-    function togglePassword(id, btn) {
-        const inp = document.getElementById(id);
-        if (!inp) return;
-        const isPwd = inp.type === "password";
-        inp.type = isPwd ? "text" : "password";
-        btn.textContent = isPwd ? "🙈" : "👁️";
-    }
+    function togglePassword(id, btn) { const inp = document.getElementById(id); if (!inp) return; const isPwd = inp.type === "password"; inp.type = isPwd ? "text" : "password"; btn.textContent = isPwd ? "🙈" : "👁️"; }
 
     async function login() {
-        const email = document.getElementById("emailInput").value.trim();
-        const password = document.getElementById("passwordInput").value;
-        const err = document.getElementById("loginError");
+        const email = document.getElementById("emailInput").value.trim(), password = document.getElementById("passwordInput").value, err = document.getElementById("loginError");
         err.classList.add("hidden");
-        if (!email || !password) {
-            err.textContent = "Заполните все поля";
-            err.classList.remove("hidden");
-            return;
-        }
+        if (!email || !password) { err.textContent = "Заполните все поля"; err.classList.remove("hidden"); return; }
         try {
-            const r = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "same-origin",
-                body: JSON.stringify({ email, password })
-            });
-            if (!r.ok) {
-                err.textContent = "Неверный email или пароль";
-                err.classList.remove("hidden");
-                return;
-            }
+            const r = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ email, password }) });
+            if (!r.ok) { err.textContent = "Неверный email или пароль"; err.classList.remove("hidden"); return; }
             window.location.href = "/dashboard";
-        } catch (e) {
-            err.textContent = "Ошибка соединения";
-            err.classList.remove("hidden");
-        }
+        } catch (e) { err.textContent = "Ошибка соединения"; err.classList.remove("hidden"); }
     }
 
     async function register() {
-        const ln = document.getElementById("regLastName").value.trim();
-        const fn = document.getElementById("regFirstName").value.trim();
-        const email = document.getElementById("regEmail").value.trim();
-        const password = document.getElementById("regPassword").value;
-        const err = document.getElementById("regError");
+        const ln = document.getElementById("regLastName").value.trim(), fn = document.getElementById("regFirstName").value.trim(), email = document.getElementById("regEmail").value.trim(), password = document.getElementById("regPassword").value, err = document.getElementById("regError");
         err.classList.add("hidden");
-        if (!ln || !fn || !email || !password) {
-            err.textContent = "Заполните все поля";
-            err.classList.remove("hidden");
-            return;
-        }
-        if (password.length < 6) {
-            err.textContent = "Пароль минимум 6 символов";
-            err.classList.remove("hidden");
-            return;
-        }
-        const btn = document.getElementById("regBtn");
-        btn.disabled = true;
-        btn.innerHTML = "⏳";
+        if (!ln || !fn || !email || !password) { err.textContent = "Заполните все поля"; err.classList.remove("hidden"); return; }
+        if (password.length < 6) { err.textContent = "Пароль минимум 6 символов"; err.classList.remove("hidden"); return; }
+        const btn = document.getElementById("regBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
-            const r = await fetch("/api/auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: ln + " " + fn, email, password })
-            });
-            if (!r.ok) {
-                const e = await r.json();
-                err.textContent = e.message || "Ошибка регистрации";
-                err.classList.remove("hidden");
-                btn.disabled = false;
-                btn.innerHTML = "Зарегистрироваться";
-                return;
-            }
+            const r = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: ln + " " + fn, email, password }) });
+            if (!r.ok) { const e = await r.json(); err.textContent = e.message || "Ошибка регистрации"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Зарегистрироваться"; return; }
             showVerify(email);
-        } catch (e) {
-            err.textContent = "Ошибка соединения";
-            err.classList.remove("hidden");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = "Зарегистрироваться";
-        }
+        } catch (e) { err.textContent = "Ошибка соединения"; err.classList.remove("hidden"); } finally { btn.disabled = false; btn.innerHTML = "Зарегистрироваться"; }
     }
 
     async function verifyEmail() {
-        const email = document.getElementById("regEmail").value.trim();
-        const password = document.getElementById("regPassword").value;
-        const code = getCodeFromInputs("verifyCodeInputs");
-        const err = document.getElementById("verifyError");
+        const email = document.getElementById("regEmail").value.trim(), password = document.getElementById("regPassword").value, code = getCodeFromInputs("verifyCodeInputs"), err = document.getElementById("verifyError");
         err.classList.add("hidden");
-        if (!code || code.length !== 6) {
-            err.textContent = "Введите код полностью";
-            err.classList.remove("hidden");
-            return;
-        }
-        const btn = document.getElementById("verifyBtn");
-        btn.disabled = true;
-        btn.innerHTML = "⏳";
+        if (!code || code.length !== 6) { err.textContent = "Введите код полностью"; err.classList.remove("hidden"); return; }
+        const btn = document.getElementById("verifyBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
-            const vr = await fetch("/api/auth/verify-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, code })
-            });
-            if (!vr.ok) {
-                err.textContent = "Неверный код";
-                err.classList.remove("hidden");
-                btn.disabled = false;
-                btn.innerHTML = "Подтвердить";
-                return;
-            }
-            const lr = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "same-origin",
-                body: JSON.stringify({ email, password })
-            });
-            if (!lr.ok) {
-                err.textContent = "Ошибка входа";
-                err.classList.remove("hidden");
-                btn.disabled = false;
-                btn.innerHTML = "Подтвердить";
-                return;
-            }
+            const vr = await fetch("/api/auth/verify-email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, code }) });
+            if (!vr.ok) { err.textContent = "Неверный код"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Подтвердить"; return; }
+            const lr = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ email, password }) });
+            if (!lr.ok) { err.textContent = "Ошибка входа"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Подтвердить"; return; }
             window.location.href = "/dashboard";
-        } catch (e) {
-            err.textContent = "Ошибка соединения";
-            err.classList.remove("hidden");
-            btn.disabled = false;
-            btn.innerHTML = "Подтвердить";
-        }
+        } catch (e) { err.textContent = "Ошибка соединения"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Подтвердить"; }
     }
 
     async function forgotPassword() {
-        const email = document.getElementById("forgotEmail").value.trim();
-        const err = document.getElementById("forgotError");
+        const email = document.getElementById("forgotEmail").value.trim(), err = document.getElementById("forgotError");
         err.classList.add("hidden");
-        if (!email) {
-            err.textContent = "Введите email";
-            err.classList.remove("hidden");
-            return;
-        }
-        const btn = document.getElementById("forgotBtn");
-        btn.disabled = true;
-        btn.innerHTML = "⏳";
+        if (!email) { err.textContent = "Введите email"; err.classList.remove("hidden"); return; }
+        const btn = document.getElementById("forgotBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
-            const r = await fetch("/api/auth/forgot-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email })
-            });
-            if (!r.ok) {
-                err.textContent = "Ошибка отправки";
-                err.classList.remove("hidden");
-                btn.disabled = false;
-                btn.innerHTML = "Отправить код";
-                return;
-            }
+            const r = await fetch("/api/auth/forgot-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
+            if (!r.ok) { err.textContent = "Ошибка отправки"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Отправить код"; return; }
             showReset(email);
-        } catch (e) {
-            err.textContent = "Ошибка соединения";
-            err.classList.remove("hidden");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = "Отправить код";
-        }
+        } catch (e) { err.textContent = "Ошибка соединения"; err.classList.remove("hidden"); } finally { btn.disabled = false; btn.innerHTML = "Отправить код"; }
     }
 
     async function resetPassword() {
-        const code = getCodeFromInputs("resetCodeInputs");
-        const np = document.getElementById("resetNewPassword").value;
-        const np2 = document.getElementById("resetNewPassword2").value;
-        const err = document.getElementById("resetError");
+        const code = getCodeFromInputs("resetCodeInputs"), np = document.getElementById("resetNewPassword").value, np2 = document.getElementById("resetNewPassword2").value, err = document.getElementById("resetError");
         err.classList.add("hidden");
-        if (!code || code.length !== 6) {
-            err.textContent = "Введите код полностью";
-            err.className = "text-red-400 text-xs mb-3 text-left";
-            err.classList.remove("hidden");
-            return;
-        }
-        if (!np || np.length < 6) {
-            err.textContent = "Пароль минимум 6 символов";
-            err.className = "text-red-400 text-xs mb-3 text-left";
-            err.classList.remove("hidden");
-            return;
-        }
-        if (np !== np2) {
-            err.textContent = "Пароли не совпадают";
-            err.className = "text-red-400 text-xs mb-3 text-left";
-            err.classList.remove("hidden");
-            return;
-        }
-        const btn = document.getElementById("resetBtn");
-        btn.disabled = true;
-        btn.innerHTML = "⏳";
+        if (!code || code.length !== 6) { err.textContent = "Введите код полностью"; err.className = "text-red-400 text-xs mb-3 text-left"; err.classList.remove("hidden"); return; }
+        if (!np || np.length < 6) { err.textContent = "Пароль минимум 6 символов"; err.className = "text-red-400 text-xs mb-3 text-left"; err.classList.remove("hidden"); return; }
+        if (np !== np2) { err.textContent = "Пароли не совпадают"; err.className = "text-red-400 text-xs mb-3 text-left"; err.classList.remove("hidden"); return; }
+        const btn = document.getElementById("resetBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
-            const r = await fetch("/api/auth/reset-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code, password: np })
-            });
-            if (!r.ok) {
-                const e = await r.json();
-                err.textContent = e.message || "Неверный код";
-                err.className = "text-red-400 text-xs mb-3 text-left";
-                err.classList.remove("hidden");
-                btn.disabled = false;
-                btn.innerHTML = "Сменить пароль";
-                return;
-            }
-            document.getElementById("resetForm").innerHTML = `
-                    <div class="mb-4">
-                        <div class="text-3xl mb-2">✅</div>
-                        <p class="text-emerald-400 font-semibold text-base mb-1">Пароль изменён!</p>
-                        <p class="text-xs text-gray-400">Войдите с новым паролем</p>
-                    </div>
-                    <button onclick="showLogin()" class="btn btn-primary w-full bg-gradient-to-r from-indigo-500 to-purple-600 border-0 font-semibold text-sm h-11">
-                        Войти ✨
-                    </button>
-                `;
-        } catch (e) {
-            err.textContent = "Ошибка соединения";
-            err.className = "text-red-400 text-xs mb-3 text-left";
-            err.classList.remove("hidden");
-            btn.disabled = false;
-            btn.innerHTML = "Сменить пароль";
-        }
+            const r = await fetch("/api/auth/reset-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, password: np }) });
+            if (!r.ok) { const e = await r.json(); err.textContent = e.message || "Неверный код"; err.className = "text-red-400 text-xs mb-3 text-left"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Сменить пароль"; return; }
+            document.getElementById("resetForm").innerHTML = `<div class="mb-4"><div class="text-3xl mb-2">✅</div><p class="text-emerald-400 font-semibold text-base mb-1">Пароль изменён!</p><p class="text-xs text-gray-400">Войдите с новым паролем</p></div><button onclick="showLogin()" class="btn btn-primary w-full bg-gradient-to-r from-indigo-500 to-purple-600 border-0 font-semibold text-sm h-11">Войти ✨</button>`;
+        } catch (e) { err.textContent = "Ошибка соединения"; err.className = "text-red-400 text-xs mb-3 text-left"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Сменить пароль"; }
     }
 </script>
 </body>

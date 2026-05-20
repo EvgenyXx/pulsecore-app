@@ -1,10 +1,9 @@
 package ru.pulsecore.app.modules.notification.factory;
 
 
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
-import org.springframework.stereotype.Component;
-
 
 import java.time.LocalDate;
 

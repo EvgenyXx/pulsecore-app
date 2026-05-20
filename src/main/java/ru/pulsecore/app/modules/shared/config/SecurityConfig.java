@@ -13,7 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.pulsecore.app.modules.shared.propirties.SessionProperties;
+import ru.pulsecore.app.modules.auth.service.OAuth2SuccessHandler;
+import ru.pulsecore.app.modules.shared.properties.SessionProperties;
 
 @Configuration
 @EnableWebSecurity
@@ -22,6 +23,7 @@ import ru.pulsecore.app.modules.shared.propirties.SessionProperties;
 public class SecurityConfig {
 
     private final SessionProperties sessionProperties;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,11 +47,15 @@ public class SecurityConfig {
                                 "/", "/index.html", "/register.html",
                                 "/subscribe.html", "/profile.html", "/dashboard.html",
                                 "/img.png", "/favicon.ico", "/robots.txt", "/error",
-                                "/api/auth/**", "/api/payment/webhook"
+                                "/api/auth/**", "/api/payment/webhook","/oauth-finish.html"
                         ).permitAll()
                         .requestMatchers("/api/player/**").authenticated()
                         .requestMatchers("/admin.html", "/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/")
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout

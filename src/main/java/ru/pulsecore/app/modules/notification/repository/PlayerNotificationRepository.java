@@ -1,10 +1,10 @@
 package ru.pulsecore.app.modules.notification.repository;
 
-import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
-import ru.pulsecore.app.modules.player.domain.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
+import ru.pulsecore.app.modules.player.domain.Player;
 
 import java.time.LocalDate;
 import java.util.List;

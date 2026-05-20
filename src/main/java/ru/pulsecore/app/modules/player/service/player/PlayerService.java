@@ -1,5 +1,9 @@
 package ru.pulsecore.app.modules.player.service.player;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.UpdateProfileRequest;
 import ru.pulsecore.app.modules.player.api.dto.PlayerProfileResponse;
@@ -10,10 +14,6 @@ import ru.pulsecore.app.modules.player.exception.OldPasswordMismatchException;
 import ru.pulsecore.app.modules.player.exception.SamePasswordException;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,5 +1,8 @@
 package ru.pulsecore.app.modules.tournament.extraction;
 
+import lombok.RequiredArgsConstructor;
+import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.model.LeagueType;
 import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.core.parser.LeagueDetector;
@@ -9,9 +12,6 @@ import ru.pulsecore.app.modules.tournament.domain.TournamentStatus;
 import ru.pulsecore.app.modules.tournament.parser.MatchParser;
 import ru.pulsecore.app.modules.tournament.parser.TournamentParser;
 import ru.pulsecore.app.modules.tournament.parser.TournamentStatusParser;
-import lombok.RequiredArgsConstructor;
-import org.jsoup.nodes.Document;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

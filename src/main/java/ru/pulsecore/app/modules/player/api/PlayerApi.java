@@ -37,4 +37,10 @@ public final class PlayerApi {
 
     // ── Webhook (отдельный) ──
     public static final String WEBHOOK = "/api/payment/webhook";
+
+
+    // ==================== PlayerApi.java (добавить константы) ====================
+    public static final String TOP_MONTH = "/top/month";
+    public static final String TOP_MONTH_POSITION = "/{id}/top/month";
+    public static final String TOP_MONTH_POSITION_BY_LEAGUE = "/{id}/top/month/{league}";
 }

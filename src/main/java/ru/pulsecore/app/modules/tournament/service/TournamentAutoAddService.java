@@ -1,13 +1,13 @@
+// ==================== TournamentAutoAddService.java ====================
 package ru.pulsecore.app.modules.tournament.service;
-
-import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.notification.service.TournamentProcessService;
-import ru.pulsecore.app.modules.player.domain.Player;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.core.dto.TournamentDto;
+import ru.pulsecore.app.modules.notification.service.TournamentProcessService;
+import ru.pulsecore.app.modules.player.domain.Player;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,15 +22,19 @@ public class TournamentAutoAddService {
 
     @Async
     public void addRecentTournamentsForPlayer(Player player, int days) {
-        LocalDate startDate = LocalDate.now().minusDays(days);
-        LocalDate endDate = LocalDate.now();
+        LocalDate start = LocalDate.now().minusDays(days);
+        LocalDate end = LocalDate.now();
+        addTournamentsForPeriod(player, start, end);
+    }
 
+    public int addTournamentsForPeriod(Player player, LocalDate start, LocalDate end) {
         List<TournamentDto> tournaments;
         try {
-            tournaments = tournamentSearchService.findByDateRangeAndPlayer(startDate.toString(), endDate.toString(), player.getName());
+            tournaments = tournamentSearchService.findByDateRangeAndPlayer(
+                    start.toString(), end.toString(), player.getName());
         } catch (Exception e) {
-            log.error("❌ Ошибка поиска турниров для {}: {}", player.getName(), e.getMessage());
-            return;
+            log.error("Ошибка поиска турниров для {}: {}", player.getName(), e.getMessage());
+            return 0;
         }
 
         int added = 0;
@@ -39,9 +43,10 @@ public class TournamentAutoAddService {
                 tournamentProcessService.processByUrl(t.getLink(), player.getId().toString());
                 added++;
             } catch (Exception e) {
-                log.warn("⚠️ {} — {}", t.getLink(), e.getMessage());
+                log.warn("{} — {}", t.getLink(), e.getMessage());
             }
         }
-        log.info("📊 Авто-добавлено {} турниров за {} дней для {}", added, days, player.getName());
+        log.info("{} — добавлено {} турниров за {} - {}", player.getName(), added, start, end);
+        return added;
     }
 }

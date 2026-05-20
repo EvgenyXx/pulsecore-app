@@ -1,8 +1,8 @@
 package ru.pulsecore.app.core.stats;
 
-import ru.pulsecore.app.modules.shared.HtmlSelectors;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.modules.shared.HtmlSelectors;
 
 import java.time.LocalTime;
 

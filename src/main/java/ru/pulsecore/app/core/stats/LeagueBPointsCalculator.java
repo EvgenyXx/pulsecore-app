@@ -1,7 +1,8 @@
 package ru.pulsecore.app.core.stats;
 
-import ru.pulsecore.app.core.model.Match;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.core.model.Match;
+
 import java.time.LocalDate;
 
 @Service

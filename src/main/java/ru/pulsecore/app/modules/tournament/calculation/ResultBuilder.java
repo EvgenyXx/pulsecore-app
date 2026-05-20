@@ -1,11 +1,11 @@
 package ru.pulsecore.app.modules.tournament.calculation;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.core.stats.BonusCalculator;
 import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
