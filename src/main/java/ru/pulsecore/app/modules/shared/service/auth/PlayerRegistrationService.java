@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.domain.Subscription;
-import ru.pulsecore.app.modules.player.exception.BadCredentialsException;
-import ru.pulsecore.app.modules.player.exception.EmailAlreadyExistsException;
-import ru.pulsecore.app.modules.player.exception.PlayerNameAlreadyExistsException;
+import ru.pulsecore.app.modules.player.exception.*;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.player.repository.SubscriptionRepository;
 import ru.pulsecore.app.modules.player.service.role.RoleService;
@@ -47,15 +45,29 @@ public class PlayerRegistrationService {
         String normalizedEmail = email.toLowerCase().trim();
         String normalizedName = name.toLowerCase().trim();
 
-        if (playerRepository.existsByEmail(normalizedEmail)) throw new EmailAlreadyExistsException();
-        if (playerRepository.existsByNameIgnoreCase(normalizedName)) throw new PlayerNameAlreadyExistsException();
+        checkEmailNotTakenByLocal(normalizedEmail);
+        checkNameUnique(normalizedName);
 
         String code = String.format("%06d", new SecureRandom().nextInt(999999));
         String encodedPassword = passwordEncoder.encode(rawPassword);
-
         mailStrategyRegistry.send(MailTypes.VERIFICATION, normalizedEmail, code);
 
         return new Pending(normalizedName, normalizedEmail, encodedPassword, code);
+    }
+
+    private void checkEmailNotTakenByLocal(String normalizedEmail) {
+        playerRepository.findByEmail(normalizedEmail).ifPresent(player -> {
+            if (player.getPassword() == null || player.getPassword().isBlank()) {
+                throw new OAuthOnlyLoginException(player.getOauthProvider());
+            }
+            throw new EmailAlreadyExistsException();
+        });
+    }
+
+    private void checkNameUnique(String normalizedName) {
+        if (playerRepository.existsByNameIgnoreCase(normalizedName)) {
+            throw new PlayerNameAlreadyExistsException();
+        }
     }
 
     @Transactional

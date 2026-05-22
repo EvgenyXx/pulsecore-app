@@ -1,6 +1,8 @@
+// ==================== TournamentResultRepository.java ====================
 package ru.pulsecore.app.modules.tournament.persistence.repository;
 
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,14 +24,33 @@ import java.util.UUID;
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
 
-    @Modifying
+    // Добавить в TournamentResultRepository:
 
+
+
+    @Query(value = """
+        SELECT league FROM (
+            SELECT league, COUNT(*) as cnt
+            FROM (
+                SELECT league FROM tournament_results
+                WHERE player_id = :playerId
+                ORDER BY date DESC
+                LIMIT 7
+            ) last7
+            GROUP BY league
+            ORDER BY cnt DESC
+            LIMIT 1
+        ) sub
+        """, nativeQuery = true)
+    String findPrimaryLeague(@Param("playerId") UUID playerId);
+
+
+
+
+
+    @Modifying
     @Query("DELETE FROM TournamentResultEntity t WHERE t.player.id = :playerId")
     int deleteByPlayerId(@Param("playerId") UUID playerId);
-
-
-
-
 
     @Query("SELECT DAY(tr.date) as day, COALESCE(SUM(tr.amount), 0) as total, COUNT(tr) as count " +
             "FROM TournamentResultEntity tr " +
@@ -50,7 +71,6 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
                                                    @Param("since") LocalDate since,
                                                    @Param("year") int year);
 
-    // ОСТАЛЬНЫЕ МЕТОДЫ БЕЗ ИЗМЕНЕНИЙ
     @Query("SELECT COALESCE(AVG(tr.amount), 0) FROM TournamentResultEntity tr " +
             "WHERE tr.player.id = :playerId AND tr.date >= :since")
     double getPlayerAverage(@Param("playerId") UUID playerId, @Param("since") LocalDate since);
@@ -62,62 +82,24 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             "ORDER BY SUM(tr.amount) DESC")
     List<LeagueStatProjection> getAllLeaguesStats(@Param("since") LocalDate since);
 
-    @Query("SELECT p.name as name, " +
-            "COALESCE((SELECT SUM(trAll.amount) FROM TournamentResultEntity trAll WHERE trAll.player = p AND trAll.date >= :since), 0) as total, " +
-            "COALESCE((SELECT COUNT(trAll) FROM TournamentResultEntity trAll WHERE trAll.player = p AND trAll.date >= :since), 0) as tournaments " +
-            "FROM TournamentResultEntity tr JOIN tr.player p " +
-            "WHERE tr.date >= :since AND tr.league = :league " +
-            "AND tr.player.id IN (" +
-            "    SELECT tr2.player.id FROM TournamentResultEntity tr2 " +
-            "    WHERE tr2.date >= :since " +
-            "    GROUP BY tr2.player.id " +
-            "    HAVING SUM(CASE WHEN tr2.league = :league THEN 1 ELSE 0 END) > " +
-            "           SUM(CASE WHEN tr2.league != :league THEN 1 ELSE 0 END) " +
-            "    OR (" +
-            "        SUM(CASE WHEN tr2.league = :league THEN 1 ELSE 0 END) = " +
-            "        SUM(CASE WHEN tr2.league != :league THEN 1 ELSE 0 END) " +
-            "        AND (" +
-            "            SELECT tr3.league FROM TournamentResultEntity tr3 " +
-            "            WHERE tr3.player = tr2.player AND tr3.date >= :since " +
-            "            ORDER BY tr3.date DESC LIMIT 1" +
-            "        ) = :league" +
-            "    )" +
-            ") " +
-            "GROUP BY p.id, p.name " +
-            "ORDER BY total DESC " +
-            "LIMIT :limit")
-    List<TopPlayerProjection> findTopByPrimaryLeague(@Param("since") LocalDate since,
-                                                     @Param("league") String league,
-                                                     @Param("limit") int limit);
-
-    @Query("SELECT tr.player.id, SUM(tr.amount) " +
-            "FROM TournamentResultEntity tr " +
-            "WHERE tr.date BETWEEN :since AND :until " +
-            "GROUP BY tr.player.id")
-    List<Object[]> getAllPlayerStats(@Param("since") LocalDate since, @Param("until") LocalDate until);
-
-    @Query("SELECT COUNT(DISTINCT tr.player.id) FROM TournamentResultEntity tr " +
-            "WHERE tr.date BETWEEN :since AND :until")
-    long countPlayersWithEarnings(@Param("since") LocalDate since, @Param("until") LocalDate until);
-
-    @Query("SELECT p.name as name, SUM(tr.amount) as total, COUNT(*) as tournaments " +
-            "FROM TournamentResultEntity tr JOIN tr.player p " +
-            "WHERE tr.date >= :since " +
-            "GROUP BY tr.player.id, p.name " +
-            "ORDER BY SUM(tr.amount) DESC " +
-            "LIMIT :limit")
-    List<TopPlayerProjection> findTopPlayers(@Param("since") LocalDate since, @Param("limit") int limit);
-
     boolean existsByPlayerAndTournament_ExternalId(Player player, Long externalId);
+
+    // ==================== TournamentResultRepository.java — добавить ====================
+    @Query("SELECT t FROM TournamentResultEntity t WHERE t.player = :player AND t.date BETWEEN :start AND :end ORDER BY t.date ASC")
+    Page<TournamentResultEntity> findByPlayerAndDateBetweenOrderByDateAsc(
+            @Param("player") Player player,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end,
+            Pageable pageable);
 
     List<TournamentResultEntity> findByPlayerAndDateBetweenOrderByDateAsc(Player player, LocalDate start, LocalDate end);
 
     @Query("""
-    SELECT COUNT(t) as count, COALESCE(SUM(t.amount), 0) as sum,
-           COALESCE(AVG(t.amount), 0) as average, COALESCE(SUM(t.amount) * 0.97, 0) as minusThreePercent
-    FROM TournamentResultEntity t
-    WHERE t.player = :player AND t.date BETWEEN :start AND :end
-    """)
+        SELECT COUNT(t) as count, COALESCE(SUM(t.amount), 0) as sum,
+               COALESCE(AVG(t.amount), 0) as average, COALESCE(SUM(t.amount) * 0.97, 0) as minusThreePercent
+        FROM TournamentResultEntity t
+        WHERE t.player = :player AND t.date BETWEEN :start AND :end
+        """)
     PeriodStatsProjection getStats(Player player, LocalDate start, LocalDate end);
 
     Optional<TournamentResultEntity> findTopByPlayerOrderByDateDesc(Player player);
@@ -133,6 +115,4 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             "GROUP BY tr.league " +
             "ORDER BY SUM(tr.amount) DESC")
     List<LeagueStatProjection> getLeagueStats(Player player);
-
-
 }

@@ -8,11 +8,15 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px','2xl':'1536px'}}}}</script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <style>
+        :root { --bg: #06060f; --gold: #f59e0b; --gold-light: #fbbf24; }
         html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
         * { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 100vh; min-height: 100dvh; background: #06060f; position: relative; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; touch-action: pan-y pinch-zoom; }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 100vh; min-height: 100dvh; background: var(--bg); position: relative; overflow-x: hidden; overflow-y: auto; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
         .bg-mesh { position: fixed; inset: 0; z-index: -5; background-image: radial-gradient(circle at 15% 25%, rgba(245,158,11,0.06) 0%, transparent 45%), radial-gradient(circle at 85% 75%, rgba(251,191,36,0.05) 0%, transparent 45%), radial-gradient(circle at 50% 50%, rgba(217,119,6,0.04) 0%, transparent 65%); }
         .bg-grid { position: fixed; inset: 0; z-index: -4; opacity: 0.10; background-image: linear-gradient(rgba(245,158,11,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.06) 1px, transparent 1px); background-size: 50px 50px; }
         @media (max-width: 767px) { .bg-grid { background-size: 32px 32px; } }
@@ -23,71 +27,47 @@
         .glass { background: rgba(255,255,255,0.035); backdrop-filter: blur(18px) saturate(120%); -webkit-backdrop-filter: blur(18px) saturate(120%); border: 1px solid rgba(255,255,255,0.07); }
         .glass-strong { background: rgba(255,255,255,0.05); backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%); border: 1px solid rgba(255,255,255,0.1); }
         .glass-sidebar { background: rgba(10,10,20,0.85); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border-right: 1px solid rgba(255,255,255,0.06); }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 18px; border-radius: 14px; cursor: pointer; color: #a0aab8; border-left: 3px solid transparent; user-select: none; -webkit-user-select: none; transition: all 0.2s ease; }
-        .nav-item:active { transform: scale(0.97); }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 18px; border-radius: 14px; cursor: pointer; color: #a0aab8; border-left: 3px solid transparent; user-select: none; -webkit-user-select: none; }
         .nav-item:hover { background: rgba(245,158,11,0.08); color: #fcd34d; }
         .nav-item.active { background: rgba(245,158,11,0.12); color: #fbbf24; border-left-color: #f59e0b; box-shadow: inset 0 0 20px rgba(245,158,11,0.05); }
         .nav-item .nav-icon { font-size: 1.25rem; flex-shrink: 0; width: 24px; text-align: center; line-height: 1; }
         .nav-item.admin-item { border-left-color: #10b981; }
-        .nav-item.admin-item:hover { background: rgba(16,185,129,0.12); color: #a7f3d0; }
-        .widget-card { background: rgba(255,255,255,0.025); border-radius: 22px; padding: clamp(20px, 4vw, 30px); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .widget-card { background: rgba(255,255,255,0.025); border-radius: 22px; padding: clamp(18px, 3vw, 24px); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; flex-direction: column; }
         .widget-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-5px); box-shadow: 0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,158,11,0.15); }
-        .widget-card:active { transform: translateY(-2px) scale(0.98); }
-        .stat-card { background: rgba(255,255,255,0.025); border-radius: 18px; padding: clamp(16px, 3vw, 22px); border: 1px solid rgba(255,255,255,0.04); transition: all 0.3s ease; }
-        .stat-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
-        .content-panel { animation: slideIn 0.45s cubic-bezier(0.22, 0.61, 0.36, 1); }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-        .result-row { animation: fadeInUp 0.4s ease forwards; opacity: 0; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .btn-3d { transition: all 0.25s ease; }
-        .btn-3d:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,158,11,0.3); }
-        .btn-3d:active { transform: translateY(0) scale(0.97); }
-        .input-glow:focus { box-shadow: 0 0 0 3px rgba(245,158,11,0.15), 0 0 20px rgba(245,158,11,0.1); border-color: rgba(251,191,36,0.6) !important; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; }
-        .modal-box { background: #1a1a2e; border-radius: 16px; padding: 24px; max-width: 440px; width: 90%; border: 1px solid rgba(255,255,255,0.1); }
-        .mobile-nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 12px; cursor: pointer; color: #a0aab8; border-left: 3px solid transparent; user-select: none; }
-        .mobile-nav-item:active { transform: scale(0.96); }
-        .spinner { display: inline-block; width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.08); border-top-color: #f59e0b; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        .spinner-sm { width: 18px; height: 18px; border-width: 2px; display: inline-block; border: 2px solid rgba(255,255,255,0.2); border-top-color: #f59e0b; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .lineup-card { border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-        .lineup-card.soon { border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.03); }
-        .lineup-card.normal { border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.015); }
-        .lineup-slot { border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
-        .lineup-slot.playing { background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.15); }
-        .info-banner { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.15); border-radius: 14px; padding: 14px 18px; margin-bottom: 18px; }
-        .info-banner p { margin: 4px 0; line-height: 1.5; }
-        .mobile-admin-btn { background: rgba(16,185,129,0.12); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-left: 3px solid #34d399 !important; border: 1px solid rgba(16,185,129,0.25); border-radius: 12px; color: #a7f3d0; font-weight: 500; box-shadow: inset 0 0 20px rgba(16,185,129,0.06), 0 2px 10px rgba(0,0,0,0.2); }
-        .mobile-admin-btn:hover { background: rgba(16,185,129,0.18); color: #6ee7b7; }
-        .pro-badge { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 700; font-size: 0.65rem; padding: 3px 12px; border-radius: 20px; box-shadow: 0 0 20px rgba(245,158,11,0.5); letter-spacing: 0.5px; animation: proPulse 2s ease-in-out infinite; display: inline-block; vertical-align: middle; }
-        @keyframes proPulse { 0%, 100% { box-shadow: 0 0 20px rgba(245,158,11,0.5); } 50% { box-shadow: 0 0 35px rgba(245,158,11,0.8), 0 0 60px rgba(245,158,11,0.3); } }
-        .pro-diamond { display: inline-block; animation: diamondSpin 3s linear infinite; margin-right: 2px; }
+        .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 700; border: none; border-radius: 14px; padding: 14px 24px; box-shadow: 0 4px 20px rgba(245,158,11,0.35); cursor: pointer; font-size: 0.95rem; }
+        .btn-gold:hover { box-shadow: 0 8px 30px rgba(245,158,11,0.5); transform: translateY(-2px); }
+        .pro-badge { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 700; font-size: 0.65rem; padding: 3px 12px; border-radius: 20px; box-shadow: 0 0 20px rgba(245,158,11,0.5); letter-spacing: 0.5px; animation: proPulse 2s ease-in-out infinite; display: inline-flex; align-items: center; gap: 4px; }
+        @keyframes proPulse { 0%, 100% { box-shadow: 0 0 20px rgba(245,158,11,0.5); } 50% { box-shadow: 0 0 35px rgba(245,158,11,0.8); } }
+        .pro-diamond { animation: diamondSpin 3s linear infinite; }
         @keyframes diamondSpin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
         .amount-gold { color: #fbbf24; }
-        .amount-removed { color: #f87171; }
-        .title-badge { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,191,36,0.12)); border: 1px solid rgba(245,158,11,0.4); border-radius: 20px; padding: 4px 14px; font-size: 0.8rem; color: #fbbf24; font-weight: 600; white-space: nowrap; }
-        .league-tab { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; color: #9ca3af; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); transition: all 0.2s; white-space: nowrap; }
+        .league-tab { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; color: #9ca3af; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); white-space: nowrap; }
         .league-tab:hover { color: #fbbf24; background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
         .league-tab.active { color: #fbbf24; background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); box-shadow: 0 0 15px rgba(245,158,11,0.1); }
         .league-tab.my-league { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.05); }
-        .topweek-close { cursor: pointer; color: #6b7280; font-size: 1.2rem; line-height: 1; padding: 4px 8px; border-radius: 8px; }
-        .topweek-close:hover { color: #f87171; background: rgba(239,68,68,0.1); }
-        .ptr-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; color: #6b7280; font-size: 0.7rem; height: 0; overflow: hidden; transition: height 0.3s; }
+        .content-panel { animation: slideIn 0.45s cubic-bezier(0.22, 0.61, 0.36, 1); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner { width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.08); border-top-color: #f59e0b; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+        .spinner-sm { width: 18px; height: 18px; border-width: 2px; display: inline-block; border: 2px solid rgba(255,255,255,0.2); border-top-color: #f59e0b; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .mobile-nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 12px; cursor: pointer; color: #a0aab8; border-left: 3px solid transparent; font-weight: 500; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .modal-box { background: #1a1a2e; border-radius: 16px; padding: 24px; max-width: 440px; width: 90%; border: 1px solid rgba(255,255,255,0.1); }
+        .flatpickr-input { background: rgba(255,255,255,0.04)!important; border: 1px solid rgba(255,255,255,0.08)!important; border-radius: 14px!important; color: #fff!important; padding: 14px 16px!important; font-size: 0.9rem!important; font-family: 'Inter'!important; width: 100%!important; }
+        .flatpickr-input:focus { border-color: rgba(245,158,11,0.5)!important; box-shadow: 0 0 20px rgba(245,158,11,0.1)!important; outline: none!important; }
+        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 20px; }
+        * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; }
+        .ptr-indicator { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: center; gap: 8px; color: #f59e0b; font-size: 0.8rem; height: 0; overflow: hidden; transition: height 0.3s; background: rgba(6,6,15,0.95); backdrop-filter: blur(10px); }
         .ptr-indicator.active { height: 56px; }
         .ptr-indicator.done { color: #34d399; }
-        .ptr-spin { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #f59e0b; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 20px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
-        * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
+<div id="ptrIndicator" class="ptr-indicator"></div>
 
 <div id="editTournamentModal" class="modal-overlay hidden" onclick="if(event.target===this)closeEditTournamentModal()">
-    <div class="modal-box"><h3 class="text-white font-semibold mb-1">✏️ Скорректировать турнир</h3><p class="text-xs text-gray-400 mb-4">Ручная корректировка суммы для этого турнира</p><p class="text-sm text-gray-300 mb-2" id="editTournamentInfo"></p><div class="mb-4"><label class="text-xs text-gray-400 mb-1 block">Сумма (₽)</label><input id="editTournamentAmount" type="number" step="0.01" class="input input-bordered w-full bg-transparent text-white input-glow"><p class="text-xs text-gray-500 mt-1">Укажите корректную сумму, которую вы получили</p></div><div class="flex gap-2"><button onclick="saveTournamentEdit()" class="btn btn-sm bg-amber-600 hover:bg-amber-500 text-white border-0 flex-1">💾 Сохранить</button><button onclick="closeEditTournamentModal()" class="btn btn-sm bg-gray-600 hover:bg-gray-500 text-white border-0 flex-1">Отмена</button></div><p id="editTournamentError" class="text-error text-xs mt-2 hidden"></p></div>
+    <div class="modal-box"><h3 class="text-white font-semibold mb-1">✏️ Скорректировать турнир</h3><p class="text-xs text-gray-400 mb-4">Ручная корректировка суммы</p><p class="text-sm text-gray-300 mb-2" id="editTournamentInfo"></p><div class="mb-4"><label class="text-xs text-gray-400 mb-1 block">Сумма (₽)</label><input id="editTournamentAmount" type="number" step="0.01" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-amber-500 focus:outline-none"></div><div class="flex gap-2"><button onclick="saveTournamentEdit()" class="btn-gold flex-1 py-2 rounded-xl text-sm">💾 Сохранить</button><button onclick="closeEditTournamentModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-xl text-sm">Отмена</button></div><p id="editTournamentError" class="text-red-400 text-xs mt-2 hidden"></p></div>
 </div>
 
 <div id="mobileHeader" class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
@@ -100,13 +80,10 @@
     <nav class="flex flex-col gap-1.5 flex-1 overflow-y-auto">
         <div class="mobile-nav-item bg-amber-500/10 border-amber-500/20" onclick="mobileNav('home', this)"><span>🏠</span> Главная</div>
         <div class="mobile-nav-item" onclick="mobileNav('sum', this)"><span>💰</span> Сумма за период</div>
-        <div class="mobile-nav-item" onclick="mobileNav('addTournament', this)"><span>🔗</span> Добавить турнир</div>
         <div class="mobile-nav-item" onclick="window.location.href='/analytics'"><span>📊</span> Аналитика</div>
         <div class="mobile-nav-item" onclick="window.location.href='/subscribe'"><span>💳</span> Подписка</div>
-        <div class="mobile-nav-item" onclick="window.location.href='/assistant'"><span>🤖</span> ИИ Ассистент</div>
         <div class="mobile-nav-item" onclick="window.location.href='/profile'"><span>👤</span> Профиль</div>
-        <div class="mobile-nav-item hidden mobile-admin-btn" id="mobile-nav-admin" onclick="window.location.href='/admin'"><span>🛡️</span> Админка</div>
-    </nav>
+        <div class="mobile-nav-item hidden" id="mobile-nav-admin" onclick="window.location.href='/admin'" style="background: rgba(16,185,129,0.12); border-left: 3px solid #34d399; color: #a7f3d0; font-weight: 500;"><span>🛡️</span> Админка</div>    </nav>
     <button onclick="logout()" class="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm mt-4 py-3 w-full justify-center rounded-xl bg-white/3 hover:bg-red-500/10 active:scale-95">🚪 Выйти</button>
 </div>
 
@@ -115,10 +92,8 @@
     <nav class="flex flex-col gap-1 flex-1">
         <div class="nav-item active" onclick="goHome()" id="nav-home"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Главная</div><div class="text-xs text-gray-500">Обзор</div></div></div>
         <div class="nav-item" onclick="showAction('sum')" id="nav-sum"><span class="nav-icon">💰</span><div><div class="font-medium text-sm">Сумма за период</div><div class="text-xs text-gray-500">Подсчёт и список</div></div></div>
-        <div class="nav-item" onclick="showAction('addTournament')" id="nav-add"><span class="nav-icon">🔗</span><div><div class="font-medium text-sm">Добавить турнир</div><div class="text-xs text-gray-500">Поиск и импорт</div></div></div>
         <div class="nav-item" onclick="window.location.href='/analytics'"><span class="nav-icon">📊</span><div><div class="font-medium text-sm">Аналитика</div><div class="text-xs text-gray-500">Статистика по лигам</div></div></div>
-        <div class="nav-item admin-item hidden" id="nav-admin" onclick="window.location.href='/admin'"><span class="nav-icon">🛡️</span><div><div class="font-medium text-sm text-emerald-400">Админка</div><div class="text-xs text-emerald-700/50">Управление</div></div></div>
-        <div class="nav-item" onclick="window.location.href='/assistant'"><span class="nav-icon">🤖</span><div><div class="font-medium text-sm">ИИ Ассистент</div><div class="text-xs text-gray-500">Нейросоветник</div></div></div>
+        <div class="nav-item admin-item hidden" id="nav-admin" onclick="window.location.href='/admin'"><span class="nav-icon">🛡️</span><div><div class="font-medium text-sm text-emerald-400">Админка</div></div></div>
         <div class="nav-item" onclick="window.location.href='/subscribe'"><span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписка</div><div class="text-xs text-gray-500">Оформить</div></div></div>
         <div class="nav-item" onclick="window.location.href='/profile'"><span class="nav-icon">👤</span><div><div class="font-medium text-sm">Профиль</div><div class="text-xs text-gray-500">Email и пароль</div></div></div>
     </nav>
@@ -127,183 +102,204 @@
 
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10">
     <div id="contentArea" class="max-w-5xl mx-auto w-full">
-        <div id="ptrIndicator" class="ptr-indicator"></div>
         <div id="homePage">
-            <div class="mb-6 sm:mb-7 md:mb-8">
+            <div class="mb-6 sm:mb-8">
                 <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                    <h2 class="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight"><span id="playerName"></span></h2>
-                    <span id="titleBadge" class="title-badge hidden"></span>
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white"><span id="playerName"></span></h2>
                     <span id="proBadge" class="pro-badge hidden"><span class="pro-diamond">💎</span>PRO</span>
                 </div>
-                <p class="text-gray-400 mt-1 sm:mt-1.5 text-xs sm:text-sm" id="subStatusText"></p>
+                <p class="text-gray-400 mt-1 text-xs sm:text-sm" id="subStatusText"></p>
             </div>
 
             <div id="topWeekBanner" class="hidden mb-4 p-4 glass rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/5" onclick="toggleTopWeek()">
-                <span class="text-2xl">🏆</span>
-                <div class="flex-1">
-                    <p class="text-sm font-semibold text-white">Зал славы</p>
-                    <p class="text-xs text-gray-400" id="topWeekPreview">Нажмите чтобы посмотреть</p>
-                </div>
+                <span class="text-2xl">🏆</span><div class="flex-1"><p class="text-sm font-semibold text-white">Зал славы</p><p class="text-xs text-gray-400" id="topWeekPreview">Нажмите чтобы посмотреть</p></div>
                 <span class="text-gray-400" id="topWeekArrow">▼</span>
             </div>
             <div id="topWeekPanel" class="hidden glass rounded-2xl p-5 sm:p-6 mb-6 content-panel"></div>
 
-            <div id="dashboardWidgets" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-5"><div class="col-span-full flex flex-col items-center py-12 sm:py-14 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div></div>
-            <div id="homeResultPanel" class="content-panel mt-5 sm:mt-6 md:mt-7"></div>
+            <div id="dashboardWidgets" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="col-span-full flex flex-col items-center py-16 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>
+            </div>
         </div>
         <div id="actionPage" class="hidden content-panel">
-            <div class="mb-6 sm:mb-7 md:mb-8"><h2 class="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight" id="actionTitle">Действие</h2><p class="text-gray-400 mt-1.5 sm:mt-2 text-sm sm:text-base" id="actionSubtitle"></p></div>
+            <div class="mb-6 sm:mb-8"><h2 class="text-2xl sm:text-3xl font-extrabold text-white" id="actionTitle"></h2><p class="text-gray-400 mt-1.5 text-sm" id="actionSubtitle"></p></div>
             <div id="actionContent"></div>
         </div>
     </div>
+</main>
 
-    <script>
-        let playerId = null, currentPlayerName = null, tournamentCart = [], editingTournamentResultId = null, primaryLeague = null;
-        let currentPeriod = 'week'; // 'week' или 'month'
+<script>
+    let playerId = null, editingTournamentResultId = null, primaryLeague = 'A';
+    let currentPeriod = 'week', currentPage = 0;
 
-        // Pull-to-Refresh
-        const ptrIndicator = document.getElementById('ptrIndicator');
-        let ptrStart = 0, ptrTriggered = false;
-        document.addEventListener('touchstart', e => { if (window.scrollY <= 2) { ptrStart = e.touches[0].clientY; ptrTriggered = false; } }, {passive: true});
-        document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 2) return; if (e.touches[0].clientY - ptrStart > 50) { ptrTriggered = true; ptrIndicator.innerHTML = '<span class="ptr-spin"></span> Обновление...'; ptrIndicator.classList.add('active'); } }, {passive: true});
-        document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeekPreview(); setTimeout(() => { ptrIndicator.innerHTML = '✓ Обновлено'; ptrIndicator.classList.add('done'); setTimeout(() => { ptrIndicator.classList.remove('active', 'done'); ptrIndicator.innerHTML = ''; }, 1000); }, 400); } ptrStart = 0; });
+    // Pull-to-Refresh
+    const ptr = document.getElementById('ptrIndicator');
+    let ptrStart = 0, ptrTriggered = false;
+    document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientY; ptrTriggered = false; } }, {passive: true});
+    document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientY - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, {passive: true});
+    document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeekPreview(); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => { ptr.classList.remove('active', 'done'); }, 1200); }, 500); } ptrStart = 0; });
 
-        function toggleMobileMenu() { const m=document.getElementById('mobileMenu'),o=document.getElementById('mobileMenuOverlay'); if(m.classList.contains('translate-x-0')){m.classList.remove('translate-x-0');m.classList.add('translate-x-full');o.classList.add('hidden');}else{m.classList.remove('translate-x-full');m.classList.add('translate-x-0');o.classList.remove('hidden');} }
-        function mobileNav(a,e){ toggleMobileMenu(); document.querySelectorAll('.mobile-nav-item').forEach(i=>{i.classList.remove('bg-amber-500/10','border-amber-500/20');i.style.borderColor='transparent';}); e.classList.add('bg-amber-500/10');e.style.borderColor='rgba(245,158,11,0.2)'; if(a==='home')goHome(); else showAction(a); }
+    function toggleMobileMenu() { const m=document.getElementById('mobileMenu'),o=document.getElementById('mobileMenuOverlay'); if(m.classList.contains('translate-x-0')){m.classList.remove('translate-x-0');m.classList.add('translate-x-full');o.classList.add('hidden');}else{m.classList.remove('translate-x-full');m.classList.add('translate-x-0');o.classList.remove('hidden');} }
+    function mobileNav(a,e){ toggleMobileMenu(); document.querySelectorAll('.mobile-nav-item').forEach(i=>{i.classList.remove('bg-amber-500/10','border-amber-500/20');}); e.classList.add('bg-amber-500/10','border-amber-500/20'); if(a==='home')goHome(); else showAction(a); }
 
-        async function checkSession() {
-            try { const r=await fetch("/api/auth/me",{credentials:"same-origin"}); if(!r.ok){window.location.href="/";return;} const d=await r.json(); playerId=d.id;currentPlayerName=d.name; document.getElementById("playerName").textContent=d.name; const s=document.getElementById("sidebarPlayerName"),m=document.getElementById("mobilePlayerName"); if(s)s.textContent=d.name; if(m)m.textContent=d.name; if(d.admin){document.getElementById('nav-admin')?.classList.remove('hidden');document.getElementById('mobile-nav-admin')?.classList.remove('hidden');} loadDashboardWidgets(); loadTopWeekPreview(); } catch(e){window.location.href="/";}
-        }
-        checkSession();
+    async function checkSession() {
+        try { const r=await fetch("/api/auth/me",{credentials:"same-origin"}); if(!r.ok){window.location.href="/";return;} const d=await r.json(); playerId=d.id; if(d.admin){document.getElementById('nav-admin')?.classList.remove('hidden');document.getElementById('mobile-nav-admin')?.classList.remove('hidden');} document.getElementById("playerName").textContent=d.name; document.getElementById("sidebarPlayerName")&&(document.getElementById("sidebarPlayerName").textContent=d.name); document.getElementById("mobilePlayerName")&&(document.getElementById("mobilePlayerName").textContent=d.name); loadDashboardWidgets(); loadTopWeekPreview(); } catch(e){window.location.href="/";}
+    }
+    checkSession();
 
-        function goHome(){ document.getElementById("homePage").style.display="block"; document.getElementById("actionPage").classList.add("hidden"); highlightNav("nav-home"); loadDashboardWidgets(); }
-        function highlightNav(id){ document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")); document.getElementById(id)?.classList.add("active"); }
+    function goHome(){ document.getElementById("homePage").style.display="block"; document.getElementById("actionPage").classList.add("hidden"); highlightNav("nav-home"); loadDashboardWidgets(); }
+    function highlightNav(id){ document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")); document.getElementById(id)?.classList.add("active"); }
 
-        async function loadTopWeekPreview() {
-            try {
-                const r = await fetch(`/api/player/${playerId}/top/week`, { credentials: "same-origin" });
-                if (!r.ok) return;
-                const d = await r.json();
-                if (d && d.top5 && d.top5.length > 0) {
-                    document.getElementById("topWeekBanner").classList.remove("hidden");
-                    document.getElementById("topWeekPreview").textContent = "Нажмите чтобы посмотреть";
-                }
-            } catch (e) {}
-        }
+    async function loadTopWeekPreview() { try { const r=await fetch(`/api/player/top/WEEK/${primaryLeague||'A'}`,{credentials:"same-origin"}); if(!r.ok)return; const d=await r.json(); if(d&&d.top5&&d.top5.length>0){ document.getElementById("topWeekBanner").classList.remove("hidden"); document.getElementById("topWeekPreview").textContent="Нажмите чтобы посмотреть"; } } catch(e){} }
 
-        function toggleTopWeek() { const panel = document.getElementById("topWeekPanel"), arrow = document.getElementById("topWeekArrow"); if (panel.classList.contains("hidden")) { loadTopWeek(null); arrow.textContent = "▲"; } else { panel.classList.add("hidden"); arrow.textContent = "▼"; } }
-        function switchLeague(league) { loadTopWeek(league); }
-
-        function switchPeriod(period) {
-            currentPeriod = period;
-            document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.period-tab[onclick="switchPeriod('${period}')"]`)?.classList.add('active');
-            const activeLeague = document.querySelector('#leagueTabs .league-tab.active');
-            const league = activeLeague && activeLeague.textContent !== 'Все' ? activeLeague.textContent : null;
-            loadTopWeek(league);
-        }
-
-        async function loadTopWeek(league) {
-            const panel = document.getElementById("topWeekPanel");
-            const periodLabel = currentPeriod === 'week' ? '7 дней' : '30 дней';
-            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-            const currentMonth = monthNames[new Date().getMonth()];
-            const topTitle = currentPeriod === 'week' ? 'недели' : `за ${currentMonth}`;
-
-            // Формируем URL в зависимости от периода
-            let baseUrl;
-            if (currentPeriod === 'week') {
-                baseUrl = league
-                    ? `/api/player/${playerId}/top/week/${league}`
-                    : `/api/player/${playerId}/top/week`;
-            } else {
-                baseUrl = league
-                    ? `/api/player/${playerId}/top/month/${league}`
-                    : `/api/player/${playerId}/top/month`;
+    function toggleTopWeek(){
+        const p=document.getElementById("topWeekPanel"),a=document.getElementById("topWeekArrow");
+        if(p.classList.contains("hidden")){
+            const proBadge = document.getElementById("proBadge");
+            if(proBadge.classList.contains("hidden")) {
+                p.innerHTML = `<div class="flex items-center justify-between mb-3"><h3 class="font-bold text-white">🏆 Зал славы</h3><span class="cursor-pointer text-gray-400 hover:text-red-400 text-xl" onclick="toggleTopWeek()">✕</span></div><div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`;
+                p.classList.remove("hidden");
+                a.textContent="▲";
+                return;
             }
+            p.innerHTML=`<div class="text-center py-4"><div class="spinner mx-auto"></div></div>`;
+            loadTopWeek(null);a.textContent="▲"
+        }else{
+            p.classList.add("hidden");a.textContent="▼"
+        }
+    }
 
-            const leagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
-            const leagueLabels = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
+    function switchLeague(l){loadTopWeek(l)}
+    function switchPeriod(p){currentPeriod=p;document.querySelectorAll('.period-tab').forEach(t=>t.classList.remove('active'));document.querySelector(`.period-tab[onclick="switchPeriod('${p}')"]`)?.classList.add('active');const al=document.querySelector('#leagueTabs .league-tab.active');const lg=al&&al.textContent!=='Все'?al.textContent:null;loadTopWeek(lg)}
 
-            let periodTabs = `<div class="flex gap-1.5 flex-wrap mb-3">`;
-            periodTabs += `<span class="league-tab period-tab ${currentPeriod==='week'?'active':''}" onclick="switchPeriod('week')" style="cursor:pointer">Неделя</span>`;
-            periodTabs += `<span class="league-tab period-tab ${currentPeriod==='month'?'active':''}" onclick="switchPeriod('month')" style="cursor:pointer">Месяц</span>`;
-            periodTabs += `</div>`;
+    async function loadTopWeek(league){
+        const proBadge = document.getElementById("proBadge");
+        if(proBadge.classList.contains("hidden")) return;
+        const panel=document.getElementById("topWeekPanel");
+        const period=currentPeriod.toUpperCase();
+        const periodLabel=period==='WEEK'?'7 дней':period==='MONTH'?'30 дней':'365 дней';
+        const topTitle=period==='WEEK'?'недели':period==='MONTH'?`за месяц`:`за год`;
+        let baseUrl=league?`/api/player/top/${period}/${league}`:`/api/player/top/${period}`;
+        const leagues=['A','B','C','D','SUPER_LEAGUE'],labels={'A':'A','B':'B','C':'C','D':'D','SUPER_LEAGUE':'Супер'};
+        let tabs=`<div class="flex gap-1.5 flex-wrap mb-3"><span class="league-tab period-tab ${currentPeriod==='week'?'active':''}" onclick="switchPeriod('week')">Неделя</span><span class="league-tab period-tab ${currentPeriod==='month'?'active':''}" onclick="switchPeriod('month')">Месяц</span><span class="league-tab period-tab ${currentPeriod==='year'?'active':''}" onclick="switchPeriod('year')">Год</span></div>`;
+        tabs+=`<div class="flex items-center justify-between flex-wrap gap-2 mb-3"><h3 class="font-bold text-white">🏆 Топ ${topTitle}</h3><div class="flex gap-1.5 flex-wrap" id="leagueTabs">`;
+        tabs+=`<span class="league-tab ${!league?'active':''}" onclick="switchLeague(null)">Все</span>`;
+        leagues.forEach(l=>{const ia=l===league,im=l===primaryLeague;tabs+=`<span class="league-tab ${ia?'active':''} ${im?'my-league':''}" onclick="switchLeague('${l}')">${labels[l]}</span>`});
+        tabs+=`</div><span class="cursor-pointer text-gray-400 hover:text-red-400 text-xl" onclick="toggleTopWeek()">✕</span></div>`;
+        panel.classList.remove("hidden");document.getElementById("topWeekArrow").textContent="▲";
+        try{
+            const r=await fetch(baseUrl,{credentials:"same-origin"});if(!r.ok)throw new Error();const d=await r.json();
+            let h="";
+            if(!d.top5||d.top5.length===0)h=`<div class="text-center py-6"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет данных за ${periodLabel}</p></div>`;
+            else{
+                const m=['🥇','🥈','🥉'];
+                h=d.top5.map((p,i)=>{const pr=i<3?m[i]:`${i+1}.`;const isMe=(i+1)===d.playerPosition;const mc=isMe?'bg-amber-500/10 border-l-2 border-amber-500 rounded-lg':'rounded-lg';const dn=(p.name||'')+(isMe?' 👈':'');return`<div class="flex items-center gap-3 py-2 px-3 ${mc}"><span class="text-lg w-8 text-center">${pr}</span><span class="text-white text-sm font-medium flex-1">${dn}</span><span class="text-gray-500 text-xs">${p.tournaments} тур.</span></div>`}).join("");
+                if(d.playerPosition>5)h+=`<div class="border-t border-white/10 mt-3 pt-3 flex items-center gap-3 py-2 px-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500"><span class="text-lg w-8 text-center text-gray-400">${d.playerPosition}.</span><span class="text-white text-sm font-medium flex-1">👈 Вы</span><span class="text-gray-500 text-xs">${d.playerTournaments} тур.</span></div>`;
+            }
+            panel.innerHTML=tabs+h;
+        }catch(e){panel.innerHTML=tabs+`<div class="text-center py-6"><p class="text-red-400 text-sm">❌ Ошибка</p></div>`}
+    }
 
-            let tabsHtml = `<div class="flex items-center justify-between flex-wrap gap-2 mb-3"><h3 class="font-bold text-white">🏆 Топ ${topTitle}</h3><div class="flex gap-1.5 flex-wrap" id="leagueTabs">`;
-            tabsHtml += `<span class="league-tab ${!league ? 'active' : ''}" onclick="switchLeague(null)">Все</span>`;
-            leagues.forEach(l => {
-                const isActive = l === league, isMyLeague = l === primaryLeague;
-                tabsHtml += `<span class="league-tab ${isActive ? 'active' : ''} ${isMyLeague ? 'my-league' : ''}" onclick="switchLeague('${l}')">${leagueLabels[l]}</span>`;
-            });
-            tabsHtml += `</div><span class="topweek-close" onclick="toggleTopWeek()">✕</span></div>`;
+    function loadDashboardWidgets(){
+        const w=document.getElementById("dashboardWidgets");
+        w.innerHTML=`<div class="col-span-full flex flex-col items-center py-16 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
+        fetch(`/api/player/${playerId}/dashboard`,{credentials:"same-origin"}).then(r=>r.json()).then(d=>{
+            primaryLeague=d.primaryLeague||'A';
+            if(d.subscription && d.subscription.active) {
+                document.getElementById("proBadge").classList.remove("hidden");
+                document.getElementById("subStatusText").textContent="Подписка до "+new Date(d.subscription.expiresAt).toLocaleDateString("ru-RU");
+            }
+            const lastHtml=d.lastResult?`<div class="widget-card justify-between" onclick="window.open('${d.lastResult.tournamentLink}','_blank')"><div class="flex items-center gap-2 mb-1"><span>🏆</span><h3 class="font-bold text-sm text-amber-300">Последний результат</h3></div><p class="text-2xl font-extrabold amount-gold mt-1">${formatMoney(d.lastResult.amount)}</p><p class="text-xs text-gray-500 mt-auto pt-1">📅 ${d.lastResult.date}</p></div>`:`<div class="widget-card items-center justify-center"><div class="text-center"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет результатов</p></div></div>`;
 
-            panel.innerHTML = periodTabs + tabsHtml + `<div class="text-center py-4"><div class="spinner mx-auto"></div></div>`;
-            panel.classList.remove("hidden");
-            document.getElementById("topWeekArrow").textContent = "▲";
+            let lineupHtml='<div class="widget-card"><div class="flex items-center gap-2 mb-3"><span>📅</span><h3 class="font-bold text-sm text-white">Ближайшие турниры</h3></div><div class="flex-1 space-y-2">';
+            if(d.upcomingLineups&&d.upcomingLineups.length>0){
+                const uniqueDates = [...new Set(d.upcomingLineups.map(l => l.date))];
+                const date1 = uniqueDates[0];
+                const date2 = uniqueDates[1];
 
-            try {
-                const res = await fetch(baseUrl, { credentials: "same-origin" });
-                if (!res.ok) throw new Error();
-                const data = await res.json();
+                const formatDate = (dateStr) => {
+                    const p = dateStr.split('-');
+                    return p[2] + '.' + p[1];
+                };
 
-                let contentHtml = "";
-                if (!data.top5 || data.top5.length === 0) {
-                    contentHtml = `<div class="text-center py-6"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет данных за ${periodLabel}</p></div>`;
-                } else {
-                    const medals = ['🥇', '🥈', '🥉'];
-                    const titles = league ? {} : {1: '👑 Рокфеллер', 2: '💰 Магнат', 3: '💎 Толстосум'};
-                    contentHtml = data.top5.map((p, i) => {
-                        const prefix = i < 3 ? medals[i] : `${i+1}.`;
-                        const isMe = (i + 1) === data.playerPosition;
-                        const meClass = isMe ? 'bg-amber-500/10 border-l-2 border-amber-500' : '';
-                        const title = titles[i+1] ? `<span class="text-xs text-amber-400 font-medium ml-1">· ${titles[i+1]}</span>` : '';
-                        const displayName = (p.name || '') + (isMe ? ' 👈' : '');
-                        return `<div class="flex items-center gap-3 py-2 px-3 rounded-lg ${meClass}"><span class="text-lg w-8 text-center">${prefix}</span><span class="text-white text-sm font-medium flex-1">${displayName}${title}</span><span class="text-gray-500 text-xs">${p.tournaments} тур.</span></div>`;
-                    }).join("");
-
-                    if (data.playerPosition > 5 || (data.playerPosition > 0 && data.playerTotal === 0)) {
-                        contentHtml += `<div class="border-t border-white/10 mt-3 pt-3 flex items-center gap-3 py-2 px-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500"><span class="text-lg w-8 text-center text-gray-400">${data.playerPosition}.</span><span class="text-white text-sm font-medium flex-1">👈 Вы</span><span class="text-gray-500 text-xs">${data.playerTournaments} тур.</span></div>`;
+                if(date1) {
+                    const items = d.upcomingLineups.filter(l => l.date === date1);
+                    lineupHtml+=`<div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">📌 Сегодня, ${formatDate(date1)}</div>`;
+                    if(items.some(l => l.inLineup)) {
+                        items.filter(l => l.inLineup).forEach(l=>{
+                            const players = l.players ? l.players.split(', ').join(' • ') : '';
+                            lineupHtml+=`<div class="bg-amber-500/5 rounded-lg p-2 border border-amber-500/10 mb-2"><div class="flex items-center justify-between"><span class="text-white text-xs font-medium">⏰ ${l.time||'??:??'}</span><span class="text-[9px] font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">🏆 ${l.league||'?'}</span></div><p class="text-[11px] text-gray-400 mt-1">👥 ${players||'—'}</p><p class="text-[10px] text-amber-400 mt-1">✅ Вы в составе</p></div>`;
+                        });
+                    } else {
+                        lineupHtml+=`<div class="flex flex-col items-center py-3 text-gray-500"><span class="text-xl mb-1">😴</span><p class="text-xs">Пока не играете</p></div>`;
                     }
                 }
-                panel.innerHTML = periodTabs + tabsHtml + contentHtml;
-            } catch(e) {
-                panel.innerHTML = periodTabs + tabsHtml + `<div class="text-center py-6"><p class="text-red-400 text-sm">❌ Ошибка загрузки</p></div>`;
+
+                if(date2) {
+                    const items = d.upcomingLineups.filter(l => l.date === date2);
+                    lineupHtml+=`<div class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2 mt-3">📅 Завтра, ${formatDate(date2)}</div>`;
+                    if(items.some(l => l.inLineup)) {
+                        items.filter(l => l.inLineup).forEach(l=>{
+                            const players = l.players ? l.players.split(', ').join(' • ') : '';
+                            lineupHtml+=`<div class="bg-blue-500/5 rounded-lg p-2 border border-blue-500/10 mb-2"><div class="flex items-center justify-between"><span class="text-white text-xs font-medium">⏰ ${l.time||'??:??'}</span><span class="text-[9px] font-bold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">🏆 ${l.league||'?'}</span></div><p class="text-[11px] text-gray-400 mt-1">👥 ${players||'—'}</p><p class="text-[10px] text-amber-400 mt-1">✅ Вы в составе</p></div>`;
+                        });
+                    } else {
+                        lineupHtml+=`<div class="flex flex-col items-center py-3 text-gray-500"><span class="text-xl mb-1">😴</span><p class="text-xs">Пока не играете</p></div>`;
+                    }
+                }
+            } else {
+                lineupHtml+=`<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Составы не загружены</p></div>`;
             }
-        }
+            lineupHtml+=`</div></div>`;
+            w.innerHTML=lastHtml+lineupHtml;
+        }).catch(()=>{w.innerHTML=`<div class="col-span-full text-center py-16 text-gray-400">❌ Ошибка загрузки</div>`});
+    }
 
-        function loadDashboardWidgets() {
-            const widgets=document.getElementById("dashboardWidgets");
-            widgets.innerHTML=`<div class="col-span-full flex flex-col items-center py-12 sm:py-14 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
-            fetch(`/api/player/subscription`,{credentials:"same-origin"}).then(r=>r.json()).then(sub=>{
-                if(!sub || !sub.active) { widgets.innerHTML = subscriptionBlock(); document.getElementById("topWeekBanner").classList.add("hidden"); document.getElementById("proBadge").classList.add("hidden"); return; }
-                fetch(`/api/player/${playerId}/dashboard`,{credentials:"same-origin"}).then(r=>r.json()).then(d=>{
-                    const nameEl=document.getElementById("playerName"),proBadge=document.getElementById("proBadge"),titleBadge=document.getElementById("titleBadge"),subStatusText=document.getElementById("subStatusText");
-                    primaryLeague=d.primaryLeague||'A'; nameEl.textContent=d.playerName;
-                    if(d.topWeekTitle){const emojis={'Рокфеллер':'👑','Магнат':'💰','Толстосум':'💎','Смотрящий за лигой ':'👀'}; titleBadge.textContent=`${emojis[d.topWeekTitle]||'🏆'} ${d.topWeekTitle}`; titleBadge.classList.remove("hidden");} else {titleBadge.classList.add("hidden");}
-                    if(d.subscription&&d.subscription.active){proBadge.classList.remove("hidden");subStatusText.textContent="Подписка до "+new Date(d.subscription.expiresAt).toLocaleDateString("ru-RU");} else {proBadge.classList.add("hidden");subStatusText.textContent="";}
-                    const lastResultHtml=d.lastResult?`<div class="widget-card" onclick="window.open('${d.lastResult.tournamentLink}','_blank')"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">🏆</div><h3 class="font-bold text-base sm:text-lg text-amber-300">Последний результат</h3><p class="text-xs sm:text-sm text-gray-400 mt-1">📅 ${d.lastResult.date}</p><p class="text-2xl sm:text-3xl font-bold amount-gold mt-2 sm:mt-3">${formatMoney(d.lastResult.amount)}</p></div>`:'<div class="widget-card"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">📭</div><h3 class="font-bold text-base sm:text-lg text-gray-400">Нет результатов</h3></div>';
-                    let lineupHtml='<div class="widget-card col-span-full"><div class="text-3xl sm:text-4xl mb-2 sm:mb-3">📅</div><h3 class="font-bold text-base sm:text-lg text-white mb-1">Ближайшие турниры</h3><p class="text-xs text-gray-500 mb-4">Составы на ближайшие дни</p>';
-                    if(d.upcomingLineups&&d.upcomingLineups.length>0){let cd=null; d.upcomingLineups.forEach(l=>{if(cd!==l.date){if(cd!==null)lineupHtml+='</div>';cd=l.date;const cc=l.isSoon?'soon':'normal';const bd=l.isSoon?'<span class="text-xs bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full font-medium ml-2">🔜 Ближайший</span>':'';lineupHtml+=`<div class="lineup-card ${cc}"><div class="flex items-center justify-between mb-3"><span class="text-white font-semibold text-sm">📅 ${l.date}</span>${bd}</div>`;} if(l.inLineup){const pl=l.players?l.players.split(', ').join(' • '):'';lineupHtml+=`<div class="lineup-slot playing"><div class="flex items-center justify-between flex-wrap gap-2"><span class="text-white text-sm font-medium">⏰ ${l.time}</span><span class="text-xs font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">🏆 ${l.league}</span></div><p class="text-xs text-gray-400 mt-2">👥 ${pl}</p><p class="text-xs text-amber-400 mt-1 font-medium">✅ Вы в составе</p></div>`;} else {lineupHtml+=`<div class="flex flex-col items-center py-4 text-gray-500"><span class="text-2xl mb-1">😴</span><p class="text-sm">Пока не играете</p></div>`;}});lineupHtml+='</div>';} else {lineupHtml+='<div class="flex flex-col items-center py-6 text-gray-500"><span class="text-3xl mb-2">📭</span><p class="text-sm">Составы пока не загружены</p></div>';}
-                    lineupHtml+='</div>';widgets.innerHTML=lastResultHtml+lineupHtml;
-                }).catch(()=>{widgets.innerHTML=`<div class="col-span-full text-center py-12 sm:py-14 text-gray-400">❌ Ошибка загрузки</div>`;});
-            }).catch(()=>{ widgets.innerHTML = subscriptionBlock(); });
+    function showAction(a){
+        document.getElementById("homePage").style.display="none";
+        document.getElementById("actionPage").classList.remove("hidden");
+        highlightNav("nav-"+a);
+        const t=document.getElementById("actionTitle"), s=document.getElementById("actionSubtitle"), c=document.getElementById("actionContent");
+        if(a==='sum'){
+            if(document.getElementById("proBadge").classList.contains("hidden")) {
+                t.textContent="💰 Сумма за период"; s.textContent="Подсчёт заработка и список турниров";
+                c.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`;
+                return;
+            }
+            currentPage = 0;
+            t.textContent="💰 Сумма за период"; s.textContent="Подсчёт заработка и список турниров";
+            c.innerHTML=`<div class="glass rounded-2xl p-6 text-center" id="sumCheck"><div class="spinner mx-auto mb-4"></div><p class="text-gray-400 text-sm">Проверка доступа...</p></div>`;
+            fetch(`/api/player/sum?start=2026-01-01&end=${new Date().toISOString().split("T")[0]}`,{credentials:"same-origin"}).then(r=>{
+                if(r.status===402){c.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3></div>`;return;}
+                c.innerHTML=`<div class="glass rounded-2xl p-4 mb-4 text-sm text-gray-300 text-left"><p class="mb-2 font-medium text-amber-200">📖 Как пользоваться:</p><p>1. Выберите даты начала и окончания (или одну)</p><p>2. Нажмите «Рассчитать»</p><p>3. Система покажет общую сумму и список турниров с корректировкой ✏️</p></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"><div><label class="text-xs text-gray-400 mb-1 block">📅 Дата с</label><input id="dateStart" type="text" class="flatpickr-input" placeholder="Выберите дату"></div><div><label class="text-xs text-gray-400 mb-1 block">📅 Дата по (необязательно)</label><input id="dateEnd" type="text" class="flatpickr-input" placeholder="Выберите дату"></div></div><button onclick="executeSum()" class="btn-gold w-full">🧮 Рассчитать</button><p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p><div id="actionResult" class="mt-4"></div>`;
+                flatpickr("#dateStart", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
+                flatpickr("#dateEnd", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
+            }).catch(()=>{c.innerHTML=`<div class="text-center py-8 text-red-400">❌ Ошибка</div>`});
         }
+    }
 
-        function showAction(a){document.getElementById("homePage").style.display="none";document.getElementById("actionPage").classList.remove("hidden");highlightNav(`nav-${a==='addTournament'?'add':a}`);const c=document.getElementById("actionContent"),t=document.getElementById("actionTitle"),s=document.getElementById("actionSubtitle");if(a==='sum'){t.textContent="💰 Сумма за период";s.textContent="Подсчёт заработка и список турниров";c.innerHTML=`<div class="glass rounded-2xl p-6 sm:p-8 text-center" id="sumCheck"><div class="spinner mx-auto mb-4"></div><p class="text-gray-400 text-sm sm:text-base">Проверка доступа...</p></div>`;fetch(`/api/player/${playerId}/sum?start=2026-01-01&end=${new Date().toISOString().split("T")[0]}`,{credentials:"same-origin"}).then(r=>{if(r.status===402)throw{status:402};document.getElementById("sumCheck").innerHTML=`<div class="info-banner"><p class="text-sm text-amber-200 font-medium mb-1">📖 Как пользоваться:</p><p class="text-xs text-gray-300">1. Выберите дату начала и дату окончания (или только одну)</p><p class="text-xs text-gray-300">2. Нажмите «Рассчитать»</p><p class="text-xs text-gray-300">3. Система покажет общую сумму и список турниров с возможностью корректировки ✏️</p><p class="text-xs text-red-300 mt-2">⚠️ Максимальный диапазон — 90 дней, максимум 50 турниров</p></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"><div><label class="text-xs sm:text-sm text-gray-400 mb-1.5 block font-medium">📅 Дата с</label><input id="dateStart" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div><div><label class="text-xs sm:text-sm text-gray-400 mb-1.5 block font-medium">📅 Дата по (необязательно)</label><input id="dateEnd" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div></div><button onclick="executeSum()" id="sumBtn" class="btn btn-primary w-full bg-gradient-to-r from-amber-500 to-yellow-600 border-0 font-semibold btn-3d">🧮 Рассчитать</button><p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p><div id="sumLoading" class="hidden mt-4 text-center"><span class="spinner-sm mr-2"></span><span class="text-amber-300/80 text-sm">Считаем...</span></div>`;}).catch(()=>{document.getElementById("sumCheck").innerHTML=subscriptionBlock();});c.innerHTML+=`<div id="actionResult" class="mt-6"></div>`;}else if(a==='addTournament'){t.textContent="🔗 Добавить турниры";s.textContent="Поиск по диапазону дат — авто-добавление в корзину";c.innerHTML=`<div class="info-banner"><p class="text-sm text-amber-200 font-medium mb-1">📖 Как пользоваться:</p><p class="text-xs text-gray-300">1. Выберите диапазон дат (макс. 30 дней) и нажмите «Найти»</p><p class="text-xs text-gray-300">2. Новые турниры (🆕) попадут в корзину. Сохранённые (✓) — пропускаются</p><p class="text-xs text-gray-300">3. Нажмите «Обработать всё» — система загрузит результаты</p></div><div class="glass rounded-2xl p-5 sm:p-6 md:p-7 mb-4"><h3 class="text-white font-semibold mb-3">🔍 Поиск турниров (макс. 30 дней)</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3"><div><label class="text-xs text-gray-400 mb-1 block">Дата с</label><input id="tournamentDateStart" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div><div><label class="text-xs text-gray-400 mb-1 block">Дата по</label><input id="tournamentDateEnd" type="date" class="input input-bordered w-full bg-transparent text-white input-glow"></div></div><button onclick="searchTournamentsByDateRange()" id="searchBtn" class="btn bg-amber-600 hover:bg-amber-500 text-white border-0 font-semibold w-full sm:w-auto">🔍 Найти</button><div id="tournamentList" class="mt-4 hidden"></div></div><div class="glass rounded-2xl p-5 sm:p-6 md:p-7 mb-4"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="text-white font-semibold">📋 Корзина</h3><div class="flex items-center gap-2"><span id="cartCount" class="text-xs text-gray-400">0 шт.</span><button onclick="clearCart()" class="btn btn-xs bg-gray-600 hover:bg-gray-500 text-white border-0">Очистить</button></div></div><div id="cartList" class="space-y-2 mb-3 max-h-64 overflow-y-auto"><p class="text-gray-500 text-sm text-center py-4">Корзина пуста</p></div><button onclick="processCart()" id="processCartBtn" class="btn btn-primary w-full bg-gradient-to-r from-emerald-500 to-teal-600 border-0 font-semibold btn-3d" disabled>⚡ Обработать всё</button></div><p id="addError" class="text-error text-xs sm:text-sm hidden mb-2"></p><p id="addSuccess" class="text-success text-xs sm:text-sm hidden mb-2"></p><div id="actionResult" class="mt-4"></div>`;}}
-        async function executeSum(){const start=document.getElementById("dateStart").value,end=document.getElementById("dateEnd").value,btn=document.getElementById("sumBtn"),errorEl=document.getElementById("sumError"),loadingEl=document.getElementById("sumLoading"),resultEl=document.getElementById("actionResult");errorEl.classList.add("hidden");resultEl.innerHTML="";if(!start&&!end){errorEl.textContent="❌ Выберите хотя бы одну дату";errorEl.classList.remove("hidden");return;}btn.disabled=true;btn.innerHTML='<span class="spinner-sm mr-2"></span> Считаем...';loadingEl.classList.remove("hidden");const params=new URLSearchParams();if(start)params.append("start",start);if(end)params.append("end",end);try{const r=await fetch(`/api/player/${playerId}/sum?${params.toString()}`,{credentials:"same-origin"});if(r.status===402){resultEl.innerHTML=subscriptionBlock();return;}if(!r.ok){resultEl.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка загрузки</p>';return;}const d=await r.json();if(!d.tournaments||d.tournaments.length===0){resultEl.innerHTML=`<div class="glass rounded-2xl p-6 sm:p-8 text-center"><span class="text-4xl">📭</span><p class="text-gray-400 mt-3">Нет турниров за выбранный период</p></div>`;return;}let statsHtml=`<div class="glass rounded-2xl p-5 sm:p-6 mb-6 content-panel"><h3 class="text-lg sm:text-xl font-bold mb-4">📊 Результат</h3><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4"><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">💰 Общая сумма</div><div class="text-xl sm:text-2xl font-bold amount-gold">${formatMoney(d.sum)}</div></div><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">📊 Среднее</div><div class="text-xl sm:text-2xl font-bold text-blue-400">${formatMoney(d.average)}</div></div><div class="stat-card result-row"><div class="text-xs text-gray-400 mb-1">🎯 Турниров</div><div class="text-xl sm:text-2xl font-bold text-amber-400">${d.count}</div></div></div></div>`;let rows=d.tournaments.map((t,i)=>{let cleanDate=t.date||'—';try{const dt=new Date(cleanDate);if(!isNaN(dt.getTime()))cleanDate=dt.toLocaleDateString('ru-RU');}catch(e){}const isRemoved=t.hasRemoved===true;const rowClass=isRemoved?'result-row hover:bg-white/5 border-l-2 border-red-500/60 bg-red-500/5':'result-row hover:bg-white/5';const warningIcon=isRemoved?'<span class="text-red-400 text-xs ml-1" title="Игрок снялся в финале или за 3-е место. Проверьте результат.">⚠️</span>':'';return`<tr class="${rowClass}" style="animation-delay:${i*0.05}s"><td class="text-sm sm:text-base text-gray-400">${i+1}</td><td class="text-sm sm:text-base text-white">${cleanDate}${warningIcon}</td><td class="${isRemoved?'amount-removed':'amount-gold'} font-medium text-sm sm:text-base">${formatMoney(t.amount)}</td><td class="text-center"><button onclick='openEditTournamentModal(${t.resultId||0},"${cleanDate}",${t.amount})' class="btn btn-xs bg-gray-600 hover:bg-gray-500 text-white border-0" title="Скорректировать">✏️</button></td></tr>`;}).join("");resultEl.innerHTML=statsHtml+`<div class="glass rounded-2xl p-5 sm:p-6 content-panel"><h3 class="text-lg sm:text-xl font-bold mb-4">📋 Список турниров</h3><div class="overflow-x-auto -mx-1"><table class="table table-sm sm:table-md w-full"><thead><tr class="text-gray-400"><th>№</th><th>Дата</th><th>Сумма</th><th class="text-center">✏️</th></tr></thead><tbody>${rows}</tbody></table></div><p class="text-gray-500 text-xs mt-3">ℹ️ Если сумма некорректна — нажмите ✏️ и укажите верную сумму.</p><p class="text-red-400/70 text-xs mt-1">⚠️ Подсвеченные строки — игрок снялся в финале или за 3-е место, проверьте результат.</p></div>`;}catch(e){resultEl.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка соединения</p>';}finally{btn.disabled=false;btn.innerHTML='🧮 Рассчитать';loadingEl.classList.add("hidden");}}
-        function openEditTournamentModal(id,date,amount){editingTournamentResultId=id;document.getElementById("editTournamentInfo").textContent=`📅 Дата: ${date} | Текущая сумма: ${formatMoney(amount)}`;document.getElementById("editTournamentAmount").value=amount;document.getElementById("editTournamentError").classList.add("hidden");document.getElementById("editTournamentModal").classList.remove("hidden");}
-        function closeEditTournamentModal(){document.getElementById("editTournamentModal").classList.add("hidden");editingTournamentResultId=null;}
-        async function saveTournamentEdit(){const errEl=document.getElementById("editTournamentError");if(!editingTournamentResultId){errEl.textContent="❌ Нет данных";errEl.classList.remove("hidden");return;}const newAmount=parseFloat(document.getElementById("editTournamentAmount").value);if(isNaN(newAmount)||newAmount<0){errEl.textContent="❌ Введите корректную сумму (>= 0)";errEl.classList.remove("hidden");return;}try{const r=await fetch(`/api/tournament/result/${editingTournamentResultId}`,{method:"PUT",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({amount:newAmount,bonus:0})});if(!r.ok){const txt=await r.text();throw new Error(txt||'Ошибка');}closeEditTournamentModal();executeSum();}catch(e){errEl.textContent="❌ "+(e.message||"Ошибка сохранения");errEl.classList.remove("hidden");}}
-        function removeFromCart(link){tournamentCart=tournamentCart.filter(t=>t.link!==link);renderCart();}
-        function clearCart(){tournamentCart=[];renderCart();}
-        function renderCart(){const cl=document.getElementById("cartList"),cc=document.getElementById("cartCount"),pb=document.getElementById("processCartBtn");cc.textContent=tournamentCart.length+" шт.";pb.disabled=tournamentCart.length===0;if(tournamentCart.length===0){cl.innerHTML='<p class="text-gray-500 text-sm text-center py-4">Корзина пуста</p>';return;}cl.innerHTML=tournamentCart.map((t,i)=>{const ds=t.date&&t.date.date?t.date.date.split(' ')[0]:t._date||'—';return`<div class="glass rounded-xl p-3 flex justify-between items-center"><div class="flex-1 min-w-0"><p class="text-white text-sm font-semibold truncate">${i+1}. 🏆 ${t.title||t.league||'Турнир'}</p><p class="text-xs text-gray-400">📅 ${ds}</p></div><button onclick="removeFromCart('${t.link}')" class="btn btn-xs bg-red-600/50 hover:bg-red-500 text-white border-0 ml-2">✕</button></div>`;}).join("");}
-        async function searchTournamentsByDateRange(){const sd=document.getElementById("tournamentDateStart").value,ed=document.getElementById("tournamentDateEnd").value,rd=document.getElementById("tournamentList"),ee=document.getElementById("addError"),se=document.getElementById("addSuccess");ee.classList.add("hidden");rd.classList.add("hidden");se.classList.add("hidden");const date=sd||ed;if(!date){ee.textContent="❌ Выберите хотя бы одну дату";ee.classList.remove("hidden");return;}const fs=sd||ed,fe=ed||sd;if(Math.round((new Date(fe)-new Date(fs))/86400000)>30){ee.textContent="❌ Максимальный диапазон — 30 дней";ee.classList.remove("hidden");return;}const sb=document.getElementById("searchBtn");sb.disabled=true;sb.innerHTML='<span class="spinner-sm mr-2"></span> Ищем...';const url=`/api/tournament/search-with-status?date=${fs}`+(sd&&ed?`&endDate=${fe}`:'');try{const r=await fetch(url,{credentials:"same-origin"});if(!r.ok)throw new Error();const items=await r.json();let nc=0,sc=0;for(const item of items){const t=item.tournament;const isSaved=item.saved;if(isSaved)sc++;else nc++;if(!isSaved&&!tournamentCart.find(c=>c.link===t.link)){const ds=t.date&&t.date.date?t.date.date.split(' ')[0]:'';tournamentCart.push({...t,_date:ds});}}rd.innerHTML=(!items||items.length===0)?`<p class="text-gray-400 text-center py-4">Турниры не найдены</p>`:`<p class="text-sm mb-2">Найдено: ${items.length} (🆕 новых: ${nc}, ✓ сохранено: ${sc})</p>`+items.map(item=>{const t=item.tournament;const ds=t.date&&t.date.date?t.date.date.split(' ')[0]:'';const saved=item.saved;const border=saved?'rgba(245,158,11,0.5)':'rgba(239,68,68,0.5)';const badge=saved?'<span class="text-amber-400 text-xs ml-1">✓ сохранён</span>':'<span class="text-red-400 text-xs ml-1">🆕 новый</span>';return`<div class="glass rounded-xl p-3 mb-2" style="border:1px solid ${border};"><p class="text-white text-sm font-semibold">🏆 ${t.title||t.league||'Турнир'} ${badge}</p><p class="text-xs text-gray-400">📅 ${ds}</p></div>`;}).join("");rd.classList.remove("hidden");renderCart();if(nc>0){se.textContent=`✅ Добавлено в корзину: ${nc}`;se.classList.remove("hidden");setTimeout(()=>se.classList.add("hidden"),4000);}}catch(e){ee.textContent="❌ Ошибка загрузки";ee.classList.remove("hidden");}finally{sb.disabled=false;sb.innerHTML="🔍 Найти";}}
-        async function processCart(){if(tournamentCart.length===0)return;const btn=document.getElementById("processCartBtn"),se=document.getElementById("addSuccess");btn.disabled=true;btn.innerHTML='<span class="spinner-sm mr-2"></span> Обработка...';let added=0,errors=0;for(let i=0;i<tournamentCart.length;i++){const t=tournamentCart[i];try{se.textContent=`${i+1}/${tournamentCart.length}: ${t.title||t.league||'...'}`;se.classList.remove("hidden");const r=await fetch("/api/tournament/add",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({url:t.link})});if(r.ok)added++;else errors++;}catch(e){errors++;}}se.textContent=`✅ Обработано: ${added}`+(errors>0?` (ошибок: ${errors})`:'');tournamentCart=[];renderCart();btn.disabled=true;btn.innerHTML="⚡ Обработать всё";}
-        function subscriptionBlock(){return`<div class="glass rounded-2xl p-6 sm:p-8 text-center content-panel"><div class="text-4xl sm:text-5xl mb-3 sm:mb-4">🔒</div><h3 class="text-lg sm:text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><p class="text-gray-400 text-sm sm:text-base mb-6">Оформите подписку чтобы пользоваться всеми функциями</p><button onclick="window.location.href='/subscribe'" class="btn bg-amber-500 hover:bg-amber-400 text-black border-0 font-semibold btn-3d px-8">💳 Оформить подписку</button></div>`;}
-        async function logout(){await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"});window.location.replace("/");}
-        function formatMoney(v){if(v==null)return"0 ₽";return new Intl.NumberFormat("ru-RU").format(Math.round(v))+" ₽";}
-    </script>
-</main>
+    async function executeSum(){
+        const s=document.getElementById("dateStart").value,e=document.getElementById("dateEnd").value,err=document.getElementById("sumError"),res=document.getElementById("actionResult");
+        err.classList.add("hidden"); if(!s&&!e){err.textContent="❌ Выберите дату";err.classList.remove("hidden");return}
+        const p=new URLSearchParams();if(s)p.append("start",s);if(e)p.append("end",e); p.append("page", currentPage); p.append("size", 20);
+        try{
+            const r=await fetch(`/api/player/sum?${p.toString()}`,{credentials:"same-origin"});
+            if(r.status===402){res.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3></div>`;return}
+            if(!r.ok){res.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка</p>';return}
+            const d=await r.json();
+            if(!d.tournaments||d.tournaments.length===0){res.innerHTML=`<div class="text-center py-8"><span class="text-4xl">📭</span><p class="text-gray-400 mt-3">Нет турниров</p></div>`;return}
+            let paginationHtml = '';
+            if(d.totalPages > 1) { paginationHtml = `<div class="flex items-center justify-center gap-3 mt-4"><button onclick="changePage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm disabled:opacity-30 disabled:cursor-not-allowed">← Назад</button><span class="text-gray-400 text-xs">${currentPage + 1} / ${d.totalPages}</span><button onclick="changePage(${currentPage + 1})" ${currentPage >= d.totalPages - 1 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm disabled:opacity-30 disabled:cursor-not-allowed">Вперёд →</button></div>`; }
+            res.innerHTML=`<div class="glass rounded-2xl p-4 mb-4"><div class="grid grid-cols-3 gap-3 text-center"><div><div class="text-xs text-gray-400">💰 Общая</div><div class="text-lg font-bold amount-gold">${formatMoney(d.sum)}</div></div><div><div class="text-xs text-gray-400">📊 Среднее</div><div class="text-lg font-bold text-blue-400">${formatMoney(d.average)}</div></div><div><div class="text-xs text-gray-400">🎯 Турниров</div><div class="text-lg font-bold text-amber-400">${d.count}</div></div></div></div>`+ d.tournaments.map((t,i)=>`<div class="flex items-center justify-between py-2 px-3 glass rounded-xl mb-2 text-sm"><span class="text-gray-400">${currentPage * 20 + i + 1}.</span><span class="text-white">${t.date||'—'}</span><span class="amount-gold font-medium">${formatMoney(t.amount)}</span><button onclick="openEditTournamentModal(${t.resultId||0},'${t.date||''}',${t.amount})" class="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded-lg">✏️</button></div>`).join("") + paginationHtml;
+        }catch(e){res.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка соединения</p>'}
+    }
+
+    function changePage(page) { currentPage = page; executeSum(); }
+    function openEditTournamentModal(id,date,amount){editingTournamentResultId=id;document.getElementById("editTournamentInfo").textContent=`📅 ${date} | ${formatMoney(amount)}`;document.getElementById("editTournamentAmount").value=amount;document.getElementById("editTournamentError").classList.add("hidden");document.getElementById("editTournamentModal").classList.remove("hidden")}
+    function closeEditTournamentModal(){document.getElementById("editTournamentModal").classList.add("hidden")}
+    async function saveTournamentEdit(){const a=parseFloat(document.getElementById("editTournamentAmount").value);if(!editingTournamentResultId||isNaN(a))return;try{await fetch(`/api/tournament/result/${editingTournamentResultId}`,{method:"PUT",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({amount:a,bonus:0})});closeEditTournamentModal();executeSum()}catch(e){}}
+    async function logout(){await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"});window.location.replace("/")}
+    function formatMoney(v){if(v==null)return"0 ₽";return new Intl.NumberFormat("ru-RU").format(Math.round(v))+" ₽"}
+</script>
 </body>
 </html>

@@ -20,7 +20,7 @@ public class TournamentAutoAddService {
     private final TournamentSearchService tournamentSearchService;
     private final TournamentProcessService tournamentProcessService;
 
-    @Async
+    @Async("taskExecutor")
     public void addRecentTournamentsForPlayer(Player player, int days) {
         LocalDate start = LocalDate.now().minusDays(days);
         LocalDate end = LocalDate.now();

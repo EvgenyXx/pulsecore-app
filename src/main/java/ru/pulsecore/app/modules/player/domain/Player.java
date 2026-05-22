@@ -78,6 +78,9 @@ public class Player {
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlayerNotification> notifications = new ArrayList<>();
 
+    @Column(name = "primary_league", length = 20)
+    private String primaryLeague;
+
 
 
     private LocalDateTime createdAt;

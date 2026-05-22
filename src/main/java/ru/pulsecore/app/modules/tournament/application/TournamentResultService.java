@@ -3,6 +3,8 @@ package ru.pulsecore.app.modules.tournament.application;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.ResultDto;
@@ -24,6 +26,11 @@ public class TournamentResultService {
 
     private final TournamentResultRepository tournamentResultRepository;
     private final TournamentRepository tournamentRepository;
+
+    // ==================== TournamentResultService.java — добавить ====================
+    public Page<TournamentResultEntity> getResultsByPeriod(Player player, LocalDate start, LocalDate end, Pageable pageable) {
+        return tournamentResultRepository.findByPlayerAndDateBetweenOrderByDateAsc(player, start, end, pageable);
+    }
 
     @Transactional
     public void updateResult(Long id, Double amount, Double bonus) {

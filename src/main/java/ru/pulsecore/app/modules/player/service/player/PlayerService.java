@@ -76,6 +76,11 @@ public class PlayerService {
         }
     }
 
+    public Player getByName(String name) {
+        return playerRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new PlayerNotFoundException(name));
+    }
+
     public void changePassword(UUID id, ChangePasswordRequest request) {
         Player player = getById(id);
 

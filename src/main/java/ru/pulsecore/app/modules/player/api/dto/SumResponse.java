@@ -1,3 +1,4 @@
+// ==================== SumResponse.java — заменить ====================
 package ru.pulsecore.app.modules.player.api.dto;
 
 import lombok.Builder;
@@ -14,6 +15,9 @@ public class SumResponse {
     private Double average;
     private Long count;
     private List<TournamentItem> tournaments;
+    private int totalPages;
+    private int currentPage;
+    private long totalElements;
 
     @Data
     @Builder
