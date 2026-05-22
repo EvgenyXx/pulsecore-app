@@ -20,7 +20,7 @@ public class TournamentCascadeSyncService {
 
     private final TournamentAutoAddService tournamentAutoAddService;
 
-    @Async
+    @Async("taskExecutor")
     public void syncAllHistory(Player player) {
         YearMonth month = YearMonth.now().minusMonths(1);
 

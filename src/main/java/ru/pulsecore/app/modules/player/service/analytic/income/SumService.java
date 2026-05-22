@@ -1,16 +1,18 @@
-// ==================== 3. SumService.java ====================
+// ==================== SumService.java — заменить ====================
 package ru.pulsecore.app.modules.player.service.analytic.income;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.modules.player.api.dto.SumResponse;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
+import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -21,20 +23,18 @@ public class SumService {
     private final PlayerService playerService;
     private final TournamentResultService tournamentResultService;
 
-    public SumResponse getSum(UUID id, LocalDate start, LocalDate end) {
+    public SumResponse getSum(UUID id, LocalDate start, LocalDate end, int page, int size) {
         Player player = playerService.getById(id);
         if (start == null && end == null)
             return SumResponse.builder().playerName(capitalize(player.getName())).start("").end("")
-                    .sum(0.0).average(0.0).count(0L).tournaments(List.of()).build();
+                    .sum(0.0).average(0.0).count(0L).tournaments(null).totalPages(0).currentPage(0).totalElements(0).build();
         if (start == null) start = end;
         if (end == null) end = start;
-        if (end.toEpochDay() - start.toEpochDay() > 90) end = start.plusDays(90);
 
         PeriodStatsProjection stats = tournamentResultService.getStatsByPeriod(player, start, end);
-        var entities = tournamentResultService.getResultsByPeriod(player, start, end);
-        if (entities.size() > 50) entities = entities.subList(0, 50);
+        Page<TournamentResultEntity> pageResult = tournamentResultService.getResultsByPeriod(player, start, end, PageRequest.of(page, size));
 
-        List<SumResponse.TournamentItem> tournaments = entities.stream()
+        var tournaments = pageResult.getContent().stream()
                 .map(e -> SumResponse.TournamentItem.builder()
                         .date(e.getDate().toString()).amount(e.getAmount())
                         .resultId(e.getId()).hasRemoved(e.isHasRemoved()).build())
@@ -45,7 +45,11 @@ public class SumService {
                 .sum(stats != null ? stats.getSum() : 0)
                 .average(stats != null ? stats.getAverage() : 0)
                 .count(stats != null ? stats.getCount() : 0)
-                .tournaments(tournaments).build();
+                .tournaments(tournaments)
+                .totalPages(pageResult.getTotalPages())
+                .currentPage(pageResult.getNumber())
+                .totalElements(pageResult.getTotalElements())
+                .build();
     }
 
     private String capitalize(String name) {

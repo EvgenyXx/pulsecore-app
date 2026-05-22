@@ -65,9 +65,7 @@ logging:
             ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
 
 app:
-      smart:
-            api-key: ${SMART_API_KEY}
-            api-url: ${SMART_API_URL}
+
       admin:
             email: ${ADMIN_EMAIL}
       yookassa:

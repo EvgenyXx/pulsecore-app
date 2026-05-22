@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
                 .status(e.getStatus().value())
                 .error(e.getStatus().getReasonPhrase())
                 .message(e.getMessage())
+                .type(e.getType())  // ← добавь эту строку
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(e.getStatus()).body(response);

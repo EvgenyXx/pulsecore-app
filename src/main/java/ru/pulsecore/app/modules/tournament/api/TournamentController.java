@@ -20,10 +20,7 @@ public class TournamentController {
 
     private final TournamentFacade tournamentFacade;
 
-    @PostMapping(TournamentApi.ADD)
-    public ResponseEntity<AddTournamentResponse> addByUrl(@Valid @RequestBody AddTournamentRequest request) {
-        return ResponseEntity.ok(tournamentFacade.addByUrl(request));
-    }
+
 
     @GetMapping(TournamentApi.SEARCH)
     public ResponseEntity<List<TournamentDto>> searchTournaments(
@@ -49,10 +46,5 @@ public class TournamentController {
         return ResponseEntity.ok(Map.of(TournamentApi.RESP_MESSAGE, TournamentApi.RESP_OK));
     }
 
-    @GetMapping(TournamentApi.SEARCH_WITH_STATUS)
-    public ResponseEntity<List<TournamentSearchResult>> searchTournamentsWithStatus(
-            @RequestParam(TournamentApi.PARAM_DATE) String date,
-            @RequestParam(required = false) String endDate) {
-        return ResponseEntity.ok(tournamentFacade.searchTournamentsWithStatus(date, endDate));
-    }
+
 }

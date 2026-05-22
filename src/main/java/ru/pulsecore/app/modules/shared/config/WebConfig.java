@@ -24,10 +24,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns(
                         "/api/player/*/sum",
                         "/api/player/*/tournaments",
-                        "/api/player/*/dashboard",
+//                        "/api/player/*/dashboard",
                         "/api/player/*/top/week",
                         "/api/player/*/top/week/*",
-                        "/api/player/chat",
+
                         "/api/player/analytics",
                         "/api/player/*/monthly-income",
                         "/api/player/*/daily-income"
@@ -42,7 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/register").setViewName("forward:/register.html");
         registry.addViewController("/subscribe").setViewName("forward:/subscribe.html");
         registry.addViewController("/analytics").setViewName("forward:/analytics.html");
-        registry.addViewController("/assistant").setViewName("forward:/assistant.html");
+
         registry.addViewController("oauth-finish").setViewName("forward:/oauth-finish.html");
     }
 

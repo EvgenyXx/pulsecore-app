@@ -44,12 +44,6 @@ public class AnalyticsController {
         return ResponseEntity.ok(analyticsFacade.getDailyIncome(principal.playerId(), year, month));
     }
 
-    // ── AI-ассистент ──────────────────────────
-    @PostMapping(PlayerApi.CHAT)
-    public ResponseEntity<Map<String, String>> chat(
-            @CurrentPlayer PlayerPrincipal principal,
-            @RequestBody Map<String, String> request) {
-        return ResponseEntity.ok(analyticsFacade.chat(principal.playerId(), request.get("question")));
-    }
+
 
 }

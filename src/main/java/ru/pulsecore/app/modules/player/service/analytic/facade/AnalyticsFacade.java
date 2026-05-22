@@ -6,7 +6,6 @@ import ru.pulsecore.app.modules.player.api.dto.AnalyticsResponse;
 import ru.pulsecore.app.modules.player.api.dto.DailyIncomeResponse;
 import ru.pulsecore.app.modules.player.api.dto.MonthlyIncomeResponse;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.analytic.ai.AiAssistantFacade;
 import ru.pulsecore.app.modules.player.service.analytic.income.PlayerIncomeService;
 import ru.pulsecore.app.modules.player.service.analytic.league.LeagueAnalyticsService;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
@@ -21,7 +20,7 @@ public class AnalyticsFacade {
     private final PlayerService playerService;
     private final LeagueAnalyticsService leagueAnalyticsService;
     private final PlayerIncomeService playerIncomeService;
-    private final AiAssistantFacade aiAssistant;
+
 
     // ── Аналитика ─────────────────────────────
     public AnalyticsResponse getAnalytics(UUID playerId, int days) {
@@ -39,12 +38,7 @@ public class AnalyticsFacade {
         return playerIncomeService.getDailyIncome(player, year, month);
     }
 
-    // ── AI-ассистент ──────────────────────────
-    public Map<String, String> chat(UUID playerId, String question) {
-        Player player = playerService.getById(playerId);
-        String answer = aiAssistant.chat(player, question);
-        return Map.of("answer", answer);
-    }
+
 
 
 }

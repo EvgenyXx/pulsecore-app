@@ -55,6 +55,7 @@
         @media (min-width: 768px) { .swipe-hint { display: none; } }
         .nav-arrows-desktop { display: none; }
         @media (min-width: 768px) { .nav-arrows-desktop { display: flex; align-items: center; gap: 4px; } }
+        .no-data-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #6b7280; font-size: 1rem; text-align: center; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -88,7 +89,7 @@
     <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
         <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">📅 Доход по месяцам</h2>
         <div class="flex items-center gap-2 mb-5"><span class="text-gray-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-gray-400 text-sm">год</span></div>
-        <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap"><canvas id="monthlyChart"></canvas></div></div>
+        <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap" style="position:relative"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных за этот год</div></div></div>
         <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill" style="display:none"><span class="text-gray-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
         <p class="swipe-hint">← листай влево/вправо для смены года →</p>
     </div>
@@ -99,7 +100,7 @@
             <span class="daily-month-title" id="dailyMonthLabel">Май 2026</span>
             <button onclick="nextDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:1.1rem;flex-shrink:0;">→</button>
         </div>
-        <div class="chart-card" id="dailyChartCard"><div class="chart-wrap"><canvas id="dailyChart"></canvas></div></div>
+        <div class="chart-card" id="dailyChartCard"><div class="chart-wrap" style="position:relative"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных за этот месяц</div></div></div>
         <div class="daily-stats-row">
             <div class="daily-stat"><div class="daily-stat-value" id="dailyTotal">0 ₽</div><div class="daily-stat-label">За месяц</div></div>
             <div class="daily-stat"><div class="daily-stat-value" id="dailyAvg">0 ₽</div><div class="daily-stat-label">В день (сред)</div></div>
@@ -180,7 +181,18 @@
         if (mA) { let sx = 0; mA.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive: true}); mA.addEventListener('touchend', e => { if (!sx) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 35) { if (dx > 0) prevMonthlyYear(); else nextMonthlyYear(); } sx = 0; }); }
     }
 
-    function populateYears() { const s = document.getElementById("yearSelect"); s.innerHTML = ''; const y = new Date().getFullYear(); for (let i = y; i >= y - 3; i--) { const o = document.createElement("option"); o.value = i; o.textContent = i; if (i === y) o.selected = true; s.appendChild(o); } }
+    function populateYears() {
+        const s = document.getElementById("yearSelect");
+        s.innerHTML = '';
+        const currentYear = new Date().getFullYear();
+        for (let i = currentYear; i >= 2025; i--) {
+            const o = document.createElement("option");
+            o.value = i;
+            o.textContent = i;
+            if (i === currentYear) o.selected = true;
+            s.appendChild(o);
+        }
+    }
 
     async function loadLeagueAvg() {
         if (!playerId) return;
@@ -203,17 +215,65 @@
 
     async function loadMonthly() {
         if (!playerId) return;
-        const year = document.getElementById("yearSelect").value; monthlyYear = parseInt(year);
-        try { const r = await fetch(`/api/player/${playerId}/monthly-income?year=${year}`, { credentials: "same-origin" }); if (!r.ok) throw new Error(); const d = await r.json(); buildMonthlyChart(d.months, d.overallAverage); } catch (e) {}
+        const year = document.getElementById("yearSelect").value;
+        monthlyYear = parseInt(year);
+
+        document.getElementById("monthlyAvgPill").style.display = 'none';
+        document.getElementById("monthlyNoData").classList.add("hidden");
+
+        try {
+            const r = await fetch(`/api/player/${playerId}/monthly-income?year=${year}`, { credentials: "same-origin" });
+            if (!r.ok) throw new Error();
+            const d = await r.json();
+
+            if (!d.months || d.months.length === 0 || d.months.every(m => m.total === 0)) {
+                if (monthlyChart) monthlyChart.destroy();
+                const ctx = document.getElementById("monthlyChart").getContext("2d");
+                monthlyChart = new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [] }, options: { plugins: { datalabels: { display: false } } } });
+                document.getElementById("monthlyNoData").classList.remove("hidden");
+            } else {
+                buildMonthlyChart(d.months, d.overallAverage);
+            }
+        } catch (e) {
+            if (monthlyChart) monthlyChart.destroy();
+            document.getElementById("monthlyNoData").classList.remove("hidden");
+        }
     }
 
     async function loadDaily() {
-        if (!playerId) return; updateDailyLabel();
-        try { const r = await fetch(`/api/player/${playerId}/daily-income?year=${dailyYear}&month=${dailyMonth}`, { credentials: "same-origin" }); if (!r.ok) throw new Error(); const d = await r.json(); buildDailyChart(d);
-            document.getElementById("dailyTotal").textContent = fmt(d.monthTotal); document.getElementById("dailyAvg").textContent = fmt(d.dailyAverage);
-            const best = d.days.reduce((max, x) => x.total > max.total ? x : max, {day:0,total:0});
-            document.getElementById("dailyBest").textContent = best.total > 0 ? `${best.day} числа — ${fmt(best.total)}` : '—';
-        } catch (e) {}
+        if (!playerId) return;
+        updateDailyLabel();
+        document.getElementById("dailyNoData").classList.add("hidden");
+        document.getElementById("dailyTotal").textContent = '...';
+        document.getElementById("dailyAvg").textContent = '...';
+        document.getElementById("dailyBest").textContent = '...';
+
+        try {
+            const r = await fetch(`/api/player/${playerId}/daily-income?year=${dailyYear}&month=${dailyMonth}`, { credentials: "same-origin" });
+            if (!r.ok) throw new Error();
+            const d = await r.json();
+
+            if (!d.days || d.days.length === 0 || d.days.every(day => day.total === 0)) {
+                if (dailyChart) dailyChart.destroy();
+                const ctx = document.getElementById("dailyChart").getContext("2d");
+                dailyChart = new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [] }, options: { plugins: { datalabels: { display: false } } } });
+                document.getElementById("dailyNoData").classList.remove("hidden");
+                document.getElementById("dailyTotal").textContent = '0 ₽';
+                document.getElementById("dailyAvg").textContent = '0 ₽';
+                document.getElementById("dailyBest").textContent = '—';
+            } else {
+                buildDailyChart(d);
+                document.getElementById("dailyTotal").textContent = fmt(d.monthTotal);
+                document.getElementById("dailyAvg").textContent = fmt(d.dailyAverage);
+                const best = d.days.reduce((max, x) => x.total > max.total ? x : max, {day:0,total:0});
+                document.getElementById("dailyBest").textContent = best.total > 0 ? `${best.day} числа — ${fmt(best.total)}` : '—';
+            }
+        } catch (e) {
+            document.getElementById("dailyNoData").classList.remove("hidden");
+            document.getElementById("dailyTotal").textContent = '—';
+            document.getElementById("dailyAvg").textContent = '—';
+            document.getElementById("dailyBest").textContent = '—';
+        }
     }
 
     function buildLeagueChart(data) {

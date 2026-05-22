@@ -6,7 +6,7 @@ import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.notification.service.TournamentProcessService;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentRequest;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
-import ru.pulsecore.app.modules.tournament.api.dto.TournamentSearchResult;
+
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
 import ru.pulsecore.app.security.PlayerPrincipal;
 import ru.pulsecore.app.security.PlayerPrincipalExtractor;
@@ -22,10 +22,7 @@ public class TournamentFacade {
     private final TournamentSearchService tournamentSearchService;
     private final TournamentResultService tournamentResultService;
 
-    public AddTournamentResponse addByUrl(AddTournamentRequest request) {
-        PlayerPrincipal principal = extractor.extract();
-        return tournamentProcessService.processByUrl(request.getUrl(), principal.playerId().toString());
-    }
+
 
     public List<TournamentDto> searchTournaments(String date, String endDate) {
         PlayerPrincipal principal = extractor.extract();
@@ -47,12 +44,5 @@ public class TournamentFacade {
         tournamentResultService.updateResult(tournamentId, amount, bonus);
     }
 
-    public List<TournamentSearchResult> searchTournamentsWithStatus(String date, String endDate) {
-        PlayerPrincipal principal = extractor.extract();
-        String playerId = principal.playerId().toString();
-        if (endDate != null && !endDate.isEmpty()) {
-            return tournamentSearchService.findByDateRangeAndPlayerWithStatus(date, endDate, playerId);
-        }
-        return tournamentSearchService.findByDateAndPlayerWithStatus(date, playerId);
-    }
+
 }

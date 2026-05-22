@@ -258,7 +258,16 @@
         if (!email || !password) { err.textContent = "Заполните все поля"; err.classList.remove("hidden"); return; }
         try {
             const r = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ email, password }) });
-            if (!r.ok) { err.textContent = "Неверный email или пароль"; err.classList.remove("hidden"); return; }
+            if (!r.ok) {
+                const data = await r.json();
+                if (data.type === "OAUTH_ONLY") {
+                    err.innerHTML = `${data.message}<br><br><a href="/oauth2/authorization/yandex" class="text-amber-400 underline">Войти через Яндекс</a>`;
+                } else {
+                    err.textContent = data.message || "Неверный email или пароль";
+                }
+                err.classList.remove("hidden");
+                return;
+            }
             window.location.href = "/dashboard";
         } catch (e) { err.textContent = "Ошибка соединения"; err.classList.remove("hidden"); }
     }
@@ -271,7 +280,18 @@
         const btn = document.getElementById("regBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
             const r = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: ln + " " + fn, email, password }) });
-            if (!r.ok) { const e = await r.json(); err.textContent = e.message || "Ошибка регистрации"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Зарегистрироваться"; return; }
+            if (!r.ok) {
+                const e = await r.json();
+                if (e.type === "OAUTH_EMAIL") {
+                    err.innerHTML = `${e.message}<br><br><a href="/oauth2/authorization/yandex" class="text-amber-400 underline">Войти через Яндекс</a>`;
+                } else {
+                    err.textContent = e.message || "Ошибка регистрации";
+                }
+                err.classList.remove("hidden");
+                btn.disabled = false;
+                btn.innerHTML = "Зарегистрироваться";
+                return;
+            }
             showVerify(email);
         } catch (e) { err.textContent = "Ошибка соединения"; err.classList.remove("hidden"); } finally { btn.disabled = false; btn.innerHTML = "Зарегистрироваться"; }
     }

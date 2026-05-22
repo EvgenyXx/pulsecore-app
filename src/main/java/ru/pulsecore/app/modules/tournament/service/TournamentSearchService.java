@@ -5,15 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
-import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
-import ru.pulsecore.app.modules.tournament.api.dto.TournamentSearchResult;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentResultRepository;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -22,8 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class TournamentSearchService {
 
     private final MastersApiClient mastersApiClient;
-    private final TournamentResultRepository tournamentResultRepository;
-    private final PlayerService playerService;
+
 
 
     public List<TournamentDto> findByDateAndPlayer(String date, String playerName) {
@@ -34,32 +29,7 @@ public class TournamentSearchService {
                 .toList();
     }
 
-    public List<TournamentSearchResult> findByDateAndPlayerWithStatus(String date, String playerId) {
-        Player player = playerService.findById(UUID.fromString(playerId));
-        if (player == null) return List.of();
 
-        List<TournamentDto> tournaments = findByDateAndPlayer(date, player.getName());
-        return tournaments.stream()
-                .map(t -> TournamentSearchResult.builder()
-                        .tournament(t)
-                        .saved(tournamentResultRepository.existsByPlayerAndTournament_ExternalId(player, t.getId()))
-                        .build())
-                .toList();
-    }
-
-    // TournamentSearchService.java — добавь метод
-    public List<TournamentSearchResult> findByDateRangeAndPlayerWithStatus(String startDate, String endDate, String playerId) {
-        Player player = playerService.findById(UUID.fromString(playerId));
-        if (player == null) return List.of();
-
-        List<TournamentDto> tournaments = findByDateRangeAndPlayer(startDate, endDate, player.getName());
-        return tournaments.stream()
-                .map(t -> TournamentSearchResult.builder()
-                        .tournament(t)
-                        .saved(tournamentResultRepository.existsByPlayerAndTournament_ExternalId(player, t.getId()))
-                        .build())
-                .toList();
-    }
 
     public List<TournamentDto> findByDateRangeAndPlayer(String startDate, String endDate, String playerName) {
         final String searchName = playerName.toLowerCase();

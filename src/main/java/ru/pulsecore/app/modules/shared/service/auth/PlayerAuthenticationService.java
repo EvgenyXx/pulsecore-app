@@ -5,8 +5,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.exception.BadCredentialsException;
+import ru.pulsecore.app.modules.player.exception.OAuthOnlyLoginException;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 
+// ==================== PlayerAuthenticationService.java ====================
 @Service
 @RequiredArgsConstructor
 public class PlayerAuthenticationService {
@@ -18,9 +20,21 @@ public class PlayerAuthenticationService {
         String normalizedEmail = email.toLowerCase().trim();
         Player player = playerRepository.findByEmail(normalizedEmail)
                 .orElseThrow(BadCredentialsException::new);
+
+        checkOAuthOnly(player);
+        checkPassword(rawPassword, player);
+        return player;
+    }
+
+    private void checkOAuthOnly(Player player) {
+        if (player.getPassword() == null || player.getPassword().isBlank()) {
+            throw new OAuthOnlyLoginException(player.getOauthProvider());
+        }
+    }
+
+    private void checkPassword(String rawPassword, Player player) {
         if (!passwordEncoder.matches(rawPassword, player.getPassword())) {
             throw new BadCredentialsException();
         }
-        return player;
     }
 }

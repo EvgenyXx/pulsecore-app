@@ -8,7 +8,6 @@ import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.player.api.dto.*;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.analytic.league.LeagueService;
-import ru.pulsecore.app.modules.player.service.analytic.top.TopWeekService;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentResultRepository;
 
@@ -23,13 +22,12 @@ public class DashboardService {
     private final PlayerService playerService;
     private final TournamentResultRepository tournamentResultRepository;
     private final LineupRepository lineupRepository;
-    private final TopWeekService topWeekService;
     private final LeagueService leagueService;
 
     public DashboardResponse getDashboard(UUID id) {
         Player player = playerService.getById(id);
         String playerNameLower = player.getName().toLowerCase();
-        TopWeekResponse topWeek = topWeekService.getTopWithPosition(id);
+
         String primaryLeague = leagueService.getPrimaryLeague(id);
 
         var lastResult = tournamentResultRepository.findTopByPlayerOrderByDateDesc(player)
@@ -72,7 +70,7 @@ public class DashboardService {
         return DashboardResponse.builder()
                 .playerName(capitalize(player.getName())).lastResult(lastResult)
                 .upcomingLineups(upcomingLineups).subscription(subInfo)
-                .topWeekTitle(topWeek.getTitle()).hasCrown(topWeek.isHasCrown())
+
                 .primaryLeague(primaryLeague).build();
     }
 
