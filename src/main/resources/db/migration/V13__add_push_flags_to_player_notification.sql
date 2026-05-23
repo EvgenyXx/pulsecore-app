@@ -1,0 +1,3 @@
+ALTER TABLE player_notification
+    ADD COLUMN IF NOT EXISTS push_reminder_sent BOOLEAN DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS push_evening_sent BOOLEAN DEFAULT FALSE;

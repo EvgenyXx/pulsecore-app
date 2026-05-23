@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.service.strategy;
+package ru.pulsecore.app.modules.shared.service.mail;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,13 +11,13 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 @RequiredArgsConstructor
-public class NewTournamentMailStrategy implements MailStrategy {
+public class NewTournamentMailStrategy implements ru.pulsecore.app.modules.player.service.strategy.MailStrategy {
 
-    private final MailProperties mailProperties;
+    private final ru.pulsecore.app.modules.player.service.strategy.MailProperties mailProperties;
 
     @Override
     public String getType() {
-        return MailTypes.NEW_TOURNAMENT;
+        return ru.pulsecore.app.modules.player.service.strategy.MailTypes.NEW_TOURNAMENT;
     }
 
     @Override

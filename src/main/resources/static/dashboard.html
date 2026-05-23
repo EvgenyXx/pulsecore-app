@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PulseCore — Личный кабинет</title>
+    <title>PulseCore</title> <link rel="manifest" href="/manifest.json">   <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PulseCore">
     <link rel="icon" type="image/png" href="/img.png">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -60,7 +63,16 @@
         .ptr-indicator { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: center; gap: 8px; color: #f59e0b; font-size: 0.8rem; height: 0; overflow: hidden; transition: height 0.3s; background: rgba(6,6,15,0.95); backdrop-filter: blur(10px); }
         .ptr-indicator.active { height: 56px; }
         .ptr-indicator.done { color: #34d399; }
+        @supports (padding-top: env(safe-area-inset-top)) {
+            #mobileHeader {
+                padding-top: calc(env(safe-area-inset-top) + 8px);
+            }
+            body {
+                padding-top: 0;
+            }
+        }
     </style>
+
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
@@ -109,6 +121,13 @@
                     <span id="proBadge" class="pro-badge hidden"><span class="pro-diamond">💎</span>PRO</span>
                 </div>
                 <p class="text-gray-400 mt-1 text-xs sm:text-sm" id="subStatusText"></p>
+                <div id="pushToggleContainer" class="hidden mb-3 flex items-center gap-2">
+                    <span class="text-xs text-gray-400">🔔 Push-уведомления</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="pushToggle" class="sr-only peer" onchange="togglePush()">
+                        <div class="w-9 h-5 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
             </div>
 
             <div id="topWeekBanner" class="hidden mb-4 p-4 glass rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/5" onclick="toggleTopWeek()">
@@ -208,6 +227,8 @@
             if(d.subscription && d.subscription.active) {
                 document.getElementById("proBadge").classList.remove("hidden");
                 document.getElementById("subStatusText").textContent="Подписка до "+new Date(d.subscription.expiresAt).toLocaleDateString("ru-RU");
+                document.getElementById("pushToggleContainer")?.classList.remove("hidden");
+                checkPushStatus();
             }
             const lastHtml=d.lastResult?`<div class="widget-card justify-between" onclick="window.open('${d.lastResult.tournamentLink}','_blank')"><div class="flex items-center gap-2 mb-1"><span>🏆</span><h3 class="font-bold text-sm text-amber-300">Последний результат</h3></div><p class="text-2xl font-extrabold amount-gold mt-1">${formatMoney(d.lastResult.amount)}</p><p class="text-xs text-gray-500 mt-auto pt-1">📅 ${d.lastResult.date}</p></div>`:`<div class="widget-card items-center justify-center"><div class="text-center"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет результатов</p></div></div>`;
 
@@ -300,6 +321,87 @@
     async function saveTournamentEdit(){const a=parseFloat(document.getElementById("editTournamentAmount").value);if(!editingTournamentResultId||isNaN(a))return;try{await fetch(`/api/tournament/result/${editingTournamentResultId}`,{method:"PUT",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({amount:a,bonus:0})});closeEditTournamentModal();executeSum()}catch(e){}}
     async function logout(){await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"});window.location.replace("/")}
     function formatMoney(v){if(v==null)return"0 ₽";return new Intl.NumberFormat("ru-RU").format(Math.round(v))+" ₽"}
+
+    // ========== Push-уведомления ==========
+
+    // Проверка статуса подписки при загрузке
+    async function checkPushStatus() {
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            const sub = await reg.pushManager.getSubscription();
+            const toggle = document.getElementById('pushToggle');
+            if (toggle && sub) {
+                toggle.checked = true;
+            }
+        } catch(e) {}
+    }
+
+    // Включение/выключение пуша
+    async function togglePush() {
+        const toggle = document.getElementById('pushToggle');
+        if (toggle.checked) {
+            const ok = await enablePushNotifications();
+            if (!ok) toggle.checked = false;
+        } else {
+            await disablePushNotifications();
+        }
+    }
+
+    async function enablePushNotifications() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            alert('Ваш браузер не поддерживает push-уведомления');
+            return false;
+        }
+        try {
+            const reg = await navigator.serviceWorker.register('/sw.js');
+            const vapidKey = await fetch('/api/push/vapid-public-key').then(r => r.text());
+            const sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlB64ToUint8Array(vapidKey)
+            });
+            await fetch('/api/push/subscribe', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    endpoint: sub.endpoint,
+                    p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))),
+                    auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth'))))
+                })
+            });
+            return true;
+        } catch(e) {
+            console.error('Ошибка подписки:', e);
+            return false;
+        }
+    }
+
+    async function disablePushNotifications() {
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            const sub = await reg.pushManager.getSubscription();
+            if (sub) {
+                await sub.unsubscribe();
+                await fetch('/api/push/unsubscribe', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ endpoint: sub.endpoint })
+                });
+            }
+        } catch(e) {
+            console.error('Ошибка отписки:', e);
+        }
+    }
+
+    function urlB64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+        return outputArray;
+    }
 </script>
 </body>
 </html>

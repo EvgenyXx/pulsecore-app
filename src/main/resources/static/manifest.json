@@ -1,0 +1,20 @@
+{
+  "name": "PulseCore",
+  "short_name": "PulseCore",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#06060f",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "/img.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/img.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
