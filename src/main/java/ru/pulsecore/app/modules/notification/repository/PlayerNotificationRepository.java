@@ -9,23 +9,24 @@ import ru.pulsecore.app.modules.player.domain.Player;
 import java.time.LocalDate;
 import java.util.List;
 
-
 @Repository
 public interface PlayerNotificationRepository
         extends JpaRepository<PlayerNotification, Long> {
+
 
     boolean existsByPlayerAndTournament_ExternalId(Player player, Long externalId);
 
     void deleteByTournament_FinishedTrueAndTournament_DateBefore(LocalDate date);
 
-
-
     @Query("""
-        SELECT pn
-        FROM PlayerNotification pn
-        JOIN FETCH pn.tournament t
-        WHERE t.started = false
-    """)
+    SELECT pn
+    FROM PlayerNotification pn
+    JOIN FETCH pn.tournament t
+    JOIN FETCH pn.player
+    WHERE t.finished = false 
+      AND t.cancelled = false 
+      AND pn.pushReminderSent = false
+""")
     List<PlayerNotification> findPendingWithTournament();
 
     @Query("""
@@ -36,6 +37,4 @@ public interface PlayerNotificationRepository
         WHERE t.finished = false
     """)
     List<PlayerNotification> findNotFinishedFull();
-
-
 }

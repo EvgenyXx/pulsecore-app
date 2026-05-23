@@ -1,6 +1,4 @@
 spring:
-
-
   security:
     oauth2:
       client:
@@ -64,10 +62,12 @@ logging:
     ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
 
 app:
+  vapid:
+    public-key: ${VAPID_PUBLIC_KEY}
+    private-key: ${VAPID_PRIVATE_KEY}
   smart:
     key: ${SMART_API_KEY}
     url: ${SMART_API_URL}
-
   admin:
     email: ${ADMIN_EMAIL}
   yookassa:
