@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.push;
+package ru.pulsecore.app.modules.push.api.dto;
 
 public record PushSubscriptionRequest(
         String endpoint,

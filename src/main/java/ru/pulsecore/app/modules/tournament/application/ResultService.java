@@ -1,4 +1,3 @@
-// ==================== ResultService.java ====================
 package ru.pulsecore.app.modules.tournament.application;
 
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,7 @@ import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 import ru.pulsecore.app.modules.tournament.extraction.TournamentExtractor;
+import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +29,7 @@ public class ResultService {
     private final TournamentExtractor tournamentExtractor;
     private final StrategyResolver strategyResolver;
     private final ResultBuilder resultBuilder;
+    private final NameNormalizer nameNormalizer;  // 🔥 ДОБАВЛЕНО
 
     public ParsedResult calculateAll(String url) {
         Document doc = loader.load(url);
@@ -44,6 +45,12 @@ public class ResultService {
         MatchCalculationStrategy strategy = strategyResolver.resolve(ctx);
         MatchProcessingResult matchResult = strategy.process(ctx);
         List<ResultDto> results = resultBuilder.build(matchResult, ctx);
+
+        // 🔥 НОРМАЛИЗУЕМ ИМЕНА ИГРОКОВ В РЕЗУЛЬТАТАХ
+        for (ResultDto result : results) {
+            String normalizedName = nameNormalizer.normalize(result.getPlayer());
+            result.setPlayer(normalizedName);
+        }
 
         // Применяем праздничный бонус к итоговой сумме каждого игрока
         LocalDate tournamentDate = null;

@@ -8,6 +8,7 @@ import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.tournament.api.dto.AdminCalculateResponse;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament.service.TournamentSearchService;
+import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +21,7 @@ public class AdminCalculateService {
 
     private final TournamentSearchService tournamentSearchService;
     private final ResultService resultService;
+    private final NameNormalizer nameNormalizer;  // 🔥 ДОБАВЛЕНО
 
     public AdminCalculateResponse calculate(String name, String startDate, String endDate) {
 
@@ -43,14 +45,17 @@ public class AdminCalculateService {
 
         List<AdminCalculateResponse.TournamentResultItem> items = new ArrayList<>();
         double totalAmount = 0;
-        String searchName = name.toLowerCase();
+
+        // 🔥 Нормализуем поисковое имя через NameNormalizer
+        String searchName = nameNormalizer.normalizeForSearch(name);
 
         for (TournamentDto t : tournaments) {
             try {
                 ParsedResult parsed = resultService.calculateAll(t.getLink());
 
+                // 🔥 Нормализуем имя игрока из результатов через NameNormalizer
                 double playerAmount = parsed.results().stream()
-                        .filter(r -> r.getPlayer().toLowerCase().contains(searchName))
+                        .filter(r -> nameNormalizer.normalizeForSearch(r.getPlayer()).contains(searchName))
                         .mapToDouble(ResultDto::getTotal)
                         .sum();
 

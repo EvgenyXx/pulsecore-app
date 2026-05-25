@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.push;
+package ru.pulsecore.app.modules.push.model;
 
 import jakarta.persistence.*;
 import lombok.*;

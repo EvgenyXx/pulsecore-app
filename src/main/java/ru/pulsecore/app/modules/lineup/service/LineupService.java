@@ -12,6 +12,7 @@ import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.lineup.validator.TournamentValidator;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
+import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ public class LineupService {
     private final LineupMapper mapper;
     private final TournamentValidator validator;
     private final PlayerService playerService;
+    private final NameNormalizer nameNormalizer;  // 🔥 ДОБАВЛЕНО
 
     @Transactional
     public void cleanupOld() {
@@ -50,11 +52,15 @@ public class LineupService {
         List<TournamentDto> all = apiClient.loadTournaments(date.toString());
         if (all.isEmpty()) return;
 
-        Set<String> names = new HashSet<>();
-        for (Player p : players) names.add(p.getName().toLowerCase());
+        // 🔥 НОРМАЛИЗУЕМ имена игроков из БД для сравнения
+        Set<String> normalizedNames = new HashSet<>();
+        for (Player p : players) {
+            normalizedNames.add(nameNormalizer.normalizeForSearch(p.getName()));
+        }
 
         List<TournamentDto> relevant = all.stream()
-                .filter(t -> t.getPlayers().stream().anyMatch(n -> names.contains(n.toLowerCase())))
+                .filter(t -> t.getPlayers() != null && t.getPlayers().stream()
+                        .anyMatch(n -> normalizedNames.contains(nameNormalizer.normalizeForSearch(n))))  // 🔥 ИСПРАВЛЕНО
                 .filter(validator::isValid)
                 .filter(t -> date.equals(extractDate(t)))
                 .toList();

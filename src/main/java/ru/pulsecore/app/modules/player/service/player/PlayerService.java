@@ -14,6 +14,7 @@ import ru.pulsecore.app.modules.player.exception.OldPasswordMismatchException;
 import ru.pulsecore.app.modules.player.exception.SamePasswordException;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
+import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +26,7 @@ public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final PasswordEncoder passwordEncoder;
-
-
+    private final NameNormalizer nameNormalizer;  // 🔥 ДОБАВЛЕНО
 
     public boolean isNotificationsEnabled(UUID id) {
         return getById(id).isNotificationsEnabled();
@@ -77,7 +77,9 @@ public class PlayerService {
     }
 
     public Player getByName(String name) {
-        return playerRepository.findByNameIgnoreCase(name)
+        // 🔥 НОРМАЛИЗУЕМ ИМЯ ПЕРЕД ПОИСКОМ
+        String normalizedName = nameNormalizer.normalize(name);
+        return playerRepository.findByNameIgnoreCase(normalizedName)
                 .orElseThrow(() -> new PlayerNotFoundException(name));
     }
 
@@ -96,7 +98,9 @@ public class PlayerService {
     }
 
     public List<PlayerResponse> searchPlayers(String q) {
-        return playerRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(q, q)
+        // 🔥 НОРМАЛИЗУЕМ ПОИСКОВЫЙ ЗАПРОС
+        String normalizedQuery = nameNormalizer.normalizeForSearch(q);
+        return playerRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(normalizedQuery, q)
                 .stream()
                 .map(p -> PlayerResponse.builder()
                         .id(p.getId().toString())
@@ -104,11 +108,10 @@ public class PlayerService {
                         .email(p.getEmail())
                         .build())
                 .toList();
-    }//todo перенести в сервис гвери
-
+    }
 
     @Transactional
-    public void  deletePlayer(UUID id){
+    public void deletePlayer(UUID id){
         playerRepository.deleteById(id);
     }
 
@@ -117,7 +120,11 @@ public class PlayerService {
     }
 
     @Transactional
-    public Player save (Player player){
+    public Player save(Player player){
+        // 🔥 НОРМАЛИЗУЕМ ИМЯ ПЕРЕД СОХРАНЕНИЕМ
+        if (player.getName() != null) {
+            player.setName(nameNormalizer.normalize(player.getName()));
+        }
         return playerRepository.save(player);
     }
 }

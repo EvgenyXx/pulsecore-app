@@ -1,9 +1,13 @@
-package ru.pulsecore.app.modules.push;
+package ru.pulsecore.app.modules.push.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.modules.push.api.dto.PushSubscriptionRequest;
+import ru.pulsecore.app.modules.push.config.VapidConfig;
+import ru.pulsecore.app.modules.push.model.PushSubscription;
+import ru.pulsecore.app.modules.push.repository.PushSubscriptionRepository;
 
 import java.util.UUID;
 

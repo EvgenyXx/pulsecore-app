@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.push;
+package ru.pulsecore.app.modules.push.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +7,9 @@ import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.modules.push.config.VapidConfig;
+import ru.pulsecore.app.modules.push.model.PushSubscription;
+import ru.pulsecore.app.modules.push.repository.PushSubscriptionRepository;
 
 import java.security.Security;
 import java.util.List;

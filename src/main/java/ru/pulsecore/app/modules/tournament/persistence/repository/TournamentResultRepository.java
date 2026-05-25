@@ -28,6 +28,7 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
 
 
 
+
     @Query(value = """
         SELECT league FROM (
             SELECT league, COUNT(*) as cnt
@@ -109,10 +110,5 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             "WHERE tr.player = :player ORDER BY tr.date DESC LIMIT 7")
     List<String> findLastLeagues(@Param("player") Player player);
 
-    @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
-            "FROM TournamentResultEntity tr " +
-            "WHERE tr.player = :player " +
-            "GROUP BY tr.league " +
-            "ORDER BY SUM(tr.amount) DESC")
-    List<LeagueStatProjection> getLeagueStats(Player player);
+
 }

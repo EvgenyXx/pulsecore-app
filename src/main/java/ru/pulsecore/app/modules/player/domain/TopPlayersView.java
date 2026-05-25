@@ -4,6 +4,7 @@ package ru.pulsecore.app.modules.player.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Immutable;
+
 import java.util.UUID;
 
 @Entity

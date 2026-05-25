@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.push;
+package ru.pulsecore.app.modules.push.api;
 
 public final class PushApi {
     public static final String STATUS = "/status" ;

@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.push;
+package ru.pulsecore.app.modules.push.scheduler;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.notification.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.modules.push.service.WebPushService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -62,7 +63,7 @@ public class TournamentReminderScheduler {
                 webPushService.sendToPlayer(
                         player.getId(),
                         "📅 Завтра турнир!",
-                        "Завтра в " + (time != null ? time : "?") + ". Проверьте состав и будьте готовы!\n\nPulseCore",
+                        "Завтра в " + (time != null ? time : "?") + ". Проверьте состав и будьте готовы!",
                         "/dashboard"
                 );
                 pn.setPushEveningSent(true);

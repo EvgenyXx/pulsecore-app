@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.push;
+package ru.pulsecore.app.modules.push.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

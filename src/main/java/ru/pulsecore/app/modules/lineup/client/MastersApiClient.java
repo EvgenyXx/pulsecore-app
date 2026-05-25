@@ -9,6 +9,7 @@ import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.shared.properties.MastersApiProperties;
+import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class MastersApiClient {
 
     private final MastersApiProperties properties;
     private final ObjectMapper mapper;
+    private final NameNormalizer nameNormalizer;
 
     public List<TournamentDto> loadTournaments(String date) {
         for (int i = 1; i <= 2; i++) {
@@ -35,8 +37,9 @@ public class MastersApiClient {
 
                 Connection.Response res = connection.execute();
 
+                res.body();
                 log.info("Masters API: HTTP {}, body length: {}",
-                        res.statusCode(), res.body() != null ? res.body().length() : 0);
+                        res.statusCode(), res.body().length());
 
                 if (res.statusCode() != 200) {
                     String preview = res.body() != null ? res.body().substring(0, Math.min(300, res.body().length())) : "empty";
@@ -46,13 +49,24 @@ public class MastersApiClient {
                 }
 
                 String body = res.body();
-                if (body != null && body.trim().startsWith("<")) {
+                if (body.trim().startsWith("<")) {
                     log.error("Masters API вернул HTML вместо JSON: {}", body.substring(0, Math.min(500, body.length())));
                     if (i == 2) return List.of();
                     continue;
                 }
 
-                return mapper.readValue(body, new TypeReference<>() {});
+                List<TournamentDto> tournaments = mapper.readValue(body, new TypeReference<>() {});
+
+                // Нормализуем имена игроков в каждом турнире
+                if (tournaments != null) {
+                    for (TournamentDto tournament : tournaments) {
+                        if (tournament.getPlayers() != null) {
+                            tournament.setPlayers(nameNormalizer.normalizePlayers(tournament.getPlayers()));
+                        }
+                    }
+                }
+
+                return tournaments;
 
             } catch (java.net.SocketTimeoutException e) {
                 log.warn("Masters API timeout, attempt {}", i);

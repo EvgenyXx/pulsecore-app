@@ -15,9 +15,9 @@ public class AsyncConfig {
     @Bean("taskExecutor")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(3);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(25);
+        executor.setCorePoolSize(4);       // 4 потока = 4 игрока одновременно
+        executor.setMaxPoolSize(4);        // максимум 4
+        executor.setQueueCapacity(100);    // очередь на 100 игроков
         executor.setThreadNamePrefix("pulse-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();

@@ -1,8 +1,11 @@
-package ru.pulsecore.app.modules.push;
+package ru.pulsecore.app.modules.push.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.pulsecore.app.modules.push.service.PushFacade;
+import ru.pulsecore.app.modules.push.api.dto.PushSubscriptionRequest;
+import ru.pulsecore.app.modules.push.api.PushApi;
 import ru.pulsecore.app.security.CurrentPlayer;
 import ru.pulsecore.app.security.PlayerPrincipal;
 

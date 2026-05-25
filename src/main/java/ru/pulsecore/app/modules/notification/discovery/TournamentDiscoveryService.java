@@ -8,7 +8,7 @@ import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
 import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
-import ru.pulsecore.app.modules.push.WebPushService;
+import ru.pulsecore.app.modules.push.service.WebPushService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

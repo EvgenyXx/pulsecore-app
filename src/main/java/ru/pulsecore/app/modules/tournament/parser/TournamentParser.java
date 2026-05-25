@@ -4,9 +4,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.shared.HtmlSelectors;
+import ru.pulsecore.app.modules.shared.service.NameNormalizer;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TournamentParser {
+
+    private final NameNormalizer nameNormalizer;
+
+    // Добавлен конструктор для внедрения NameNormalizer
+    public TournamentParser(NameNormalizer nameNormalizer) {
+        this.nameNormalizer = nameNormalizer;
+    }
 
     public Long parseTournamentId(Document doc) {
         Element shortLink = doc.select(HtmlSelectors.SHORTLINK).first();
@@ -34,27 +45,23 @@ public class TournamentParser {
         return null;
     }
 
+    // 🔥 НОВЫЙ МЕТОД: нормализует список всех игроков
+    public List<String> parseAndNormalizePlayers(Document doc) {
+        return doc.select(HtmlSelectors.PLAYER)
+                .stream()
+                .map(Element::text)
+                .map(nameNormalizer::normalize)
+                .collect(Collectors.toList());
+    }
 
-
-    // 🔥 ГЛАВНОЕ ИСПРАВЛЕНИЕ
+    // 🔥 ИСПРАВЛЕН: использует NameNormalizer вместо локального normalize
     public String findRemovedPlayer(Document doc) {
         return doc.select(HtmlSelectors.PLAYER)
                 .stream()
                 .filter(player -> player.hasClass(HtmlSelectors.STATUS_REMOVED))
                 .map(Element::text)
-                .map(this::normalize) // 👈 КЛЮЧЕВОЕ
+                .map(nameNormalizer::normalize)
                 .findFirst()
                 .orElse(null);
-    }
-
-    // 🔥 ТАКОЙ ЖЕ normalize как в стратегии
-    private String normalize(String name) {
-        if (name == null) return "";
-
-        return name.toLowerCase()
-                .replace("\u00A0", " ")
-                .replaceAll("\\(.*?\\)", "") // 👈 убираем "(снят)" и т.п.
-                .replaceAll("\\s+", " ")
-                .trim();
     }
 }
