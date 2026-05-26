@@ -3,6 +3,8 @@ package ru.pulsecore.app.modules.player.api;
 
 public final class PlayerApi {
 
+
+
     private PlayerApi() {}
 
     public static final String BASE_PATH = "/api/player";
@@ -30,10 +32,14 @@ public final class PlayerApi {
 
     // ── Analytics + AI ──
     public static final String ANALYTICS = "/analytics";
+    public static final String BEST_TIME = "/best-time";
 
     public static final String MONTHLY_INCOME = "/{id}/monthly-income";
     public static final String DAILY_INCOME = "/{id}/daily-income";
 
     // ── Webhook ──
     public static final String WEBHOOK = "/api/payment/webhook";
+
+
+
 }

@@ -5,12 +5,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.player.api.PlayerApi;
 import ru.pulsecore.app.modules.player.api.dto.AnalyticsResponse;
+import ru.pulsecore.app.modules.player.api.dto.BestTimeResponse;
 import ru.pulsecore.app.modules.player.api.dto.DailyIncomeResponse;
 import ru.pulsecore.app.modules.player.api.dto.MonthlyIncomeResponse;
 import ru.pulsecore.app.modules.player.service.analytic.facade.AnalyticsFacade;
 import ru.pulsecore.app.security.CurrentPlayer;
 import ru.pulsecore.app.security.PlayerPrincipal;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 
@@ -42,6 +45,18 @@ public class AnalyticsController {
             @RequestParam int year,
             @RequestParam int month) {
         return ResponseEntity.ok(analyticsFacade.getDailyIncome(principal.playerId(), year, month));
+    }
+
+    @GetMapping(PlayerApi.BEST_TIME)
+    public ResponseEntity<List<BestTimeResponse>> getBestTime(
+            @CurrentPlayer PlayerPrincipal principal,
+            @RequestParam(required = false) LocalDate start,
+            @RequestParam(required = false) LocalDate end) {
+
+        if (start == null) start = LocalDate.of(2000, 1, 1);
+        if (end == null) end = LocalDate.now();
+
+        return ResponseEntity.ok(analyticsFacade.getBestTime(principal.playerId(), start, end));
     }
 
 

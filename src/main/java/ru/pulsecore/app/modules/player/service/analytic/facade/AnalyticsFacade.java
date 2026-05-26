@@ -3,13 +3,17 @@ package ru.pulsecore.app.modules.player.service.analytic.facade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.player.api.dto.AnalyticsResponse;
+import ru.pulsecore.app.modules.player.api.dto.BestTimeResponse;
 import ru.pulsecore.app.modules.player.api.dto.DailyIncomeResponse;
 import ru.pulsecore.app.modules.player.api.dto.MonthlyIncomeResponse;
 import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.player.repository.PlayerAnalyticsRepository;
 import ru.pulsecore.app.modules.player.service.analytic.income.PlayerIncomeService;
 import ru.pulsecore.app.modules.player.service.analytic.league.LeagueAnalyticsService;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,6 +24,8 @@ public class AnalyticsFacade {
     private final PlayerService playerService;
     private final LeagueAnalyticsService leagueAnalyticsService;
     private final PlayerIncomeService playerIncomeService;
+    private final PlayerAnalyticsRepository playerAnalyticsRepository;
+
 
 
     // ── Аналитика ─────────────────────────────
@@ -39,6 +45,7 @@ public class AnalyticsFacade {
     }
 
 
-
-
+    public List<BestTimeResponse> getBestTime(UUID playerId, LocalDate start, LocalDate end) {
+        return playerAnalyticsRepository.getBestTime(playerId, start, end);
+    }
 }
