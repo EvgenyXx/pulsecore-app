@@ -103,6 +103,8 @@ public class PlayerRegistrationService {
                 player.getName(), player.getEmail(), ip, userAgent,
                 device, os, browser);
 
+        mailStrategyRegistry.send(MailTypes.WELCOME, player.getEmail(), player.getName());
+
         return player;
     }
 }

@@ -26,7 +26,7 @@ public class PrimaryLeagueUpdater {
         updateAllPrimaryLeagues();
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     @Transactional
     public void updateAllPrimaryLeagues() {
         List<Player> players = playerRepository.findAll();

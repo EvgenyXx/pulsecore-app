@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.push.api.dto.PushSubscriptionRequest;
 import ru.pulsecore.app.modules.push.config.VapidConfig;
 import ru.pulsecore.app.modules.push.model.PushSubscription;
@@ -19,6 +21,7 @@ public class PushFacade {
 
     private final PushSubscriptionRepository repository;
     private final VapidConfig vapidConfig;
+    private final PlayerService  playerService;
 
     @Transactional(readOnly = true)
     public boolean isSubscribed(UUID playerId) {
@@ -53,5 +56,16 @@ public class PushFacade {
                         },
                         () -> log.debug("Push-подписка не найдена для playerId={}", playerId)
                 );
+    }
+
+    public boolean togglePushEnabled(UUID playerId) {
+        Player player = playerService.getById(playerId);
+        player.setPushEnabled(!player.isPushEnabled());
+        playerService.save(player);
+        return player.isPushEnabled();
+    }
+
+    public boolean isPushEnabled(UUID playerId) {
+        return playerService.getById(playerId).isPushEnabled();
     }
 }

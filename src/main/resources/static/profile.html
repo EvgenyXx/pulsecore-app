@@ -80,13 +80,13 @@
             </div>
         </div>
 
-        <!-- Уведомления -->
+        <!-- Уведомления (почта) -->
         <div class="glass rounded-xl md:rounded-2xl p-4 md:p-5 mb-4">
             <div class="flex items-center justify-between gap-2 md:gap-3">
                 <div class="flex items-center gap-2 md:gap-3">
                     <span class="text-xl">🔔</span>
                     <div>
-                        <h3 class="font-semibold text-white text-sm md:text-base">Уведомления</h3>
+                        <h3 class="font-semibold text-white text-sm md:text-base">Уведомления на почту</h3>
                         <p class="text-xs text-gray-500" id="notifLabel">Загрузка...</p>
                     </div>
                 </div>
@@ -95,6 +95,26 @@
                         <span class="toggle-icon off">🔕</span>
                         <span class="toggle-icon on">🔔</span>
                         <div class="toggle-thumb" id="toggleThumb"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Push-уведомления -->
+        <div class="glass rounded-xl md:rounded-2xl p-4 md:p-5 mb-4">
+            <div class="flex items-center justify-between gap-2 md:gap-3">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <span class="text-xl">📲</span>
+                    <div>
+                        <h3 class="font-semibold text-white text-sm md:text-base">Push-уведомления</h3>
+                        <p class="text-xs text-gray-500" id="pushLabel">Загрузка...</p>
+                    </div>
+                </div>
+                <div class="toggle-wrapper" onclick="togglePush()">
+                    <div class="toggle-track off" id="pushToggleTrack">
+                        <span class="toggle-icon off">🔕</span>
+                        <span class="toggle-icon on">📲</span>
+                        <div class="toggle-thumb" id="pushToggleThumb"></div>
                     </div>
                 </div>
             </div>
@@ -169,6 +189,7 @@
 <script>
     let playerId = null;
     let notificationsEnabled = true;
+    let pushEnabled = true;
 
     async function init() {
         try {
@@ -180,6 +201,7 @@
             document.getElementById("emailInput").value = data.email || '';
             if (data.createdAt) document.getElementById("createdAt").textContent = new Date(data.createdAt).toLocaleDateString("ru-RU");
             await loadNotificationState();
+            await loadPushState();
         } catch (e) { window.location.href = "/"; }
     }
 
@@ -189,12 +211,23 @@
             if (res.ok) {
                 const data = await res.json();
                 notificationsEnabled = data.enabled;
-                updateToggleUI();
+                updateNotificationToggleUI();
             }
-        } catch(e) { updateToggleUI(); }
+        } catch(e) { updateNotificationToggleUI(); }
     }
 
-    function updateToggleUI() {
+    async function loadPushState() {
+        try {
+            const res = await fetch('/api/push/push-status', { credentials: 'same-origin' });
+            if (res.ok) {
+                const data = await res.json();
+                pushEnabled = data.pushEnabled;
+                updatePushToggleUI();
+            }
+        } catch(e) { updatePushToggleUI(); }
+    }
+
+    function updateNotificationToggleUI() {
         const track = document.getElementById("toggleTrack");
         const thumb = document.getElementById("toggleThumb");
         const label = document.getElementById("notifLabel");
@@ -211,13 +244,47 @@
         }
     }
 
+    function updatePushToggleUI() {
+        const track = document.getElementById("pushToggleTrack");
+        const thumb = document.getElementById("pushToggleThumb");
+        const label = document.getElementById("pushLabel");
+        if (pushEnabled) {
+            track.className = "toggle-track on";
+            thumb.className = "toggle-thumb on";
+            label.textContent = "Включены";
+            label.className = "text-xs text-emerald-400";
+        } else {
+            track.className = "toggle-track off";
+            thumb.className = "toggle-thumb";
+            label.textContent = "Отключены";
+            label.className = "text-xs text-gray-500";
+        }
+    }
+
     async function toggleNotifications() {
         notificationsEnabled = !notificationsEnabled;
-        updateToggleUI();
+        updateNotificationToggleUI();
         try {
-            await fetch(`/api/player/notifications?enabled=${notificationsEnabled}`, { method: "PUT" });        } catch(e) {
+            await fetch(`/api/player/notifications?enabled=${notificationsEnabled}`, { method: "PUT" });
+        } catch(e) {
             notificationsEnabled = !notificationsEnabled;
-            updateToggleUI();
+            updateNotificationToggleUI();
+        }
+    }
+
+    async function togglePush() {
+        pushEnabled = !pushEnabled;
+        updatePushToggleUI();
+        try {
+            const res = await fetch('/api/push/toggle', { method: 'POST', credentials: 'same-origin' });
+            if (res.ok) {
+                const data = await res.json();
+                pushEnabled = data.pushEnabled;
+                updatePushToggleUI();
+            }
+        } catch(e) {
+            pushEnabled = !pushEnabled;
+            updatePushToggleUI();
         }
     }
 

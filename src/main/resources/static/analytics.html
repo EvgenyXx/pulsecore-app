@@ -9,6 +9,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px'}}}}</script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -56,6 +59,17 @@
         .nav-arrows-desktop { display: none; }
         @media (min-width: 768px) { .nav-arrows-desktop { display: flex; align-items: center; gap: 4px; } }
         .no-data-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #6b7280; font-size: 1rem; text-align: center; }
+        .best-time-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        .best-time-table th { text-align: left; padding: 8px 6px; font-size: 0.65rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .best-time-table td { padding: 10px 6px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .best-time-table tr:last-child td { border-bottom: none; }
+        .best-time-table .highlight { color: #fbbf24; font-weight: 700; }
+        .period-btn { padding: 8px 16px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+        .period-btn.active { background: #f59e0b; color: #000; }
+        .period-btn:not(.active) { background: rgba(255,255,255,0.05); color: #9ca3af; }
+        .period-btn:not(.active):hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .flatpickr-input { background: rgba(255,255,255,0.04)!important; border: 1px solid rgba(255,255,255,0.08)!important; border-radius: 14px!important; color: #fff!important; padding: 10px 14px!important; font-size: 0.8rem!important; font-family: 'Inter'!important; width: 130px!important; }
+        .flatpickr-input:focus { border-color: rgba(245,158,11,0.5)!important; box-shadow: 0 0 20px rgba(245,158,11,0.1)!important; outline: none!important; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -69,9 +83,10 @@
 <aside class="hidden md:flex glass-nav w-64 min-h-screen p-6 flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-3 mb-10 px-1"><div class="w-11 h-11 rounded-xl bg-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-500/10"><span class="text-2xl">📊</span></div><div><h1 class="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1><p class="text-xs text-gray-400">Статистика</p></div></div>
     <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item active" id="nav-league-avg" onclick="switchTab('league')"><span class="nav-icon">🏆</span><div><div class="font-medium text-sm">Средняя по лигам</div><div class="text-xs text-gray-500">Заработок по лигам</div></div></div>
+        <div class="nav-item active" id="nav-league" onclick="switchTab('league')"><span class="nav-icon">🏆</span><div><div class="font-medium text-sm">Средняя по лигам</div><div class="text-xs text-gray-500">Заработок по лигам</div></div></div>
         <div class="nav-item" id="nav-monthly" onclick="switchTab('monthly')"><span class="nav-icon">📅</span><div><div class="font-medium text-sm">Доход по месяцам</div><div class="text-xs text-gray-500">Динамика заработка</div></div></div>
         <div class="nav-item" id="nav-daily" onclick="switchTab('daily')"><span class="nav-icon">📆</span><div><div class="font-medium text-sm">Доход по дням</div><div class="text-xs text-gray-500">Каждый день месяца</div></div></div>
+        <div class="nav-item" id="nav-best-time" onclick="switchTab('best-time')"><span class="nav-icon">⏰</span><div><div class="font-medium text-sm">Лучшее время</div><div class="text-xs text-gray-500">Самое результативное</div></div></div>
     </nav>
     <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">На главную</div><div class="text-xs text-gray-500">Вернуться</div></div></a>
 </aside>
@@ -108,19 +123,49 @@
         </div>
         <p class="swipe-hint">← листай влево/вправо для смены месяца →</p>
     </div>
+
+    <div id="tab-best-time" class="hidden content-panel max-w-2xl mx-auto">
+        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">⏰ Лучшее время</h2>
+        <p class="text-gray-400 text-sm mb-5">В какое время суток вы зарабатываете больше всего</p>
+
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+            <button onclick="setBestTimePeriod('all')" id="bt-all" class="period-btn active">Всё время</button>
+            <button onclick="setBestTimePeriod('month')" id="bt-month" class="period-btn">Месяц</button>
+            <button onclick="setBestTimePeriod('week')" id="bt-week" class="period-btn">Неделя</button>
+            <span class="text-gray-500 text-xs mx-1">или</span>
+            <input type="text" id="bestTimeStart" class="flatpickr-input" placeholder="Дата с">
+            <span class="text-gray-500 text-xs">—</span>
+            <input type="text" id="bestTimeEnd" class="flatpickr-input" placeholder="Дата по">
+            <button onclick="setBestTimePeriod('custom')" class="period-btn">🔍 Применить</button>
+        </div>
+        <p class="text-xs text-gray-500 mb-4" id="bestTimePeriodLabel">Показаны данные за всё время</p>
+
+        <div class="chart-card">
+            <div class="chart-wrap"><canvas id="bestTimeChart"></canvas></div>
+            <table class="best-time-table">
+                <thead><tr><th>Время</th><th>Игр</th><th>Средний</th><th>Всего</th></tr></thead>
+                <tbody id="bestTimeTableBody"></tbody>
+            </table>
+        </div>
+    </div>
 </main>
 
 <div class="mobile-nav">
     <div class="mobile-nav-item active" id="mob-nav-league" onclick="switchTab('league')"><span class="m-icon">🏆</span>Лиги</div>
     <div class="mobile-nav-item" id="mob-nav-monthly" onclick="switchTab('monthly')"><span class="m-icon">📅</span>Месяцы</div>
     <div class="mobile-nav-item" id="mob-nav-daily" onclick="switchTab('daily')"><span class="m-icon">📆</span>Дни</div>
+    <div class="mobile-nav-item" id="mob-nav-best-time" onclick="switchTab('best-time')"><span class="m-icon">⏰</span>Время</div>
     <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Главная</a>
 </div>
 
 <script>
-    let leagueChart = null, monthlyChart = null, dailyChart = null, playerId = null;
+    let leagueChart = null, monthlyChart = null, dailyChart = null, bestTimeChart = null, playerId = null;
     let dailyYear, dailyMonth, monthlyYear;
+    let bestTimePeriod = 'all';
     const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+    flatpickr("#bestTimeStart", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
+    flatpickr("#bestTimeEnd", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
 
     function switchTab(tab) {
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -130,9 +175,11 @@
         document.getElementById('tab-league').classList.toggle('hidden', tab !== 'league');
         document.getElementById('tab-monthly').classList.toggle('hidden', tab !== 'monthly');
         document.getElementById('tab-daily').classList.toggle('hidden', tab !== 'daily');
+        document.getElementById('tab-best-time').classList.toggle('hidden', tab !== 'best-time');
         if (tab === 'league') loadLeagueAvg();
         if (tab === 'monthly') { initMonthlyYear(); loadMonthly(); }
         if (tab === 'daily') { initDailyMonth(); loadDaily(); }
+        if (tab === 'best-time') loadBestTime();
     }
 
     async function init() {
@@ -194,6 +241,89 @@
         }
     }
 
+    function setBestTimePeriod(period) {
+        bestTimePeriod = period;
+        document.querySelectorAll('#tab-best-time .period-btn').forEach(b => b.classList.remove('active'));
+        if (period === 'custom') {
+            document.getElementById('bt-all').classList.add('active');
+        } else {
+            document.getElementById('bt-' + period)?.classList.add('active');
+        }
+
+        const label = document.getElementById('bestTimePeriodLabel');
+        if (period === 'all') label.textContent = 'Показаны данные за всё время';
+        else if (period === 'month') label.textContent = 'Показаны данные за последние 30 дней';
+        else if (period === 'week') label.textContent = 'Показаны данные за последние 7 дней';
+        else if (period === 'custom') label.textContent = 'Показаны данные за выбранный период';
+
+        loadBestTime();
+    }
+
+    async function loadBestTime() {
+        if (!playerId) return;
+        try {
+            let start, end;
+            const now = new Date();
+
+            if (bestTimePeriod === 'week') {
+                start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                end = now.toISOString().split('T')[0];
+            } else if (bestTimePeriod === 'month') {
+                start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                end = now.toISOString().split('T')[0];
+            } else if (bestTimePeriod === 'custom') {
+                start = document.getElementById('bestTimeStart').value;
+                end = document.getElementById('bestTimeEnd').value;
+            }
+
+            const params = new URLSearchParams();
+            if (start) params.append('start', start);
+            if (end) params.append('end', end);
+
+            const r = await fetch(`/api/player/best-time?${params.toString()}`, { credentials: "same-origin" });
+            if (!r.ok) throw new Error();
+            const data = await r.json();
+
+            if (!data || data.length === 0) {
+                document.getElementById("bestTimeTableBody").innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4">Нет данных</td></tr>';
+                if (bestTimeChart) { bestTimeChart.destroy(); bestTimeChart = null; }
+                return;
+            }
+
+            document.getElementById("bestTimeTableBody").innerHTML = data.map((r, i) => {
+                const isBest = i === 0;
+                return `<tr>
+                    <td class="${isBest ? 'highlight' : ''}">${r.time || '—'}</td>
+                    <td>${r.gamesCount}</td>
+                    <td>${fmt(r.avgPoints)}</td>
+                    <td class="${isBest ? 'highlight' : ''}">${fmt(r.totalPoints)}</td>
+                </tr>`;
+            }).join('');
+
+            if (bestTimeChart) bestTimeChart.destroy();
+            const ctx = document.getElementById("bestTimeChart").getContext("2d");
+            const labels = data.map(r => r.time || '—');
+            const scores = data.map(r => r.avgPoints != null ? Math.round(r.avgPoints) : 0);
+            const bgColors = labels.map((_, i) => i === 0 ? '#fbbf24DD' : 'rgba(255,255,255,0.08)');
+
+            bestTimeChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets: [{ data: scores, backgroundColor: bgColors, borderRadius: 8, borderSkipped: false, barPercentage: 0.5 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, animation: { duration: 800, easing: 'easeOutQuart' },
+                    plugins: { legend: { display: false }, datalabels: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, max: Math.max(...scores, 1) * 1.3, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', font: { size: 9 }, padding: 4 } },
+                        x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 12 }, padding: 6 } }
+                    }
+                }
+            });
+
+        } catch (e) {
+            document.getElementById("bestTimeTableBody").innerHTML = '<tr><td colspan="4" class="text-center text-red-400 py-4">Ошибка загрузки</td></tr>';
+        }
+    }
+
     async function loadLeagueAvg() {
         if (!playerId) return;
         try {
@@ -217,27 +347,19 @@
         if (!playerId) return;
         const year = document.getElementById("yearSelect").value;
         monthlyYear = parseInt(year);
-
         document.getElementById("monthlyAvgPill").style.display = 'none';
         document.getElementById("monthlyNoData").classList.add("hidden");
-
         try {
             const r = await fetch(`/api/player/${playerId}/monthly-income?year=${year}`, { credentials: "same-origin" });
             if (!r.ok) throw new Error();
             const d = await r.json();
-
             if (!d.months || d.months.length === 0 || d.months.every(m => m.total === 0)) {
                 if (monthlyChart) monthlyChart.destroy();
-                const ctx = document.getElementById("monthlyChart").getContext("2d");
-                monthlyChart = new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [] }, options: { plugins: { datalabels: { display: false } } } });
                 document.getElementById("monthlyNoData").classList.remove("hidden");
             } else {
                 buildMonthlyChart(d.months, d.overallAverage);
             }
-        } catch (e) {
-            if (monthlyChart) monthlyChart.destroy();
-            document.getElementById("monthlyNoData").classList.remove("hidden");
-        }
+        } catch (e) { document.getElementById("monthlyNoData").classList.remove("hidden"); }
     }
 
     async function loadDaily() {
@@ -247,16 +369,12 @@
         document.getElementById("dailyTotal").textContent = '...';
         document.getElementById("dailyAvg").textContent = '...';
         document.getElementById("dailyBest").textContent = '...';
-
         try {
             const r = await fetch(`/api/player/${playerId}/daily-income?year=${dailyYear}&month=${dailyMonth}`, { credentials: "same-origin" });
             if (!r.ok) throw new Error();
             const d = await r.json();
-
             if (!d.days || d.days.length === 0 || d.days.every(day => day.total === 0)) {
                 if (dailyChart) dailyChart.destroy();
-                const ctx = document.getElementById("dailyChart").getContext("2d");
-                dailyChart = new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [] }, options: { plugins: { datalabels: { display: false } } } });
                 document.getElementById("dailyNoData").classList.remove("hidden");
                 document.getElementById("dailyTotal").textContent = '0 ₽';
                 document.getElementById("dailyAvg").textContent = '0 ₽';

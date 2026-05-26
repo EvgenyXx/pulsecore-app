@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.notification.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.modules.notification.service.NotificationPermissionService;
 import ru.pulsecore.app.modules.push.service.WebPushService;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ public class TournamentReminderScheduler {
 
     private final PlayerNotificationRepository notificationRepository;
     private final WebPushService webPushService;
+    private final NotificationPermissionService notificationPermissionService;
 
     @Scheduled(fixedRate = 60000)
     @Transactional
@@ -45,12 +47,14 @@ public class TournamentReminderScheduler {
                     long minutesUntilTournament = java.time.Duration.between(now, tournamentTime).toMinutes();
 
                     if (minutesUntilTournament > 0 && minutesUntilTournament <= 60) {
-                        webPushService.sendToPlayer(
-                                player.getId(),
-                                "🏆 Турнир начинается!",
-                                "Начало в " + time + ". До старта " + minutesUntilTournament + " мин. Проверьте состав!\n\nPulseCore",
-                                "/dashboard"
-                        );
+                        if (notificationPermissionService.canSendPush(player)) {
+                            webPushService.sendToPlayer(
+                                    player.getId(),
+                                    "🏆 Турнир начинается!",
+                                    "Начало в " + time + ". До старта " + minutesUntilTournament + " мин. Проверьте состав!\n\nPulseCore",
+                                    "/dashboard"
+                            );
+                        }
                         pn.setPushReminderSent(true);
                         notificationRepository.save(pn);
                     }
@@ -60,12 +64,14 @@ public class TournamentReminderScheduler {
             }
 
             if (date.equals(tomorrow) && now.getHour() == 20 && !pn.isPushEveningSent()) {
-                webPushService.sendToPlayer(
-                        player.getId(),
-                        "📅 Завтра турнир!",
-                        "Завтра в " + (time != null ? time : "?") + ". Проверьте состав и будьте готовы!",
-                        "/dashboard"
-                );
+                if (notificationPermissionService.canSendPush(player)) {
+                    webPushService.sendToPlayer(
+                            player.getId(),
+                            "📅 Завтра турнир!",
+                            "Завтра в " + (time != null ? time : "?") + ". Проверьте состав и будьте готовы!",
+                            "/dashboard"
+                    );
+                }
                 pn.setPushEveningSent(true);
                 notificationRepository.save(pn);
             }
