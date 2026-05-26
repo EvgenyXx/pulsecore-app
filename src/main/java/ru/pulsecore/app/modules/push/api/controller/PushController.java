@@ -44,4 +44,16 @@ public class PushController {
         pushFacade.unsubscribe(principal.playerId(), request.get("endpoint"));
         return ResponseEntity.ok(Map.of("status", "ok"));
     }
+
+
+    @GetMapping(PushApi.PUSH_STATUS)
+    public ResponseEntity<Map<String, Boolean>> pushStatus(@CurrentPlayer PlayerPrincipal principal) {
+        return ResponseEntity.ok(Map.of("pushEnabled", pushFacade.isPushEnabled(principal.playerId())));
+    }
+
+    @PostMapping(PushApi.TOGGLE)
+    public ResponseEntity<Map<String, Boolean>> togglePush(@CurrentPlayer PlayerPrincipal principal) {
+        boolean newState = pushFacade.togglePushEnabled(principal.playerId());
+        return ResponseEntity.ok(Map.of("pushEnabled", newState));
+    }
 }

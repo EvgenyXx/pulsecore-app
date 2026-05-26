@@ -81,6 +81,10 @@ public class Player {
     @Column(name = "primary_league", length = 20)
     private String primaryLeague;
 
+    @Column(name = "push_enabled", nullable = false)
+    @Builder.Default
+    private boolean pushEnabled = true;
+
 
 
     private LocalDateTime createdAt;

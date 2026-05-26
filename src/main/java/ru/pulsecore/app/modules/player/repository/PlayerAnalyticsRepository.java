@@ -32,7 +32,6 @@ public class PlayerAnalyticsRepository {
                 .gamesCount(rs.getLong("games_count"))
                 .avgPoints(rs.getDouble("avg_points"))
                 .totalPoints(rs.getDouble("total_points"))
-                .productivityScore(rs.getDouble("productivity_score"))
                 .build();
 
         return jdbc.query(sql, params, mapper);

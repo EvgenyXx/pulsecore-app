@@ -1,9 +1,9 @@
 SELECT
     t.time,
     COUNT(*) AS games_count,
-    ROUND(AVG(tr.amount)::numeric, 2) AS avg_points,
+    AVG(tr.amount) AS avg_points,
     SUM(tr.amount) AS total_points,
-    ROUND(AVG(tr.amount) * LN(COUNT(*))::numeric, 2) AS productivity_score
+    (AVG(tr.amount) * LN(COUNT(*))) AS productivity_score
 FROM tournament_results tr
          JOIN tournament t ON t.id = tr.tournament_id
 WHERE tr.player_id = :playerId

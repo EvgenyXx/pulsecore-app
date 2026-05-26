@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
+import ru.pulsecore.app.modules.notification.service.NotificationPermissionService;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
@@ -26,6 +27,7 @@ public class TournamentDiscoveryService {
     private final TournamentSaver saver;
     private final MailStrategyRegistry mailStrategyRegistry;
     private final WebPushService webPushService;
+    private final NotificationPermissionService notificationPermissionService;
 
     public void checkNewTournaments(UUID playerId) {
         Player user = userService.findById(playerId);
@@ -46,55 +48,59 @@ public class TournamentDiscoveryService {
 
         saver.save(user, newTournaments);
 
-        if (!user.isNotificationsEnabled()) {
-            log.info("🔕 Notifications disabled for {}", user.getEmail());
-            return;
+        // Почта — если разрешено
+        if (notificationPermissionService.canSendEmail(user)) {
+            newTournaments.forEach(tournament ->
+                    mailStrategyRegistry.send(MailTypes.NEW_TOURNAMENT, user.getEmail(), tournament, user)
+            );
+        } else {
+            log.info("🔕 Email notifications disabled for {}", user.getEmail());
         }
 
-        // Почта
-        newTournaments.forEach(tournament ->
-                mailStrategyRegistry.send(MailTypes.NEW_TOURNAMENT, user.getEmail(), tournament, user)
-        );
+        // Push — если разрешено
+        if (notificationPermissionService.canSendPush(user)) {
+            newTournaments.forEach(tournament -> {
+                String firstName = extractFirstName(user.getName());
+                String rawDate = tournament.getDate() != null ? tournament.getDate().getDate() : null;
+                String dateStr = formatDate(rawDate);
+                String timeStr = formatTime(rawDate);
+                String hall = tournament.getHall() != null ? tournament.getHall() : "—";
+                String league = tournament.getLeague() != null ? tournament.getLeague() : "—";
 
-        // Push о новом составе
-        newTournaments.forEach(tournament -> {
-            String firstName = user.getName().contains(" ")
-                    ? user.getName().substring(user.getName().lastIndexOf(" ") + 1)
-                    : user.getName();
+                StringBuilder body = new StringBuilder();
+                body.append(firstName).append(", вы записаны на турнир!\n\n");
+                body.append("📅 ").append(dateStr).append(" в ").append(timeStr).append("\n");
+                body.append("🏛 Зал: ").append(hall).append("\n");
+                body.append("🏆 Лига: ").append(league).append("\n\n");
 
-            String rawDate = tournament.getDate() != null ? tournament.getDate().getDate() : null;
-            String dateStr = formatDate(rawDate);
-            String timeStr = formatTime(rawDate);
-            String hall = tournament.getHall() != null ? tournament.getHall() : "—";
-            String league = tournament.getLeague() != null ? tournament.getLeague() : "—";
-
-            StringBuilder body = new StringBuilder();
-            body.append(firstName).append(", вы записаны на турнир!\n\n");
-            body.append("📅 ").append(dateStr).append(" в ").append(timeStr).append("\n");
-            body.append("🏛 Зал: ").append(hall).append("\n");
-            body.append("🏆 Лига: ").append(league).append("\n\n");
-
-            if (tournament.getPlayers() != null && !tournament.getPlayers().isEmpty()) {
-                body.append("👥 Состав:\n");
-                List<String> players = tournament.getPlayers();
-                int count = Math.min(players.size(), 10);
-                for (int i = 0; i < count; i++) {
-                    body.append(i + 1).append(". ").append(players.get(i)).append("\n");
+                if (tournament.getPlayers() != null && !tournament.getPlayers().isEmpty()) {
+                    body.append("👥 Состав:\n");
+                    List<String> players = tournament.getPlayers();
+                    int count = Math.min(players.size(), 10);
+                    for (int i = 0; i < count; i++) {
+                        body.append(i + 1).append(". ").append(players.get(i)).append("\n");
+                    }
+                    if (players.size() > 10) {
+                        body.append("... и ещё ").append(players.size() - 10).append("\n");
+                    }
                 }
-                if (players.size() > 10) {
-                    body.append("... и ещё ").append(players.size() - 10).append("\n");
-                }
-            }
 
-            webPushService.sendToPlayer(
-                    user.getId(),
-                    "📋 Вы в составе!",
-                    body.toString(),
-                    "/dashboard"
-            );
-        });
+                webPushService.sendToPlayer(
+                        user.getId(),
+                        "📋 Вы в составе!",
+                        body.toString(),
+                        "/dashboard"
+                );
+            });
+        } else {
+            log.info("🔕 Push notifications disabled for {}", user.getEmail());
+        }
 
         log.info("📧📲 Sent {} notifications to {}", newTournaments.size(), user.getEmail());
+    }
+
+    private String extractFirstName(String fullName) {
+        return fullName.contains(" ") ? fullName.substring(fullName.lastIndexOf(" ") + 1) : fullName;
     }
 
     private static String formatDate(String raw) {

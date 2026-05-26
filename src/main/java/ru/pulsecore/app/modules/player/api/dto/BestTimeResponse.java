@@ -14,5 +14,5 @@ public class BestTimeResponse {
     private Long gamesCount;
     private Double avgPoints;
     private Double totalPoints;
-    private Double productivityScore;
+
 }
