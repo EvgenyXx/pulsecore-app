@@ -56,7 +56,11 @@ public class SubscriptionService {
     @Transactional(readOnly = true)
     public boolean hasActiveSubscription(UUID playerId) {
         var sub = subscriptionRepository.findByPlayerId(playerId);
-        log.info("🔥 SUB RAW: {}", sub.isPresent() ? sub.get().isActiveNow() : "null");
-        return sub.map(Subscription::isActiveNow).orElse(false);
+        boolean active = sub.map(Subscription::isActiveNow).orElse(false);
+        if (active) {
+            Player player = sub.get().getPlayer();
+            log.info("✅ Активная подписка: {}", player.getName());
+        }
+        return active;
     }
 }

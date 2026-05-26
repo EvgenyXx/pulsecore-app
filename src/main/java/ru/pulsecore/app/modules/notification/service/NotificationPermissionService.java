@@ -13,6 +13,8 @@ public class NotificationPermissionService {
     }
 
     public boolean canSendPush(Player player) {
-        return player != null && player.isPushEnabled();
+        return player != null
+                && player.isPushEnabled()
+                && player.hasActiveSubscription();
     }
 }
