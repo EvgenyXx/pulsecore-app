@@ -109,10 +109,6 @@ public class TournamentProcessService {
         ParsedResult parsed;
         try {
             parsed = resultService.calculateAll(url);
-            log.warn("🔍 PARSED: url={}, time='{}', date='{}', resultsCount={}",
-                    url, parsed.time(),
-                    parsed.results().isEmpty() ? "empty" : parsed.results().get(0).getDate(),
-                    parsed.results().size());
         } catch (Exception e) {
             throw new TournamentParseException(url, e);
         }
@@ -125,14 +121,21 @@ public class TournamentProcessService {
             }
         }
 
-        LocalDate finalTournamentDate = tournamentDate;
-        tournamentRepository.findByExternalId(parsed.tournamentId())
+        // Найти или создать турнир
+        TournamentEntity tournament = tournamentRepository.findByExternalId(parsed.tournamentId())
                 .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder()
                         .externalId(parsed.tournamentId())
                         .link(url)
-                        .date(finalTournamentDate)
-                        .time(parsed.time())
                         .build()));
+
+        // Обновить дату и время, если их нет
+        if (tournament.getDate() == null && tournamentDate != null) {
+            tournament.setDate(tournamentDate);
+        }
+        if (tournament.getTime() == null && parsed.time() != null && !parsed.time().isEmpty()) {
+            tournament.setTime(parsed.time());
+        }
+        tournamentRepository.save(tournament);
 
         tournamentResultService.processResults(
                 parsed.results(), player, parsed.tournamentId(),
@@ -147,5 +150,5 @@ public class TournamentProcessService {
                 .resultsCount(parsed.results().size())
                 .results(parsed.results())
                 .build();
-    }
+    }//todo его менять на старый
 }
