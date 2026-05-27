@@ -10,8 +10,8 @@ import ru.pulsecore.app.modules.shared.exception.SiteUnavailableException;
 @Slf4j
 public class DocumentLoader {
 
-    private static final int MAX_ATTEMPTS = 3;
-    private static final int TIMEOUT = 60_000;  // было 30_000, стало 60_000
+    private static final int MAX_ATTEMPTS = 2;
+    private static final int TIMEOUT = 20_000;
 
     public Document load(String url) {
         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
@@ -24,6 +24,9 @@ public class DocumentLoader {
                         .get();
             } catch (java.net.SocketTimeoutException e) {
                 log.warn("Timeout loading {}, attempt {}/{}", url, i, MAX_ATTEMPTS);
+                if (i < MAX_ATTEMPTS) {
+                    try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+                }
             } catch (Exception e) {
                 throw new SiteUnavailableException();
             }

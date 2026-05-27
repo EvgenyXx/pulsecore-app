@@ -13,6 +13,7 @@ public class LineupMapper {
         return Lineup.builder()
                 .league(t.getLeague())
                 .time(time)
+                .hall(t.getHall())
                 .players(String.join(", ", t.getPlayers()))
                 .date(date)
                 .build();

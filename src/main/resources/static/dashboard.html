@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PulseCore</title> <link rel="manifest" href="/manifest.json">   <link rel="manifest" href="/manifest.json">
+    <title>PulseCore</title>
+    <link rel="manifest" href="/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PulseCore">
@@ -15,6 +16,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+
     <style>
         :root { --bg: #06060f; --gold: #f59e0b; --gold-light: #fbbf24; }
         html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
@@ -64,15 +66,32 @@
         .ptr-indicator.active { height: 56px; }
         .ptr-indicator.done { color: #34d399; }
         @supports (padding-top: env(safe-area-inset-top)) {
-            #mobileHeader {
-                padding-top: calc(env(safe-area-inset-top) + 8px);
-            }
-            body {
-                padding-top: 0;
-            }
+            #mobileHeader { padding-top: calc(env(safe-area-inset-top) + 8px); }
+            body { padding-top: 0; }
+        }
+        /* Halls styles */
+        .hall-checkbox-card { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); transition: all 0.2s; }
+        .hall-checkbox-card:hover { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
+        .hall-checkbox-card.selected { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); }
+        .hall-checkbox-card input[type="checkbox"] { accent-color: #f59e0b; width: 18px; height: 18px; }
+        .lineup-by-hall { margin-bottom: 16px; }
+        .lineup-by-hall .hall-title { font-size: 0.85rem; font-weight: 700; color: #fbbf24; margin-bottom: 8px; padding: 6px 12px; background: rgba(245,158,11,0.08); border-radius: 8px; display: inline-block; }
+        .lineup-row { display: flex; align-items: flex-start; padding: 10px 12px; border-radius: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); gap: 8px; }
+        .lineup-row .lineup-info { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; min-width: 120px; }
+        .lineup-row .time-badge { font-size: 0.75rem; font-weight: 600; color: #fbbf24; background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+        .lineup-row .league-badge { font-size: 0.7rem; font-weight: 600; color: #60a5fa; background: rgba(96,165,250,0.1); padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+        .lineup-row .hall-badge { font-size: 0.7rem; color: #9ca3af; white-space: nowrap; }
+        .lineup-row .players-text { font-size: 0.75rem; color: #9ca3af; flex: 1; line-height: 1.5; }
+        .players-text .player-name { display: block; }
+        .date-tab { padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: #9ca3af; }
+        .date-tab.active { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+        .date-tab:hover { background: rgba(245,158,11,0.08); color: #fbbf24; }
+        @media (max-width: 480px) {
+            .lineup-row { flex-direction: column; gap: 6px; }
+            .lineup-row .lineup-info { width: 100%; justify-content: flex-start; }
+            .lineup-row .players-text { width: 100%; }
         }
     </style>
-
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
@@ -91,11 +110,12 @@
     <div class="flex items-center justify-between mb-6"><div class="flex items-center gap-3"><img src="/img.png" alt="PulseCore" class="w-8 h-8 rounded-xl shadow-lg object-cover"><span class="font-bold text-white text-sm">PulseCore</span></div><button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 active:scale-90 text-white text-lg">✕</button></div>
     <nav class="flex flex-col gap-1.5 flex-1 overflow-y-auto">
         <div class="mobile-nav-item bg-amber-500/10 border-amber-500/20" onclick="mobileNav('home', this)"><span>🏠</span> Главная</div>
-        <div class="mobile-nav-item" onclick="mobileNav('sum', this)"><span>💰</span> Сумма за период</div>
+        <div class="mobile-nav-item" onclick="mobileNav('halls', this)"><span>📅</span> Расписание</div>        <div class="mobile-nav-item" onclick="mobileNav('sum', this)"><span>💰</span> Сумма за период</div>
         <div class="mobile-nav-item" onclick="window.location.href='/analytics'"><span>📊</span> Аналитика</div>
         <div class="mobile-nav-item" onclick="window.location.href='/subscribe'"><span>💳</span> Подписка</div>
         <div class="mobile-nav-item" onclick="window.location.href='/profile'"><span>👤</span> Профиль</div>
-        <div class="mobile-nav-item hidden" id="mobile-nav-admin" onclick="window.location.href='/admin'" style="background: rgba(16,185,129,0.12); border-left: 3px solid #34d399; color: #a7f3d0; font-weight: 500;"><span>🛡️</span> Админка</div>    </nav>
+        <div class="mobile-nav-item hidden" id="mobile-nav-admin" onclick="window.location.href='/admin'" style="background: rgba(16,185,129,0.12); border-left: 3px solid #34d399; color: #a7f3d0; font-weight: 500;"><span>🛡️</span> Админка</div>
+    </nav>
     <button onclick="logout()" class="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm mt-4 py-3 w-full justify-center rounded-xl bg-white/3 hover:bg-red-500/10 active:scale-95">🚪 Выйти</button>
 </div>
 
@@ -103,7 +123,7 @@
     <div class="flex items-center gap-3 mb-10 px-1"><img src="/img.png" alt="PulseCore" class="w-11 h-11 rounded-xl shadow-lg object-cover"><div><h1 class="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent tracking-tight">PulseCore</h1><p id="sidebarPlayerName" class="text-xs text-gray-400"></p></div></div>
     <nav class="flex flex-col gap-1 flex-1">
         <div class="nav-item active" onclick="goHome()" id="nav-home"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Главная</div><div class="text-xs text-gray-500">Обзор</div></div></div>
-        <div class="nav-item" onclick="showAction('sum')" id="nav-sum"><span class="nav-icon">💰</span><div><div class="font-medium text-sm">Сумма за период</div><div class="text-xs text-gray-500">Подсчёт и список</div></div></div>
+        <div class="nav-item" onclick="showAction('halls')" id="nav-halls"><span class="nav-icon">📅</span><div><div class="font-medium text-sm">Расписание</div><div class="text-xs text-gray-500">Турниры и составы</div></div></div>        <div class="nav-item" onclick="showAction('sum')" id="nav-sum"><span class="nav-icon">💰</span><div><div class="font-medium text-sm">Сумма за период</div><div class="text-xs text-gray-500">Подсчёт и список</div></div></div>
         <div class="nav-item" onclick="window.location.href='/analytics'"><span class="nav-icon">📊</span><div><div class="font-medium text-sm">Аналитика</div><div class="text-xs text-gray-500">Статистика по лигам</div></div></div>
         <div class="nav-item admin-item hidden" id="nav-admin" onclick="window.location.href='/admin'"><span class="nav-icon">🛡️</span><div><div class="font-medium text-sm text-emerald-400">Админка</div></div></div>
         <div class="nav-item" onclick="window.location.href='/subscribe'"><span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписка</div><div class="text-xs text-gray-500">Оформить</div></div></div>
@@ -115,6 +135,7 @@
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10">
     <div id="contentArea" class="max-w-5xl mx-auto w-full">
         <div id="homePage">
+            <!-- СТАРЫЙ КОНТЕНТ ГЛАВНОЙ БЕЗ ИЗМЕНЕНИЙ -->
             <div class="mb-6 sm:mb-8">
                 <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                     <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white"><span id="playerName"></span></h2>
@@ -150,24 +171,214 @@
 <script>
     let playerId = null, editingTournamentResultId = null, primaryLeague = 'A';
     let currentPeriod = 'week', currentPage = 0;
+    let selectedHalls = [];
+    let hallsDate = new Date().toISOString().split('T')[0];
 
     // Pull-to-Refresh
     const ptr = document.getElementById('ptrIndicator');
     let ptrStart = 0, ptrTriggered = false;
-    document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientY; ptrTriggered = false; } }, {passive: true});
-    document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientY - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, {passive: true});
+    document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientX; ptrTriggered = false; } }, {passive: true});
+    document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientX - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, {passive: true});
     document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeekPreview(); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => { ptr.classList.remove('active', 'done'); }, 1200); }, 500); } ptrStart = 0; });
 
     function toggleMobileMenu() { const m=document.getElementById('mobileMenu'),o=document.getElementById('mobileMenuOverlay'); if(m.classList.contains('translate-x-0')){m.classList.remove('translate-x-0');m.classList.add('translate-x-full');o.classList.add('hidden');}else{m.classList.remove('translate-x-full');m.classList.add('translate-x-0');o.classList.remove('hidden');} }
     function mobileNav(a,e){ toggleMobileMenu(); document.querySelectorAll('.mobile-nav-item').forEach(i=>{i.classList.remove('bg-amber-500/10','border-amber-500/20');}); e.classList.add('bg-amber-500/10','border-amber-500/20'); if(a==='home')goHome(); else showAction(a); }
 
     async function checkSession() {
-        try { const r=await fetch("/api/auth/me",{credentials:"same-origin"}); if(!r.ok){window.location.href="/";return;} const d=await r.json(); playerId=d.id; if(d.admin){document.getElementById('nav-admin')?.classList.remove('hidden');document.getElementById('mobile-nav-admin')?.classList.remove('hidden');} document.getElementById("playerName").textContent=d.name; document.getElementById("sidebarPlayerName")&&(document.getElementById("sidebarPlayerName").textContent=d.name); document.getElementById("mobilePlayerName")&&(document.getElementById("mobilePlayerName").textContent=d.name); loadDashboardWidgets(); loadTopWeekPreview(); } catch(e){window.location.href="/";}
+        try { const r=await fetch("/api/auth/me",{credentials:"same-origin"}); if(!r.ok){window.location.href="/";return;} const d=await r.json(); playerId=d.id; if(d.admin){document.getElementById('nav-admin')?.classList.remove('hidden');document.getElementById('mobile-nav-admin')?.classList.remove('hidden');} document.getElementById("playerName").textContent=d.name; document.getElementById("sidebarPlayerName")&&(document.getElementById("sidebarPlayerName").textContent=d.name); document.getElementById("mobilePlayerName")&&(document.getElementById("mobilePlayerName").textContent=d.name); loadDashboardWidgets(); loadTopWeekPreview(); loadSelectedHalls(); } catch(e){window.location.href="/";}
     }
     checkSession();
 
     function goHome(){ document.getElementById("homePage").style.display="block"; document.getElementById("actionPage").classList.add("hidden"); highlightNav("nav-home"); loadDashboardWidgets(); }
     function highlightNav(id){ document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")); document.getElementById(id)?.classList.add("active"); }
+
+    // ========== ЗАЛЫ ==========
+
+    async function loadSelectedHalls() {
+        try {
+            const r = await fetch('/api/player/halls', {credentials: 'same-origin'});
+            if (r.ok) {
+                const d = await r.json();
+                selectedHalls = d.halls ? d.halls.split(',').map(h => h.trim()).filter(h => h) : [];
+            }
+        } catch(e) {}
+    }
+
+    async function saveSelectedHalls() {
+        const checkboxes = document.querySelectorAll('#hallsCheckboxes input[type="checkbox"]:checked');
+        selectedHalls = Array.from(checkboxes).map(cb => cb.value);
+        const hallsStr = selectedHalls.join(', ');
+        try {
+            await fetch('/api/player/halls', {
+                method: 'PUT',
+                credentials: 'same-origin',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({halls: hallsStr})
+            });
+            // После сохранения просто обновляем составы, без перезагрузки всего
+            await refreshLineupsOnly();
+        } catch(e) {}
+    }
+
+    function formatDateShort(dateStr) {
+        const parts = dateStr.split('-');
+        return parts[2] + '.' + parts[1];
+    }
+
+    // Мгновенное переключение даты — без спиннера
+    function switchHallsDate(date) {
+        hallsDate = date;
+        // Обновляем активную кнопку
+        document.querySelectorAll('.date-tab').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-date') === date) btn.classList.add('active');
+        });
+        // Обновляем только составы
+        refreshLineupsOnly();
+    }
+
+    // Обновление только блока составов (без спиннера, без перезагрузки залов)
+    async function refreshLineupsOnly() {
+        let lineupsByHall = {};
+        if (selectedHalls.length > 0) {
+            try {
+                const r = await fetch(`/api/lineups/my?date=${hallsDate}`, {credentials: 'same-origin'});
+                if (r.ok) {
+                    lineupsByHall = await r.json();
+                }
+            } catch(e) {}
+        }
+
+        const container = document.getElementById('lineupsContainer');
+        if (!container) return;
+
+        if (Object.keys(lineupsByHall).length > 0) {
+            let allLineups = [];
+            for (const [hall, lineups] of Object.entries(lineupsByHall)) {
+                lineups.forEach(l => allLineups.push({ ...l, hall: hall }));
+            }
+            allLineups.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+
+            let html = '<h3 class="text-sm font-semibold text-white mb-3"></h3>';
+            allLineups.forEach(l => {
+                const playersArray = (l.players || '—').split(',').map(p => p.trim()).filter(p => p);
+                const playersList = playersArray.length > 0
+                    ? playersArray.map(p => `<span class="player-name">${p}</span>`).join('')
+                    : '<span class="player-name">—</span>';
+
+                html += `<div class="lineup-row">
+                    <div class="lineup-info">
+                        <span class="time-badge">${l.time || '??:??'}</span>
+                        <span class="league-badge">${l.league || '?'}</span>
+                        <span class="hall-badge">${l.hall}</span>
+                    </div>
+                    <div class="players-text">${playersList}</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Нет составов по выбранным залам</p></div>';
+        }
+    }
+
+    async function loadHallsContent() {
+        const c = document.getElementById('actionContent');
+        c.innerHTML = '<div class="text-center py-8"><div class="spinner mx-auto"></div></div>';
+
+        // Загружаем все залы для выбора
+        let allHalls = [];
+        try {
+            const r = await fetch(`/api/lineups/all?date=${hallsDate}`, {credentials: 'same-origin'});
+            if (r.ok) {
+                const data = await r.json();
+                allHalls = Object.keys(data).sort();
+            }
+        } catch(e) {}
+
+        // Загружаем составы по выбранным залам
+        let lineupsByHall = {};
+        if (selectedHalls.length > 0) {
+            try {
+                const r = await fetch(`/api/lineups/my?date=${hallsDate}`, {credentials: 'same-origin'});
+                if (r.ok) {
+                    lineupsByHall = await r.json();
+                }
+            } catch(e) {}
+        }
+
+        // Строим HTML
+        let html = '';
+
+        // Выбор даты
+        const today = new Date();
+        const dates = [];
+        for (let i = 0; i < 3; i++) {
+            const d = new Date(today);
+            d.setDate(d.getDate() + i);
+            dates.push(d.toISOString().split('T')[0]);
+        }
+
+        html += '<div class="flex gap-2 mb-4 flex-wrap">';
+        dates.forEach(d => {
+            const label = d === dates[0] ? 'Сегодня' : d === dates[1] ? 'Завтра' : 'Послезавтра';
+            html += `<button onclick="switchHallsDate('${d}')" data-date="${d}" class="date-tab ${d === hallsDate ? 'active' : ''}">${label}<br><span class="text-xs opacity-60">${formatDateShort(d)}</span></button>`;
+        });
+        html += '</div>';
+
+        // Чекбоксы залов
+        if (allHalls.length > 0) {
+            html += `<div class="glass rounded-2xl p-4 mb-4">
+    <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="document.getElementById('hallsCheckboxesWrapper').classList.toggle('hidden'); this.querySelector('.toggle-arrow').classList.toggle('rotate-180');">
+        <h3 class="text-sm font-semibold text-white">🏛 Выберите залы</h3>
+        <span class="toggle-arrow text-gray-400 text-xs">▼</span>
+    </div>
+    <div id="hallsCheckboxesWrapper"><div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="hallsCheckboxes">`;
+            allHalls.forEach(hall => {
+                const checked = selectedHalls.includes(hall);
+                html += `<label class="hall-checkbox-card ${checked ? 'selected' : ''}">
+                    <input type="checkbox" value="${hall}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)">
+                    <span class="text-sm text-white">${hall}</span>
+                </label>`;
+            });
+            html += '</div>';
+            html += '<button onclick="saveSelectedHalls()" class="btn-gold w-full mt-3 py-2 text-sm">💾 Сохранить выбранные залы</button></div>';
+        } else {
+            html += '<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Залы не загружены</p></div>';
+        }
+
+        // Составы
+        html += '<div class="glass rounded-2xl p-4" id="lineupsContainer">';
+        if (Object.keys(lineupsByHall).length > 0) {
+            let allLineups = [];
+            for (const [hall, lineups] of Object.entries(lineupsByHall)) {
+                lineups.forEach(l => allLineups.push({ ...l, hall: hall }));
+            }
+            allLineups.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+
+            html += '<h3 class="text-sm font-semibold text-white mb-3"></h3>';
+            allLineups.forEach(l => {
+                const playersArray = (l.players || '—').split(',').map(p => p.trim()).filter(p => p);
+                const playersList = playersArray.length > 0
+                    ? playersArray.map(p => `<span class="player-name">${p}</span>`).join('')
+                    : '<span class="player-name">—</span>';
+
+                html += `<div class="lineup-row">
+                    <div class="lineup-info">
+                        <span class="time-badge">${l.time || '??:??'}</span>
+                        <span class="league-badge">${l.league || '?'}</span>
+                        <span class="hall-badge">${l.hall}</span>
+                    </div>
+                    <div class="players-text">${playersList}</div>
+                </div>`;
+            });
+        } else if (selectedHalls.length > 0) {
+            html += '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Нет составов по выбранным залам</p></div>';
+        }
+        html += '</div>';
+
+        c.innerHTML = html;
+    }
+    // ========== КОНЕЦ ЗАЛОВ ==========
 
     async function loadTopWeekPreview() { try { const r=await fetch(`/api/player/top/WEEK/${primaryLeague||'A'}`,{credentials:"same-origin"}); if(!r.ok)return; const d=await r.json(); if(d&&d.top5&&d.top5.length>0){ document.getElementById("topWeekBanner").classList.remove("hidden"); document.getElementById("topWeekPreview").textContent="Нажмите чтобы посмотреть"; } } catch(e){} }
 
@@ -281,6 +492,13 @@
         document.getElementById("actionPage").classList.remove("hidden");
         highlightNav("nav-"+a);
         const t=document.getElementById("actionTitle"), s=document.getElementById("actionSubtitle"), c=document.getElementById("actionContent");
+
+        if(a==='halls'){
+            t.textContent="Расписание турниров"; s.textContent="Составы по выбранным залам";
+            loadHallsContent();
+            return;
+        }
+
         if(a==='sum'){
             if(document.getElementById("proBadge").classList.contains("hidden")) {
                 t.textContent="💰 Сумма за период"; s.textContent="Подсчёт заработка и список турниров";
@@ -324,19 +542,15 @@
 
     // ========== Push-уведомления ==========
 
-    // Проверка статуса подписки при загрузке
     async function checkPushStatus() {
         try {
             const reg = await navigator.serviceWorker.ready;
             const sub = await reg.pushManager.getSubscription();
             const toggle = document.getElementById('pushToggle');
-            if (toggle && sub) {
-                toggle.checked = true;
-            }
+            if (toggle && sub) toggle.checked = true;
         } catch(e) {}
     }
 
-    // Включение/выключение пуша
     async function togglePush() {
         const toggle = document.getElementById('pushToggle');
         if (toggle.checked) {
@@ -370,10 +584,7 @@
                 })
             });
             return true;
-        } catch(e) {
-            console.error('Ошибка подписки:', e);
-            return false;
-        }
+        } catch(e) { console.error('Ошибка подписки:', e); return false; }
     }
 
     async function disablePushNotifications() {
@@ -382,16 +593,9 @@
             const sub = await reg.pushManager.getSubscription();
             if (sub) {
                 await sub.unsubscribe();
-                await fetch('/api/push/unsubscribe', {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ endpoint: sub.endpoint })
-                });
+                await fetch('/api/push/unsubscribe', { method: 'POST', credentials: 'same-origin', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ endpoint: sub.endpoint }) });
             }
-        } catch(e) {
-            console.error('Ошибка отписки:', e);
-        }
+        } catch(e) { console.error('Ошибка отписки:', e); }
     }
 
     function urlB64ToUint8Array(base64String) {

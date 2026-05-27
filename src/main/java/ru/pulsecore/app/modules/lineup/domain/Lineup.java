@@ -35,6 +35,9 @@ public class Lineup {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String players;
 
+    @Column(length = 100)
+    private String hall;
+
     @Column(nullable = false)
     private LocalDate date;
 }

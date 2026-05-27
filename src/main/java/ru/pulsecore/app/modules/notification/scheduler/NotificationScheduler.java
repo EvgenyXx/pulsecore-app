@@ -18,7 +18,7 @@ public class NotificationScheduler {
     private final PlayerService playerService;
     private final TournamentDiscoveryService discoveryService;
 
-    @Scheduled(fixedDelay = 600000)
+    @Scheduled(fixedDelay = 900000)
     public void checkAllUsers() {
         List<Player> players = playerService.getAll();
 

@@ -24,6 +24,8 @@ spring:
             type: caffeine
             caffeine:
                   spec: expireAfterWrite=15m
+            cache-names:
+                  - allTournaments
       datasource:
             url: ${SPRING_DATASOURCE_URL}
             username: ${SPRING_DATASOURCE_USERNAME}

@@ -41,5 +41,8 @@ public final class PlayerApi {
     public static final String WEBHOOK = "/api/payment/webhook";
 
 
+    public static final String HALLS = "/halls";
+
+
 
 }

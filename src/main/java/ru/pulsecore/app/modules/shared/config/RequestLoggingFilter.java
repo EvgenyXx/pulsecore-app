@@ -9,7 +9,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.pulsecore.app.security.PlayerPrincipal;
 
 import java.io.IOException;
 
@@ -20,17 +19,15 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain chain) throws ServletException, IOException {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        String user;
+        String user = "anonymous";
 
-        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof PlayerPrincipal principal) {
-            user = principal.name(); // или principal.getPlayer().getName()
-        } else {
-            user = "anonymous";
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            user = auth.getName(); // Берём имя из аутентификации
         }
 
         String uri = request.getRequestURI();
-        if (uri.startsWith("/api/") || uri.endsWith(".html")) {
+        if (uri.startsWith("/api/")) {
             log.info("📊 {} -> {} {}", user, request.getMethod(), uri);
         }
 
