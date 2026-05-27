@@ -85,6 +85,10 @@ public class Player {
     @Builder.Default
     private boolean pushEnabled = true;
 
+    @Column(name = "selected_halls", length = 500)
+    @Builder.Default
+    private String selectedHalls = "";
+
 
 
     private LocalDateTime createdAt;

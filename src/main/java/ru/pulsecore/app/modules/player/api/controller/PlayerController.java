@@ -17,6 +17,7 @@ import ru.pulsecore.app.security.CurrentPlayer;
 import ru.pulsecore.app.security.PlayerPrincipal;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(PlayerApi.BASE_PATH)
@@ -60,5 +61,17 @@ public class PlayerController {
     public ResponseEntity<NotificationsStatusResponse> getNotificationsStatus(
             @CurrentPlayer PlayerPrincipal principal) {
         return ResponseEntity.ok(playerFacade.getNotificationsStatus(principal.playerId()));
+    }
+
+    @GetMapping(PlayerApi.HALLS)
+    public ResponseEntity<Map<String, String>> getHalls(@CurrentPlayer PlayerPrincipal principal) {
+        return ResponseEntity.ok(Map.of("halls", playerFacade.getSelectedHalls(principal.playerId())));
+    }
+
+    @PutMapping(PlayerApi.HALLS)
+    public ResponseEntity<Void> saveHalls(@CurrentPlayer PlayerPrincipal principal,
+                                          @RequestBody Map<String, String> body) {
+        playerFacade.saveSelectedHalls(principal.playerId(), body.get("halls"));
+        return ResponseEntity.ok().build();
     }
 }

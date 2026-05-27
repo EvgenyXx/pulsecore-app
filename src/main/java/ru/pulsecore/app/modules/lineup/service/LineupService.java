@@ -10,14 +10,11 @@ import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import ru.pulsecore.app.modules.lineup.mapper.LineupMapper;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.lineup.validator.TournamentValidator;
-import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
-import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +26,6 @@ public class LineupService {
     private final LineupMapper mapper;
     private final TournamentValidator validator;
     private final PlayerService playerService;
-    private final NameNormalizer nameNormalizer;  // 🔥 ДОБАВЛЕНО
 
     @Transactional
     public void cleanupOld() {
@@ -39,39 +35,42 @@ public class LineupService {
 
     @Transactional
     public void loadLineups() {
-        List<Player> players = playerService.getAll();
-        if (players.isEmpty()) return;
-
         LocalDate today = LocalDate.now();
-        loadDay(players, today);
-        loadDay(players, today.plusDays(1));
-        loadDay(players, today.plusDays(2));
+        loadDay(today);
+        loadDay(today.plusDays(1));
+        loadDay(today.plusDays(2));
     }
 
-    private void loadDay(List<Player> players, LocalDate date) {
+    @Transactional
+    public void loadTomorrowOnly() {
+        loadDay(LocalDate.now().plusDays(1));
+        log.info("Tomorrow lineups loaded");
+    }
+
+    @Transactional
+    public void loadDayAfterTomorrow() {
+        loadDay(LocalDate.now().plusDays(2));
+        log.info("Day-after-tomorrow lineups loaded");
+    }
+
+    private void loadDay(LocalDate date) {
         List<TournamentDto> all = apiClient.loadTournaments(date.toString());
-        if (all.isEmpty()) return;
+        if (all == null || all.isEmpty()) return;
 
-        // 🔥 НОРМАЛИЗУЕМ имена игроков из БД для сравнения
-        Set<String> normalizedNames = new HashSet<>();
-        for (Player p : players) {
-            normalizedNames.add(nameNormalizer.normalizeForSearch(p.getName()));
-        }
-
-        List<TournamentDto> relevant = all.stream()
-                .filter(t -> t.getPlayers() != null && t.getPlayers().stream()
-                        .anyMatch(n -> normalizedNames.contains(nameNormalizer.normalizeForSearch(n))))  // 🔥 ИСПРАВЛЕНО
+        // Сохраняем ВСЕ турниры, без фильтрации по игрокам
+        List<TournamentDto> valid = all.stream()
                 .filter(validator::isValid)
                 .filter(t -> date.equals(extractDate(t)))
                 .toList();
 
-        if (relevant.isEmpty()) return;
+        if (valid.isEmpty()) return;
 
+        // Для будущих дат чистим перед вставкой
         if (date.isAfter(LocalDate.now())) {
             lineupRepository.deleteAllByDate(date);
         }
 
-        List<Lineup> lineups = relevant.stream()
+        List<Lineup> lineups = valid.stream()
                 .map(t -> mapper.toEntity(t, date, extractTime(t)))
                 .toList();
 
@@ -80,11 +79,25 @@ public class LineupService {
                     lineup.getDate(),
                     lineup.getLeague(),
                     lineup.getTime(),
+                    lineup.getHall(),
                     lineup.getPlayers()
             );
         }
 
-        log.info("{} lineups for date {}", lineups.size(), date);
+        log.info("{} lineups saved for date {}", lineups.size(), date);
+    }
+
+    // Составы по выбранным залам — из БД
+    public List<Lineup> getLineupsForHalls(LocalDate date, List<String> halls) {
+        if (halls == null || halls.isEmpty()) return List.of();
+        return lineupRepository.findByDateAndHallIn(date, halls);
+    }
+
+    // Сгруппировать по залам
+    public Map<String, List<Lineup>> groupByHall(List<Lineup> lineups) {
+        return lineups.stream()
+                .collect(Collectors.groupingBy(l -> l.getHall() != null ? l.getHall() : "Без зала",
+                        LinkedHashMap::new, Collectors.toList()));
     }
 
     private LocalDate extractDate(TournamentDto t) {

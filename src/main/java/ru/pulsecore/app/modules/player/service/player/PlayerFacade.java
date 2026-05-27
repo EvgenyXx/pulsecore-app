@@ -47,4 +47,12 @@ public class PlayerFacade {
     public NotificationsStatusResponse getNotificationsStatus(UUID playerId) {
         return new NotificationsStatusResponse(playerService.isNotificationsEnabled(playerId));
     }
+
+    public void saveSelectedHalls(UUID playerId, String halls) {
+        playerService.saveSelectedHalls(playerId, halls);
+    }
+
+    public String getSelectedHalls(UUID playerId) {
+        return playerService.getSelectedHalls(playerId);
+    }
 }

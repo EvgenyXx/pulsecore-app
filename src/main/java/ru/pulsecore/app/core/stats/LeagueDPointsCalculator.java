@@ -22,7 +22,7 @@ public class LeagueDPointsCalculator implements PointsCalculator {
     // TODO: уточнить старые значения
     private int calculateOld(Match match) {
         int a = match.getScore1();
-        if (a == 4) return 900;
+        if (a == 4) return 600;
         if (a == 3) return 500;
         if (a == 2) return 400;
         if (a == 1) return 300;
@@ -31,7 +31,7 @@ public class LeagueDPointsCalculator implements PointsCalculator {
 
     private int calculateNew(Match match) {
         int a = match.getScore1();
-        if (a == 4) return 900;
+        if (a == 4) return 700;
         if (a == 3) return 500;
         if (a == 2) return 400;
         if (a == 1) return 300;

@@ -127,4 +127,15 @@ public class PlayerService {
         }
         return playerRepository.save(player);
     }
+
+    @Transactional
+    public void saveSelectedHalls(UUID playerId, String halls) {
+        Player player = getById(playerId);
+        player.setSelectedHalls(halls);
+        playerRepository.save(player);
+    }
+
+    public String getSelectedHalls(UUID playerId) {
+        return getById(playerId).getSelectedHalls();
+    }
 }
