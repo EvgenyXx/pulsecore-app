@@ -9,7 +9,9 @@ import ru.pulsecore.app.modules.player.domain.Player;
 public class NotificationPermissionService {
 
     public boolean canSendEmail(Player player) {
-        return player != null && player.isNotificationsEnabled();
+        return player != null
+                && player.isNotificationsEnabled()
+                && player.hasActiveSubscription();
     }
 
     public boolean canSendPush(Player player) {

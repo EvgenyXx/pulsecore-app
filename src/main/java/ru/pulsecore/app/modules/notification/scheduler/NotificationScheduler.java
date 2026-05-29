@@ -28,9 +28,14 @@ public class NotificationScheduler {
         }
 
         int errors = 0;
+        int skipped = 0;
 
         for (Player player : players) {
             try {
+                if (!player.hasActiveSubscription()) {
+                    skipped++;
+                    continue;
+                }
                 discoveryService.checkNewTournaments(player.getId());
             } catch (Exception e) {
                 errors++;
@@ -38,6 +43,9 @@ public class NotificationScheduler {
             }
         }
 
+        if (skipped > 0) {
+            log.info("Scheduler: skipped {} players without active subscription", skipped);
+        }
         if (errors > 0) {
             log.warn("Scheduler completed with {} errors out of {} players", errors, players.size());
         }
