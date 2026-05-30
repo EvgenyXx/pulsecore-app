@@ -242,6 +242,16 @@
         localStorage.setItem('hallsCheckboxesCollapsed', wrapper.classList.contains('hidden'));
     }
 
+    function toggleAllHalls() {
+        const allChecked = document.querySelectorAll('#hallsCheckboxes input[type="checkbox"]:checked').length;
+        const select = allChecked === 0;
+        document.querySelectorAll('#hallsCheckboxes input[type="checkbox"]').forEach(cb => {
+            cb.checked = select;
+            cb.parentElement.classList.toggle('selected', select);
+        });
+        document.getElementById('allHallsCheckbox').checked = select;
+    }
+
     async function loadHallsContent() {
         const c = document.getElementById('actionContent');
         c.innerHTML = '<div class="text-center py-8"><div class="spinner mx-auto"></div></div>';
@@ -259,7 +269,7 @@
         dates.forEach(d => { const label = d === dates[0] ? 'Сегодня' : d === dates[1] ? 'Завтра' : 'Послезавтра'; html += `<button onclick="switchHallsDate('${d}')" data-date="${d}" class="date-tab ${d === hallsDate ? 'active' : ''}">${label}<br><span class="text-xs opacity-60">${formatDateShort(d)}</span></button>`; });
         html += '</div>';
         if (allHalls.length > 0) {
-            html += `<div class="glass rounded-2xl p-4 mb-4"><div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleHallsCheckboxes()"><h3 class="text-sm font-semibold text-white">🏛 Выберите залы</h3><span class="toggle-arrow text-gray-400 text-xs" id="hallsToggleArrow">▼</span></div><div id="hallsCheckboxesWrapper"><div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="hallsCheckboxes">`;
+            html += `<div class="glass rounded-2xl p-4 mb-4"><div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleHallsCheckboxes()"><h3 class="text-sm font-semibold text-white">🏛 Выберите залы</h3><span class="toggle-arrow text-gray-400 text-xs" id="hallsToggleArrow">▼</span></div><div id="hallsCheckboxesWrapper"><div class="mb-2 flex items-center gap-2"><input type="checkbox" id="allHallsCheckbox" onchange="toggleAllHalls()" class="accent-amber-500 w-4 h-4"><label for="allHallsCheckbox" class="text-xs text-gray-300 cursor-pointer select-none">Выбрать все</label></div><div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="hallsCheckboxes">`;
             allHalls.forEach(hall => { const checked = selectedHalls.includes(hall); html += `<label class="hall-checkbox-card ${checked ? 'selected' : ''}"><input type="checkbox" value="${hall}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)"><span class="text-sm text-white">${hall}</span></label>`; });
             html += '</div><button onclick="saveSelectedHalls()" class="btn-gold w-full mt-3 py-2 text-sm">💾 Сохранить выбранные залы</button></div>';
         } else { html += '<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Залы не загружены</p></div>'; }

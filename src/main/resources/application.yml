@@ -30,6 +30,9 @@ spring:
             url: ${SPRING_DATASOURCE_URL}
             username: ${SPRING_DATASOURCE_USERNAME}
             password: ${SPRING_DATASOURCE_PASSWORD}
+            hikari:
+                  maximum-pool-size: 15
+                  minimum-idle: 5
       jpa:
             hibernate:
                   ddl-auto: none
@@ -97,6 +100,10 @@ app:
                   text: "Ваш код для сброса пароля: %s\n\nЕсли вы не запрашивали сброс, проигнорируйте это письмо."
 
 server:
+      tomcat:
+            threads:
+                  max: 100
+                  min-spare: 10
       servlet:
             session:
                   timeout: 30d
