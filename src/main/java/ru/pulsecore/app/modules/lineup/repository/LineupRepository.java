@@ -13,12 +13,11 @@ public interface LineupRepository extends JpaRepository<Lineup, Long> {
 
     @Modifying
     @Query(value = """
-        INSERT INTO lineup (date, league, time, hall, players)
-        VALUES (:date, :league, :time, :hall, :players)
-        ON CONFLICT (league, time, date) DO UPDATE 
-            SET players = EXCLUDED.players,
-                hall = EXCLUDED.hall
-    """, nativeQuery = true)
+    INSERT INTO lineup (date, league, time, hall, players)
+    VALUES (:date, :league, :time, :hall, :players)
+    ON CONFLICT (league, time, date, hall) DO UPDATE 
+        SET players = EXCLUDED.players
+""", nativeQuery = true)
     void upsertLineup(@Param("date") LocalDate date,
                       @Param("league") String league,
                       @Param("time") String time,
