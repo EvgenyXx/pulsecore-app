@@ -210,7 +210,7 @@
     async function refreshLineupsOnly() {
         let lineupsByHall = {};
         if (selectedHalls.length > 0) {
-            try { const r = await fetch(`/api/lineups/my?date=${hallsDate}`, {credentials: 'same-origin'}); if (r.ok) { lineupsByHall = await r.json(); } } catch(e) {}
+            try { const r = await fetch(`/api/lineups/my?date=${hallsDate}`, {credentials: 'same-origin'}); if (r.status === 402) { document.getElementById('lineupsContainer').innerHTML = '<div class="text-center py-8"><span class="text-2xl">🔒</span><p class="text-xs text-gray-400">Требуется подписка</p></div>'; return; } if (r.ok) { lineupsByHall = await r.json(); } } catch(e) {}
         }
         const container = document.getElementById('lineupsContainer');
         if (!container) return;
@@ -256,10 +256,10 @@
         const c = document.getElementById('actionContent');
         c.innerHTML = '<div class="text-center py-8"><div class="spinner mx-auto"></div></div>';
         let allHalls = [];
-        try { const r = await fetch(`/api/lineups/all?date=${hallsDate}`, {credentials: 'same-origin'}); if (r.ok) { const data = await r.json(); allHalls = Object.keys(data).sort(); } } catch(e) {}
+        try { const r = await fetch(`/api/lineups/all?date=${hallsDate}`, {credentials: 'same-origin'}); if (r.status === 402) { c.innerHTML = `<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`; return; } if (r.ok) { const data = await r.json(); allHalls = Object.keys(data).sort(); } } catch(e) {}
         let lineupsByHall = {};
         if (selectedHalls.length > 0) {
-            try { const r = await fetch(`/api/lineups/my?date=${hallsDate}`, {credentials: 'same-origin'}); if (r.ok) { lineupsByHall = await r.json(); } } catch(e) {}
+            try { const r = await fetch(`/api/lineups/my?date=${hallsDate}`, {credentials: 'same-origin'}); if (r.status === 402) { c.innerHTML = `<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`; return; } if (r.ok) { lineupsByHall = await r.json(); } } catch(e) {}
         }
         let html = '';
         const today = new Date();
@@ -330,7 +330,9 @@
         tabs+=`</div><span class="cursor-pointer text-gray-400 hover:text-red-400 text-xl" onclick="toggleTopWeek()">✕</span></div>`;
         panel.classList.remove("hidden");document.getElementById("topWeekArrow").textContent="▲";
         try{
-            const r=await fetch(baseUrl,{credentials:"same-origin"});if(!r.ok)throw new Error();const d=await r.json();
+            const r=await fetch(baseUrl,{credentials:"same-origin"});
+            if(r.status===402){panel.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`;return;}
+            if(!r.ok)throw new Error();const d=await r.json();
             let h="";
             if(!d.top5||d.top5.length===0)h=`<div class="text-center py-6"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет данных за ${periodLabel}</p></div>`;
             else{

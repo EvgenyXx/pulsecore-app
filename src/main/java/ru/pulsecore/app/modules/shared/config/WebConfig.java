@@ -24,13 +24,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns(
                         "/api/player/*/sum",
                         "/api/player/*/tournaments",
-//                        "/api/player/*/dashboard",
-                        "/api/player/*/top/week",
-                        "/api/player/*/top/week/*",
-
+                        "/api/player/*/top/**",
                         "/api/player/analytics",
                         "/api/player/*/monthly-income",
-                        "/api/player/*/daily-income"
+                        "/api/player/*/daily-income",
+                        "/api/lineups/**"
                 );
     }
 
@@ -45,8 +43,6 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addViewController("oauth-finish").setViewName("forward:/oauth-finish.html");
     }
-
-
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
