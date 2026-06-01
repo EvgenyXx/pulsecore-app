@@ -21,6 +21,12 @@ public class LineupScheduler implements ApplicationRunner {
         lineupService.loadLineups();
     }
 
+    // Сегодня — раз в час (на случай изменений в течение дня)
+    @Scheduled(cron = "0 30 * * * *")
+    public void loadToday() {
+        lineupService.loadTodayOnly();
+    }
+
     // Завтра — каждые 20 минут (часто меняется)
     @Scheduled(cron = "0 */20 * * * *")
     public void loadTomorrow() {

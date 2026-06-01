@@ -25,7 +25,13 @@ public class LineupService {
     private final MastersApiClient apiClient;
     private final LineupMapper mapper;
     private final TournamentValidator validator;
-    private final PlayerService playerService;
+
+
+    @Transactional
+    public void loadTodayOnly() {
+        loadDay(LocalDate.now());
+        log.info("Today lineups loaded");
+    }
 
     @Transactional
     public void cleanupOld() {
