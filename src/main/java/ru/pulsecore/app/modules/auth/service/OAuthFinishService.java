@@ -58,21 +58,19 @@ public class OAuthFinishService {
         Player player = createPlayer(request, session);
         activateTrial(player);
 
-        mailStrategyRegistry.send(MailTypes.WELCOME, player.getEmail(), player.getName());
+        if (player.getEmail() != null && player.getEmail().contains("@")) {
+            mailStrategyRegistry.send(MailTypes.WELCOME, player.getEmail(), player.getName());
+        }
 
-        // Синхронно: последние 30 дней
         tournamentAutoAddService.addRecentTournamentsForPlayer(player, RECENT_DAYS);
-
-        // Асинхронно: вся история до 2025 года
         cascadeSyncService.syncAllHistory(player);
 
-        // Отправка уведомления админу о новом пользователе через OAuth
         String ip = httpRequest.getRemoteAddr();
         String userAgent = httpRequest.getHeader("User-Agent") != null ? httpRequest.getHeader("User-Agent") : "Неизвестно";
         Client client = uaParser.parse(userAgent);
         mailStrategyRegistry.send(MailTypes.ADMIN_NEW_USER,
                 adminProperties.getEmail(),
-                player.getName(), player.getEmail(), ip, userAgent,
+                player.getName(), player.getEmail() != null ? player.getEmail() : "нет", ip, userAgent,
                 client.device.family, client.os.family, client.userAgent.family);
 
         clearSession(session);
@@ -81,12 +79,15 @@ public class OAuthFinishService {
 
     private Player createPlayer(OAuthFinishRequest request, HttpSession session) {
         String name = (request.getLastName() + " " + request.getFirstName()).toLowerCase().trim();
+        String email = sessionAttr(session, "oauth_email");
+        if (email == null || !email.contains("@")) {
+            email = name.replace(" ", ".") + "@unknown.pulsecore";
+        }
 
-        // Проверяем, существует ли уже игрок с таким именем
         Optional<Player> existing = playerRepository.findByNameIgnoreCase(name);
         if (existing.isPresent()) {
             Player player = existing.get();
-            player.setEmail(sessionAttr(session, "oauth_email"));
+            player.setEmail(email);
             player.setOauthProvider(sessionAttr(session, "oauth_provider"));
             player.setOauthId(sessionAttr(session, "oauth_id"));
             player.setVerified(true);
@@ -97,7 +98,7 @@ public class OAuthFinishService {
 
         Player player = Player.builder()
                 .name(name)
-                .email(sessionAttr(session, "oauth_email"))
+                .email(email)
                 .oauthProvider(sessionAttr(session, "oauth_provider"))
                 .oauthId(sessionAttr(session, "oauth_id"))
                 .verified(true)
