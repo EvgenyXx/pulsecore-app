@@ -69,13 +69,10 @@
             #mobileHeader { padding-top: calc(env(safe-area-inset-top) + 8px); }
             body { padding-top: 0; }
         }
-        /* Halls styles */
         .hall-checkbox-card { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); transition: all 0.2s; }
         .hall-checkbox-card:hover { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
         .hall-checkbox-card.selected { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); }
         .hall-checkbox-card input[type="checkbox"] { accent-color: #f59e0b; width: 18px; height: 18px; }
-        .lineup-by-hall { margin-bottom: 16px; }
-        .lineup-by-hall .hall-title { font-size: 0.85rem; font-weight: 700; color: #fbbf24; margin-bottom: 8px; padding: 6px 12px; background: rgba(245,158,11,0.08); border-radius: 8px; display: inline-block; }
         .lineup-row { display: flex; align-items: flex-start; padding: 10px 12px; border-radius: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); gap: 8px; }
         .lineup-row .lineup-info { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; min-width: 120px; }
         .lineup-row .time-badge { font-size: 0.75rem; font-weight: 600; color: #fbbf24; background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
@@ -135,7 +132,6 @@
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10">
     <div id="contentArea" class="max-w-5xl mx-auto w-full">
         <div id="homePage">
-            <!-- СТАРЫЙ КОНТЕНТ ГЛАВНОЙ БЕЗ ИЗМЕНЕНИЙ -->
             <div class="mb-6 sm:mb-8">
                 <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                     <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white"><span id="playerName"></span></h2>
@@ -192,7 +188,18 @@
     function goHome(){ document.getElementById("homePage").style.display="block"; document.getElementById("actionPage").classList.add("hidden"); highlightNav("nav-home"); loadDashboardWidgets(); }
     function highlightNav(id){ document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")); document.getElementById(id)?.classList.add("active"); }
 
-    // ========== ЗАЛЫ ==========
+    // ========== ЗАЛЫ (ОБНОВЛЕНО) ==========
+
+    function loadHallsUIState() {
+        const collapsed = localStorage.getItem('hallsCheckboxesCollapsed') === 'true';
+        const allSelected = localStorage.getItem('hallsAllSelected') === 'true';
+        return { collapsed, allSelected };
+    }
+
+    function saveHallsUIState(collapsed, allSelected) {
+        localStorage.setItem('hallsCheckboxesCollapsed', collapsed);
+        localStorage.setItem('hallsAllSelected', allSelected);
+    }
 
     async function loadSelectedHalls() {
         try {
@@ -215,7 +222,6 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({halls: hallsStr})
             });
-            // После сохранения просто обновляем составы, без перезагрузки всего
             await refreshLineupsOnly();
         } catch(e) {}
     }
@@ -225,27 +231,21 @@
         return parts[2] + '.' + parts[1];
     }
 
-    // Мгновенное переключение даты — без спиннера
     function switchHallsDate(date) {
         hallsDate = date;
-        // Обновляем активную кнопку
         document.querySelectorAll('.date-tab').forEach(btn => {
             btn.classList.remove('active');
             if (btn.getAttribute('data-date') === date) btn.classList.add('active');
         });
-        // Обновляем только составы
         refreshLineupsOnly();
     }
 
-    // Обновление только блока составов (без спиннера, без перезагрузки залов)
     async function refreshLineupsOnly() {
         let lineupsByHall = {};
         if (selectedHalls.length > 0) {
             try {
                 const r = await fetch(`/api/lineups/my?date=${hallsDate}`, {credentials: 'same-origin'});
-                if (r.ok) {
-                    lineupsByHall = await r.json();
-                }
+                if (r.ok) { lineupsByHall = await r.json(); }
             } catch(e) {}
         }
 
@@ -259,21 +259,13 @@
             }
             allLineups.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
 
-            let html = '<h3 class="text-sm font-semibold text-white mb-3"></h3>';
+            let html = '';
             allLineups.forEach(l => {
                 const playersArray = (l.players || '—').split(',').map(p => p.trim()).filter(p => p);
                 const playersList = playersArray.length > 0
                     ? playersArray.map(p => `<span class="player-name">${p}</span>`).join('')
                     : '<span class="player-name">—</span>';
-
-                html += `<div class="lineup-row">
-                    <div class="lineup-info">
-                        <span class="time-badge">${l.time || '??:??'}</span>
-                        <span class="league-badge">${l.league || '?'}</span>
-                        <span class="hall-badge">${l.hall}</span>
-                    </div>
-                    <div class="players-text">${playersList}</div>
-                </div>`;
+                html += `<div class="lineup-row"><div class="lineup-info"><span class="time-badge">${l.time || '??:??'}</span><span class="league-badge">${l.league || '?'}</span><span class="hall-badge">${l.hall}</span></div><div class="players-text">${playersList}</div></div>`;
             });
             container.innerHTML = html;
         } else {
@@ -281,42 +273,49 @@
         }
     }
 
+    function toggleAllHalls() {
+        const allCheckbox = document.getElementById('allHallsCheckbox');
+        const checkboxes = document.querySelectorAll('#hallsCheckboxes input[type="checkbox"]');
+        const selectAll = allCheckbox.checked;
+        checkboxes.forEach(cb => { cb.checked = selectAll; cb.parentElement.classList.toggle('selected', selectAll); });
+        const wrapper = document.getElementById('hallsCheckboxesWrapper');
+        saveHallsUIState(wrapper.classList.contains('hidden'), selectAll);
+    }
+
+    function toggleHallsCheckboxes() {
+        const wrapper = document.getElementById('hallsCheckboxesWrapper');
+        const arrow = document.getElementById('hallsToggleArrow');
+        if (!wrapper || !arrow) return;
+        wrapper.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+        const allSelected = document.getElementById('allHallsCheckbox')?.checked || false;
+        saveHallsUIState(wrapper.classList.contains('hidden'), allSelected);
+    }
+
     async function loadHallsContent() {
         const c = document.getElementById('actionContent');
         c.innerHTML = '<div class="text-center py-8"><div class="spinner mx-auto"></div></div>';
 
-        // Загружаем все залы для выбора
+        const uiState = loadHallsUIState();
+
         let allHalls = [];
         try {
             const r = await fetch(`/api/lineups/all?date=${hallsDate}`, {credentials: 'same-origin'});
-            if (r.ok) {
-                const data = await r.json();
-                allHalls = Object.keys(data).sort();
-            }
+            if (r.ok) { allHalls = Object.keys(await r.json()).sort(); }
         } catch(e) {}
 
-        // Загружаем составы по выбранным залам
         let lineupsByHall = {};
         if (selectedHalls.length > 0) {
             try {
                 const r = await fetch(`/api/lineups/my?date=${hallsDate}`, {credentials: 'same-origin'});
-                if (r.ok) {
-                    lineupsByHall = await r.json();
-                }
+                if (r.ok) { lineupsByHall = await r.json(); }
             } catch(e) {}
         }
 
-        // Строим HTML
         let html = '';
-
-        // Выбор даты
         const today = new Date();
         const dates = [];
-        for (let i = 0; i < 3; i++) {
-            const d = new Date(today);
-            d.setDate(d.getDate() + i);
-            dates.push(d.toISOString().split('T')[0]);
-        }
+        for (let i = 0; i < 3; i++) { const d = new Date(today); d.setDate(d.getDate() + i); dates.push(d.toISOString().split('T')[0]); }
 
         html += '<div class="flex gap-2 mb-4 flex-wrap">';
         dates.forEach(d => {
@@ -325,51 +324,39 @@
         });
         html += '</div>';
 
-        // Чекбоксы залов
         if (allHalls.length > 0) {
+            const allSelected = uiState.allSelected && selectedHalls.length === allHalls.length;
             html += `<div class="glass rounded-2xl p-4 mb-4">
-    <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="document.getElementById('hallsCheckboxesWrapper').classList.toggle('hidden'); this.querySelector('.toggle-arrow').classList.toggle('rotate-180');">
-        <h3 class="text-sm font-semibold text-white">🏛 Выберите залы</h3>
-        <span class="toggle-arrow text-gray-400 text-xs">▼</span>
-    </div>
-    <div id="hallsCheckboxesWrapper"><div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="hallsCheckboxes">`;
+                <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleHallsCheckboxes()">
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-sm font-semibold text-white">🏛 Выберите залы</h3>
+                        <label class="hall-checkbox-card" style="padding: 4px 10px; gap: 6px;" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="allHallsCheckbox" ${allSelected ? 'checked' : ''} onchange="toggleAllHalls()" class="accent-amber-500 w-4 h-4">
+                            <span class="text-xs text-gray-300 select-none">Все</span>
+                        </label>
+                    </div>
+                    <span class="toggle-arrow text-gray-400 text-xs ${uiState.collapsed ? 'rotate-180' : ''}" id="hallsToggleArrow">▼</span>
+                </div>
+                <div id="hallsCheckboxesWrapper" class="${uiState.collapsed ? 'hidden' : ''}">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="hallsCheckboxes">`;
             allHalls.forEach(hall => {
                 const checked = selectedHalls.includes(hall);
-                html += `<label class="hall-checkbox-card ${checked ? 'selected' : ''}">
-                    <input type="checkbox" value="${hall}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)">
-                    <span class="text-sm text-white">${hall}</span>
-                </label>`;
+                html += `<label class="hall-checkbox-card ${checked ? 'selected' : ''}"><input type="checkbox" value="${hall}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)"><span class="text-sm text-white">${hall}</span></label>`;
             });
-            html += '</div>';
-            html += '<button onclick="saveSelectedHalls()" class="btn-gold w-full mt-3 py-2 text-sm">💾 Сохранить выбранные залы</button></div>';
+            html += '</div><button onclick="saveSelectedHalls()" class="btn-gold w-full mt-3 py-2 text-sm">💾 Сохранить выбранные залы</button></div></div>';
         } else {
             html += '<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Залы не загружены</p></div>';
         }
 
-        // Составы
         html += '<div class="glass rounded-2xl p-4" id="lineupsContainer">';
         if (Object.keys(lineupsByHall).length > 0) {
             let allLineups = [];
-            for (const [hall, lineups] of Object.entries(lineupsByHall)) {
-                lineups.forEach(l => allLineups.push({ ...l, hall: hall }));
-            }
+            for (const [hall, lineups] of Object.entries(lineupsByHall)) { lineups.forEach(l => allLineups.push({ ...l, hall: hall })); }
             allLineups.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
-
-            html += '<h3 class="text-sm font-semibold text-white mb-3"></h3>';
             allLineups.forEach(l => {
                 const playersArray = (l.players || '—').split(',').map(p => p.trim()).filter(p => p);
-                const playersList = playersArray.length > 0
-                    ? playersArray.map(p => `<span class="player-name">${p}</span>`).join('')
-                    : '<span class="player-name">—</span>';
-
-                html += `<div class="lineup-row">
-                    <div class="lineup-info">
-                        <span class="time-badge">${l.time || '??:??'}</span>
-                        <span class="league-badge">${l.league || '?'}</span>
-                        <span class="hall-badge">${l.hall}</span>
-                    </div>
-                    <div class="players-text">${playersList}</div>
-                </div>`;
+                const playersList = playersArray.length > 0 ? playersArray.map(p => `<span class="player-name">${p}</span>`).join('') : '<span class="player-name">—</span>';
+                html += `<div class="lineup-row"><div class="lineup-info"><span class="time-badge">${l.time || '??:??'}</span><span class="league-badge">${l.league || '?'}</span><span class="hall-badge">${l.hall}</span></div><div class="players-text">${playersList}</div></div>`;
             });
         } else if (selectedHalls.length > 0) {
             html += '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Нет составов по выбранным залам</p></div>';
@@ -378,7 +365,8 @@
 
         c.innerHTML = html;
     }
-    // ========== КОНЕЦ ЗАЛОВ ==========
+
+    // ========== ОСТАЛЬНОЕ БЕЗ ИЗМЕНЕНИЙ ==========
 
     async function loadTopWeekPreview() { try { const r=await fetch(`/api/player/top/WEEK/${primaryLeague||'A'}`,{credentials:"same-origin"}); if(!r.ok)return; const d=await r.json(); if(d&&d.top5&&d.top5.length>0){ document.getElementById("topWeekBanner").classList.remove("hidden"); document.getElementById("topWeekPreview").textContent="Нажмите чтобы посмотреть"; } } catch(e){} }
 
@@ -388,25 +376,18 @@
             const proBadge = document.getElementById("proBadge");
             if(proBadge.classList.contains("hidden")) {
                 p.innerHTML = `<div class="flex items-center justify-between mb-3"><h3 class="font-bold text-white">🏆 Зал славы</h3><span class="cursor-pointer text-gray-400 hover:text-red-400 text-xl" onclick="toggleTopWeek()">✕</span></div><div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`;
-                p.classList.remove("hidden");
-                a.textContent="▲";
-                return;
+                p.classList.remove("hidden"); a.textContent="▲"; return;
             }
-            p.innerHTML=`<div class="text-center py-4"><div class="spinner mx-auto"></div></div>`;
-            loadTopWeek(null);a.textContent="▲"
-        }else{
-            p.classList.add("hidden");a.textContent="▼"
-        }
+            p.innerHTML=`<div class="text-center py-4"><div class="spinner mx-auto"></div></div>`; loadTopWeek(null);a.textContent="▲"
+        }else{ p.classList.add("hidden");a.textContent="▼" }
     }
 
     function switchLeague(l){loadTopWeek(l)}
     function switchPeriod(p){currentPeriod=p;document.querySelectorAll('.period-tab').forEach(t=>t.classList.remove('active'));document.querySelector(`.period-tab[onclick="switchPeriod('${p}')"]`)?.classList.add('active');const al=document.querySelector('#leagueTabs .league-tab.active');const lg=al&&al.textContent!=='Все'?al.textContent:null;loadTopWeek(lg)}
 
     async function loadTopWeek(league){
-        const proBadge = document.getElementById("proBadge");
-        if(proBadge.classList.contains("hidden")) return;
-        const panel=document.getElementById("topWeekPanel");
-        const period=currentPeriod.toUpperCase();
+        const proBadge = document.getElementById("proBadge"); if(proBadge.classList.contains("hidden")) return;
+        const panel=document.getElementById("topWeekPanel"), period=currentPeriod.toUpperCase();
         const periodLabel=period==='WEEK'?'7 дней':period==='MONTH'?'30 дней':'365 дней';
         const topTitle=period==='WEEK'?'недели':period==='MONTH'?`за месяц`:`за год`;
         let baseUrl=league?`/api/player/top/${period}/${league}`:`/api/player/top/${period}`;
@@ -418,101 +399,50 @@
         tabs+=`</div><span class="cursor-pointer text-gray-400 hover:text-red-400 text-xl" onclick="toggleTopWeek()">✕</span></div>`;
         panel.classList.remove("hidden");document.getElementById("topWeekArrow").textContent="▲";
         try{
-            const r=await fetch(baseUrl,{credentials:"same-origin"});if(!r.ok)throw new Error();const d=await r.json();
-            let h="";
+            const r=await fetch(baseUrl,{credentials:"same-origin"});if(!r.ok)throw new Error();const d=await r.json();let h="";
             if(!d.top5||d.top5.length===0)h=`<div class="text-center py-6"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет данных за ${periodLabel}</p></div>`;
-            else{
-                const m=['🥇','🥈','🥉'];
-                h=d.top5.map((p,i)=>{const pr=i<3?m[i]:`${i+1}.`;const isMe=(i+1)===d.playerPosition;const mc=isMe?'bg-amber-500/10 border-l-2 border-amber-500 rounded-lg':'rounded-lg';const dn=(p.name||'')+(isMe?' 👈':'');return`<div class="flex items-center gap-3 py-2 px-3 ${mc}"><span class="text-lg w-8 text-center">${pr}</span><span class="text-white text-sm font-medium flex-1">${dn}</span><span class="text-gray-500 text-xs">${p.tournaments} тур.</span></div>`}).join("");
-                if(d.playerPosition>5)h+=`<div class="border-t border-white/10 mt-3 pt-3 flex items-center gap-3 py-2 px-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500"><span class="text-lg w-8 text-center text-gray-400">${d.playerPosition}.</span><span class="text-white text-sm font-medium flex-1">👈 Вы</span><span class="text-gray-500 text-xs">${d.playerTournaments} тур.</span></div>`;
-            }
+            else{const m=['🥇','🥈','🥉'];h=d.top5.map((p,i)=>{const pr=i<3?m[i]:`${i+1}.`;const isMe=(i+1)===d.playerPosition;const mc=isMe?'bg-amber-500/10 border-l-2 border-amber-500 rounded-lg':'rounded-lg';const dn=(p.name||'')+(isMe?' 👈':'');return`<div class="flex items-center gap-3 py-2 px-3 ${mc}"><span class="text-lg w-8 text-center">${pr}</span><span class="text-white text-sm font-medium flex-1">${dn}</span><span class="text-gray-500 text-xs">${p.tournaments} тур.</span></div>`}).join("");if(d.playerPosition>5)h+=`<div class="border-t border-white/10 mt-3 pt-3 flex items-center gap-3 py-2 px-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500"><span class="text-lg w-8 text-center text-gray-400">${d.playerPosition}.</span><span class="text-white text-sm font-medium flex-1">👈 Вы</span><span class="text-gray-500 text-xs">${d.playerTournaments} тур.</span></div>`}
             panel.innerHTML=tabs+h;
         }catch(e){panel.innerHTML=tabs+`<div class="text-center py-6"><p class="text-red-400 text-sm">❌ Ошибка</p></div>`}
     }
 
     function loadDashboardWidgets(){
-        const w=document.getElementById("dashboardWidgets");
-        w.innerHTML=`<div class="col-span-full flex flex-col items-center py-16 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
+        const w=document.getElementById("dashboardWidgets"); w.innerHTML=`<div class="col-span-full flex flex-col items-center py-16 text-gray-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
         fetch(`/api/player/${playerId}/dashboard`,{credentials:"same-origin"}).then(r=>r.json()).then(d=>{
             primaryLeague=d.primaryLeague||'A';
-            if(d.subscription && d.subscription.active) {
-                document.getElementById("proBadge").classList.remove("hidden");
-                document.getElementById("subStatusText").textContent="Подписка до "+new Date(d.subscription.expiresAt).toLocaleDateString("ru-RU");
-                document.getElementById("pushToggleContainer")?.classList.remove("hidden");
-                checkPushStatus();
-            }
+            if(d.subscription && d.subscription.active) { document.getElementById("proBadge").classList.remove("hidden"); document.getElementById("subStatusText").textContent="Подписка до "+new Date(d.subscription.expiresAt).toLocaleDateString("ru-RU"); document.getElementById("pushToggleContainer")?.classList.remove("hidden"); checkPushStatus(); }
             const lastHtml=d.lastResult?`<div class="widget-card justify-between" onclick="window.open('${d.lastResult.tournamentLink}','_blank')"><div class="flex items-center gap-2 mb-1"><span>🏆</span><h3 class="font-bold text-sm text-amber-300">Последний результат</h3></div><p class="text-2xl font-extrabold amount-gold mt-1">${formatMoney(d.lastResult.amount)}</p><p class="text-xs text-gray-500 mt-auto pt-1">📅 ${d.lastResult.date}</p></div>`:`<div class="widget-card items-center justify-center"><div class="text-center"><span class="text-3xl">📭</span><p class="text-gray-400 text-sm mt-2">Нет результатов</p></div></div>`;
-
             let lineupHtml='<div class="widget-card"><div class="flex items-center gap-2 mb-3"><span>📅</span><h3 class="font-bold text-sm text-white">Ближайшие турниры</h3></div><div class="flex-1 space-y-2">';
             if(d.upcomingLineups&&d.upcomingLineups.length>0){
-                const uniqueDates = [...new Set(d.upcomingLineups.map(l => l.date))];
-                const date1 = uniqueDates[0];
-                const date2 = uniqueDates[1];
-
-                const formatDate = (dateStr) => {
-                    const p = dateStr.split('-');
-                    return p[2] + '.' + p[1];
-                };
-
-                if(date1) {
-                    const items = d.upcomingLineups.filter(l => l.date === date1);
-                    lineupHtml+=`<div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">📌 Сегодня, ${formatDate(date1)}</div>`;
-                    if(items.some(l => l.inLineup)) {
-                        items.filter(l => l.inLineup).forEach(l=>{
-                            const players = l.players ? l.players.split(', ').join(' • ') : '';
-                            lineupHtml+=`<div class="bg-amber-500/5 rounded-lg p-2 border border-amber-500/10 mb-2"><div class="flex items-center justify-between"><span class="text-white text-xs font-medium">⏰ ${l.time||'??:??'}</span><span class="text-[9px] font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">🏆 ${l.league||'?'}</span></div><p class="text-[11px] text-gray-400 mt-1">👥 ${players||'—'}</p><p class="text-[10px] text-amber-400 mt-1">✅ Вы в составе</p></div>`;
-                        });
-                    } else {
-                        lineupHtml+=`<div class="flex flex-col items-center py-3 text-gray-500"><span class="text-xl mb-1">😴</span><p class="text-xs">Пока не играете</p></div>`;
-                    }
-                }
-
-                if(date2) {
-                    const items = d.upcomingLineups.filter(l => l.date === date2);
-                    lineupHtml+=`<div class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2 mt-3">📅 Завтра, ${formatDate(date2)}</div>`;
-                    if(items.some(l => l.inLineup)) {
-                        items.filter(l => l.inLineup).forEach(l=>{
-                            const players = l.players ? l.players.split(', ').join(' • ') : '';
-                            lineupHtml+=`<div class="bg-blue-500/5 rounded-lg p-2 border border-blue-500/10 mb-2"><div class="flex items-center justify-between"><span class="text-white text-xs font-medium">⏰ ${l.time||'??:??'}</span><span class="text-[9px] font-bold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">🏆 ${l.league||'?'}</span></div><p class="text-[11px] text-gray-400 mt-1">👥 ${players||'—'}</p><p class="text-[10px] text-amber-400 mt-1">✅ Вы в составе</p></div>`;
-                        });
-                    } else {
-                        lineupHtml+=`<div class="flex flex-col items-center py-3 text-gray-500"><span class="text-xl mb-1">😴</span><p class="text-xs">Пока не играете</p></div>`;
-                    }
-                }
-            } else {
-                lineupHtml+=`<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Составы не загружены</p></div>`;
-            }
-            lineupHtml+=`</div></div>`;
-            w.innerHTML=lastHtml+lineupHtml;
+                const uniqueDates = [...new Set(d.upcomingLineups.map(l => l.date))]; const date1 = uniqueDates[0], date2 = uniqueDates[1];
+                const formatDate = (dateStr) => { const p = dateStr.split('-'); return p[2] + '.' + p[1]; };
+                if(date1) { const items = d.upcomingLineups.filter(l => l.date === date1); lineupHtml+=`<div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">📌 Сегодня, ${formatDate(date1)}</div>`; if(items.some(l => l.inLineup)) { items.filter(l => l.inLineup).forEach(l=>{ const players = l.players ? l.players.split(', ').join(' • ') : ''; lineupHtml+=`<div class="bg-amber-500/5 rounded-lg p-2 border border-amber-500/10 mb-2"><div class="flex items-center justify-between"><span class="text-white text-xs font-medium">⏰ ${l.time||'??:??'}</span><span class="text-[9px] font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">🏆 ${l.league||'?'}</span></div><p class="text-[11px] text-gray-400 mt-1">👥 ${players||'—'}</p><p class="text-[10px] text-amber-400 mt-1">✅ Вы в составе</p></div>`; }); } else { lineupHtml+=`<div class="flex flex-col items-center py-3 text-gray-500"><span class="text-xl mb-1">😴</span><p class="text-xs">Пока не играете</p></div>`; } }
+                if(date2) { const items = d.upcomingLineups.filter(l => l.date === date2); lineupHtml+=`<div class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2 mt-3">📅 Завтра, ${formatDate(date2)}</div>`; if(items.some(l => l.inLineup)) { items.filter(l => l.inLineup).forEach(l=>{ const players = l.players ? l.players.split(', ').join(' • ') : ''; lineupHtml+=`<div class="bg-blue-500/5 rounded-lg p-2 border border-blue-500/10 mb-2"><div class="flex items-center justify-between"><span class="text-white text-xs font-medium">⏰ ${l.time||'??:??'}</span><span class="text-[9px] font-bold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">🏆 ${l.league||'?'}</span></div><p class="text-[11px] text-gray-400 mt-1">👥 ${players||'—'}</p><p class="text-[10px] text-amber-400 mt-1">✅ Вы в составе</p></div>`; }); } else { lineupHtml+=`<div class="flex flex-col items-center py-3 text-gray-500"><span class="text-xl mb-1">😴</span><p class="text-xs">Пока не играете</p></div>`; } }
+            } else { lineupHtml+=`<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Составы не загружены</p></div>`; }
+            lineupHtml+=`</div></div>`; w.innerHTML=lastHtml+lineupHtml;
         }).catch(()=>{w.innerHTML=`<div class="col-span-full text-center py-16 text-gray-400">❌ Ошибка загрузки</div>`});
     }
 
     function showAction(a){
-        document.getElementById("homePage").style.display="none";
-        document.getElementById("actionPage").classList.remove("hidden");
-        highlightNav("nav-"+a);
+        document.getElementById("homePage").style.display="none"; document.getElementById("actionPage").classList.remove("hidden"); highlightNav("nav-"+a);
         const t=document.getElementById("actionTitle"), s=document.getElementById("actionSubtitle"), c=document.getElementById("actionContent");
-
         if(a==='halls'){
             t.textContent="Расписание турниров"; s.textContent="Составы по выбранным залам";
+            if(document.getElementById("proBadge").classList.contains("hidden")) {
+                c.innerHTML = `<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`;
+                return;
+            }
             loadHallsContent();
             return;
         }
-
         if(a==='sum'){
-            if(document.getElementById("proBadge").classList.contains("hidden")) {
-                t.textContent="💰 Сумма за период"; s.textContent="Подсчёт заработка и список турниров";
-                c.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`;
-                return;
-            }
-            currentPage = 0;
-            t.textContent="💰 Сумма за период"; s.textContent="Подсчёт заработка и список турниров";
+            if(document.getElementById("proBadge").classList.contains("hidden")) { t.textContent="💰 Сумма за период"; s.textContent="Подсчёт заработка и список турниров"; c.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3><button onclick="window.location.href='/subscribe'" class="btn-gold mt-2">💳 Оформить подписку</button></div>`; return; }
+            currentPage = 0; t.textContent="💰 Сумма за период"; s.textContent="Подсчёт заработка и список турниров";
             c.innerHTML=`<div class="glass rounded-2xl p-6 text-center" id="sumCheck"><div class="spinner mx-auto mb-4"></div><p class="text-gray-400 text-sm">Проверка доступа...</p></div>`;
             fetch(`/api/player/sum?start=2026-01-01&end=${new Date().toISOString().split("T")[0]}`,{credentials:"same-origin"}).then(r=>{
                 if(r.status===402){c.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3></div>`;return;}
                 c.innerHTML=`<div class="glass rounded-2xl p-4 mb-4 text-sm text-gray-300 text-left"><p class="mb-2 font-medium text-amber-200">📖 Как пользоваться:</p><p>1. Выберите даты начала и окончания (или одну)</p><p>2. Нажмите «Рассчитать»</p><p>3. Система покажет общую сумму и список турниров с корректировкой ✏️</p></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"><div><label class="text-xs text-gray-400 mb-1 block">📅 Дата с</label><input id="dateStart" type="text" class="flatpickr-input" placeholder="Выберите дату"></div><div><label class="text-xs text-gray-400 mb-1 block">📅 Дата по (необязательно)</label><input id="dateEnd" type="text" class="flatpickr-input" placeholder="Выберите дату"></div></div><button onclick="executeSum()" class="btn-gold w-full">🧮 Рассчитать</button><p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p><div id="actionResult" class="mt-4"></div>`;
-                flatpickr("#dateStart", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
-                flatpickr("#dateEnd", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
+                flatpickr("#dateStart", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" }); flatpickr("#dateEnd", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
             }).catch(()=>{c.innerHTML=`<div class="text-center py-8 text-red-400">❌ Ошибка</div>`});
         }
     }
@@ -522,13 +452,9 @@
         err.classList.add("hidden"); if(!s&&!e){err.textContent="❌ Выберите дату";err.classList.remove("hidden");return}
         const p=new URLSearchParams();if(s)p.append("start",s);if(e)p.append("end",e); p.append("page", currentPage); p.append("size", 20);
         try{
-            const r=await fetch(`/api/player/sum?${p.toString()}`,{credentials:"same-origin"});
-            if(r.status===402){res.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3></div>`;return}
-            if(!r.ok){res.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка</p>';return}
-            const d=await r.json();
-            if(!d.tournaments||d.tournaments.length===0){res.innerHTML=`<div class="text-center py-8"><span class="text-4xl">📭</span><p class="text-gray-400 mt-3">Нет турниров</p></div>`;return}
-            let paginationHtml = '';
-            if(d.totalPages > 1) { paginationHtml = `<div class="flex items-center justify-center gap-3 mt-4"><button onclick="changePage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm disabled:opacity-30 disabled:cursor-not-allowed">← Назад</button><span class="text-gray-400 text-xs">${currentPage + 1} / ${d.totalPages}</span><button onclick="changePage(${currentPage + 1})" ${currentPage >= d.totalPages - 1 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm disabled:opacity-30 disabled:cursor-not-allowed">Вперёд →</button></div>`; }
+            const r=await fetch(`/api/player/sum?${p.toString()}`,{credentials:"same-origin"}); if(r.status===402){res.innerHTML=`<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3></div>`;return} if(!r.ok){res.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка</p>';return}
+            const d=await r.json(); if(!d.tournaments||d.tournaments.length===0){res.innerHTML=`<div class="text-center py-8"><span class="text-4xl">📭</span><p class="text-gray-400 mt-3">Нет турниров</p></div>`;return}
+            let paginationHtml = ''; if(d.totalPages > 1) { paginationHtml = `<div class="flex items-center justify-center gap-3 mt-4"><button onclick="changePage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm disabled:opacity-30 disabled:cursor-not-allowed">← Назад</button><span class="text-gray-400 text-xs">${currentPage + 1} / ${d.totalPages}</span><button onclick="changePage(${currentPage + 1})" ${currentPage >= d.totalPages - 1 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm disabled:opacity-30 disabled:cursor-not-allowed">Вперёд →</button></div>`; }
             res.innerHTML=`<div class="glass rounded-2xl p-4 mb-4"><div class="grid grid-cols-3 gap-3 text-center"><div><div class="text-xs text-gray-400">💰 Общая</div><div class="text-lg font-bold amount-gold">${formatMoney(d.sum)}</div></div><div><div class="text-xs text-gray-400">📊 Среднее</div><div class="text-lg font-bold text-blue-400">${formatMoney(d.average)}</div></div><div><div class="text-xs text-gray-400">🎯 Турниров</div><div class="text-lg font-bold text-amber-400">${d.count}</div></div></div></div>`+ d.tournaments.map((t,i)=>`<div class="flex items-center justify-between py-2 px-3 glass rounded-xl mb-2 text-sm"><span class="text-gray-400">${currentPage * 20 + i + 1}.</span><span class="text-white">${t.date||'—'}</span><span class="amount-gold font-medium">${formatMoney(t.amount)}</span><button onclick="openEditTournamentModal(${t.resultId||0},'${t.date||''}',${t.amount})" class="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded-lg">✏️</button></div>`).join("") + paginationHtml;
         }catch(e){res.innerHTML='<p class="text-red-400 text-center py-6">❌ Ошибка соединения</p>'}
     }
@@ -542,70 +468,14 @@
 
     // ========== Push-уведомления ==========
 
-    async function checkPushStatus() {
-        try {
-            const reg = await navigator.serviceWorker.ready;
-            const sub = await reg.pushManager.getSubscription();
-            const toggle = document.getElementById('pushToggle');
-            if (toggle && sub) toggle.checked = true;
-        } catch(e) {}
-    }
-
-    async function togglePush() {
-        const toggle = document.getElementById('pushToggle');
-        if (toggle.checked) {
-            const ok = await enablePushNotifications();
-            if (!ok) toggle.checked = false;
-        } else {
-            await disablePushNotifications();
-        }
-    }
-
+    async function checkPushStatus() { try { const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription(); const toggle = document.getElementById('pushToggle'); if (toggle && sub) toggle.checked = true; } catch(e) {} }
+    async function togglePush() { const toggle = document.getElementById('pushToggle'); if (toggle.checked) { const ok = await enablePushNotifications(); if (!ok) toggle.checked = false; } else { await disablePushNotifications(); } }
     async function enablePushNotifications() {
-        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-            alert('Ваш браузер не поддерживает push-уведомления');
-            return false;
-        }
-        try {
-            const reg = await navigator.serviceWorker.register('/sw.js');
-            const vapidKey = await fetch('/api/push/vapid-public-key').then(r => r.text());
-            const sub = await reg.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlB64ToUint8Array(vapidKey)
-            });
-            await fetch('/api/push/subscribe', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    endpoint: sub.endpoint,
-                    p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))),
-                    auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth'))))
-                })
-            });
-            return true;
-        } catch(e) { console.error('Ошибка подписки:', e); return false; }
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) { alert('Ваш браузер не поддерживает push-уведомления'); return false; }
+        try { const reg = await navigator.serviceWorker.register('/sw.js'); const vapidKey = await fetch('/api/push/vapid-public-key').then(r => r.text()); const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8Array(vapidKey) }); await fetch('/api/push/subscribe', { method: 'POST', credentials: 'same-origin', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ endpoint: sub.endpoint, p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))), auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')))) }) }); return true; } catch(e) { console.error('Ошибка подписки:', e); return false; }
     }
-
-    async function disablePushNotifications() {
-        try {
-            const reg = await navigator.serviceWorker.ready;
-            const sub = await reg.pushManager.getSubscription();
-            if (sub) {
-                await sub.unsubscribe();
-                await fetch('/api/push/unsubscribe', { method: 'POST', credentials: 'same-origin', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ endpoint: sub.endpoint }) });
-            }
-        } catch(e) { console.error('Ошибка отписки:', e); }
-    }
-
-    function urlB64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-        return outputArray;
-    }
+    async function disablePushNotifications() { try { const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription(); if (sub) { await sub.unsubscribe(); await fetch('/api/push/unsubscribe', { method: 'POST', credentials: 'same-origin', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ endpoint: sub.endpoint }) }); } } catch(e) { console.error('Ошибка отписки:', e); } }
+    function urlB64ToUint8Array(base64String) { const padding = '='.repeat((4 - base64String.length % 4) % 4); const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/'); const rawData = window.atob(base64); const outputArray = new Uint8Array(rawData.length); for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i); return outputArray; }
 </script>
 </body>
 </html>
