@@ -74,6 +74,7 @@
         .hall-checkbox-card.selected { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); }
         .hall-checkbox-card input[type="checkbox"] { accent-color: #f59e0b; width: 18px; height: 18px; }
         .lineup-row { display: flex; align-items: flex-start; padding: 10px 12px; border-radius: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); gap: 8px; }
+        .player-row { background: rgba(245,158,11,0.08) !important; border-color: rgba(245,158,11,0.2) !important; }
         .lineup-row .lineup-info { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; min-width: 120px; }
         .lineup-row .time-badge { font-size: 0.75rem; font-weight: 600; color: #fbbf24; background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
         .lineup-row .league-badge { font-size: 0.7rem; font-weight: 600; color: #60a5fa; background: rgba(96,165,250,0.1); padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
@@ -265,7 +266,8 @@
                 const playersList = playersArray.length > 0
                     ? playersArray.map(p => `<span class="player-name">${p}</span>`).join('')
                     : '<span class="player-name">—</span>';
-                html += `<div class="lineup-row"><div class="lineup-info"><span class="time-badge">${l.time || '??:??'}</span><span class="league-badge">${l.league || '?'}</span><span class="hall-badge">${l.hall}</span></div><div class="players-text">${playersList}</div></div>`;
+                const rowClass = l.player ? 'lineup-row player-row' : 'lineup-row';
+                html += `<div class="${rowClass}"><div class="lineup-info"><span class="time-badge">${l.time || '??:??'}</span><span class="league-badge">${l.league || '?'}</span><span class="hall-badge">${l.hall}</span></div><div class="players-text">${playersList}</div></div>`;
             });
             container.innerHTML = html;
         } else {
@@ -356,7 +358,8 @@
             allLineups.forEach(l => {
                 const playersArray = (l.players || '—').split(',').map(p => p.trim()).filter(p => p);
                 const playersList = playersArray.length > 0 ? playersArray.map(p => `<span class="player-name">${p}</span>`).join('') : '<span class="player-name">—</span>';
-                html += `<div class="lineup-row"><div class="lineup-info"><span class="time-badge">${l.time || '??:??'}</span><span class="league-badge">${l.league || '?'}</span><span class="hall-badge">${l.hall}</span></div><div class="players-text">${playersList}</div></div>`;
+                const rowClass = l.player ? 'lineup-row player-row' : 'lineup-row';
+                html += `<div class="${rowClass}"><div class="lineup-info"><span class="time-badge">${l.time || '??:??'}</span><span class="league-badge">${l.league || '?'}</span><span class="hall-badge">${l.hall}</span></div><div class="players-text">${playersList}</div></div>`;
             });
         } else if (selectedHalls.length > 0) {
             html += '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Нет составов по выбранным залам</p></div>';
