@@ -21,4 +21,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     @Query(value = "SELECT * FROM subscription WHERE active = true AND expires_at::date = CURRENT_DATE + 1", nativeQuery = true)
     List<Subscription> findExpiringTomorrow();
 
+    @Query("SELECT s FROM Subscription s WHERE s.active = true AND s.expiresAt < CURRENT_TIMESTAMP")
+    List<Subscription> findExpired();
 }

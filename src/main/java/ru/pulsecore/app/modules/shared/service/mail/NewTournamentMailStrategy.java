@@ -11,13 +11,13 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 @RequiredArgsConstructor
-public class NewTournamentMailStrategy implements ru.pulsecore.app.modules.player.service.strategy.MailStrategy {
+public class NewTournamentMailStrategy implements MailStrategy {
 
-    private final ru.pulsecore.app.modules.player.service.strategy.MailProperties mailProperties;
+    private final MailProperties mailProperties;
 
     @Override
     public String getType() {
-        return ru.pulsecore.app.modules.player.service.strategy.MailTypes.NEW_TOURNAMENT;
+        return MailTypes.NEW_TOURNAMENT;
     }
 
     @Override

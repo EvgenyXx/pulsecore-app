@@ -4,9 +4,10 @@ package ru.pulsecore.app.modules.player.service.subscription;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
-import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
+
 import ru.pulsecore.app.modules.shared.properties.AdminProperties;
+import ru.pulsecore.app.modules.shared.service.mail.MailStrategyRegistry;
+import ru.pulsecore.app.modules.shared.service.mail.MailTypes;
 
 import java.util.Map;
 import java.util.UUID;

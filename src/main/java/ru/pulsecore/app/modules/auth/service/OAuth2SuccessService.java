@@ -16,6 +16,7 @@ import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -50,7 +51,6 @@ public class OAuth2SuccessService {
         }
     }
 
-    // ── Извлечение данных ──
     private OAuthUserData extractUserData(String provider, OAuth2User user) {
         if ("yandex".equals(provider)) {
             return extractYandexData(user);
@@ -64,22 +64,9 @@ public class OAuth2SuccessService {
     private OAuthUserData extractYandexData(OAuth2User user) {
         log.debug("Yandex attributes: {}", user.getAttributes());
 
-        String phone = null;
-        Object phoneObj = user.getAttribute("default_phone");
-        if (phoneObj instanceof Map<?, ?> m) {
-            phone = (String) m.get("number");
-        }
-
-        String avatar = null;
-        String avatarId = user.getAttribute("default_avatar_id");
-        if (avatarId != null && !avatarId.isEmpty()) {
-            avatar = "https://avatars.yandex.net/get-yapic/" + avatarId + "/islands-200";
-        }
-
-        String gender = null;
-        String sex = user.getAttribute("sex");
-        if ("male".equals(sex)) gender = "М";
-        else if ("female".equals(sex)) gender = "Ж";
+        String phone = extractYandexPhone(user);
+        String avatar = extractYandexAvatar(user);
+        String gender = extractYandexGender(user);
 
         return new OAuthUserData(
                 user.getAttribute("id"),
@@ -91,37 +78,50 @@ public class OAuth2SuccessService {
         );
     }
 
+    private String extractYandexPhone(OAuth2User user) {
+        Object phoneObj = user.getAttribute("default_phone");
+        if (phoneObj instanceof Map<?, ?> m) {
+            return (String) m.get("number");
+        }
+        return null;
+    }
+
+    private String extractYandexAvatar(OAuth2User user) {
+        String avatarId = user.getAttribute("default_avatar_id");
+        if (avatarId != null && !avatarId.isEmpty()) {
+            return "https://avatars.yandex.net/get-yapic/" + avatarId + "/islands-200";
+        }
+        return null;
+    }
+
+    private String extractYandexGender(OAuth2User user) {
+        String sex = user.getAttribute("sex");
+        if ("male".equals(sex)) return "М";
+        if ("female".equals(sex)) return "Ж";
+        return null;
+    }
+
     private OAuthUserData extractVkData(OAuth2User user) {
         log.debug("VK attributes: {}", user.getAttributes());
 
-        String oauthId = String.valueOf(user.getAttribute("user_id"));
-        String email = user.getAttribute("email");
-        String phone = user.getAttribute("phone");
-        String avatar = user.getAttribute("avatar");
-        String birthday = user.getAttribute("birthday");
-
-        String gender = null;
-        Object sexObj = user.getAttribute("sex");
-        if (sexObj != null) {
-            int sex = sexObj instanceof Integer ? (Integer) sexObj : Integer.parseInt(sexObj.toString());
-            gender = sex == 2 ? "М" : sex == 1 ? "Ж" : null;
-        }
-
-        String firstName = user.getAttribute("first_name");
-        String lastName = user.getAttribute("last_name");
-        String name = (firstName != null && lastName != null) ? firstName + " " + lastName : null;
-
         return new OAuthUserData(
-                oauthId,
-                email,
-                phone,
-                avatar,
-                birthday,
-                gender
+                Objects.toString(user.getAttribute("user_id"), ""),
+                user.getAttribute("email"),
+                user.getAttribute("phone"),
+                user.getAttribute("avatar"),
+                user.getAttribute("birthday"),
+                extractVkGender(user.getAttribute("sex"))
         );
     }
 
-    // ── Поиск игрока ──
+    private String extractVkGender(Object sexObj) {
+        if (sexObj == null) return null;
+        int sex = sexObj instanceof Integer i ? i : Integer.parseInt(sexObj.toString());
+        if (sex == 2) return "М";
+        if (sex == 1) return "Ж";
+        return null;
+    }
+
     private Optional<Player> findExistingPlayer(String provider, OAuthUserData data) {
         Optional<Player> player = playerRepository.findByOauthProviderAndOauthId(provider, data.oauthId());
         if (player.isEmpty() && data.email() != null) {
@@ -130,7 +130,6 @@ public class OAuth2SuccessService {
         return player;
     }
 
-    // ── Обновление и вход ──
     private void updateAndLogin(Player player, String provider, OAuthUserData data,
                                 HttpServletRequest request, HttpServletResponse response) throws IOException {
         player.setOauthProvider(provider);
@@ -149,7 +148,6 @@ public class OAuth2SuccessService {
         playerLoginService.login(player, request, response);
     }
 
-    // ── Сохранение в сессию для нового пользователя ──
     private void storeInSession(HttpServletRequest request, String provider, OAuthUserData data) {
         HttpSession session = request.getSession(true);
         session.setAttribute("oauth_email", data.email());
@@ -162,7 +160,6 @@ public class OAuth2SuccessService {
         session.setMaxInactiveInterval(600);
     }
 
-    // ── DTO ──
     private record OAuthUserData(String oauthId, String email, String phone,
                                  String avatar, String birthday, String gender) {}
 }

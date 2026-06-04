@@ -36,15 +36,19 @@ public class LineupFacade {
 
         List<LineupDto> dtos = filtered.stream()
                 .map(this::toDto)
-                .peek(dto -> dto.setPlayer(
-                        dto.getPlayers() != null &&
-                                Arrays.stream(dto.getPlayers().split(","))
-                                        .map(String::trim)
-                                        .anyMatch(p -> p.equalsIgnoreCase(playerName))
-                ))
+                .map(dto -> markPlayer(dto, playerName))
                 .toList();
 
         return groupByHall(dtos);
+    }
+
+    private LineupDto markPlayer(LineupDto dto, String playerName) {
+        boolean isPlayer = dto.getPlayers() != null &&
+                Arrays.stream(dto.getPlayers().split(","))
+                        .map(String::trim)
+                        .anyMatch(p -> p.equalsIgnoreCase(playerName));
+        dto.setPlayer(isPlayer);
+        return dto;
     }
 
     private LineupDto toDto(Lineup lineup) {

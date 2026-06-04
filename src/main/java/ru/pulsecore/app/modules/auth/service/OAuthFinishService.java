@@ -15,9 +15,10 @@ import ru.pulsecore.app.modules.player.domain.Subscription;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.player.repository.SubscriptionRepository;
 import ru.pulsecore.app.modules.player.service.role.RoleService;
-import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
-import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
+
 import ru.pulsecore.app.modules.shared.properties.AdminProperties;
+import ru.pulsecore.app.modules.shared.service.mail.MailStrategyRegistry;
+import ru.pulsecore.app.modules.shared.service.mail.MailTypes;
 import ru.pulsecore.app.modules.tournament.service.TournamentAutoAddService;
 import ru.pulsecore.app.modules.tournament.service.TournamentCascadeSyncService;
 import ua_parser.Client;

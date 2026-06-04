@@ -14,7 +14,7 @@ import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEn
 
 import java.time.LocalDate;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class SumService {
                 .map(e -> SumResponse.TournamentItem.builder()
                         .date(e.getDate().toString()).amount(e.getAmount())
                         .resultId(e.getId()).hasRemoved(e.isHasRemoved()).build())
-                .collect(Collectors.toList());
+                .toList();
 
         return SumResponse.builder()
                 .playerName(capitalize(player.getName())).start(start.toString()).end(end.toString())

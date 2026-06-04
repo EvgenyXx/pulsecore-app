@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentRequest;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
-import ru.pulsecore.app.modules.tournament.api.dto.TournamentSearchResult;
 import ru.pulsecore.app.modules.tournament.service.TournamentFacade;
 
 import java.util.List;

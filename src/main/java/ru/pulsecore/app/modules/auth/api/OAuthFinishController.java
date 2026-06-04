@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.pulsecore.app.modules.auth.service.OAuthFinishService;
 import ru.pulsecore.app.modules.auth.api.dto.OAuthFinishRequest;
-
+import ru.pulsecore.app.modules.auth.service.OAuthFinishService;
 
 import java.io.IOException;
 

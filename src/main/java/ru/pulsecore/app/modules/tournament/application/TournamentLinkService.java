@@ -8,6 +8,7 @@ import ru.pulsecore.app.core.dto.TournamentLinkResult;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentStatus;
+import ru.pulsecore.app.modules.tournament.exception.TournamentProcessException;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentLinkStatus;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
@@ -24,16 +25,14 @@ public class TournamentLinkService {
     private final TournamentRepository tournamentRepository;
     private final ParticipationService participationService;
 
-    public TournamentLinkResult process(String link, Player player) throws Exception {
-
-        ParsedResult parsed = resultService.calculateAll(link);
+    public TournamentLinkResult process(String link, Player player) {
+        ParsedResult parsed = calculateResult(link);
 
         if (parsed.results() == null || parsed.results().isEmpty()) {
             return result(TournamentLinkStatus.NOT_STARTED, parsed);
         }
 
-        boolean userExists = participationService.isUserInParsed(parsed, player.getName());
-        if (!userExists) {
+        if (!participationService.isUserInParsed(parsed, player.getName())) {
             return result(TournamentLinkStatus.NOT_PARTICIPATING, parsed);
         }
 
@@ -54,7 +53,7 @@ public class TournamentLinkService {
                 parsed.nightBonus(),
                 parsed.status() == TournamentStatus.FINISHED,
                 parsed.hasRemoved(),
-                parsed.league()  // ← добавить
+                parsed.league()
         );
 
         if (parsed.status() == TournamentStatus.FINISHED) {
@@ -65,8 +64,15 @@ public class TournamentLinkService {
         return result(TournamentLinkStatus.TRACKING_STARTED, parsed);
     }
 
-    private TournamentLinkResult result(TournamentLinkStatus status,
-                                        ParsedResult parsed) {
+    private ParsedResult calculateResult(String link) {
+        try {
+            return resultService.calculateAll(link);
+        } catch (Exception e) {
+            throw new TournamentProcessException("Failed to process tournament: " + link, e);
+        }
+    }
+
+    private TournamentLinkResult result(TournamentLinkStatus status, ParsedResult parsed) {
         log.debug("TournamentLink status={}", status);
         return new TournamentLinkResult(status, parsed);
     }

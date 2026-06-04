@@ -5,7 +5,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import ru.pulsecore.app.modules.player.domain.Player;
 
-import java.util.stream.Collectors;
 
 @Getter
 public class SecurityUser extends User {
@@ -23,7 +22,7 @@ public class SecurityUser extends User {
                 true, true, true,
                 player.getRoles().stream()
                         .map(role -> new SimpleGrantedAuthority(role.getName()))
-                        .collect(Collectors.toList())
+                        .toList()
         );
         this.playerId = player.getId().toString();
         this.playerName = player.getName();

@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.modules.player.service.strategy.MailProperties;
-import ru.pulsecore.app.modules.player.service.strategy.MailStrategy;
-import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
+
 
 import java.nio.charset.StandardCharsets;
 

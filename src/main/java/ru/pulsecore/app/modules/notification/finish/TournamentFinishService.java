@@ -31,7 +31,7 @@ public class TournamentFinishService {
 
     public boolean handleFinished(TournamentEntity t,
                                   List<PlayerNotification> notifications,
-                                  Document doc) throws Exception {
+                                  Document doc)  {
 
 
 

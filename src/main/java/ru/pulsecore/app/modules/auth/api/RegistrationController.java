@@ -16,11 +16,12 @@ import ru.pulsecore.app.modules.auth.mapping.PlayerDtoMapper;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
 import ru.pulsecore.app.modules.shared.service.auth.PlayerRegistrationService;
 
-
 @RestController
 @RequestMapping(AuthApi.BASE_PATH)
 @RequiredArgsConstructor
 public class RegistrationController {
+
+    private static final String PENDING_SESSION_KEY = "pending";
 
     private final PlayerRegistrationService registrationService;
     private final PlayerDtoMapper mapper;
@@ -29,7 +30,7 @@ public class RegistrationController {
     public ResponseEntity<MessageResponse> register(@Valid @RequestBody RegisterRequest request,
                                                     HttpSession session) {
         var pending = registrationService.initiate(request.getName(), request.getEmail(), request.getPassword());
-        session.setAttribute("pending", pending);
+        session.setAttribute(PENDING_SESSION_KEY, pending);
         session.setMaxInactiveInterval(600);
         return ResponseEntity.ok(new MessageResponse(AuthApi.OK));
     }
@@ -38,11 +39,11 @@ public class RegistrationController {
     public ResponseEntity<AuthResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequest request,
                                                     HttpSession session,
                                                     HttpServletRequest httpRequest) {
-        var pending = (PlayerRegistrationService.Pending) session.getAttribute("pending");
+        var pending = (PlayerRegistrationService.Pending) session.getAttribute(PENDING_SESSION_KEY);
         if (pending == null) return ResponseEntity.status(400).build();
         if (!pending.email().equalsIgnoreCase(request.getEmail())) return ResponseEntity.status(400).build();
         var player = registrationService.complete(pending, request.getCode(), httpRequest);
-        session.removeAttribute("pending");
+        session.removeAttribute(PENDING_SESSION_KEY);
         return ResponseEntity.ok(mapper.toAuthResponse(player));
     }
 }

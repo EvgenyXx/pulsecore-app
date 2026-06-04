@@ -8,6 +8,7 @@ import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.modules.shared.HtmlSelectors;
 import ru.pulsecore.app.modules.tournament.domain.model.Score;
 
+@SuppressWarnings("deprecation")
 @Component
 @RequiredArgsConstructor
 public class RowParser {
@@ -15,6 +16,7 @@ public class RowParser {
     private final ScoreParser scoreParser;
     private final MatchBuilder matchBuilder;
 
+    @SuppressWarnings("deprecation")
     public Match parse(Element row) {
         Elements cols = row.select(HtmlSelectors.COL);
 
@@ -33,7 +35,6 @@ public class RowParser {
         boolean isCancelled = status != null
                 && status.toLowerCase().contains("отмен");
 
-        // пропускаем только реально некорректные матчи
         if (score == null && !isCancelled) {
             return null;
         }
@@ -42,7 +43,7 @@ public class RowParser {
                 stage,
                 player1,
                 player2,
-                score, // может быть null для отменённых
+                score,
                 "",
                 null,
                 null,

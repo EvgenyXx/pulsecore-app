@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.service.strategy;
+package ru.pulsecore.app.modules.shared.service.mail;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;

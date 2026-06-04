@@ -7,9 +7,9 @@ import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.notification.service.NotificationPermissionService;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
-import ru.pulsecore.app.modules.player.service.strategy.MailStrategyRegistry;
-import ru.pulsecore.app.modules.player.service.strategy.MailTypes;
 import ru.pulsecore.app.modules.push.service.WebPushService;
+import ru.pulsecore.app.modules.shared.service.mail.MailStrategyRegistry;
+import ru.pulsecore.app.modules.shared.service.mail.MailTypes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,67 +36,68 @@ public class TournamentDiscoveryService {
             return;
         }
 
-        List<TournamentDto> tournaments = finder.find(user);
-        if (tournaments.isEmpty()) {
-            return;
-        }
-
-        List<TournamentDto> newTournaments = filter.findNew(user, tournaments);
-        if (newTournaments.isEmpty()) {
-            return;
-        }
+        List<TournamentDto> newTournaments = findNewTournaments(user);
+        if (newTournaments.isEmpty()) return;
 
         saver.save(user, newTournaments);
-
-        // Почта — если разрешено
-        if (notificationPermissionService.canSendEmail(user)) {
-            newTournaments.forEach(tournament ->
-                    mailStrategyRegistry.send(MailTypes.NEW_TOURNAMENT, user.getEmail(), tournament, user)
-            );
-        } else {
-            log.info("🔕 Email notifications disabled for {}", user.getEmail());
-        }
-
-        // Push — если разрешено
-        if (notificationPermissionService.canSendPush(user)) {
-            newTournaments.forEach(tournament -> {
-                String firstName = extractFirstName(user.getName());
-                String rawDate = tournament.getDate() != null ? tournament.getDate().getDate() : null;
-                String dateStr = formatDate(rawDate);
-                String timeStr = formatTime(rawDate);
-                String hall = tournament.getHall() != null ? tournament.getHall() : "—";
-                String league = tournament.getLeague() != null ? tournament.getLeague() : "—";
-
-                StringBuilder body = new StringBuilder();
-                body.append(firstName).append(", вы записаны на турнир!\n\n");
-                body.append("📅 ").append(dateStr).append(" в ").append(timeStr).append("\n");
-                body.append("🏛 Зал: ").append(hall).append("\n");
-                body.append("🏆 Лига: ").append(league).append("\n\n");
-
-                if (tournament.getPlayers() != null && !tournament.getPlayers().isEmpty()) {
-                    body.append("👥 Состав:\n");
-                    List<String> players = tournament.getPlayers();
-                    int count = Math.min(players.size(), 10);
-                    for (int i = 0; i < count; i++) {
-                        body.append(i + 1).append(". ").append(players.get(i)).append("\n");
-                    }
-                    if (players.size() > 10) {
-                        body.append("... и ещё ").append(players.size() - 10).append("\n");
-                    }
-                }
-
-                webPushService.sendToPlayer(
-                        user.getId(),
-                        "📋 Вы в составе!",
-                        body.toString(),
-                        "/dashboard"
-                );
-            });
-        } else {
-            log.info("🔕 Push notifications disabled for {}", user.getEmail());
-        }
-
+        sendNotifications(user, newTournaments);
         log.info("📧📲 Sent {} notifications to {}", newTournaments.size(), user.getEmail());
+    }
+
+    private List<TournamentDto> findNewTournaments(Player user) {
+        List<TournamentDto> tournaments = finder.find(user);
+        if (tournaments.isEmpty()) return List.of();
+        return filter.findNew(user, tournaments);
+    }
+
+    private void sendNotifications(Player user, List<TournamentDto> tournaments) {
+        sendEmailNotifications(user, tournaments);
+        sendPushNotifications(user, tournaments);
+    }
+
+    private void sendEmailNotifications(Player user, List<TournamentDto> tournaments) {
+        if (!notificationPermissionService.canSendEmail(user)) {
+            log.info("🔕 Email notifications disabled for {}", user.getEmail());
+            return;
+        }
+        tournaments.forEach(t -> mailStrategyRegistry.send(MailTypes.NEW_TOURNAMENT, user.getEmail(), t, user));
+    }
+
+    private void sendPushNotifications(Player user, List<TournamentDto> tournaments) {
+        if (!notificationPermissionService.canSendPush(user)) {
+            log.info("🔕 Push notifications disabled for {}", user.getEmail());
+            return;
+        }
+        tournaments.forEach(t -> webPushService.sendToPlayer(
+                user.getId(), "📋 Вы в составе!", buildPushBody(user.getName(), t), "/dashboard"
+        ));
+    }
+
+    private String buildPushBody(String playerName, TournamentDto t) {
+        String firstName = extractFirstName(playerName);
+        String dateStr = formatDate(t.getDate() != null ? t.getDate().getDate() : null);
+        String timeStr = formatTime(t.getDate() != null ? t.getDate().getDate() : null);
+        String hall = t.getHall() != null ? t.getHall() : "—";
+        String league = t.getLeague() != null ? t.getLeague() : "—";
+
+        StringBuilder body = new StringBuilder();
+        body.append(firstName).append(", вы записаны на турнир!\n\n");
+        body.append("📅 ").append(dateStr).append(" в ").append(timeStr).append("\n");
+        body.append("🏛 Зал: ").append(hall).append("\n");
+        body.append("🏆 Лига: ").append(league).append("\n\n");
+
+        List<String> players = t.getPlayers();
+        if (players != null && !players.isEmpty()) {
+            body.append("👥 Состав:\n");
+            int count = Math.min(players.size(), 10);
+            for (int i = 0; i < count; i++) {
+                body.append(i + 1).append(". ").append(players.get(i)).append("\n");
+            }
+            if (players.size() > 10) {
+                body.append("... и ещё ").append(players.size() - 10).append("\n");
+            }
+        }
+        return body.toString();
     }
 
     private String extractFirstName(String fullName) {

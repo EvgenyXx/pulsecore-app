@@ -8,7 +8,6 @@ import java.time.LocalDate;
 @Service
 public class LeagueDPointsCalculator implements PointsCalculator {
 
-    // TODO: уточнить реальную дату смены и старые значения для лиги D
     private static final LocalDate NEW_MODEL_DATE = LocalDate.of(2026, 3, 3);
 
     @Override
@@ -19,7 +18,6 @@ public class LeagueDPointsCalculator implements PointsCalculator {
         return calculateNew(match);
     }
 
-    // TODO: уточнить старые значения
     private int calculateOld(Match match) {
         int a = match.getScore1();
         if (a == 4) return 600;

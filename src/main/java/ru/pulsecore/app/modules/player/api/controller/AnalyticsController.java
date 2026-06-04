@@ -2,7 +2,10 @@ package ru.pulsecore.app.modules.player.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.modules.player.api.PlayerApi;
 import ru.pulsecore.app.modules.player.api.dto.AnalyticsResponse;
 import ru.pulsecore.app.modules.player.api.dto.BestTimeResponse;
@@ -14,7 +17,6 @@ import ru.pulsecore.app.security.PlayerPrincipal;
 
 import java.time.LocalDate;
 import java.util.List;
-
 
 
 @RestController

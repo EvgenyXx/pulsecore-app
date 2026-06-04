@@ -10,7 +10,7 @@ public final class HtmlSelectors {
     /**
      * @deprecated использовать DOM-селекторы (STAGE, PLAYER, SCORE)
      */
-    @Deprecated
+    @Deprecated(since = "1.0", forRemoval = true)
     public static final String COL = ".ml_tour_game_list_col";
 
     // ===== ЭЛЕМЕНТЫ (НОВЫЙ ПОДХОД) =====
@@ -42,25 +42,25 @@ public final class HtmlSelectors {
     /**
      * @deprecated перейти на STAGE
      */
-    @Deprecated
+    @Deprecated(since = "1.0", forRemoval = true)
     public static final int COL_STAGE = 0;
 
     /**
      * @deprecated перейти на PLAYER
      */
-    @Deprecated
+    @Deprecated(since = "1.0", forRemoval = true)
     public static final int COL_PLAYER1 = 3;
 
     /**
      * @deprecated перейти на SCORE
      */
-    @Deprecated
+    @Deprecated(since = "1.0", forRemoval = true)
     public static final int COL_SCORE = 4;
 
     /**
      * @deprecated перейти на PLAYER
      */
-    @Deprecated
+    @Deprecated(since = "1.0", forRemoval = true)
     public static final int COL_PLAYER2 = 5;
 
 

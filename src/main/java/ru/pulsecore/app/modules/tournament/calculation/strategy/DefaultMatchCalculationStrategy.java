@@ -25,7 +25,6 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
 
 
 
-    //todo добавить умножение турниров 31 и 1 числа в новый год
     @Override
     public StrategyType getType() {
         return StrategyType.DEFAULT;

@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.service.strategy;
+package ru.pulsecore.app.modules.shared.service.mail;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;

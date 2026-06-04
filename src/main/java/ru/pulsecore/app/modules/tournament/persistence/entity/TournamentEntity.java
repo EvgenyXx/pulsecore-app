@@ -24,7 +24,7 @@ public class TournamentEntity {
     @Column(unique = true, nullable = false)
     private Long externalId;
 
-    private String link; //todo добавить проверку уникальности для ссылки
+    private String link;
 
     private LocalDate date;
 

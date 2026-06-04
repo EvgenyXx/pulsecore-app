@@ -14,8 +14,9 @@ import ru.pulsecore.app.modules.auth.api.dto.ForgotPasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.ResetPasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.VerifyPasswordRequest;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
-import ru.pulsecore.app.modules.player.service.auth.PlayerPasswordResetService;
+
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
+import ru.pulsecore.app.modules.shared.service.auth.PlayerPasswordResetService;
 
 import java.util.UUID;
 
@@ -24,6 +25,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PasswordController {
 
+    private static final String RESET_SESSION_KEY = "reset";
+
     private final PlayerPasswordResetService passwordResetService;
     private final PlayerService playerService;
 
@@ -31,7 +34,7 @@ public class PasswordController {
     public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request,
                                                           HttpSession session) {
         var pending = passwordResetService.initiate(request.getEmail());
-        session.setAttribute("reset", pending);
+        session.setAttribute(RESET_SESSION_KEY, pending);
         session.setMaxInactiveInterval(600);
         return ResponseEntity.ok(new MessageResponse(AuthApi.OK));
     }
@@ -39,10 +42,10 @@ public class PasswordController {
     @PostMapping(AuthApi.RESET_PASSWORD)
     public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request,
                                                          HttpSession session) {
-        var pending = (PlayerPasswordResetService.Pending) session.getAttribute("reset");
+        var pending = (PlayerPasswordResetService.Pending) session.getAttribute(RESET_SESSION_KEY);
         if (pending == null) return ResponseEntity.status(400).body(new MessageResponse(AuthApi.CODE_EXPIRED));
         passwordResetService.complete(pending.email(), request.getCode(), pending.code(), request.getPassword());
-        session.removeAttribute("reset");
+        session.removeAttribute(RESET_SESSION_KEY);
         return ResponseEntity.ok(new MessageResponse(AuthApi.OK));
     }
 

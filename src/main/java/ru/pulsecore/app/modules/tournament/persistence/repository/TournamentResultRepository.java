@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
-import ru.pulsecore.app.core.dto.TopPlayerProjection;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.tournament.api.dto.DailyIncomeProjection;
 import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;

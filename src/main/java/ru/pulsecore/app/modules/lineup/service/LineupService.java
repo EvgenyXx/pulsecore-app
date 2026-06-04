@@ -10,10 +10,11 @@ import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import ru.pulsecore.app.modules.lineup.mapper.LineupMapper;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.lineup.validator.TournamentValidator;
-import ru.pulsecore.app.modules.player.service.player.PlayerService;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service

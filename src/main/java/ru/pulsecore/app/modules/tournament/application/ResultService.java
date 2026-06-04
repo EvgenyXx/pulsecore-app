@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.core.integration.DocumentLoader;
 import ru.pulsecore.app.core.stats.PointsCalculatorUtils;
+import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 import ru.pulsecore.app.modules.tournament.calculation.ResultBuilder;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.MatchCalculationStrategy;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.StrategyResolver;
@@ -15,7 +16,6 @@ import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 import ru.pulsecore.app.modules.tournament.extraction.TournamentExtractor;
-import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 
 import java.time.LocalDate;
 import java.util.List;

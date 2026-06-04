@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player.service;
+package ru.pulsecore.app.modules.shared.service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

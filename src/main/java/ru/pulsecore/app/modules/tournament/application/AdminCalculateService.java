@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.core.dto.TournamentDto;
+import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 import ru.pulsecore.app.modules.tournament.api.dto.AdminCalculateResponse;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament.service.TournamentSearchService;
-import ru.pulsecore.app.modules.shared.service.NameNormalizer;
 
 import java.util.ArrayList;
 import java.util.Comparator;

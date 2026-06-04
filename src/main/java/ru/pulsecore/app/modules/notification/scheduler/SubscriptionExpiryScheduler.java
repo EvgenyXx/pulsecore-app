@@ -19,6 +19,20 @@ public class SubscriptionExpiryScheduler {
     private final SubscriptionRepository subscriptionRepository;
     private final WebPushService webPushService;
 
+    // Каждый час деактивируем просроченные
+    @Scheduled(cron = "0 0 * * * *")
+    public void deactivateExpired() {
+        List<Subscription> expired = subscriptionRepository.findExpired();
+        for (Subscription sub : expired) {
+            sub.setActive(false);
+            subscriptionRepository.save(sub);
+            log.info("❌ Подписка истекла: {}", sub.getPlayer().getEmail());
+        }
+        if (!expired.isEmpty()) {
+            log.info("🔧 Деактивировано {} просроченных подписок", expired.size());
+        }
+    }
+
     @Scheduled(cron = "0 0 10 * * *")
     public void checkExpiringSubscriptions() {
         List<Subscription> expiringTomorrow = subscriptionRepository.findExpiringTomorrow();

@@ -2,7 +2,7 @@ package ru.pulsecore.app.modules.shared.service;
 
 import org.springframework.stereotype.Component;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Component
 public class NameNormalizer {
@@ -31,7 +31,7 @@ public class NameNormalizer {
         if (players == null) return null;
         return players.stream()
                 .map(this::normalize)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

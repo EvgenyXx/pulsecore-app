@@ -28,54 +28,34 @@ import java.util.UUID;
 @Slf4j
 public class TournamentProcessService {
 
+    private static final long REQUEST_DELAY_MS = 3000;
+
     private final TournamentResultService tournamentResultService;
     private final ResultService resultService;
     private final TournamentRepository tournamentRepository;
     private final PlayerService playerService;
 
-    private static final long REQUEST_DELAY_MS = 3000;
-
     @Transactional
     public void processTournament(List<PlayerNotification> notifications, ParsedResult parsed) {
-        if (notifications == null || notifications.isEmpty()) {
-            log.warn("⏭ processTournament skip: empty notifications");
-            return;
-        }
+        if (isEmpty(notifications)) return;
         TournamentEntity tournament = notifications.get(0).getTournament();
-        if (tournament == null) {
-            log.warn("⏭ processTournament skip: tournament is null");
-            return;
-        }
+        if (tournament == null) return;
+
         log.info("🏁 process finish: tournamentId={}, users={}", parsed.tournamentId(), notifications.size());
+        updateTournamentDates(tournament, parsed);
 
-        int processed = 0, foundCount = 0;
-        List<ResultDto> resultDto = parsed.results();
-
-        // Обновим дату и время турнира если их нет
-        if (tournament.getDate() == null && !parsed.results().isEmpty()) {
-            String dateStr = parsed.results().get(0).getDate();
-            if (dateStr != null && !dateStr.isEmpty()) {
-                try { tournament.setDate(LocalDate.parse(dateStr)); } catch (Exception ignored) {}
-            }
-        }
-        if (tournament.getTime() == null && parsed.time() != null) {
-            tournament.setTime(parsed.time());
-        }
-
+        int processed = 0;
+        int foundCount = 0;
         for (PlayerNotification pn : notifications) {
             Player player = pn.getPlayer();
             if (player == null) continue;
             processed++;
-            boolean found = tournamentResultService.processResults(
-                    resultDto, player, parsed.tournamentId(),
-                    parsed.nightBonus(),
-                    parsed.isFinished() || parsed.isFinalRemoved(),
-                    parsed.hasRemoved(),
-                    parsed.league());
-            if (found) foundCount++;
+            if (processPlayerResults(player, parsed)) foundCount++;
         }
+
         tournament.setFinished(true);
-        log.info("✅ process finish done: tournamentId={}, processed={}, found={}", tournament.getExternalId(), processed, foundCount);
+        log.info("✅ process finish done: tournamentId={}, processed={}, found={}",
+                tournament.getExternalId(), processed, foundCount);
     }
 
     public AddTournamentResponse processByUrl(String url, String playerId) {
@@ -84,58 +64,27 @@ public class TournamentProcessService {
 
     public List<AddTournamentResponse> processByUrls(List<String> urls, String playerId) {
         if (playerId == null) throw new UnauthorizedException();
-        Player player = playerService.findById(UUID.fromString(playerId));
-        if (player == null) throw new PlayerNotFoundException(playerId);
+        findPlayer(playerId); // просто проверить что существует
+
         List<AddTournamentResponse> responses = new ArrayList<>();
         for (int i = 0; i < urls.size(); i++) {
             String url = urls.get(i);
             try {
                 responses.add(processSingleUrl(url, playerId));
-                if (i < urls.size() - 1) {
-                    try { Thread.sleep(REQUEST_DELAY_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-                }
+                delayIfNotLast(i, urls.size());
             } catch (Exception e) {
                 log.error("❌ Ошибка обработки URL: {}", url, e);
-                responses.add(AddTournamentResponse.builder().message("Ошибка: " + e.getMessage()).resultsCount(0).results(List.of()).build());
+                responses.add(buildErrorResponse(e));
             }
         }
         return responses;
     }
 
     private AddTournamentResponse processSingleUrl(String url, String playerId) {
-        Player player = playerService.findById(UUID.fromString(playerId));
-        if (player == null) throw new PlayerNotFoundException(playerId);
-
-        ParsedResult parsed;
-        try {
-            parsed = resultService.calculateAll(url);
-        } catch (Exception e) {
-            throw new TournamentParseException(url, e);
-        }
-
-        LocalDate tournamentDate = null;
-        if (!parsed.results().isEmpty()) {
-            String dateStr = parsed.results().get(0).getDate();
-            if (dateStr != null && !dateStr.isEmpty()) {
-                try { tournamentDate = LocalDate.parse(dateStr); } catch (Exception ignored) {}
-            }
-        }
-
-        // Найти или создать турнир
-        TournamentEntity tournament = tournamentRepository.findByExternalId(parsed.tournamentId())
-                .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder()
-                        .externalId(parsed.tournamentId())
-                        .link(url)
-                        .build()));
-
-        // Обновить дату и время, если их нет
-        if (tournament.getDate() == null && tournamentDate != null) {
-            tournament.setDate(tournamentDate);
-        }
-        if (tournament.getTime() == null && parsed.time() != null && !parsed.time().isEmpty()) {
-            tournament.setTime(parsed.time());
-        }
-        tournamentRepository.save(tournament);
+        Player player = findPlayer(playerId);
+        ParsedResult parsed = parseUrl(url);
+        TournamentEntity tournament = findOrCreateTournament(parsed, url);
+        updateTournamentDates(tournament, parsed);
 
         tournamentResultService.processResults(
                 parsed.results(), player, parsed.tournamentId(),
@@ -144,11 +93,93 @@ public class TournamentProcessService {
                 parsed.hasRemoved(),
                 parsed.league());
 
+        return buildSuccessResponse(parsed);
+    }
+
+    private Player findPlayer(String playerId) {
+        Player player = playerService.findById(UUID.fromString(playerId));
+        if (player == null) throw new PlayerNotFoundException(playerId);
+        return player;
+    }
+
+    private ParsedResult parseUrl(String url) {
+        try {
+            return resultService.calculateAll(url);
+        } catch (Exception e) {
+            throw new TournamentParseException(url, e);
+        }
+    }
+
+    private TournamentEntity findOrCreateTournament(ParsedResult parsed, String url) {
+        return tournamentRepository.findByExternalId(parsed.tournamentId())
+                .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder()
+                        .externalId(parsed.tournamentId())
+                        .link(url)
+                        .build()));
+    }
+
+    private void updateTournamentDates(TournamentEntity tournament, ParsedResult parsed) {
+        if (tournament.getDate() == null) {
+            tournament.setDate(extractDate(parsed));
+        }
+        if (tournament.getTime() == null && parsed.time() != null && !parsed.time().isEmpty()) {
+            tournament.setTime(parsed.time());
+        }
+        tournamentRepository.save(tournament);
+    }
+
+    private LocalDate extractDate(ParsedResult parsed) {
+        if (parsed.results().isEmpty()) return null;
+        String dateStr = parsed.results().get(0).getDate();
+        if (dateStr == null || dateStr.isEmpty()) return null;
+        try {
+            return LocalDate.parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private boolean processPlayerResults(Player player, ParsedResult parsed) {
+        return tournamentResultService.processResults(
+                parsed.results(), player, parsed.tournamentId(),
+                parsed.nightBonus(),
+                parsed.isFinished() || parsed.isFinalRemoved(),
+                parsed.hasRemoved(),
+                parsed.league());
+    }
+
+    private boolean isEmpty(List<?> list) {
+        if (list == null || list.isEmpty()) {
+            log.warn("⏭ processTournament skip: empty notifications");
+            return true;
+        }
+        return false;
+    }
+
+    private void delayIfNotLast(int index, int total) {
+        if (index < total - 1) {
+            try {
+                Thread.sleep(REQUEST_DELAY_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private AddTournamentResponse buildSuccessResponse(ParsedResult parsed) {
         return AddTournamentResponse.builder()
                 .message("Турнир обработан")
                 .tournamentId(parsed.tournamentId())
                 .resultsCount(parsed.results().size())
                 .results(parsed.results())
                 .build();
-    }//todo его менять на старый
+    }
+
+    private AddTournamentResponse buildErrorResponse(Exception e) {
+        return AddTournamentResponse.builder()
+                .message("Ошибка: " + e.getMessage())
+                .resultsCount(0)
+                .results(List.of())
+                .build();
+    }
 }
