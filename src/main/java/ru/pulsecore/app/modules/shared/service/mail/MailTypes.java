@@ -9,6 +9,7 @@ public final class MailTypes {
     public static final String ADMIN_NEW_USER = "admin_new_user";
     public static final String ADMIN_PAYMENT_RECEIVED = "admin_payment_received";
     public static final String WELCOME = "welcome";
+    public static final String PLAYER_REPORT = "player_report";
 
     private MailTypes() {}
 }
