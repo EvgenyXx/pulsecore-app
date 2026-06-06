@@ -22,6 +22,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(subscriptionInterceptor)
                 .addPathPatterns(
+                        "/api/player/*/dashboard",
+                        "/api/player/halls",
                         "/api/player/*/sum",
                         "/api/player/*/tournaments",
                         "/api/player/*/top/**",
