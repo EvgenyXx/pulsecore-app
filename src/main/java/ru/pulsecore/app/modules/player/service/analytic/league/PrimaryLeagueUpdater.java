@@ -25,12 +25,10 @@ public class PrimaryLeagueUpdater {
 
     @PostConstruct
     public void init() {
-        updateAllPrimaryLeagues();
+        updatePrimaryLeaguesOnly();
     }
 
-    @Scheduled(cron = "0 */5 * * * *")
-    @Transactional
-    public void updateAllPrimaryLeagues() {
+    private void updatePrimaryLeaguesOnly() {
         List<Player> players = playerRepository.findAll();
         for (Player player : players) {
             String primary = tournamentResultRepository.findPrimaryLeague(player.getId());
@@ -40,8 +38,12 @@ public class PrimaryLeagueUpdater {
             }
         }
         log.info("Обновлены основные лиги для {} игроков", players.size());
+    }
 
-        // Обновляем вьюху топа
+    @Scheduled(cron = "0 */5 * * * *")
+    @Transactional
+    public void updateAllPrimaryLeagues() {
+        updatePrimaryLeaguesOnly();
         entityManager.createNativeQuery("REFRESH MATERIALIZED VIEW top_players_view").executeUpdate();
         log.info("Обновлена вьюха top_players_view");
     }
