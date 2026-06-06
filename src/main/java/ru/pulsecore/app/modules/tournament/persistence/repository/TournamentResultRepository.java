@@ -13,6 +13,7 @@ import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.tournament.api.dto.DailyIncomeProjection;
 import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;
 import ru.pulsecore.app.modules.tournament.api.dto.MonthlyIncomeProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.WeeklyStatsProjection;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
 
 import java.time.LocalDate;
@@ -25,7 +26,20 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
 
     // Добавить в TournamentResultRepository:
 
-
+    @Query("""
+    SELECT p.name AS name, 
+           COUNT(tr) AS tournaments, 
+           COALESCE(ROUND(SUM(tr.amount)), 0) AS total,
+           COALESCE(ROUND(AVG(tr.amount)), 0) AS average
+    FROM TournamentResultEntity tr
+    JOIN Player p ON tr.player.id = p.id
+    WHERE tr.player.id = :playerId 
+      AND tr.date BETWEEN :from AND :to
+    GROUP BY p.name
+    """)
+    List<WeeklyStatsProjection> getWeeklyStats(@Param("playerId") UUID playerId,
+                                               @Param("from") LocalDate from,
+                                               @Param("to") LocalDate to);
 
 
     @Query(value = """
