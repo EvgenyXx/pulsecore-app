@@ -2,7 +2,6 @@
 package ru.pulsecore.app.modules.player.service.analytic.league;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +20,15 @@ public class PrimaryLeagueUpdater {
 
     private final PlayerRepository playerRepository;
     private final TournamentResultRepository tournamentResultRepository;
-    private final EntityManager entityManager;
 
     @PostConstruct
     public void init() {
-        updatePrimaryLeaguesOnly();
+        updateAllPrimaryLeagues();
     }
 
-    private void updatePrimaryLeaguesOnly() {
+    @Scheduled(cron = "0 */5 * * * *")
+    @Transactional
+    public void updateAllPrimaryLeagues() {
         List<Player> players = playerRepository.findAll();
         for (Player player : players) {
             String primary = tournamentResultRepository.findPrimaryLeague(player.getId());
@@ -38,13 +38,5 @@ public class PrimaryLeagueUpdater {
             }
         }
         log.info("Обновлены основные лиги для {} игроков", players.size());
-    }
-
-    @Scheduled(cron = "0 */5 * * * *")
-    @Transactional
-    public void updateAllPrimaryLeagues() {
-        updatePrimaryLeaguesOnly();
-        entityManager.createNativeQuery("REFRESH MATERIALIZED VIEW top_players_view").executeUpdate();
-        log.info("Обновлена вьюха top_players_view");
     }
 }
