@@ -45,10 +45,6 @@ public class PlayerController {
         return ResponseEntity.ok(playerFacade.searchPlayers(q));
     }
 
-    @DeleteMapping(PlayerApi.DELETE_ACCOUNT)
-    public ResponseEntity<MessageResponse> deleteAccount(@CurrentPlayer PlayerPrincipal principal) {
-        return ResponseEntity.ok(playerFacade.deleteAccount(principal.playerId()));
-    }
 
     @PutMapping(PlayerApi.NOTIFICATIONS)
     public ResponseEntity<MessageResponse> toggleNotifications(

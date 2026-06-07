@@ -14,7 +14,7 @@ public final class PlayerApi {
     public static final String CHANGE_PASSWORD = "/change-password";
     public static final String SEARCH = "/search";
     public static final String SEARCH_PARAM = "q";
-    public static final String DELETE_ACCOUNT = "/account";
+
     public static final String NOTIFICATIONS = "/notifications";
     public static final String NOTIFICATIONS_STATUS = "/notifications/status";
 
