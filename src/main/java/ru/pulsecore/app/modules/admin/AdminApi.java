@@ -1,6 +1,8 @@
 package ru.pulsecore.app.modules.admin;
 
 public final class AdminApi {
+
+
     private AdminApi() {}
 
     public static final String BASE = "/api/admin";
@@ -24,4 +26,6 @@ public final class AdminApi {
     public static final String BROADCAST = "/broadcast";
 
     public static final String PAGE_VIEWS_STATS = "/stats/page-views";
+
+    public static final String PAGE_VIEWS_PLAYERS = "/stats/page-views/players";
 }
