@@ -19,7 +19,6 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final PlayerService playerService;
 
-
     @Transactional
     public void deactivate(UUID playerId) {
         Player player = playerService.getById(playerId);
@@ -30,7 +29,6 @@ public class SubscriptionService {
             log.info("❌ Подписка отключена для {}", player.getEmail());
         }
     }
-
 
     @Transactional
     public void activate(UUID playerId, int days) {
@@ -59,7 +57,7 @@ public class SubscriptionService {
         boolean active = sub.map(Subscription::isActiveNow).orElse(false);
         if (active) {
             Player player = sub.get().getPlayer();
-            log.info("✅ Активная подписка: {}", player.getName());
+            log.debug("✅ Активная подписка: {}", player.getName());
         }
         return active;
     }

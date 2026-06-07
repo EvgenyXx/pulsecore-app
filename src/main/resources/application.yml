@@ -68,6 +68,8 @@ logging:
             org.hibernate.SQL: warn
             org.flywaydb: debug
             ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
+            ru.pulsecore.app.modules.shared.config.RequestLoggingFilter: WARN
+            ru.pulsecore.app.modules.player.service.subscription.SubscriptionService: WARN
 
 app:
 
