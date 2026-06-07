@@ -34,5 +34,7 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     // ── OAuth методы ──
     Optional<Player> findByOauthProviderAndOauthId(String provider, String oauthId);
+
+    List<Player> findByVerifiedTrueAndIsBlockedFalse();
     // ── конец OAuth ──
 }
