@@ -74,6 +74,7 @@
         <div class="nav-item" id="nav-prices" onclick="showSection('prices')"><span class="nav-icon">💵</span><div><div class="font-medium text-sm">Цены</div></div></div>
         <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')"><span class="nav-icon">🧮</span><div><div class="font-medium text-sm">Расчёт</div></div></div>
         <div class="nav-item" id="nav-broadcast" onclick="showSection('broadcast')"><span class="nav-icon">📢</span><div><div class="font-medium text-sm">Рассылка</div><div class="text-xs opacity-60">Push и email всем</div></div></div>
+        <div class="nav-item" id="nav-stats" onclick="showSection('stats')"><span class="nav-icon">📊</span><div><div class="font-medium text-sm">Статистика</div><div class="text-xs opacity-60">Посещаемость</div></div></div>
         <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Дашборд</div><div class="text-xs opacity-60">Вернуться</div></div></a>
     </nav>
     <button onclick="logout()" class="flex items-center gap-2 text-gray-500 hover:text-red-400 text-sm mt-4 py-3 px-4 rounded-xl hover:bg-red-500/5 transition-colors w-full">🚪 Выйти</button>
@@ -155,6 +156,32 @@
             </div>
         </div>
 
+        <!-- РАЗДЕЛ: СТАТИСТИКА -->
+        <div id="section-stats" class="hidden">
+            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">📊 Статистика посещений</h2><p class="text-emerald-400/50 mt-1 text-sm">Самые популярные страницы за последние дни</p></div>
+            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
+                <div class="flex items-center gap-3 mb-4">
+                    <label class="text-xs text-emerald-300/70 font-medium">📅 Дней:</label>
+                    <select id="statsDays" onchange="loadPageStats()" class="select select-bordered select-sm input-glow text-white">
+                        <option value="1">1 день</option>
+                        <option value="3">3 дня</option>
+                        <option value="7" selected>7 дней</option>
+                        <option value="14">14 дней</option>
+                        <option value="30">30 дней</option>
+                    </select>
+                    <button onclick="loadPageStats()" class="btn btn-sm btn-secondary">🔄 Обновить</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="table table-sm w-full">
+                        <thead><tr class="text-gray-400"><th>Путь</th><th>Метод</th><th>Запросов</th><th>%</th></tr></thead>
+                        <tbody id="statsTableBody">
+                        <tr><td colspan="4" class="text-center text-gray-500 py-4">Загрузка...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
 
@@ -164,6 +191,7 @@
     <div class="mobile-nav-item" id="mob-nav-prices" onclick="showSection('prices')"><span class="m-icon">💵</span>Цены</div>
     <div class="mobile-nav-item" id="mob-nav-calculate" onclick="showSection('calculate')"><span class="m-icon">🧮</span>Расчёт</div>
     <div class="mobile-nav-item" id="mob-nav-broadcast" onclick="showSection('broadcast')"><span class="m-icon">📢</span>Рассылка</div>
+    <div class="mobile-nav-item" id="mob-nav-stats" onclick="showSection('stats')"><span class="m-icon">📊</span>Статистика</div>
     <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Дашборд</a>
     <div class="mobile-nav-item" onclick="logout()"><span class="m-icon">🚪</span>Выйти</div>
 </div>
@@ -183,9 +211,10 @@
         document.querySelectorAll('.mobile-nav-item').forEach(e=>e.classList.remove('active'));
         document.getElementById('nav-'+s)?.classList.add('active');
         document.getElementById('mob-nav-'+s)?.classList.add('active');
-        ['players','subscriptions','prices','calculate','broadcast'].forEach(sec => {
+        ['players','subscriptions','prices','calculate','broadcast','stats'].forEach(sec => {
             document.getElementById('section-'+sec).classList.toggle('hidden', sec!==s);
         });
+        if (s === 'stats') loadPageStats();
     }
 
     async function searchPlayers(section) {
@@ -402,6 +431,45 @@
             btn.disabled = false;
             btn.innerHTML = '🚀 Отправить всем';
             msg.classList.remove('hidden');
+        }
+    }
+
+    async function loadPageStats() {
+        const days = document.getElementById('statsDays').value;
+        const tbody = document.getElementById('statsTableBody');
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4"><span class="spinner-sm"></span> Загрузка...</td></tr>';
+
+        try {
+            const res = await fetch(`/api/admin/stats/page-views?days=${days}`, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+
+            const total = data.reduce((sum, item) => sum + item.count, 0);
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4">Нет данных за этот период</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => {
+                const percent = total > 0 ? ((item.count / total) * 100).toFixed(1) : 0;
+                const barWidth = Math.max(percent * 3, 1);
+                return `<tr>
+                    <td class="text-white text-sm font-medium">${item.path}</td>
+                    <td><span class="badge badge-sm ${item.method === 'GET' ? 'badge-active' : item.method === 'POST' ? 'badge-admin' : 'badge-inactive'}">${item.method}</span></td>
+                    <td class="text-white font-semibold">${item.count}</td>
+                    <td>
+                        <div class="flex items-center gap-2">
+                            <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                <div class="bg-emerald-500/60 h-2 rounded-full" style="width:${barWidth}px"></div>
+                            </div>
+                            <span class="text-xs text-emerald-300/60 w-12 text-right">${percent}%</span>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-red-400 py-4">❌ Ошибка загрузки</td></tr>';
         }
     }
 

@@ -22,4 +22,6 @@ public final class AdminApi {
     public static final String PLAYER_TOURNAMENTS_RESYNC = "/players/{id}/tournaments/resync";
 
     public static final String BROADCAST = "/broadcast";
+
+    public static final String PAGE_VIEWS_STATS = "/stats/page-views";
 }
