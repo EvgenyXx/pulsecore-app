@@ -73,6 +73,7 @@
         <div class="nav-item" id="nav-subscriptions" onclick="showSection('subscriptions')"><span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписки</div><div class="text-xs opacity-60">Выдача и отключение</div></div></div>
         <div class="nav-item" id="nav-prices" onclick="showSection('prices')"><span class="nav-icon">💵</span><div><div class="font-medium text-sm">Цены</div></div></div>
         <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')"><span class="nav-icon">🧮</span><div><div class="font-medium text-sm">Расчёт</div></div></div>
+        <div class="nav-item" id="nav-broadcast" onclick="showSection('broadcast')"><span class="nav-icon">📢</span><div><div class="font-medium text-sm">Рассылка</div><div class="text-xs opacity-60">Push и email всем</div></div></div>
         <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Дашборд</div><div class="text-xs opacity-60">Вернуться</div></div></a>
     </nav>
     <button onclick="logout()" class="flex items-center gap-2 text-gray-500 hover:text-red-400 text-sm mt-4 py-3 px-4 rounded-xl hover:bg-red-500/5 transition-colors w-full">🚪 Выйти</button>
@@ -143,6 +144,17 @@
             </div>
         </div>
 
+        <!-- РАЗДЕЛ: РАССЫЛКА -->
+        <div id="section-broadcast" class="hidden">
+            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">📢 Рассылка</h2><p class="text-emerald-400/50 mt-1 text-sm">Отправить push и email всем верифицированным пользователям</p></div>
+            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
+                <label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">📝 Текст сообщения</label>
+                <textarea id="broadcastMessage" rows="4" placeholder="Например: Выкатили обновление — турниры теперь грузятся в 2 раза быстрее!" class="textarea textarea-bordered w-full input-glow text-white resize-none"></textarea>
+                <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-admin w-full sm:w-auto btn-3d mt-4">🚀 Отправить всем</button>
+                <p id="broadcastMsg" class="text-xs text-center mt-3 hidden"></p>
+            </div>
+        </div>
+
     </div>
 </main>
 
@@ -151,6 +163,7 @@
     <div class="mobile-nav-item" id="mob-nav-subscriptions" onclick="showSection('subscriptions')"><span class="m-icon">💳</span>Подписки</div>
     <div class="mobile-nav-item" id="mob-nav-prices" onclick="showSection('prices')"><span class="m-icon">💵</span>Цены</div>
     <div class="mobile-nav-item" id="mob-nav-calculate" onclick="showSection('calculate')"><span class="m-icon">🧮</span>Расчёт</div>
+    <div class="mobile-nav-item" id="mob-nav-broadcast" onclick="showSection('broadcast')"><span class="m-icon">📢</span>Рассылка</div>
     <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Дашборд</a>
     <div class="mobile-nav-item" onclick="logout()"><span class="m-icon">🚪</span>Выйти</div>
 </div>
@@ -170,7 +183,7 @@
         document.querySelectorAll('.mobile-nav-item').forEach(e=>e.classList.remove('active'));
         document.getElementById('nav-'+s)?.classList.add('active');
         document.getElementById('mob-nav-'+s)?.classList.add('active');
-        ['players','subscriptions','prices','calculate'].forEach(sec => {
+        ['players','subscriptions','prices','calculate','broadcast'].forEach(sec => {
             document.getElementById('section-'+sec).classList.toggle('hidden', sec!==s);
         });
     }
@@ -346,6 +359,50 @@
         if(!p1||!p2||p1<1||p2<1){ msg.textContent="❌ Введите корректные цены"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); return; }
         btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Сохраняем...'; msg.classList.add("hidden");
         try { const r=await fetch("/api/admin/prices",{method:"PUT",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({"1":p1,"2":p2})}); if(!r.ok)throw new Error(); msg.textContent="✅ Цены обновлены"; msg.className="text-xs text-center mt-3 text-emerald-400"; msg.classList.remove("hidden"); } catch(e){ msg.textContent="❌ Ошибка"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); } finally { btn.disabled=false; btn.innerHTML="💾 Сохранить цены"; }
+    }
+
+    async function sendBroadcast() {
+        const message = document.getElementById('broadcastMessage').value.trim();
+        const msg = document.getElementById('broadcastMsg');
+        const btn = document.getElementById('broadcastBtn');
+
+        if (!message) {
+            msg.textContent = '❌ Введите текст сообщения';
+            msg.className = 'text-xs text-center mt-3 text-red-400';
+            msg.classList.remove('hidden');
+            return;
+        }
+
+        if (!confirm(`Отправить push и email всем пользователям?\n\n"${message}"`)) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-sm"></span> Отправляем...';
+        msg.classList.add('hidden');
+
+        try {
+            const res = await fetch('/api/admin/broadcast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ message })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                msg.textContent = '❌ ' + (data.message || 'Ошибка');
+                msg.className = 'text-xs text-center mt-3 text-red-400';
+            } else {
+                msg.textContent = data.message;
+                msg.className = 'text-xs text-center mt-3 text-emerald-400';
+                document.getElementById('broadcastMessage').value = '';
+            }
+        } catch (e) {
+            msg.textContent = '❌ Ошибка соединения';
+            msg.className = 'text-xs text-center mt-3 text-red-400';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '🚀 Отправить всем';
+            msg.classList.remove('hidden');
+        }
     }
 
     async function logout(){ await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}); window.location.replace("/"); }

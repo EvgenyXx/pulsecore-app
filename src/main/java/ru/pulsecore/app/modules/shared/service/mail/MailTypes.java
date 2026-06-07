@@ -10,6 +10,7 @@ public final class MailTypes {
     public static final String ADMIN_PAYMENT_RECEIVED = "admin_payment_received";
     public static final String WELCOME = "welcome";
     public static final String PLAYER_REPORT = "player_report";
+    public static final String BROADCAST = "broadcast";
 
     private MailTypes() {}
 }

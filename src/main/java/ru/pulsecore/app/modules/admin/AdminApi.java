@@ -11,19 +11,15 @@ public final class AdminApi {
 
     public static final String DELETE_PLAYER = "/players/{id}";
 
-
     public static final String SUBSCRIBE = "/players/{id}/subscribe";
     public static final String UNSUBSCRIBE = "/players/{id}/unsubscribe";
 
-
-
     public static final String TOURNAMENT_CALCULATE = "/tournaments/calculate";
 
-    public static final String PLAYER_SUBSCRIPTION = "/players/{id}/subscription";  // ← ДОБАВИТЬ
+    public static final String PLAYER_SUBSCRIPTION = "/players/{id}/subscription";
 
     public static final String PLAYER_TOURNAMENTS = "/players/{id}/tournaments";
     public static final String PLAYER_TOURNAMENTS_RESYNC = "/players/{id}/tournaments/resync";
 
-
-
+    public static final String BROADCAST = "/broadcast";
 }
