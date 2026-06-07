@@ -12,7 +12,7 @@
     <style>
         html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
         * { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 100vh; min-height: 100dvh; background: #051210; position: relative; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; touch-action: pan-y pinch-zoom; }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 100vh; min-height: 100dvh; background: #051210; position: relative; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
         .bg-mesh { position: fixed; inset: 0; z-index: -5; background-image: radial-gradient(circle at 10% 20%, rgba(16,185,129,0.20) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(20,184,166,0.18) 0%, transparent 40%), radial-gradient(circle at 50% 50%, rgba(52,211,153,0.10) 0%, transparent 60%); }
         .bg-grid { position: fixed; inset: 0; z-index: -4; opacity: 0.12; background-image: linear-gradient(rgba(16,185,129,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.08) 1px, transparent 1px); background-size: 50px 50px; }
         @media (max-width: 767px) { .bg-grid { background-size: 32px 32px; } }
@@ -69,10 +69,9 @@
 <aside class="hidden md:flex glass-nav w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-3 mb-10 px-1"><div class="w-11 h-11 rounded-xl bg-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/10"><span class="text-2xl">🛡️</span></div><div><h1 class="text-lg font-bold bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent tracking-tight">PulseCore</h1><p class="text-xs text-emerald-400/60">Админ-панель</p></div></div>
     <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item active" id="nav-tournaments" onclick="showSection('tournaments')"><span class="nav-icon">🏆</span><div><div class="font-medium text-sm">Управление турнирами</div></div></div>
-        <div class="nav-item" id="nav-subscriptions" onclick="showSection('subscriptions')"><span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписки</div></div></div>
-        <div class="nav-item" id="nav-roles" onclick="showSection('roles')"><span class="nav-icon">👑</span><div><div class="font-medium text-sm">Роли</div></div></div>
-        <div class="nav-item" id="nav-prices" onclick="showSection('prices')"><span class="nav-icon">💵</span><div><div class="font-medium text-sm">Тарифы подписки</div></div></div>
+        <div class="nav-item active" id="nav-players" onclick="showSection('players')"><span class="nav-icon">👥</span><div><div class="font-medium text-sm">Игроки</div><div class="text-xs opacity-60">Управление, роли, турниры</div></div></div>
+        <div class="nav-item" id="nav-subscriptions" onclick="showSection('subscriptions')"><span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписки</div><div class="text-xs opacity-60">Выдача и отключение</div></div></div>
+        <div class="nav-item" id="nav-prices" onclick="showSection('prices')"><span class="nav-icon">💵</span><div><div class="font-medium text-sm">Цены</div></div></div>
         <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')"><span class="nav-icon">🧮</span><div><div class="font-medium text-sm">Расчёт</div></div></div>
         <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Дашборд</div><div class="text-xs opacity-60">Вернуться</div></div></a>
     </nav>
@@ -82,19 +81,31 @@
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8 lg:p-10 pb-24 md:pb-10">
     <div class="max-w-3xl mx-auto w-full content-panel">
 
-        <div id="section-tournaments">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">🏆 Управление турнирами</h2><p class="text-emerald-400/50 mt-1 text-sm">Поиск игрока и управление его турнирами</p></div>
-            <div class="glass rounded-2xl p-4 sm:p-6 mb-5"><label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label><input id="tourSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('tour')"><div id="tourSearchResults" class="mt-3 space-y-2 hidden"></div></div>
-            <div id="tourSelectedPlayer" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
-                <div class="flex justify-between items-start mb-4 flex-wrap gap-2"><div><p class="text-xs text-emerald-300/60 uppercase tracking-wider mb-1">Выбранный игрок</p><p class="text-white font-semibold text-base sm:text-lg" id="tourSelName"></p><p class="text-xs sm:text-sm text-emerald-300/40" id="tourSelEmail"></p></div></div>
-                <div class="flex gap-3 flex-wrap">
-                    <button onclick="deletePlayerTournaments()" class="btn btn-sm btn-danger flex-1">🗑 Удалить все турниры</button>
-                    <button onclick="resyncPlayerTournaments()" class="btn btn-sm btn-primary flex-1">🔄 Перезагрузить историю</button>
+        <!-- РАЗДЕЛ: ИГРОКИ -->
+        <div id="section-players">
+            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">👥 Игроки</h2><p class="text-emerald-400/50 mt-1 text-sm">Поиск, управление ролями, турнирами, удаление</p></div>
+            <div class="glass rounded-2xl p-4 sm:p-6 mb-5"><label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label><input id="playerSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('players')"><div id="playerSearchResults" class="mt-3 space-y-2 hidden"></div></div>
+            <div id="playerSelected" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
+                <div class="flex justify-between items-start mb-4 flex-wrap gap-2">
+                    <div><p class="text-xs text-emerald-300/60 uppercase tracking-wider mb-1">Выбранный игрок</p><p class="text-white font-semibold text-base sm:text-lg" id="playerSelName"></p><p class="text-xs sm:text-sm text-emerald-300/40" id="playerSelEmail"></p></div>
+                    <div class="flex gap-1 flex-wrap" id="playerSelBadges"></div>
                 </div>
-                <p id="tourActionsMsg" class="text-xs text-center mt-3 hidden"></p>
+                <div class="flex gap-2 flex-wrap mb-3">
+                    <button onclick="togglePlayerRole('ROLE_ADMIN')" id="grantAdminBtn" class="btn btn-sm btn-admin hidden">👑 Сделать админом</button>
+                    <button onclick="togglePlayerRole('ROLE_ADMIN')" id="revokeAdminBtn" class="btn btn-sm btn-danger hidden">🔻 Разжаловать</button>
+                </div>
+                <div class="flex gap-2 flex-wrap mb-3">
+                    <button onclick="deletePlayerTournaments()" class="btn btn-sm btn-danger">🗑 Удалить все турниры</button>
+                    <button onclick="resyncPlayerTournaments()" class="btn btn-sm btn-primary">🔄 Перезагрузить историю</button>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="deletePlayerAccount()" id="deletePlayerBtn" class="btn btn-sm bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30">🗑 Удалить аккаунт</button>
+                </div>
+                <p id="playerMsg" class="text-xs text-center mt-3 hidden"></p>
             </div>
         </div>
 
+        <!-- РАЗДЕЛ: ПОДПИСКИ -->
         <div id="section-subscriptions" class="hidden">
             <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">💳 Подписки</h2><p class="text-emerald-400/50 mt-1 text-sm">Поиск игроков и управление подписками</p></div>
             <div class="glass rounded-2xl p-4 sm:p-6 mb-5"><label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label><input id="subSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('sub')"><div id="subSearchResults" class="mt-3 space-y-2 hidden"></div></div>
@@ -105,18 +116,9 @@
             </div>
         </div>
 
-        <div id="section-roles" class="hidden">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">👑 Роли</h2><p class="text-emerald-400/50 mt-1 text-sm">Поиск игроков и управление ролями</p></div>
-            <div class="glass rounded-2xl p-4 sm:p-6 mb-5"><label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label><input id="roleSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('role')"><div id="roleSearchResults" class="mt-3 space-y-2 hidden"></div></div>
-            <div id="roleSelectedPlayer" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
-                <div class="flex justify-between items-start mb-4 flex-wrap gap-2"><div><p class="text-xs text-emerald-300/60 uppercase tracking-wider mb-1">Выбранный игрок</p><p class="text-white font-semibold text-base sm:text-lg" id="roleSelName"></p><p class="text-xs sm:text-sm text-emerald-300/40" id="roleSelEmail"></p></div><div class="flex gap-1 flex-wrap" id="roleSelBadges"></div></div>
-                <div class="flex gap-2 flex-wrap"><button onclick="toggleRole('ROLE_ADMIN')" id="grantAdminBtn" class="btn btn-sm btn-admin hidden">👑 Сделать админом</button><button onclick="toggleRole('ROLE_ADMIN')" id="revokeAdminBtn" class="btn btn-sm btn-danger hidden">🔻 Разжаловать</button></div>
-                <p id="roleMsg" class="text-xs text-center mt-3 hidden"></p>
-            </div>
-        </div>
-
+        <!-- РАЗДЕЛ: ЦЕНЫ -->
         <div id="section-prices" class="hidden">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">💵 Управление ценами</h2><p class="text-emerald-400/50 mt-1 text-sm">Изменение стоимости подписки</p></div>
+            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">💵 Цены</h2><p class="text-emerald-400/50 mt-1 text-sm">Изменение стоимости подписки</p></div>
             <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4"><div><label class="text-xs text-emerald-300/70 mb-1 block font-medium">💰 1 месяц (₽)</label><input id="price1Input" type="number" min="1" class="input input-bordered w-full input-glow text-white text-lg font-bold"></div><div><label class="text-xs text-emerald-300/70 mb-1 block font-medium">💰 2 месяца (₽)</label><input id="price2Input" type="number" min="1" class="input input-bordered w-full input-glow text-white text-lg font-bold"></div></div>
                 <div class="flex gap-3 flex-wrap"><button onclick="loadCurrentPrices()" class="btn btn-sm btn-secondary">🔄 Загрузить текущие</button><button onclick="updatePrices()" id="updatePricesBtn" class="btn btn-admin flex-1 btn-3d">💾 Сохранить цены</button></div>
@@ -124,6 +126,7 @@
             </div>
         </div>
 
+        <!-- РАЗДЕЛ: РАСЧЁТ -->
         <div id="section-calculate" class="hidden">
             <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">🧮 Расчёт игрока</h2><p class="text-emerald-400/50 mt-1 text-sm">Посчитать заработок любого игрока за период</p></div>
             <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
@@ -144,9 +147,8 @@
 </main>
 
 <div class="mobile-nav">
-    <div class="mobile-nav-item active" id="mob-nav-tournaments" onclick="showSection('tournaments')"><span class="m-icon">🏆</span>Турниры</div>
+    <div class="mobile-nav-item active" id="mob-nav-players" onclick="showSection('players')"><span class="m-icon">👥</span>Игроки</div>
     <div class="mobile-nav-item" id="mob-nav-subscriptions" onclick="showSection('subscriptions')"><span class="m-icon">💳</span>Подписки</div>
-    <div class="mobile-nav-item" id="mob-nav-roles" onclick="showSection('roles')"><span class="m-icon">👑</span>Роли</div>
     <div class="mobile-nav-item" id="mob-nav-prices" onclick="showSection('prices')"><span class="m-icon">💵</span>Цены</div>
     <div class="mobile-nav-item" id="mob-nav-calculate" onclick="showSection('calculate')"><span class="m-icon">🧮</span>Расчёт</div>
     <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Дашборд</a>
@@ -168,14 +170,14 @@
         document.querySelectorAll('.mobile-nav-item').forEach(e=>e.classList.remove('active'));
         document.getElementById('nav-'+s)?.classList.add('active');
         document.getElementById('mob-nav-'+s)?.classList.add('active');
-        ['tournaments','subscriptions','roles','prices','calculate'].forEach(sec => {
+        ['players','subscriptions','prices','calculate'].forEach(sec => {
             document.getElementById('section-'+sec).classList.toggle('hidden', sec!==s);
         });
     }
 
     async function searchPlayers(section) {
-        const inputId = section==='sub'?'subSearchInput':section==='role'?'roleSearchInput':'tourSearchInput';
-        const resultsId = section==='sub'?'subSearchResults':section==='role'?'roleSearchResults':'tourSearchResults';
+        const inputId = section==='sub'?'subSearchInput':'playerSearchInput';
+        const resultsId = section==='sub'?'subSearchResults':'playerSearchResults';
         const q=document.getElementById(inputId).value.trim();
         const results=document.getElementById(resultsId);
         if(q.length<2){results.classList.add("hidden");return;}
@@ -191,26 +193,26 @@
 
     function selectPlayer(id,name,email,section){
         selectedPlayerId=id;
-        if(section==='tour'){
-            document.getElementById('tourSelName').textContent=name;
-            document.getElementById('tourSelEmail').textContent=email;
-            document.getElementById('tourSelectedPlayer').classList.remove('hidden');
-            document.getElementById('tourSearchResults').classList.add('hidden');
-            document.getElementById('tourActionsMsg').classList.add('hidden');
+        if(section==='sub'){
+            document.getElementById('subSelName').textContent=name;
+            document.getElementById('subSelEmail').textContent=email;
+            document.getElementById('subSelectedPlayer').classList.remove('hidden');
+            document.getElementById('subSearchResults').classList.add('hidden');
+            document.getElementById('subMsg').classList.add('hidden');
+            refreshPlayerUI('sub');
         } else {
-            const p=section==='sub'?'sub':'role';
-            document.getElementById(p+'SelName').textContent=name;
-            document.getElementById(p+'SelEmail').textContent=email;
-            document.getElementById(p+'SelectedPlayer').classList.remove('hidden');
-            document.getElementById(p+'SearchResults').classList.add('hidden');
-            document.getElementById(p+'Msg').classList.add('hidden');
-            refreshPlayerUI(section);
+            document.getElementById('playerSelName').textContent=name;
+            document.getElementById('playerSelEmail').textContent=email;
+            document.getElementById('playerSelected').classList.remove('hidden');
+            document.getElementById('playerSearchResults').classList.add('hidden');
+            document.getElementById('playerMsg').classList.add('hidden');
+            refreshPlayerUI('players');
         }
     }
 
     async function deletePlayerTournaments() {
         if(!selectedPlayerId)return;
-        const msg=document.getElementById('tourActionsMsg');
+        const msg=document.getElementById('playerMsg');
         msg.textContent='⏳ Удаление...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
         try{
             const r=await fetch(`/api/admin/players/${selectedPlayerId}/tournaments`,{method:'DELETE'});
@@ -221,7 +223,7 @@
 
     async function resyncPlayerTournaments() {
         if(!selectedPlayerId)return;
-        const msg=document.getElementById('tourActionsMsg');
+        const msg=document.getElementById('playerMsg');
         msg.textContent='⏳ Запуск фоновой загрузки...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
         try{
             const r=await fetch(`/api/admin/players/${selectedPlayerId}/tournaments/resync`,{method:'POST'});
@@ -230,64 +232,79 @@
         }catch(e){ msg.textContent='❌ Ошибка'; msg.className='text-xs text-center text-red-400'; }
     }
 
+    async function deletePlayerAccount() {
+        if(!selectedPlayerId)return;
+        if(!confirm('Удалить аккаунт навсегда? Все данные, результаты и подписка будут удалены.')) return;
+        const msg=document.getElementById('playerMsg');
+        msg.textContent='⏳ Удаление аккаунта...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
+        try{
+            const r=await fetch(`/api/admin/players/${selectedPlayerId}`,{method:'DELETE'});
+            if(!r.ok)throw new Error();
+            msg.textContent='✅ Аккаунт удалён'; msg.className='text-xs text-center text-emerald-400';
+            document.getElementById('playerSelected').classList.add('hidden');
+        }catch(e){ msg.textContent='❌ Ошибка при удалении'; msg.className='text-xs text-center text-red-400'; }
+    }
+
     async function refreshPlayerUI(section){
         if(!selectedPlayerId)return;
-        const p=section==='sub'?'sub':'role';
         const sr=await fetch(ADMIN+selectedPlayerId+'/subscription');
         if(sr.ok)playersCache[selectedPlayerId]=await sr.json();
         const cached=playersCache[selectedPlayerId];
         let badges='';
         if(cached&&cached.active){badges+=`<span class="badge badge-sm badge-active">Подписка до ${new Date(cached.expiresAt).toLocaleDateString("ru-RU")}</span>`;}else{badges+='<span class="badge badge-sm badge-inactive">Нет подписки</span>';}
-        if(section==='sub'){document.getElementById('subSelBadges').innerHTML=badges;document.getElementById('removeSubBtn').classList.toggle('hidden',!(cached&&cached.active));}
-        else{
+
+        if(section==='sub'){
+            document.getElementById('subSelBadges').innerHTML=badges;
+            document.getElementById('removeSubBtn').classList.toggle('hidden',!(cached&&cached.active));
+        } else {
             try{
                 const rr=await fetch(ADMIN+selectedPlayerId+'/roles');
                 const roles=rr.ok?await rr.json():[];
                 if(roles.includes("ROLE_ADMIN"))badges+=' <span class="badge badge-sm badge-admin">Админ</span>';
-                document.getElementById('roleSelBadges').innerHTML=badges;
+                document.getElementById('playerSelBadges').innerHTML=badges;
                 document.getElementById('grantAdminBtn').classList.toggle('hidden',roles.includes("ROLE_ADMIN"));
                 document.getElementById('revokeAdminBtn').classList.toggle('hidden',!roles.includes("ROLE_ADMIN"));
-            }catch(e){document.getElementById('roleSelBadges').innerHTML=badges;document.getElementById('grantAdminBtn').classList.add('hidden');document.getElementById('revokeAdminBtn').classList.add('hidden');}
+            }catch(e){}
         }
+    }
+
+    async function togglePlayerRole(roleName){
+        if(!selectedPlayerId)return;
+        const msg=document.getElementById('playerMsg');
+        const isGrant=!document.getElementById('grantAdminBtn').classList.contains('hidden');
+        const method=isGrant?'POST':'DELETE';
+        const endpoint=isGrant?'roles/grant':'roles/revoke';
+        msg.textContent=isGrant?'⏳ Выдача роли...':'⏳ Отзыв роли...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
+        try{
+            const r=await fetch(ADMIN+selectedPlayerId+'/'+endpoint+'?role='+roleName,{method});
+            if(!r.ok)throw new Error();
+            msg.textContent=isGrant?`✅ Роль ${roleName} выдана`:`✅ Роль ${roleName} отозвана`; msg.className='text-xs text-center text-emerald-400';
+            await refreshPlayerUI('players');
+        }catch(e){msg.textContent='❌ Ошибка';msg.className='text-xs text-center text-red-400';}
     }
 
     async function giveSub(days){
         if(!selectedPlayerId)return;
         const msg=document.getElementById("subMsg");
-        msg.textContent="⏳ Выдача..."; msg.className="text-xs text-center mt-3 text-emerald-300/60"; msg.classList.remove("hidden");
+        msg.textContent='⏳ Выдача...'; msg.className='text-xs text-center mt-3 text-emerald-300/60'; msg.classList.remove('hidden');
         try{
-            const r=await fetch(ADMIN+selectedPlayerId+'/subscribe?days='+days,{method:"POST"});
+            const r=await fetch(ADMIN+selectedPlayerId+'/subscribe?days='+days,{method:'POST'});
             if(!r.ok)throw new Error();
-            msg.textContent=`✅ Подписка выдана на ${days} дней`; msg.className="text-xs text-center mt-3 text-emerald-400";
+            msg.textContent=`✅ Подписка выдана на ${days} дней`; msg.className='text-xs text-center mt-3 text-emerald-400';
             await refreshPlayerUI('sub');
-        }catch(e){msg.textContent="❌ Ошибка при выдаче";msg.className="text-xs text-center mt-3 text-red-400";}
+        }catch(e){msg.textContent='❌ Ошибка при выдаче';msg.className='text-xs text-center mt-3 text-red-400';}
     }
 
     async function removeSub(){
         if(!selectedPlayerId)return;
         const msg=document.getElementById("subMsg");
-        msg.textContent="⏳ Отключение..."; msg.className="text-xs text-center mt-3 text-emerald-300/60"; msg.classList.remove("hidden");
+        msg.textContent='⏳ Отключение...'; msg.className='text-xs text-center mt-3 text-emerald-300/60'; msg.classList.remove('hidden');
         try{
-            const r=await fetch(ADMIN+selectedPlayerId+'/unsubscribe',{method:"DELETE"});
+            const r=await fetch(ADMIN+selectedPlayerId+'/unsubscribe',{method:'DELETE'});
             if(!r.ok)throw new Error();
-            msg.textContent="✅ Подписка отключена"; msg.className="text-xs text-center mt-3 text-emerald-400";
+            msg.textContent='✅ Подписка отключена'; msg.className='text-xs text-center mt-3 text-emerald-400';
             await refreshPlayerUI('sub');
-        }catch(e){msg.textContent="❌ Ошибка при отключении";msg.className="text-xs text-center mt-3 text-red-400";}
-    }
-
-    async function toggleRole(roleName){
-        if(!selectedPlayerId)return;
-        const msg=document.getElementById("roleMsg");
-        const isGrant=!document.getElementById("grantAdminBtn").classList.contains("hidden");
-        const method=isGrant?"POST":"DELETE";
-        const endpoint=isGrant?"roles/grant":"roles/revoke";
-        msg.textContent=isGrant?"⏳ Выдача роли...":"⏳ Отзыв роли..."; msg.className="text-xs text-center mt-3 text-emerald-300/60"; msg.classList.remove("hidden");
-        try{
-            const r=await fetch(ADMIN+selectedPlayerId+'/'+endpoint+'?role='+roleName,{method});
-            if(!r.ok)throw new Error();
-            msg.textContent=isGrant?`✅ Роль ${roleName} выдана`:`✅ Роль ${roleName} отозвана`; msg.className="text-xs text-center mt-3 text-emerald-400";
-            await refreshPlayerUI('role');
-        }catch(e){msg.textContent="❌ Ошибка";msg.className="text-xs text-center mt-3 text-red-400";}
+        }catch(e){msg.textContent='❌ Ошибка при отключении';msg.className='text-xs text-center mt-3 text-red-400';}
     }
 
     async function adminCalculate() {

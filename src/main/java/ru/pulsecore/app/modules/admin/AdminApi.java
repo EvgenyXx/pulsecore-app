@@ -9,6 +9,8 @@ public final class AdminApi {
     public static final String ROLES_REVOKE = "/players/{id}/roles/revoke";
     public static final String ROLES = "/players/{id}/roles";
 
+    public static final String DELETE_PLAYER = "/players/{id}";
+
 
     public static final String SUBSCRIBE = "/players/{id}/subscribe";
     public static final String UNSUBSCRIBE = "/players/{id}/unsubscribe";
