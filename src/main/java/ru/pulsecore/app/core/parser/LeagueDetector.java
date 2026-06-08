@@ -15,12 +15,29 @@ public class LeagueDetector {
         String title = doc.title();
         log.info("League detection: title='{}', html length={}", title, doc.html().length());
 
-        if (title.contains("Лига A") || title.contains("Лига А")) return LeagueType.A;
-        if (title.contains("Лига В") || title.contains("Лига B")) return LeagueType.B;
-        if (title.contains("Лига С") || title.contains("Лига C")) return LeagueType.C;
-        if (title.contains("Лига D")) return LeagueType.D;
-        if (title.contains("Мужская Суперлига") || title.contains("Женская Суперлига")) return LeagueType.SUPER_LEAGUE;
+        LeagueType fromTitle = detectFromText(title);
+        if (fromTitle != null) return fromTitle;
+
+        String bodyText = doc.body().text();
+        LeagueType fromBody = detectFromText(bodyText);
+        if (fromBody != null) {
+            log.info("League detected from body: {}", fromBody);
+            return fromBody;
+        }
 
         throw new LeagueDetectionException(title);
+    }
+
+    private LeagueType detectFromText(String text) {
+        if (text.contains("Лига A") || text.contains("Лига А")
+                || text.contains("Лига: A") || text.contains("Лига: А")) return LeagueType.A;
+        if (text.contains("Лига В") || text.contains("Лига B")
+                || text.contains("Лига: B") || text.contains("Лига: В")) return LeagueType.B;
+        if (text.contains("Лига С") || text.contains("Лига C")
+                || text.contains("Лига: C") || text.contains("Лига: С")) return LeagueType.C;
+        if (text.contains("Лига D") || text.contains("Лига: D")) return LeagueType.D;
+        if (text.contains("Мужская Суперлига") || text.contains("Женская Суперлига")
+                || text.contains("Суперлига")) return LeagueType.SUPER_LEAGUE;
+        return null;
     }
 }
