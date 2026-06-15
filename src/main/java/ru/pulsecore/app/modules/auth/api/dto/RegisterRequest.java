@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.pulsecore.app.modules.shared.validation.RussianEmail;
 
 @Data
 @Builder
@@ -15,8 +16,10 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
     @NotBlank @Size(min = 2, max = 100)
     private String name;
-    @NotBlank @Email
+
+    @NotBlank  @RussianEmail
     private String email;
+
     @NotBlank @Size(min = 6, max = 100)
     private String password;
 }
