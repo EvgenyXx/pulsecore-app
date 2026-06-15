@@ -51,6 +51,12 @@ public class TournamentFinishProcessor {
                 return new Result(false, true);
             }
 
+            // Проверяем, существует ли турнир в БД
+            if (!tournamentRepository.existsById(t.getId())) {
+                log.warn("⚠️ Турнир {} (ID={}) не найден в БД, пропускаем обработку", t.getExternalId(), t.getId());
+                return null;
+            }
+
             // 🏁 FINISHED
             if (finishService.handleFinished(t, notifications, doc)) {
                 return new Result(true, false);

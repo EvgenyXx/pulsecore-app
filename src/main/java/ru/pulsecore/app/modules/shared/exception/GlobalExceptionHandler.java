@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -17,6 +19,26 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ClientAbortException.class)
     public void handleClientAbort(ClientAbortException e) {
         // Клиент оборвал соединение — не логируем
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
+        // Собираем все ошибки полей в одно сообщение
+        String errors = e.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .distinct()
+                .reduce((a, b) -> a + "; " + b)
+                .orElse("Ошибка валидации");
+
+        log.warn("Ошибка валидации: {}", errors);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .status(400)
+                .error("Bad Request")
+                .message(errors)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.badRequest().body(response);
     }
 
 
