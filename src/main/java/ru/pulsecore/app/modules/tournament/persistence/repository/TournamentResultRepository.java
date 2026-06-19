@@ -24,8 +24,7 @@ import java.util.UUID;
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
 
-    // Добавить в TournamentResultRepository:
-
+    // можно использовать как отправка о конкретном пользователи за неделю
     @Query("""
     SELECT p.name AS name, 
            COUNT(tr) AS tournaments, 
