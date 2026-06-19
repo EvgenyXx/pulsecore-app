@@ -10,12 +10,10 @@ export async function loadDashboardWidgets() {
         const data = await API.getDashboard(state.playerId);
         state.primaryLeague = data.primaryLeague || 'A';
 
-        if (data.subscription?.active) {
-            document.getElementById('proBadge').classList.remove('hidden');
-            document.getElementById('subStatusText').textContent = 'Подписка до ' + new Date(data.subscription.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-            document.getElementById('pushToggleContainer')?.classList.remove('hidden');
-            checkPushStatus();
-        }
+        document.getElementById('proBadge').classList.remove('hidden');
+        document.getElementById('subStatusText').textContent = 'Подписка до ' + new Date(data.subscription.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        document.getElementById('pushToggleContainer')?.classList.remove('hidden');
+        checkPushStatus();
 
         const lastHtml = data.lastResult
             ? `<div class="widget-card" onclick="window.open('${data.lastResult.tournamentLink}','_blank')"><div class="flex items-center gap-2 mb-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg><h3 class="font-bold text-sm text-indigo-300">Последний результат</h3></div><p class="text-2xl font-extrabold amount-gold mt-1">${formatMoney(data.lastResult.amount)}</p><p class="text-xs text-zinc-500 mt-auto pt-1">📅 ${data.lastResult.date}</p></div>`
@@ -46,7 +44,16 @@ export async function loadDashboardWidgets() {
 
         container.innerHTML = lastHtml + lineupHtml;
     } catch (e) {
-        container.innerHTML = `<div class="col-span-full text-center py-16 text-zinc-400">❌ Ошибка загрузки</div>`;
+        // 402 Payment Required — нет подписки
+        container.innerHTML = `
+            <div class="col-span-full widget-card rounded-2xl p-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
+                <p class="text-zinc-400 text-sm mb-5">Оформите подписку чтобы открыть все функции</p>
+                <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a>
+            </div>`;
     }
 }
 
