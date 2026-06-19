@@ -24,6 +24,7 @@ body {
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     color: #d4d4d8;
+    padding-top: env(safe-area-inset-top);
 }
 
 /* Галактический фон */
@@ -48,6 +49,18 @@ body {
 }
 
 .bg-orb { display: none; }
+
+/* Звёзды */
+.stars { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+.star {
+    position: absolute; background: #fff; border-radius: 50%;
+    animation: twinkle var(--duration) ease-in-out infinite;
+    animation-delay: var(--delay); opacity: 0;
+}
+@keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.8); }
+}
 
 /* Стекло */
 .glass {
@@ -155,7 +168,14 @@ body {
 .ptr-indicator.active { height: 48px; }
 .ptr-indicator.done { color: #34d399; }
 
-@supports (padding-top: env(safe-area-inset-top)) { #mobileHeader { padding-top: calc(env(safe-area-inset-top) + 8px); } }
+/* PWA Safe Area */
+#mobileHeader {
+    padding-top: max(6px, env(safe-area-inset-top));
+    padding-bottom: 6px;
+}
+main {
+    padding-top: 0;
+}
 
 .hall-checkbox-card { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); }
 .hall-checkbox-card:hover { background: rgba(99,102,241,0.06); border-color: rgba(99,102,241,0.20); }

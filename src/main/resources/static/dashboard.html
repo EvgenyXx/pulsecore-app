@@ -26,7 +26,6 @@
 <div class="stars" id="starsContainer"></div>
 <div id="ptrIndicator" class="ptr-indicator"></div>
 
-<!-- Модалка редактирования турнира -->
 <div id="editTournamentModal" class="modal-overlay hidden" onclick="if(event.target===this)closeEditTournamentModal()">
     <div class="modal-box">
         <h3 class="text-white font-semibold mb-1">✏️ Скорректировать турнир</h3>
@@ -44,21 +43,19 @@
     </div>
 </div>
 
-<!-- Mobile Header -->
-<div id="mobileHeader" class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-        <img src="/img.png" alt="PulseCore" class="w-9 h-9 rounded-xl shadow-lg object-cover">
+<div id="mobileHeader" class="md:hidden glass-strong sticky top-0 z-40 px-4 py-1.5 border-b border-white/5 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+        <img src="/img.png" alt="PulseCore" class="w-7 h-7 rounded-lg object-cover">
         <div>
-            <h1 class="text-base font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1>
-            <p id="mobilePlayerName" class="text-xs text-zinc-400 leading-tight"></p>
+            <h1 class="text-sm font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1>
+            <p id="mobilePlayerName" class="text-[11px] text-zinc-400 leading-tight"></p>
         </div>
     </div>
-    <button id="burgerBtn" onclick="toggleMobileMenu()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 active:scale-90 text-white text-xl">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <button id="burgerBtn" onclick="toggleMobileMenu()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
 </div>
 
-<!-- Mobile Menu -->
 <div id="mobileMenuOverlay" class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden" onclick="toggleMobileMenu()"></div>
 <div id="mobileMenu" class="md:hidden fixed top-0 right-0 h-full w-[300px] max-w-[85vw] glass-sidebar z-50 p-5 flex flex-col transform translate-x-full transition-transform duration-300 ease-out shadow-2xl" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between mb-6">
@@ -106,7 +103,6 @@
     </button>
 </div>
 
-<!-- Sidebar (десктоп) -->
 <aside class="hidden md:flex glass-sidebar w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-3 mb-10 px-1">
         <img src="/img.png" alt="PulseCore" class="w-11 h-11 rounded-xl shadow-lg object-cover">
@@ -151,7 +147,6 @@
     </button>
 </aside>
 
-<!-- Main -->
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10">
     <div id="contentArea" class="max-w-5xl mx-auto w-full">
         <div id="homePage">
