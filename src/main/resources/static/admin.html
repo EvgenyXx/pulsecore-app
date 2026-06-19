@@ -7,184 +7,246 @@
     <link rel="icon" type="image/png" href="/img.png">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px','2xl':'1536px'}}}}</script>
+    <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px'}}}}</script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
     <style>
-        html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
-        * { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 100vh; min-height: 100dvh; background: #051210; position: relative; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
-        .bg-mesh { position: fixed; inset: 0; z-index: -5; background-image: radial-gradient(circle at 10% 20%, rgba(16,185,129,0.20) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(20,184,166,0.18) 0%, transparent 40%), radial-gradient(circle at 50% 50%, rgba(52,211,153,0.10) 0%, transparent 60%); }
-        .bg-grid { position: fixed; inset: 0; z-index: -4; opacity: 0.12; background-image: linear-gradient(rgba(16,185,129,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.08) 1px, transparent 1px); background-size: 50px 50px; }
-        @media (max-width: 767px) { .bg-grid { background-size: 32px 32px; } }
-        .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); z-index: -3; animation: orbFloat 10s ease-in-out infinite; pointer-events: none; }
-        .bg-orb-1 { width: clamp(250px, 40vw, 500px); height: clamp(250px, 40vw, 500px); background: rgba(16,185,129,0.12); top: -15%; right: -10%; }
-        .bg-orb-2 { width: clamp(200px, 30vw, 400px); height: clamp(200px, 30vw, 400px); background: rgba(20,184,166,0.10); bottom: -10%; left: -8%; animation-delay: -5s; }
-        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(25px, -25px) scale(1.08); } 66% { transform: translate(-15px, 20px) scale(0.95); } }
-        .glass { background: rgba(16,185,129,0.08); backdrop-filter: blur(18px) saturate(120%); -webkit-backdrop-filter: blur(18px) saturate(120%); border: 1px solid rgba(16,185,129,0.18); }
-        .glass-strong { background: rgba(16,185,129,0.12); backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%); border: 1px solid rgba(16,185,129,0.28); }
-        .glass-nav { background: rgba(5,18,16,0.90); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border-right: 1px solid rgba(16,185,129,0.18); }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 18px; border-radius: 14px; cursor: pointer; color: #5a9078; border-left: 3px solid transparent; user-select: none; -webkit-user-select: none; transition: all 0.2s ease; }
-        .nav-item:active { transform: scale(0.97); }
-        .nav-item:hover { background: rgba(16,185,129,0.15); color: #6ee7b7; }
-        .nav-item.active { background: rgba(16,185,129,0.22); color: #34d399; border-left-color: #34d399; box-shadow: inset 0 0 30px rgba(16,185,129,0.10); }
-        .nav-item .nav-icon { font-size: 1.25rem; flex-shrink: 0; width: 24px; text-align: center; line-height: 1; }
-        .btn-3d { transition: all 0.25s ease; }
-        .btn-3d:hover { transform: translateY(-2px); }
-        .btn-3d:active { transform: translateY(0) scale(0.97); }
-        .btn-primary { background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(16,185,129,0.4); color: #fff; font-weight: 600; box-shadow: 0 4px 20px rgba(16,185,129,0.25); }
-        .btn-primary:hover { background: linear-gradient(135deg, #34d399, #10b981); box-shadow: 0 8px 30px rgba(16,185,129,0.45); }
-        .btn-secondary { background: rgba(20,184,166,0.15); border: 1px solid rgba(20,184,166,0.30); color: #5eead4; font-weight: 600; }
-        .btn-secondary:hover { background: rgba(20,184,166,0.25); box-shadow: 0 8px 25px rgba(20,184,166,0.30); }
-        .btn-danger { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.30); color: #f87171; font-weight: 600; }
-        .btn-danger:hover { background: rgba(239,68,68,0.25); box-shadow: 0 8px 25px rgba(239,68,68,0.30); }
-        .btn-admin { background: linear-gradient(135deg, #f59e0b, #d97706); border: 1px solid rgba(245,158,11,0.4); color: #fff; font-weight: 600; box-shadow: 0 4px 20px rgba(245,158,11,0.25); }
-        .btn-admin:hover { background: linear-gradient(135deg, #fbbf24, #f59e0b); box-shadow: 0 8px 30px rgba(245,158,11,0.45); }
-        .input-glow { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.22); color: #d1fae5; }
-        .input-glow:focus { box-shadow: 0 0 0 4px rgba(16,185,129,0.15), 0 0 30px rgba(16,185,129,0.10); border-color: rgba(52,211,153,0.6) !important; outline: none; }
-        .player-card { background: rgba(16,185,129,0.05); border-radius: 16px; padding: 14px 18px; cursor: pointer; border: 1px solid rgba(16,185,129,0.12); transition: all 0.2s ease; }
-        .player-card:hover { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.35); transform: translateX(4px); }
-        .badge-active { background: rgba(16,185,129,0.22); color: #34d399; border: 1px solid rgba(16,185,129,0.35); }
-        .badge-inactive { background: rgba(239,68,68,0.18); color: #f87171; border: 1px solid rgba(239,68,68,0.28); }
-        .badge-admin { background: rgba(245,158,11,0.22); color: #fbbf24; border: 1px solid rgba(245,158,11,0.35); }
-        .hidden { display: none; }
-        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,18,16,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(16,185,129,0.18); z-index: 50; display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; }
-        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #5a9078; cursor: pointer; padding: 6px 12px; border-radius: 12px; font-size: 10px; transition: all 0.2s; }
-        .mobile-nav-item.active { color: #34d399; background: rgba(16,185,129,0.12); }
-        .mobile-nav-item .m-icon { font-size: 20px; }
-        @media (min-width: 768px) { .mobile-nav { display: none; } }
-        .result-row { animation: fadeInUp 0.4s ease forwards; opacity: 0; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Inter', sans-serif; min-height: 100dvh; background: #0c0c18; -webkit-font-smoothing: antialiased; }
+        .btn { font-weight: 600; border: none; border-radius: 10px; padding: 10px 16px; cursor: pointer; font-size: 0.85rem; width: 100%; text-align: center; }
+        .btn-indigo { background: #6366f1; color: #fff; }
+        .btn-indigo:hover { background: #4f46e5; }
+        .btn-emerald { background: #10b981; color: #fff; }
+        .btn-emerald:hover { background: #059669; }
+        .btn-danger { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.20); }
+        .btn-danger:hover { background: rgba(239,68,68,0.22); }
+        .btn-amber { background: #f59e0b; color: #000; }
+        .btn-amber:hover { background: #d97706; }
+        .btn-ghost { background: transparent; color: #a1a1aa; border: 1px solid rgba(255,255,255,0.06); padding: 8px 14px; font-size: 0.82rem; font-weight: 500; }
+        .btn-ghost:hover { background: rgba(255,255,255,0.04); color: #e5e5e5; }
+        .input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; color: #e5e5e5; padding: 10px 13px; font-size: 0.88rem; width: 100%; outline: none; font-family: 'Inter'; }
+        .input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.08); }
+        .player-row { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 12px 14px; cursor: pointer; border: 1px solid rgba(255,255,255,0.04); }
+        .player-row:hover { background: rgba(99,102,241,0.06); border-color: rgba(99,102,241,0.20); }
+        .badge { font-size: 0.68rem; padding: 2px 7px; border-radius: 5px; white-space: nowrap; }
+        .badge-green { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.20); }
+        .badge-red { background: rgba(239,68,68,0.10); color: #f87171; border: 1px solid rgba(239,68,68,0.15); }
+        .badge-amber { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.20); }
+        @media (min-width: 768px) { .btn { width: auto; } }
+        .spinner-sm { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.12); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .spinner-sm { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
+<div class="stars" id="starsContainer"></div>
 
-<div class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
-    <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-emerald-500/30 flex items-center justify-center"><span class="text-lg">🛡️</span></div><div><h1 class="text-sm font-bold bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">PulseCore</h1><p class="text-xs text-emerald-400/60">Админ-панель</p></div></div>
-    <a href="/dashboard" class="flex items-center gap-1 text-xs text-emerald-400/60 hover:text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-lg">🏠 Дашборд</a>
+<div id="mobileHeader" class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+        <img src="/img.png" class="w-8 h-8 rounded-lg object-cover">
+        <h1 class="text-sm font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1>
+    </div>
+    <button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
 </div>
 
-<aside class="hidden md:flex glass-nav w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
-    <div class="flex items-center gap-3 mb-10 px-1"><div class="w-11 h-11 rounded-xl bg-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/10"><span class="text-2xl">🛡️</span></div><div><h1 class="text-lg font-bold bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent tracking-tight">PulseCore</h1><p class="text-xs text-emerald-400/60">Админ-панель</p></div></div>
+<div id="mobileMenuOverlay" class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden" onclick="toggleMobileMenu()"></div>
+<div id="mobileMenu" class="md:hidden fixed top-0 right-0 h-full w-[280px] max-w-[85vw] glass-sidebar z-50 p-5 flex flex-col transform translate-x-full transition-transform duration-300 ease-out" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between mb-6">
+        <span class="font-bold text-white text-sm">Меню</span>
+        <button onclick="toggleMobileMenu()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
     <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item active" id="nav-players" onclick="showSection('players')"><span class="nav-icon">👥</span><div><div class="font-medium text-sm">Игроки</div><div class="text-xs opacity-60">Управление, роли, турниры</div></div></div>
-        <div class="nav-item" id="nav-subscriptions" onclick="showSection('subscriptions')"><span class="nav-icon">💳</span><div><div class="font-medium text-sm">Подписки</div><div class="text-xs opacity-60">Выдача и отключение</div></div></div>
-        <div class="nav-item" id="nav-prices" onclick="showSection('prices')"><span class="nav-icon">💵</span><div><div class="font-medium text-sm">Цены</div></div></div>
-        <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')"><span class="nav-icon">🧮</span><div><div class="font-medium text-sm">Расчёт</div></div></div>
-        <div class="nav-item" id="nav-broadcast" onclick="showSection('broadcast')"><span class="nav-icon">📢</span><div><div class="font-medium text-sm">Рассылка</div><div class="text-xs opacity-60">Push и email всем</div></div></div>
-        <div class="nav-item" id="nav-stats" onclick="showSection('stats')"><span class="nav-icon">📊</span><div><div class="font-medium text-sm">Статистика</div><div class="text-xs opacity-60">Посещаемость</div></div></div>
-        <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">Дашборд</div><div class="text-xs opacity-60">Вернуться</div></div></a>
+        <div class="mobile-nav-item active" onclick="mobileNav('players', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Игроки
+        </div>
+        <div class="mobile-nav-item" onclick="mobileNav('subscriptions', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            Подписки
+        </div>
+        <div class="mobile-nav-item" onclick="mobileNav('prices', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Цены
+        </div>
+        <div class="mobile-nav-item" onclick="mobileNav('calculate', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/></svg>
+            Расчёт
+        </div>
+        <div class="mobile-nav-item" onclick="mobileNav('broadcast', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/></svg>
+            Рассылка
+        </div>
+        <div class="mobile-nav-item" onclick="mobileNav('stats', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Статистика
+        </div>
     </nav>
-    <button onclick="logout()" class="flex items-center gap-2 text-gray-500 hover:text-red-400 text-sm mt-4 py-3 px-4 rounded-xl hover:bg-red-500/5 transition-colors w-full">🚪 Выйти</button>
+    <a href="/dashboard" class="nav-item mt-3">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Дашборд
+    </a>
+    <button onclick="logout()" class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Выйти
+    </button>
+</div>
+
+<aside class="hidden md:flex glass-sidebar w-64 min-h-screen p-5 flex-col relative z-10 shrink-0">
+    <div class="flex items-center gap-2.5 mb-8 px-1">
+        <img src="/img.png" class="w-9 h-9 rounded-xl object-cover">
+        <div>
+            <h1 class="text-base font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1>
+            <p class="text-xs text-zinc-500">Админ-панель</p>
+        </div>
+    </div>
+    <nav class="flex flex-col gap-0.5 flex-1">
+        <div class="nav-item active" id="nav-players" onclick="showSection('players')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <div><div class="font-medium text-sm">Игроки</div></div>
+        </div>
+        <div class="nav-item" id="nav-subscriptions" onclick="showSection('subscriptions')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <div><div class="font-medium text-sm">Подписки</div></div>
+        </div>
+        <div class="nav-item" id="nav-prices" onclick="showSection('prices')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <div><div class="font-medium text-sm">Цены</div></div>
+        </div>
+        <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/></svg>
+            <div><div class="font-medium text-sm">Расчёт</div></div>
+        </div>
+        <div class="nav-item" id="nav-broadcast" onclick="showSection('broadcast')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/></svg>
+            <div><div class="font-medium text-sm">Рассылка</div></div>
+        </div>
+        <div class="nav-item" id="nav-stats" onclick="showSection('stats')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <div><div class="font-medium text-sm">Статистика</div></div>
+        </div>
+    </nav>
+    <a href="/dashboard" class="flex items-center gap-2 text-zinc-500 hover:text-zinc-300 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-white/5 w-full">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Дашборд
+    </a>
+    <button onclick="logout()" class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm mt-1 py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Выйти
+    </button>
 </aside>
 
-<main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8 lg:p-10 pb-24 md:pb-10">
-    <div class="max-w-3xl mx-auto w-full content-panel">
+<main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8">
+    <div class="max-w-2xl">
 
-        <!-- РАЗДЕЛ: ИГРОКИ -->
         <div id="section-players">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">👥 Игроки</h2><p class="text-emerald-400/50 mt-1 text-sm">Поиск, управление ролями, турнирами, удаление</p></div>
-            <div class="glass rounded-2xl p-4 sm:p-6 mb-5"><label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label><input id="playerSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('players')"><div id="playerSearchResults" class="mt-3 space-y-2 hidden"></div></div>
-            <div id="playerSelected" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
-                <div class="flex justify-between items-start mb-4 flex-wrap gap-2">
-                    <div><p class="text-xs text-emerald-300/60 uppercase tracking-wider mb-1">Выбранный игрок</p><p class="text-white font-semibold text-base sm:text-lg" id="playerSelName"></p><p class="text-xs sm:text-sm text-emerald-300/40" id="playerSelEmail"></p></div>
-                    <div class="flex gap-1 flex-wrap" id="playerSelBadges"></div>
+            <h2 class="text-lg font-extrabold text-white mb-4">Игроки</h2>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <input id="playerSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('players')">
+                <div id="playerSearchResults" class="mt-3 space-y-1 hidden"></div>
+            </div>
+            <div id="playerSelected" class="widget-card rounded-2xl p-4 hidden">
+                <div class="mb-3">
+                    <p class="text-white font-semibold" id="playerSelName"></p>
+                    <p class="text-xs text-zinc-500" id="playerSelEmail"></p>
+                    <div class="flex gap-1 flex-wrap mt-1" id="playerSelBadges"></div>
                 </div>
-                <div class="flex gap-2 flex-wrap mb-3">
-                    <button onclick="togglePlayerRole('ROLE_ADMIN')" id="grantAdminBtn" class="btn btn-sm btn-admin hidden">👑 Сделать админом</button>
-                    <button onclick="togglePlayerRole('ROLE_ADMIN')" id="revokeAdminBtn" class="btn btn-sm btn-danger hidden">🔻 Разжаловать</button>
+                <div class="flex flex-col gap-2">
+                    <button onclick="togglePlayerRole('ROLE_ADMIN')" id="grantAdminBtn" class="btn btn-amber hidden">Сделать админом</button>
+                    <button onclick="togglePlayerRole('ROLE_ADMIN')" id="revokeAdminBtn" class="btn btn-danger hidden">Разжаловать</button>
+                    <button onclick="deletePlayerTournaments()" class="btn btn-danger">Удалить все турниры</button>
+                    <button onclick="resyncPlayerTournaments()" class="btn btn-indigo">Перезагрузить историю</button>
+                    <button onclick="deletePlayerAccount()" class="btn btn-danger">Удалить аккаунт</button>
                 </div>
-                <div class="flex gap-2 flex-wrap mb-3">
-                    <button onclick="deletePlayerTournaments()" class="btn btn-sm btn-danger">🗑 Удалить все турниры</button>
-                    <button onclick="resyncPlayerTournaments()" class="btn btn-sm btn-primary">🔄 Перезагрузить историю</button>
-                </div>
-                <div class="flex gap-2 flex-wrap">
-                    <button onclick="deletePlayerAccount()" id="deletePlayerBtn" class="btn btn-sm bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30">🗑 Удалить аккаунт</button>
-                </div>
-                <p id="playerMsg" class="text-xs text-center mt-3 hidden"></p>
+                <p id="playerMsg" class="text-xs text-center mt-2 hidden"></p>
             </div>
         </div>
 
-        <!-- РАЗДЕЛ: ПОДПИСКИ -->
         <div id="section-subscriptions" class="hidden">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">💳 Подписки</h2><p class="text-emerald-400/50 mt-1 text-sm">Поиск игроков и управление подписками</p></div>
-            <div class="glass rounded-2xl p-4 sm:p-6 mb-5"><label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">🔍 Поиск игрока</label><input id="subSearchInput" type="text" placeholder="Имя, фамилия или email..." class="input input-bordered w-full input-glow text-white" oninput="searchPlayers('sub')"><div id="subSearchResults" class="mt-3 space-y-2 hidden"></div></div>
-            <div id="subSelectedPlayer" class="glass-strong rounded-2xl p-4 sm:p-6 hidden">
-                <div class="flex justify-between items-start mb-4 flex-wrap gap-2"><div><p class="text-xs text-emerald-300/60 uppercase tracking-wider mb-1">Выбранный игрок</p><p class="text-white font-semibold text-base sm:text-lg" id="subSelName"></p><p class="text-xs sm:text-sm text-emerald-300/40" id="subSelEmail"></p></div><div class="flex gap-1 flex-wrap" id="subSelBadges"></div></div>
-                <div class="flex gap-2 flex-wrap"><button onclick="giveSub(30)" class="btn btn-sm btn-primary flex-1 btn-3d">⚡ 30 дней</button><button onclick="giveSub(60)" class="btn btn-sm btn-secondary flex-1 btn-3d">💎 60 дней</button><button onclick="removeSub()" id="removeSubBtn" class="btn btn-sm btn-danger hidden">❌ Отключить</button></div>
-                <p id="subMsg" class="text-xs text-center mt-3 hidden"></p>
+            <h2 class="text-lg font-extrabold text-white mb-4">Подписки</h2>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <input id="subSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('sub')">
+                <div id="subSearchResults" class="mt-3 space-y-1 hidden"></div>
+            </div>
+            <div id="subSelectedPlayer" class="widget-card rounded-2xl p-4 hidden">
+                <div class="mb-3">
+                    <p class="text-white font-semibold" id="subSelName"></p>
+                    <p class="text-xs text-zinc-500" id="subSelEmail"></p>
+                    <div class="flex gap-1 flex-wrap mt-1" id="subSelBadges"></div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <button onclick="giveSub(30)" class="btn btn-emerald">Выдать 30 дней</button>
+                    <button onclick="giveSub(60)" class="btn btn-indigo">Выдать 60 дней</button>
+                    <button onclick="removeSub()" id="removeSubBtn" class="btn btn-danger hidden">Отключить подписку</button>
+                </div>
+                <p id="subMsg" class="text-xs text-center mt-2 hidden"></p>
             </div>
         </div>
 
-        <!-- РАЗДЕЛ: ЦЕНЫ -->
         <div id="section-prices" class="hidden">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">💵 Цены</h2><p class="text-emerald-400/50 mt-1 text-sm">Изменение стоимости подписки</p></div>
-            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4"><div><label class="text-xs text-emerald-300/70 mb-1 block font-medium">💰 1 месяц (₽)</label><input id="price1Input" type="number" min="1" class="input input-bordered w-full input-glow text-white text-lg font-bold"></div><div><label class="text-xs text-emerald-300/70 mb-1 block font-medium">💰 2 месяца (₽)</label><input id="price2Input" type="number" min="1" class="input input-bordered w-full input-glow text-white text-lg font-bold"></div></div>
-                <div class="flex gap-3 flex-wrap"><button onclick="loadCurrentPrices()" class="btn btn-sm btn-secondary">🔄 Загрузить текущие</button><button onclick="updatePrices()" id="updatePricesBtn" class="btn btn-admin flex-1 btn-3d">💾 Сохранить цены</button></div>
-                <p id="pricesMsg" class="text-xs text-center mt-3 hidden"></p>
+            <h2 class="text-lg font-extrabold text-white mb-4">Цены</h2>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div><label class="text-xs text-zinc-400 mb-1 block">1 мес (₽)</label><input id="price1Input" type="number" min="1" class="input"></div>
+                    <div><label class="text-xs text-zinc-400 mb-1 block">2 мес (₽)</label><input id="price2Input" type="number" min="1" class="input"></div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <button onclick="loadCurrentPrices()" class="btn btn-ghost">Загрузить текущие</button>
+                    <button onclick="updatePrices()" id="updatePricesBtn" class="btn btn-amber">Сохранить</button>
+                </div>
+                <p id="pricesMsg" class="text-xs text-center mt-2 hidden"></p>
             </div>
         </div>
 
-        <!-- РАЗДЕЛ: РАСЧЁТ -->
         <div id="section-calculate" class="hidden">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">🧮 Расчёт игрока</h2><p class="text-emerald-400/50 mt-1 text-sm">Посчитать заработок любого игрока за период</p></div>
-            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4"><div><label class="text-xs text-emerald-300/70 mb-1 block font-medium">🔍 Фамилия и имя</label><input id="calcName" type="text" placeholder="павлов евгений" class="input input-bordered w-full input-glow text-white"></div><div><label class="text-xs text-emerald-300/70 mb-1 block font-medium">📅 Дата с</label><input id="calcStartDate" type="date" class="input input-bordered w-full input-glow text-white"></div><div><label class="text-xs text-emerald-300/70 mb-1 block font-medium">📅 Дата по</label><input id="calcEndDate" type="date" class="input input-bordered w-full input-glow text-white"></div></div>
-                <p class="text-xs text-gray-500 mb-3">ℹ️ Если «Дата по» не указана — поиск за один день</p>
-                <button onclick="adminCalculate()" id="calcBtn" class="btn btn-admin w-full sm:w-auto">🧮 Посчитать</button>
-                <p id="calcError" class="text-red-400 text-xs mt-3 hidden"></p>
-                <div id="calcLoading" class="hidden mt-4 text-center"><div class="inline-flex items-center gap-2 text-emerald-300/80 text-sm"><span class="spinner-sm"></span> Идёт поиск и расчёт турниров...</div></div>
+            <h2 class="text-lg font-extrabold text-white mb-4">Расчёт</h2>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex flex-col gap-3 mb-3">
+                    <div><label class="text-xs text-zinc-400 mb-1 block">Имя и фамилия</label><input id="calcName" type="text" placeholder="Павлов Евгений" class="input"></div>
+                    <div><label class="text-xs text-zinc-400 mb-1 block">Дата с</label><input id="calcStartDate" type="date" class="input"></div>
+                    <div><label class="text-xs text-zinc-400 mb-1 block">Дата по</label><input id="calcEndDate" type="date" class="input"></div>
+                </div>
+                <button onclick="adminCalculate()" id="calcBtn" class="btn btn-amber">Посчитать</button>
+                <p id="calcError" class="text-red-400 text-xs mt-2 hidden"></p>
+                <div id="calcLoading" class="hidden mt-2 text-center"><span class="spinner-sm"></span> Поиск...</div>
             </div>
-            <div id="calcResult" class="hidden glass-strong rounded-2xl p-4 sm:p-6">
-                <div class="flex flex-col sm:flex-row gap-4 mb-6"><div class="stat-card flex-1 text-center" style="background:rgba(255,255,255,0.025);border-radius:18px;padding:22px;border:1px solid rgba(255,255,255,0.04);"><div class="text-xs text-gray-400 mb-1">💰 Общая сумма</div><div class="text-2xl sm:text-3xl font-bold text-emerald-400" id="calcTotal"></div></div><div class="stat-card flex-1 text-center" style="background:rgba(255,255,255,0.025);border-radius:18px;padding:22px;border:1px solid rgba(255,255,255,0.04);"><div class="text-xs text-gray-400 mb-1">🎯 Турниров</div><div class="text-2xl sm:text-3xl font-bold text-indigo-400" id="calcCount"></div></div></div>
-                <div class="overflow-x-auto -mx-1"><table class="table table-sm sm:table-md w-full"><thead><tr class="text-gray-400"><th>№</th><th>Дата</th><th>Турнир</th><th>Сумма</th></tr></thead><tbody id="calcTableBody"></tbody></table></div>
-                <p class="text-amber-400/70 text-xs mt-2 hidden" id="calcWarning">⚠️ Подсвеченные строки — игрок снялся в финале или за 3-е место.</p>
+            <div id="calcResult" class="widget-card rounded-2xl p-4 hidden">
+                <div class="flex gap-3 mb-4">
+                    <div class="flex-1 text-center bg-white/5 rounded-xl p-4"><div class="text-xs text-zinc-500">Сумма</div><div class="text-xl font-bold text-indigo-400" id="calcTotal"></div></div>
+                    <div class="flex-1 text-center bg-white/5 rounded-xl p-4"><div class="text-xs text-zinc-500">Турниров</div><div class="text-xl font-bold text-indigo-400" id="calcCount"></div></div>
+                </div>
+                <div class="overflow-x-auto"><table class="w-full text-xs"><thead><tr class="text-zinc-500"><th class="text-left py-1">№</th><th class="text-left py-1">Дата</th><th class="text-left py-1">Турнир</th><th class="text-right py-1">Сумма</th></tr></thead><tbody id="calcTableBody"></tbody></table></div>
             </div>
         </div>
 
-        <!-- РАЗДЕЛ: РАССЫЛКА -->
         <div id="section-broadcast" class="hidden">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">📢 Рассылка</h2><p class="text-emerald-400/50 mt-1 text-sm">Отправить push и email всем верифицированным пользователям</p></div>
-            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
-                <label class="text-xs text-emerald-300/70 mb-2 block font-medium uppercase tracking-wider">📝 Текст сообщения</label>
-                <textarea id="broadcastMessage" rows="4" placeholder="Например: Выкатили обновление — турниры теперь грузятся в 2 раза быстрее!" class="textarea textarea-bordered w-full input-glow text-white resize-none"></textarea>
-                <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-admin w-full sm:w-auto btn-3d mt-4">🚀 Отправить всем</button>
-                <p id="broadcastMsg" class="text-xs text-center mt-3 hidden"></p>
+            <h2 class="text-lg font-extrabold text-white mb-4">Рассылка</h2>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <textarea id="broadcastMessage" rows="3" placeholder="Текст сообщения..." class="input resize-none mb-3"></textarea>
+                <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-amber">Отправить всем</button>
+                <p id="broadcastMsg" class="text-xs text-center mt-2 hidden"></p>
             </div>
         </div>
 
-        <!-- РАЗДЕЛ: СТАТИСТИКА -->
         <div id="section-stats" class="hidden">
-            <div class="mb-6"><h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">📊 Статистика посещений</h2><p class="text-emerald-400/50 mt-1 text-sm">Самые популярные страницы за последние дни</p></div>
-            <div class="glass rounded-2xl p-4 sm:p-6 mb-5">
-                <div class="flex items-center gap-3 mb-4">
-                    <label class="text-xs text-emerald-300/70 font-medium">📅 Дней:</label>
-                    <select id="statsDays" onchange="loadPageStats()" class="select select-bordered select-sm input-glow text-white">
-                        <option value="1">1 день</option>
-                        <option value="3">3 дня</option>
-                        <option value="7" selected>7 дней</option>
-                        <option value="14">14 дней</option>
-                        <option value="30">30 дней</option>
+            <h2 class="text-lg font-extrabold text-white mb-4">Статистика</h2>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center gap-2 mb-3">
+                    <select id="statsDays" onchange="loadPageStats()" class="input w-auto">
+                        <option value="1">1 день</option><option value="3">3 дня</option><option value="7" selected>7 дней</option><option value="14">14 дней</option><option value="30">30 дней</option>
                     </select>
-                    <button onclick="loadPageStats()" class="btn btn-sm btn-secondary">🔄 Обновить</button>
+                    <button onclick="loadPageStats()" class="btn btn-ghost">Обновить</button>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="table table-sm w-full">
-                        <thead><tr class="text-gray-400"><th>Путь</th><th>Метод</th><th>Запросов</th><th>%</th></tr></thead>
-                        <tbody id="statsTableBody">
-                        <tr><td colspan="4" class="text-center text-gray-500 py-4">Загрузка...</td></tr>
-                        </tbody>
+                    <table class="w-full text-xs"><thead><tr class="text-zinc-500"><th class="text-left py-1">Путь</th><th class="text-right py-1">Запросов</th><th class="text-right py-1">%</th></tr></thead>
+                        <tbody id="statsTableBody"><tr><td colspan="3" class="text-center text-zinc-500 py-4">Загрузка...</td></tr></tbody>
                     </table>
                 </div>
-
                 <div class="mt-6">
-                    <h3 class="text-lg font-bold text-white mb-3">👤 По игрокам</h3>
-                    <div id="playerStatsContainer">
-                        <p class="text-center text-gray-500 py-4"><span class="spinner-sm"></span> Загрузка...</p>
-                    </div>
+                    <h3 class="text-base font-bold text-white mb-3">По игрокам</h3>
+                    <div id="playerStatsContainer"><p class="text-center text-zinc-500 py-4">Загрузка...</p></div>
                 </div>
             </div>
         </div>
@@ -192,340 +254,11 @@
     </div>
 </main>
 
-<div class="mobile-nav">
-    <div class="mobile-nav-item active" id="mob-nav-players" onclick="showSection('players')"><span class="m-icon">👥</span>Игроки</div>
-    <div class="mobile-nav-item" id="mob-nav-subscriptions" onclick="showSection('subscriptions')"><span class="m-icon">💳</span>Подписки</div>
-    <div class="mobile-nav-item" id="mob-nav-prices" onclick="showSection('prices')"><span class="m-icon">💵</span>Цены</div>
-    <div class="mobile-nav-item" id="mob-nav-calculate" onclick="showSection('calculate')"><span class="m-icon">🧮</span>Расчёт</div>
-    <div class="mobile-nav-item" id="mob-nav-broadcast" onclick="showSection('broadcast')"><span class="m-icon">📢</span>Рассылка</div>
-    <div class="mobile-nav-item" id="mob-nav-stats" onclick="showSection('stats')"><span class="m-icon">📊</span>Статистика</div>
-    <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Дашборд</a>
-    <div class="mobile-nav-item" onclick="logout()"><span class="m-icon">🚪</span>Выйти</div>
-</div>
-
+<script type="module" src="/js/admin-app.js"></script>
 <script>
-    const ADMIN = '/api/admin/players/';
-    async function checkAdmin() {
-        try { const r = await fetch("/api/auth/me",{credentials:"same-origin"}); if(!r.ok){window.location.href="/";return;} const d = await r.json(); if(!d.admin){window.location.href="/dashboard";return;} } catch(e){window.location.href="/";}
-    }
-    checkAdmin();
-
-    let selectedPlayerId = null;
-    let playersCache = {};
-
-    function showSection(s) {
-        document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-        document.querySelectorAll('.mobile-nav-item').forEach(e=>e.classList.remove('active'));
-        document.getElementById('nav-'+s)?.classList.add('active');
-        document.getElementById('mob-nav-'+s)?.classList.add('active');
-        ['players','subscriptions','prices','calculate','broadcast','stats'].forEach(sec => {
-            document.getElementById('section-'+sec).classList.toggle('hidden', sec!==s);
-        });
-        if (s === 'stats') loadPageStats();
-    }
-
-    async function searchPlayers(section) {
-        const inputId = section==='sub'?'subSearchInput':'playerSearchInput';
-        const resultsId = section==='sub'?'subSearchResults':'playerSearchResults';
-        const q=document.getElementById(inputId).value.trim();
-        const results=document.getElementById(resultsId);
-        if(q.length<2){results.classList.add("hidden");return;}
-        try {
-            const r=await fetch(`/api/player/search?q=${encodeURIComponent(q)}`); if(!r.ok)throw new Error();
-            const players=await r.json();
-            results.classList.remove("hidden");
-            results.innerHTML=players.map(p=>{
-                return `<div class="player-card flex justify-between items-center" onclick="selectPlayer('${p.id}','${p.name.replace(/'/g,"\\'")}','${p.email.replace(/'/g,"\\'")}','${section}')"><div><p class="text-white text-sm font-semibold">${p.name}</p><p class="text-xs text-emerald-300/30 mt-0.5">${p.email}</p></div><span class="text-emerald-400 text-sm flex-shrink-0 ml-2">Выбрать →</span></div>`;
-            }).join("");
-        } catch(e){ results.innerHTML='<p class="text-red-400 text-sm text-center py-3">❌ Ошибка загрузки</p>'; }
-    }
-
-    function selectPlayer(id,name,email,section){
-        selectedPlayerId=id;
-        if(section==='sub'){
-            document.getElementById('subSelName').textContent=name;
-            document.getElementById('subSelEmail').textContent=email;
-            document.getElementById('subSelectedPlayer').classList.remove('hidden');
-            document.getElementById('subSearchResults').classList.add('hidden');
-            document.getElementById('subMsg').classList.add('hidden');
-            refreshPlayerUI('sub');
-        } else {
-            document.getElementById('playerSelName').textContent=name;
-            document.getElementById('playerSelEmail').textContent=email;
-            document.getElementById('playerSelected').classList.remove('hidden');
-            document.getElementById('playerSearchResults').classList.add('hidden');
-            document.getElementById('playerMsg').classList.add('hidden');
-            refreshPlayerUI('players');
-        }
-    }
-
-    async function deletePlayerTournaments() {
-        if(!selectedPlayerId)return;
-        const msg=document.getElementById('playerMsg');
-        msg.textContent='⏳ Удаление...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
-        try{
-            const r=await fetch(`/api/admin/players/${selectedPlayerId}/tournaments`,{method:'DELETE'});
-            const d=await r.json();
-            msg.textContent=`✅ ${d.message}`; msg.className='text-xs text-center text-emerald-400';
-        }catch(e){ msg.textContent='❌ Ошибка'; msg.className='text-xs text-center text-red-400'; }
-    }
-
-    async function resyncPlayerTournaments() {
-        if(!selectedPlayerId)return;
-        const msg=document.getElementById('playerMsg');
-        msg.textContent='⏳ Запуск фоновой загрузки...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
-        try{
-            const r=await fetch(`/api/admin/players/${selectedPlayerId}/tournaments/resync`,{method:'POST'});
-            const d=await r.json();
-            msg.textContent=`✅ ${d.message}`; msg.className='text-xs text-center text-emerald-400';
-        }catch(e){ msg.textContent='❌ Ошибка'; msg.className='text-xs text-center text-red-400'; }
-    }
-
-    async function deletePlayerAccount() {
-        if(!selectedPlayerId)return;
-        if(!confirm('Удалить аккаунт навсегда? Все данные, результаты и подписка будут удалены.')) return;
-        const msg=document.getElementById('playerMsg');
-        msg.textContent='⏳ Удаление аккаунта...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
-        try{
-            const r=await fetch(`/api/admin/players/${selectedPlayerId}`,{method:'DELETE'});
-            if(!r.ok)throw new Error();
-            msg.textContent='✅ Аккаунт удалён'; msg.className='text-xs text-center text-emerald-400';
-            document.getElementById('playerSelected').classList.add('hidden');
-        }catch(e){ msg.textContent='❌ Ошибка при удалении'; msg.className='text-xs text-center text-red-400'; }
-    }
-
-    async function refreshPlayerUI(section){
-        if(!selectedPlayerId)return;
-        const sr=await fetch(ADMIN+selectedPlayerId+'/subscription');
-        if(sr.ok)playersCache[selectedPlayerId]=await sr.json();
-        const cached=playersCache[selectedPlayerId];
-        let badges='';
-        if(cached&&cached.active){badges+=`<span class="badge badge-sm badge-active">Подписка до ${new Date(cached.expiresAt).toLocaleDateString("ru-RU")}</span>`;}else{badges+='<span class="badge badge-sm badge-inactive">Нет подписки</span>';}
-
-        if(section==='sub'){
-            document.getElementById('subSelBadges').innerHTML=badges;
-            document.getElementById('removeSubBtn').classList.toggle('hidden',!(cached&&cached.active));
-        } else {
-            try{
-                const rr=await fetch(ADMIN+selectedPlayerId+'/roles');
-                const roles=rr.ok?await rr.json():[];
-                if(roles.includes("ROLE_ADMIN"))badges+=' <span class="badge badge-sm badge-admin">Админ</span>';
-                document.getElementById('playerSelBadges').innerHTML=badges;
-                document.getElementById('grantAdminBtn').classList.toggle('hidden',roles.includes("ROLE_ADMIN"));
-                document.getElementById('revokeAdminBtn').classList.toggle('hidden',!roles.includes("ROLE_ADMIN"));
-            }catch(e){}
-        }
-    }
-
-    async function togglePlayerRole(roleName){
-        if(!selectedPlayerId)return;
-        const msg=document.getElementById('playerMsg');
-        const isGrant=!document.getElementById('grantAdminBtn').classList.contains('hidden');
-        const method=isGrant?'POST':'DELETE';
-        const endpoint=isGrant?'roles/grant':'roles/revoke';
-        msg.textContent=isGrant?'⏳ Выдача роли...':'⏳ Отзыв роли...'; msg.className='text-xs text-center text-emerald-300/60'; msg.classList.remove('hidden');
-        try{
-            const r=await fetch(ADMIN+selectedPlayerId+'/'+endpoint+'?role='+roleName,{method});
-            if(!r.ok)throw new Error();
-            msg.textContent=isGrant?`✅ Роль ${roleName} выдана`:`✅ Роль ${roleName} отозвана`; msg.className='text-xs text-center text-emerald-400';
-            await refreshPlayerUI('players');
-        }catch(e){msg.textContent='❌ Ошибка';msg.className='text-xs text-center text-red-400';}
-    }
-
-    async function giveSub(days){
-        if(!selectedPlayerId)return;
-        const msg=document.getElementById("subMsg");
-        msg.textContent='⏳ Выдача...'; msg.className='text-xs text-center mt-3 text-emerald-300/60'; msg.classList.remove('hidden');
-        try{
-            const r=await fetch(ADMIN+selectedPlayerId+'/subscribe?days='+days,{method:'POST'});
-            if(!r.ok)throw new Error();
-            msg.textContent=`✅ Подписка выдана на ${days} дней`; msg.className='text-xs text-center mt-3 text-emerald-400';
-            await refreshPlayerUI('sub');
-        }catch(e){msg.textContent='❌ Ошибка при выдаче';msg.className='text-xs text-center mt-3 text-red-400';}
-    }
-
-    async function removeSub(){
-        if(!selectedPlayerId)return;
-        const msg=document.getElementById("subMsg");
-        msg.textContent='⏳ Отключение...'; msg.className='text-xs text-center mt-3 text-emerald-300/60'; msg.classList.remove('hidden');
-        try{
-            const r=await fetch(ADMIN+selectedPlayerId+'/unsubscribe',{method:'DELETE'});
-            if(!r.ok)throw new Error();
-            msg.textContent='✅ Подписка отключена'; msg.className='text-xs text-center mt-3 text-emerald-400';
-            await refreshPlayerUI('sub');
-        }catch(e){msg.textContent='❌ Ошибка при отключении';msg.className='text-xs text-center mt-3 text-red-400';}
-    }
-
-    async function adminCalculate() {
-        const name = document.getElementById('calcName').value.trim();
-        const startDate = document.getElementById('calcStartDate').value;
-        const endDate = document.getElementById('calcEndDate').value;
-        const btn = document.getElementById('calcBtn');
-        const errorEl = document.getElementById('calcError');
-        const resultEl = document.getElementById('calcResult');
-        const loadingEl = document.getElementById('calcLoading');
-        errorEl.classList.add('hidden'); resultEl.classList.add('hidden');
-        if (!name || !startDate) { errorEl.textContent = '❌ Заполните имя и дату начала'; errorEl.classList.remove('hidden'); return; }
-        btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Считаем...'; loadingEl.classList.remove('hidden');
-        try {
-            const res = await fetch('/api/admin/tournaments/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ name, startDate, endDate: endDate || startDate }) });
-            if (!res.ok) throw new Error(); const data = await res.json();
-            if (!data.tournaments || data.tournaments.length === 0) { errorEl.textContent = 'ℹ️ Турниры не найдены'; errorEl.classList.remove('hidden'); return; }
-            document.getElementById('calcTotal').textContent = formatMoney(data.totalAmount);
-            document.getElementById('calcCount').textContent = data.tournamentCount;
-            const tbody = document.getElementById('calcTableBody');
-            tbody.innerHTML = data.tournaments.map((t, i) => {
-                let d = t.date || '—'; if (d.includes(' ')) d = d.split(' ')[0];
-                try { const dt = new Date(d); if (!isNaN(dt.getTime())) d = dt.toLocaleDateString('ru-RU'); } catch(e) {}
-                const cls = t.hasRemoved ? 'result-row hover:bg-white/5 border-l-2 border-amber-500/60 bg-amber-500/5' : 'result-row hover:bg-white/5';
-                return `<tr class="${cls}" style="animation-delay:${i*0.05}s"><td class="text-gray-400">${i+1}</td><td class="text-white text-sm">${d}</td><td class="text-gray-300 text-sm">${t.tournamentTitle||'—'}</td><td class="${t.hasRemoved?'text-amber-400':'text-emerald-400'} font-medium">${formatMoney(t.amount)}</td></tr>`;
-            }).join('');
-            resultEl.classList.remove('hidden');
-        } catch (e) { errorEl.textContent = '❌ Ошибка'; errorEl.classList.remove('hidden'); }
-        finally { btn.disabled = false; btn.innerHTML = '🧮 Посчитать'; loadingEl.classList.add('hidden'); }
-    }
-
-    async function loadCurrentPrices() {
-        const msg=document.getElementById("pricesMsg"); msg.classList.add("hidden");
-        try { const r=await fetch("/api/prices"); if(!r.ok)throw new Error(); const p=await r.json(); document.getElementById("price1Input").value=p[1]||0; document.getElementById("price2Input").value=p[2]||0; msg.textContent="✅ Текущие цены загружены"; msg.className="text-xs text-center mt-3 text-emerald-400"; msg.classList.remove("hidden"); } catch(e){ msg.textContent="❌ Ошибка загрузки цен"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); }
-    }
-
-    async function updatePrices() {
-        const msg=document.getElementById("pricesMsg"), btn=document.getElementById("updatePricesBtn"), p1=parseInt(document.getElementById("price1Input").value), p2=parseInt(document.getElementById("price2Input").value);
-        if(!p1||!p2||p1<1||p2<1){ msg.textContent="❌ Введите корректные цены"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); return; }
-        btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Сохраняем...'; msg.classList.add("hidden");
-        try { const r=await fetch("/api/admin/prices",{method:"PUT",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({"1":p1,"2":p2})}); if(!r.ok)throw new Error(); msg.textContent="✅ Цены обновлены"; msg.className="text-xs text-center mt-3 text-emerald-400"; msg.classList.remove("hidden"); } catch(e){ msg.textContent="❌ Ошибка"; msg.className="text-xs text-center mt-3 text-red-400"; msg.classList.remove("hidden"); } finally { btn.disabled=false; btn.innerHTML="💾 Сохранить цены"; }
-    }
-
-    async function sendBroadcast() {
-        const message = document.getElementById('broadcastMessage').value.trim();
-        const msg = document.getElementById('broadcastMsg');
-        const btn = document.getElementById('broadcastBtn');
-
-        if (!message) {
-            msg.textContent = '❌ Введите текст сообщения';
-            msg.className = 'text-xs text-center mt-3 text-red-400';
-            msg.classList.remove('hidden');
-            return;
-        }
-
-        if (!confirm(`Отправить push и email всем пользователям?\n\n"${message}"`)) return;
-
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-sm"></span> Отправляем...';
-        msg.classList.add('hidden');
-
-        try {
-            const res = await fetch('/api/admin/broadcast', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ message })
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                msg.textContent = '❌ ' + (data.message || 'Ошибка');
-                msg.className = 'text-xs text-center mt-3 text-red-400';
-            } else {
-                msg.textContent = data.message;
-                msg.className = 'text-xs text-center mt-3 text-emerald-400';
-                document.getElementById('broadcastMessage').value = '';
-            }
-        } catch (e) {
-            msg.textContent = '❌ Ошибка соединения';
-            msg.className = 'text-xs text-center mt-3 text-red-400';
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '🚀 Отправить всем';
-            msg.classList.remove('hidden');
-        }
-    }
-
-    async function loadPageStats() {
-        const days = document.getElementById('statsDays').value;
-        const tbody = document.getElementById('statsTableBody');
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4"><span class="spinner-sm"></span> Загрузка...</td></tr>';
-
-        try {
-            const res = await fetch(`/api/admin/stats/page-views?days=${days}`, { credentials: 'same-origin' });
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-
-            const total = data.reduce((sum, item) => sum + item.count, 0);
-
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4">Нет данных за этот период</td></tr>';
-            } else {
-                tbody.innerHTML = data.map(item => {
-                    const percent = total > 0 ? ((item.count / total) * 100).toFixed(1) : 0;
-                    const barWidth = Math.max(percent * 3, 1);
-                    return `<tr>
-                        <td class="text-white text-sm font-medium">${item.path}</td>
-                        <td><span class="badge badge-sm ${item.method === 'GET' ? 'badge-active' : item.method === 'POST' ? 'badge-admin' : 'badge-inactive'}">${item.method}</span></td>
-                        <td class="text-white font-semibold">${item.count}</td>
-                        <td>
-                            <div class="flex items-center gap-2">
-                                <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
-                                    <div class="bg-emerald-500/60 h-2 rounded-full" style="width:${barWidth}px"></div>
-                                </div>
-                                <span class="text-xs text-emerald-300/60 w-12 text-right">${percent}%</span>
-                            </div>
-                        </td>
-                    </tr>`;
-                }).join('');
-            }
-        } catch (e) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-red-400 py-4">❌ Ошибка загрузки</td></tr>';
-        }
-
-        // Статистика по игрокам
-        const container = document.getElementById('playerStatsContainer');
-        container.innerHTML = '<p class="text-center text-gray-500 py-4"><span class="spinner-sm"></span> Загрузка...</p>';
-
-        fetch(`/api/admin/stats/page-views/players?days=${days}`, { credentials: 'same-origin' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.length === 0) {
-                    container.innerHTML = '<p class="text-center text-gray-500 py-4">Нет данных</p>';
-                    return;
-                }
-
-                let html = '<div class="overflow-x-auto"><table class="table table-sm w-full"><thead><tr class="text-gray-400"><th>Игрок</th><th>Куда заходил</th><th>Всего</th><th>%</th></tr></thead><tbody>';
-
-                data.forEach(item => {
-                    const barWidth = Math.max(item.percent * 3, 1);
-                    const pathsHtml = item.paths.map(p =>
-                        `<div class="flex justify-between gap-4 text-xs py-0.5">
-                            <span class="text-emerald-300/80">${p.path}</span>
-                            <span class="text-emerald-400/50 font-mono">×${p.count}</span>
-                        </div>`
-                    ).join('');
-
-                    html += `<tr>
-                        <td class="text-white text-sm font-semibold align-top pt-2">${item.name}</td>
-                        <td class="align-top pt-2">${pathsHtml}</td>
-                        <td class="text-white font-semibold text-center align-top pt-2">${item.totalCount}</td>
-                        <td class="align-top pt-2">
-                            <div class="flex items-center gap-2">
-                                <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
-                                    <div class="bg-emerald-500/60 h-2 rounded-full" style="width:${barWidth}px"></div>
-                                </div>
-                                <span class="text-xs text-emerald-300/60 w-12 text-right">${item.percent.toFixed(1)}%</span>
-                            </div>
-                        </td>
-                    </tr>`;
-                });
-
-                html += '</tbody></table></div>';
-                container.innerHTML = html;
-            })
-            .catch(() => {
-                container.innerHTML = '<p class="text-center text-red-400 py-4">❌ Ошибка загрузки</p>';
-            });
-    }
-
-    async function logout(){ await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}); window.location.replace("/"); }
-    function formatMoney(v){ if(v==null)return"0 ₽"; return new Intl.NumberFormat("ru-RU").format(Math.round(v))+" ₽"; }
+    window.toggleMobileMenu=function(){const m=document.getElementById('mobileMenu'),o=document.getElementById('mobileMenuOverlay');if(m.classList.contains('translate-x-0')){m.classList.remove('translate-x-0');m.classList.add('translate-x-full');o.classList.add('hidden');}else{m.classList.remove('translate-x-full');m.classList.add('translate-x-0');o.classList.remove('hidden');}};
+    window.mobileNav=function(s,el){toggleMobileMenu();document.querySelectorAll('#mobileMenu .mobile-nav-item').forEach(i=>i.classList.remove('bg-indigo-500/10','border-indigo-500/20','active'));el.classList.add('bg-indigo-500/10','border-indigo-500/20','active');showSection(s);};
+    (function(){const c=document.getElementById('starsContainer');if(!c)return;let h='';for(let i=0;i<50;i++){const s=Math.random()*2+0.5;h+=`<div class="star" style="width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`;}c.innerHTML=h;})();
 </script>
 </body>
 </html>

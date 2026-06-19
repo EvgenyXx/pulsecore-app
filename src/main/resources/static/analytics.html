@@ -14,106 +14,123 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px'}}}}</script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
     <style>
-        :root { --bg: #06060f; --amber: #f59e0b; --card: rgba(255,255,255,0.025); --border: rgba(255,255,255,0.06); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; min-height: 100dvh; -webkit-font-smoothing: antialiased; }
-        .bg-mesh { position: fixed; inset: 0; z-index: -5; background: radial-gradient(circle at 15% 25%, rgba(245,158,11,0.06), transparent 45%), radial-gradient(circle at 85% 75%, rgba(251,191,36,0.05), transparent 45%); }
-        .bg-grid { position: fixed; inset: 0; z-index: -4; opacity: 0.08; background-image: linear-gradient(rgba(245,158,11,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.06) 1px, transparent 1px); background-size: 50px 50px; }
-        @media (max-width: 767px) { .bg-grid { background-size: 32px 32px; } }
-        .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); z-index: -3; animation: orbFloat 10s infinite; }
-        .bg-orb-1 { width: 500px; height: 500px; background: rgba(245,158,11,0.04); top: -15%; right: -10%; }
-        .bg-orb-2 { width: 400px; height: 400px; background: rgba(251,191,36,0.04); bottom: -10%; left: -8%; animation-delay: -5s; }
-        @keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(25px,-25px) scale(1.08)} 66%{transform:translate(-15px,20px) scale(0.95)} }
-        .glass { background: rgba(255,255,255,0.035); backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.07); }
-        .glass-strong { background: rgba(255,255,255,0.05); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); }
-        .glass-nav { background: rgba(10,10,20,0.85); backdrop-filter: blur(30px); border-right: 1px solid rgba(255,255,255,0.06); }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 18px; border-radius: 14px; cursor: pointer; color: #a0aab8; border-left: 3px solid transparent; transition: all 0.2s; font-size: 0.9rem; }
-        .nav-item:hover { background: rgba(245,158,11,0.08); color: #fcd34d; }
-        .nav-item.active { background: rgba(245,158,11,0.12); color: #fbbf24; border-left-color: #f59e0b; }
-        .nav-item .nav-icon { font-size: 1.25rem; width: 24px; text-align: center; }
-        .chart-card { background: var(--card); border-radius: 20px; padding: 16px 12px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
+        .chart-card { background: rgba(255,255,255,0.025); border-radius: 16px; padding: 16px 12px; border: 1px solid rgba(99,102,241,0.12); }
         .chart-wrap { position: relative; height: 280px; }
         @media (min-width: 480px) { .chart-wrap { height: 340px; } .chart-card { padding: 24px 20px; } }
         @media (min-width: 768px) { .chart-wrap { height: 420px; } }
         @media (min-width: 1024px) { .chart-wrap { height: 460px; } }
-        .avg-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 50px; padding: 6px 14px; font-size: 0.8rem; }
-        .year-select { appearance: none; -webkit-appearance: none; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 8px; padding: 6px 28px 6px 10px; font-size: 0.8rem; outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23f59e0b'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
-        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,20,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.06); z-index: 50; display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; }
-        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #a0aab8; cursor: pointer; padding: 6px 12px; border-radius: 12px; font-size: 10px; transition: all 0.2s; }
-        .mobile-nav-item.active { color: #fbbf24; background: rgba(245,158,11,0.12); }
+        .avg-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); border-radius: 50px; padding: 6px 14px; font-size: 0.8rem; }
+        .year-select { appearance: none; -webkit-appearance: none; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 8px; padding: 6px 28px 6px 10px; font-size: 0.8rem; outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23818cf8'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(12,12,24,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.04); z-index: 50; display: flex; justify-content: space-around; padding: 8px 4px 12px 4px; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #71717a; cursor: pointer; padding: 6px 12px; border-radius: 12px; font-size: 10px; transition: all 0.2s; }
+        .mobile-nav-item.active { color: #818cf8; background: rgba(99,102,241,0.10); }
         .mobile-nav-item .m-icon { font-size: 20px; }
         @media (min-width: 768px) { .mobile-nav { display: none; } }
-        .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.08); border-top-color: var(--amber); border-radius: 50%; animation: spin 0.7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .content-panel { animation: slideIn 0.4s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .content-panel { animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .daily-header { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 12px; }
-        .daily-month-title { font-size: 1.2rem; font-weight: 700; text-align: center; color: #fff; padding: 6px 20px; background: rgba(255,255,255,0.03); border-radius: 12px; }
+        .daily-month-title { font-size: 1.2rem; font-weight: 700; text-align: center; color: #fff; padding: 6px 20px; background: rgba(255,255,255,0.02); border-radius: 12px; }
         .daily-stats-row { display: flex; gap: 8px; margin-top: 12px; }
-        .daily-stat { flex: 1; background: rgba(255,255,255,0.03); border-radius: 14px; padding: 12px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .daily-stat-value { font-size: 1.1rem; font-weight: 700; color: #fbbf24; }
-        .daily-stat-label { font-size: 0.6rem; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .swipe-hint { text-align: center; font-size: 0.6rem; color: #4b5563; margin-top: 8px; padding: 4px 12px; background: rgba(255,255,255,0.02); border-radius: 20px; display: inline-block; width: 100%; }
+        .daily-stat { flex: 1; background: rgba(255,255,255,0.02); border-radius: 14px; padding: 12px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.04); }
+        .daily-stat-value { font-size: 1.1rem; font-weight: 700; color: #818cf8; }
+        .daily-stat-label { font-size: 0.6rem; color: #71717a; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .swipe-hint { text-align: center; font-size: 0.6rem; color: #52525b; margin-top: 8px; padding: 4px 12px; background: rgba(255,255,255,0.015); border-radius: 20px; display: inline-block; width: 100%; }
         @media (min-width: 768px) { .swipe-hint { display: none; } }
         .nav-arrows-desktop { display: none; }
         @media (min-width: 768px) { .nav-arrows-desktop { display: flex; align-items: center; gap: 4px; } }
-        .no-data-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #6b7280; font-size: 1rem; text-align: center; }
+        .no-data-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #71717a; font-size: 1rem; text-align: center; }
         .best-time-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-        .best-time-table th { text-align: left; padding: 8px 6px; font-size: 0.65rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .best-time-table td { padding: 10px 6px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .best-time-table th { text-align: left; padding: 8px 6px; font-size: 0.65rem; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .best-time-table td { padding: 10px 6px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .best-time-table tr:last-child td { border-bottom: none; }
-        .best-time-table .highlight { color: #fbbf24; font-weight: 700; }
-        .period-btn { padding: 8px 16px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
-        .period-btn.active { background: #f59e0b; color: #000; }
-        .period-btn:not(.active) { background: rgba(255,255,255,0.05); color: #9ca3af; }
-        .period-btn:not(.active):hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .flatpickr-input { background: rgba(255,255,255,0.04)!important; border: 1px solid rgba(255,255,255,0.08)!important; border-radius: 14px!important; color: #fff!important; padding: 10px 14px!important; font-size: 0.8rem!important; font-family: 'Inter'!important; width: 130px!important; }
-        .flatpickr-input:focus { border-color: rgba(245,158,11,0.5)!important; box-shadow: 0 0 20px rgba(245,158,11,0.1)!important; outline: none!important; }
+        .best-time-table .highlight { color: #818cf8; font-weight: 700; }
+        .period-btn { padding: 7px 14px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+        .period-btn.active { background: #6366f1; color: #fff; }
+        .period-btn:not(.active) { background: rgba(255,255,255,0.04); color: #71717a; }
+        .period-btn:not(.active):hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .flatpickr-input { background: rgba(255,255,255,0.03)!important; border: 1px solid rgba(255,255,255,0.06)!important; border-radius: 10px!important; color: #fff!important; padding: 10px 14px!important; font-size: 0.8rem!important; font-family: 'Inter'!important; width: 130px!important; }
+        .flatpickr-input:focus { border-color: rgba(99,102,241,0.5)!important; box-shadow: 0 0 16px rgba(99,102,241,0.10)!important; outline: none!important; }
+        .spinner { width: 32px; height: 32px; border: 2px solid rgba(255,255,255,0.05); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
+<div class="stars" id="starsContainer"></div>
 
 <div class="md:hidden glass-strong sticky top-0 z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
-    <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-amber-500/30 flex items-center justify-center"><span class="text-lg">📊</span></div><h1 class="text-sm font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1></div>
-    <a href="/dashboard" class="flex items-center gap-1 text-xs text-amber-400/60 hover:text-amber-300 bg-amber-500/10 px-3 py-1.5 rounded-lg">🏠 На главную</a>
+    <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div><h1 class="text-sm font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">Аналитика</h1></div>
+    </div>
+    <a href="/dashboard" class="flex items-center gap-1 text-xs text-indigo-400/60 hover:text-indigo-300 bg-indigo-500/10 px-3 py-1.5 rounded-lg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        На главную
+    </a>
 </div>
 
-<aside class="hidden md:flex glass-nav w-64 min-h-screen p-6 flex-col relative z-10 shrink-0">
-    <div class="flex items-center gap-3 mb-10 px-1"><div class="w-11 h-11 rounded-xl bg-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-500/10"><span class="text-2xl">📊</span></div><div><h1 class="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Аналитика</h1><p class="text-xs text-gray-400">Статистика</p></div></div>
+<aside class="hidden md:flex glass-sidebar w-64 min-h-screen p-6 flex-col relative z-10 shrink-0">
+    <div class="flex items-center gap-3 mb-10 px-1">
+        <div class="w-11 h-11 rounded-xl bg-indigo-500/20 flex items-center justify-center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div><h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">Аналитика</h1><p class="text-xs text-zinc-400">Статистика</p></div>
+    </div>
     <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item active" id="nav-league" onclick="switchTab('league')"><span class="nav-icon">🏆</span><div><div class="font-medium text-sm">Средняя по лигам</div><div class="text-xs text-gray-500">Заработок по лигам</div></div></div>
-        <div class="nav-item" id="nav-monthly" onclick="switchTab('monthly')"><span class="nav-icon">📅</span><div><div class="font-medium text-sm">Доход по месяцам</div><div class="text-xs text-gray-500">Динамика заработка</div></div></div>
-        <div class="nav-item" id="nav-daily" onclick="switchTab('daily')"><span class="nav-icon">📆</span><div><div class="font-medium text-sm">Доход по дням</div><div class="text-xs text-gray-500">Каждый день месяца</div></div></div>
-        <div class="nav-item" id="nav-best-time" onclick="switchTab('best-time')"><span class="nav-icon">⏰</span><div><div class="font-medium text-sm">Лучшее время</div><div class="text-xs text-gray-500">Самое результативное</div></div></div>
+        <div class="nav-item active" id="nav-league" onclick="switchTab('league')">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></span>
+            <div><div class="font-medium text-sm">Средняя по лигам</div><div class="text-xs text-zinc-500">Заработок по лигам</div></div>
+        </div>
+        <div class="nav-item" id="nav-monthly" onclick="switchTab('monthly')">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <div><div class="font-medium text-sm">Доход по месяцам</div><div class="text-xs text-zinc-500">Динамика заработка</div></div>
+        </div>
+        <div class="nav-item" id="nav-daily" onclick="switchTab('daily')">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span>
+            <div><div class="font-medium text-sm">Доход по дням</div><div class="text-xs text-zinc-500">Каждый день месяца</div></div>
+        </div>
+        <div class="nav-item" id="nav-best-time" onclick="switchTab('best-time')">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+            <div><div class="font-medium text-sm">Лучшее время</div><div class="text-xs text-zinc-500">Самое результативное</div></div>
+        </div>
     </nav>
-    <a href="/dashboard" class="nav-item mt-auto"><span class="nav-icon">🏠</span><div><div class="font-medium text-sm">На главную</div><div class="text-xs text-gray-500">Вернуться</div></div></a>
+    <a href="/dashboard" class="flex items-center gap-2 text-zinc-500 hover:text-zinc-300 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-white/5 transition-colors w-full">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>На главную</span>
+    </a>
 </aside>
 
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8 pb-24 md:pb-10">
-    <div id="loading" class="flex flex-col items-center justify-center py-32 text-gray-400"><div class="spinner mb-5"></div><p class="text-sm">Загрузка...</p></div>
+    <div id="loading" class="flex flex-col items-center justify-center py-32 text-zinc-400"><div class="spinner mb-5"></div><p class="text-sm">Загрузка...</p></div>
 
     <div id="tab-league" class="hidden content-panel max-w-2xl mx-auto">
-        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">🏆 Средняя по лигам</h2>
-        <p class="text-gray-400 text-sm mb-5">Средний заработок за турнир по всем игрокам</p>
+        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">Средняя по лигам</h2>
+        <p class="text-zinc-400 text-sm mb-5">Средний заработок за турнир по всем игрокам</p>
         <div class="chart-card"><div class="chart-wrap"><canvas id="leagueChart"></canvas></div>
-            <div class="flex flex-col items-center gap-1 mt-4"><span class="avg-badge"><span class="text-gray-400">Ваша средняя:</span><span class="text-white font-bold" id="playerAvgPill">-</span></span><p class="text-xs text-gray-500" id="closestInfo"></p></div></div>
+            <div class="flex flex-col items-center gap-1 mt-4"><span class="avg-badge"><span class="text-zinc-400">Ваша средняя:</span><span class="text-white font-bold" id="playerAvgPill">-</span></span><p class="text-xs text-zinc-500" id="closestInfo"></p></div></div>
     </div>
 
     <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
-        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">📅 Доход по месяцам</h2>
-        <div class="flex items-center gap-2 mb-5"><span class="text-gray-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-gray-400 text-sm">год</span></div>
+        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">Доход по месяцам</h2>
+        <div class="flex items-center gap-2 mb-5"><span class="text-zinc-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-zinc-400 text-sm">год</span></div>
         <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap" style="position:relative"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных за этот год</div></div></div>
-        <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill" style="display:none"><span class="text-gray-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
+        <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill" style="display:none"><span class="text-zinc-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
         <p class="swipe-hint">← листай влево/вправо для смены года →</p>
     </div>
 
     <div id="tab-daily" class="hidden content-panel max-w-2xl mx-auto">
         <div class="daily-header">
-            <button onclick="prevDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:1.1rem;flex-shrink:0;">←</button>
-            <span class="daily-month-title" id="dailyMonthLabel">Май 2026</span>
-            <button onclick="nextDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-size:1.1rem;flex-shrink:0;">→</button>
+            <button onclick="prevDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;flex-shrink:0;display:flex;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="daily-month-title" id="dailyMonthLabel">Июнь 2026</span>
+            <button onclick="nextDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;flex-shrink:0;display:flex;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
         </div>
         <div class="chart-card" id="dailyChartCard"><div class="chart-wrap" style="position:relative"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных за этот месяц</div></div></div>
         <div class="daily-stats-row">
@@ -125,20 +142,20 @@
     </div>
 
     <div id="tab-best-time" class="hidden content-panel max-w-2xl mx-auto">
-        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">⏰ Лучшее время</h2>
-        <p class="text-gray-400 text-sm mb-5">В какое время суток вы зарабатываете больше всего</p>
+        <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">Лучшее время</h2>
+        <p class="text-zinc-400 text-sm mb-5">В какое время суток вы зарабатываете больше всего</p>
 
         <div class="flex flex-wrap items-center gap-2 mb-4">
             <button onclick="setBestTimePeriod('all')" id="bt-all" class="period-btn active">Всё время</button>
             <button onclick="setBestTimePeriod('month')" id="bt-month" class="period-btn">Месяц</button>
             <button onclick="setBestTimePeriod('week')" id="bt-week" class="period-btn">Неделя</button>
-            <span class="text-gray-500 text-xs mx-1">или</span>
+            <span class="text-zinc-500 text-xs mx-1">или</span>
             <input type="text" id="bestTimeStart" class="flatpickr-input" placeholder="Дата с">
-            <span class="text-gray-500 text-xs">—</span>
+            <span class="text-zinc-500 text-xs">—</span>
             <input type="text" id="bestTimeEnd" class="flatpickr-input" placeholder="Дата по">
-            <button onclick="setBestTimePeriod('custom')" class="period-btn">🔍 Применить</button>
+            <button onclick="setBestTimePeriod('custom')" class="period-btn">Применить</button>
         </div>
-        <p class="text-xs text-gray-500 mb-4" id="bestTimePeriodLabel">Показаны данные за всё время</p>
+        <p class="text-xs text-zinc-500 mb-4" id="bestTimePeriodLabel">Показаны данные за всё время</p>
 
         <div class="chart-card">
             <div class="chart-wrap"><canvas id="bestTimeChart"></canvas></div>
@@ -151,290 +168,50 @@
 </main>
 
 <div class="mobile-nav">
-    <div class="mobile-nav-item active" id="mob-nav-league" onclick="switchTab('league')"><span class="m-icon">🏆</span>Лиги</div>
-    <div class="mobile-nav-item" id="mob-nav-monthly" onclick="switchTab('monthly')"><span class="m-icon">📅</span>Месяцы</div>
-    <div class="mobile-nav-item" id="mob-nav-daily" onclick="switchTab('daily')"><span class="m-icon">📆</span>Дни</div>
-    <div class="mobile-nav-item" id="mob-nav-best-time" onclick="switchTab('best-time')"><span class="m-icon">⏰</span>Время</div>
-    <a href="/dashboard" class="mobile-nav-item no-underline"><span class="m-icon">🏠</span>Главная</a>
+    <div class="mobile-nav-item active" id="mob-nav-league" onclick="switchTab('league')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+        Лиги
+    </div>
+    <div class="mobile-nav-item" id="mob-nav-monthly" onclick="switchTab('monthly')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Месяцы
+    </div>
+    <div class="mobile-nav-item" id="mob-nav-daily" onclick="switchTab('daily')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+        Дни
+    </div>
+    <div class="mobile-nav-item" id="mob-nav-best-time" onclick="switchTab('best-time')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Время
+    </div>
+    <a href="/dashboard" class="mobile-nav-item no-underline">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Главная
+    </a>
 </div>
 
+<script type="module" src="/js/analytics-app.js"></script>
 <script>
-    let leagueChart = null, monthlyChart = null, dailyChart = null, bestTimeChart = null, playerId = null;
-    let dailyYear, dailyMonth, monthlyYear;
-    let bestTimePeriod = 'all';
-    const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-
-    flatpickr("#bestTimeStart", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
-    flatpickr("#bestTimeEnd", { locale: "ru", dateFormat: "Y-m-d", maxDate: "today" });
-
-    function switchTab(tab) {
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById('nav-' + tab)?.classList.add('active');
-        document.getElementById('mob-nav-' + tab)?.classList.add('active');
-        document.getElementById('tab-league').classList.toggle('hidden', tab !== 'league');
-        document.getElementById('tab-monthly').classList.toggle('hidden', tab !== 'monthly');
-        document.getElementById('tab-daily').classList.toggle('hidden', tab !== 'daily');
-        document.getElementById('tab-best-time').classList.toggle('hidden', tab !== 'best-time');
-        if (tab === 'league') loadLeagueAvg();
-        if (tab === 'monthly') { initMonthlyYear(); loadMonthly(); }
-        if (tab === 'daily') { initDailyMonth(); loadDaily(); }
-        if (tab === 'best-time') loadBestTime();
-    }
-
-    async function init() {
-        try {
-            const r = await fetch("/api/auth/me", { credentials: "same-origin" });
-            if (!r.ok) { window.location.href = "/"; return; }
-            const user = await r.json();
-            playerId = user.id;
-
-            const subRes = await fetch(`/api/player/subscription`);
-            const subData = await subRes.json();
-            if (!subData || !subData.active) {
-                document.getElementById("loading").innerHTML = "";
-                document.getElementById("loading").classList.add("hidden");
-                document.querySelector("main").innerHTML =
-                    `<div class="glass rounded-2xl p-8 text-center max-w-md mx-auto mt-20">
-                    <div class="text-5xl mb-4">🔒</div>
-                    <h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3>
-                    <p class="text-gray-400 text-sm mb-6">Оформите подписку чтобы открыть аналитику</p>
-                    <a href="/subscribe" class="inline-block bg-amber-500 hover:bg-amber-400 text-black font-semibold px-8 py-3 rounded-xl">💳 Оформить подписку</a>
-                    <br><a href="/dashboard" class="text-xs text-gray-500 mt-4 inline-block">← На главную</a>
-                </div>`;
-                return;
-            }
-
-            document.getElementById("loading").classList.add("hidden");
-            initDailyMonth(); initMonthlyYear(); initSwipes(); initDesktopArrows();
-            switchTab('league'); populateYears();
-        } catch (e) { document.getElementById("loading").innerHTML = '<p class="text-red-400">❌ Ошибка</p>'; }
-    }
-
-    function initDesktopArrows() { const d = window.innerWidth >= 768; document.querySelectorAll('.nav-arrows-desktop').forEach(b => b.style.display = d ? 'flex' : 'none'); }
-    function initDailyMonth() { const n = new Date(); dailyYear = n.getFullYear(); dailyMonth = n.getMonth() + 1; }
-    function initMonthlyYear() { monthlyYear = new Date().getFullYear(); document.getElementById("yearSelect").value = monthlyYear; }
-    function updateDailyLabel() { document.getElementById("dailyMonthLabel").textContent = monthNames[dailyMonth-1] + ' ' + dailyYear; }
-    function prevDailyMonth() { dailyMonth--; if (dailyMonth < 1) { dailyMonth = 12; dailyYear--; } updateDailyLabel(); loadDaily(); }
-    function nextDailyMonth() { dailyMonth++; if (dailyMonth > 12) { dailyMonth = 1; dailyYear++; } updateDailyLabel(); loadDaily(); }
-    function prevMonthlyYear() { monthlyYear--; document.getElementById("yearSelect").value = monthlyYear; loadMonthly(); }
-    function nextMonthlyYear() { monthlyYear++; document.getElementById("yearSelect").value = monthlyYear; loadMonthly(); }
-    function onYearChange() { monthlyYear = parseInt(document.getElementById("yearSelect").value); loadMonthly(); }
-
-    function initSwipes() {
-        const dA = document.getElementById('dailyChartCard');
-        if (dA) { let sx = 0; dA.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive: true}); dA.addEventListener('touchend', e => { if (!sx) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 35) { if (dx > 0) prevDailyMonth(); else nextDailyMonth(); } sx = 0; }); }
-        const mA = document.getElementById('monthlyChartCard');
-        if (mA) { let sx = 0; mA.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive: true}); mA.addEventListener('touchend', e => { if (!sx) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 35) { if (dx > 0) prevMonthlyYear(); else nextMonthlyYear(); } sx = 0; }); }
-    }
-
-    function populateYears() {
-        const s = document.getElementById("yearSelect");
-        s.innerHTML = '';
-        const currentYear = new Date().getFullYear();
-        for (let i = currentYear; i >= 2025; i--) {
-            const o = document.createElement("option");
-            o.value = i;
-            o.textContent = i;
-            if (i === currentYear) o.selected = true;
-            s.appendChild(o);
+    (function() {
+        const container = document.getElementById('starsContainer');
+        if (!container) return;
+        const count = 100;
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            const size = Math.random() * 2.5 + 0.5;
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const duration = Math.random() * 3 + 2;
+            const delay = Math.random() * 5;
+            html += `<div class="star" style="
+                width:${size}px; height:${size}px;
+                left:${x}%; top:${y}%;
+                --duration:${duration}s;
+                --delay:${delay}s;
+            "></div>`;
         }
-    }
-
-    function setBestTimePeriod(period) {
-        bestTimePeriod = period;
-        document.querySelectorAll('#tab-best-time .period-btn').forEach(b => b.classList.remove('active'));
-        if (period === 'custom') {
-            document.getElementById('bt-all').classList.add('active');
-        } else {
-            document.getElementById('bt-' + period)?.classList.add('active');
-        }
-
-        const label = document.getElementById('bestTimePeriodLabel');
-        if (period === 'all') label.textContent = 'Показаны данные за всё время';
-        else if (period === 'month') label.textContent = 'Показаны данные за последние 30 дней';
-        else if (period === 'week') label.textContent = 'Показаны данные за последние 7 дней';
-        else if (period === 'custom') label.textContent = 'Показаны данные за выбранный период';
-
-        loadBestTime();
-    }
-
-    async function loadBestTime() {
-        if (!playerId) return;
-        try {
-            let start, end;
-            const now = new Date();
-
-            if (bestTimePeriod === 'week') {
-                start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-                end = now.toISOString().split('T')[0];
-            } else if (bestTimePeriod === 'month') {
-                start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-                end = now.toISOString().split('T')[0];
-            } else if (bestTimePeriod === 'custom') {
-                start = document.getElementById('bestTimeStart').value;
-                end = document.getElementById('bestTimeEnd').value;
-            }
-
-            const params = new URLSearchParams();
-            if (start) params.append('start', start);
-            if (end) params.append('end', end);
-
-            const r = await fetch(`/api/player/best-time?${params.toString()}`, { credentials: "same-origin" });
-            if (!r.ok) throw new Error();
-            const data = await r.json();
-
-            if (!data || data.length === 0) {
-                document.getElementById("bestTimeTableBody").innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4">Нет данных</td></tr>';
-                if (bestTimeChart) { bestTimeChart.destroy(); bestTimeChart = null; }
-                return;
-            }
-
-            document.getElementById("bestTimeTableBody").innerHTML = data.map((r, i) => {
-                const isBest = i === 0;
-                return `<tr>
-                    <td class="${isBest ? 'highlight' : ''}">${r.time || '—'}</td>
-                    <td>${r.gamesCount}</td>
-                    <td>${fmt(r.avgPoints)}</td>
-                    <td class="${isBest ? 'highlight' : ''}">${fmt(r.totalPoints)}</td>
-                </tr>`;
-            }).join('');
-
-            if (bestTimeChart) bestTimeChart.destroy();
-            const ctx = document.getElementById("bestTimeChart").getContext("2d");
-            const labels = data.map(r => r.time || '—');
-            const scores = data.map(r => r.avgPoints != null ? Math.round(r.avgPoints) : 0);
-            const bgColors = labels.map((_, i) => i === 0 ? '#fbbf24DD' : 'rgba(255,255,255,0.08)');
-
-            bestTimeChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels, datasets: [{ data: scores, backgroundColor: bgColors, borderRadius: 8, borderSkipped: false, barPercentage: 0.5 }] },
-                options: {
-                    responsive: true, maintainAspectRatio: false, animation: { duration: 800, easing: 'easeOutQuart' },
-                    plugins: { legend: { display: false }, datalabels: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, max: Math.max(...scores, 1) * 1.3, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', font: { size: 9 }, padding: 4 } },
-                        x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 12 }, padding: 6 } }
-                    }
-                }
-            });
-
-        } catch (e) {
-            document.getElementById("bestTimeTableBody").innerHTML = '<tr><td colspan="4" class="text-center text-red-400 py-4">Ошибка загрузки</td></tr>';
-        }
-    }
-
-    async function loadLeagueAvg() {
-        if (!playerId) return;
-        try {
-            const r = await fetch("/api/player/analytics", { credentials: "same-origin" });
-            if (!r.ok) throw new Error();
-            const d = await r.json();
-            document.getElementById("playerAvgPill").textContent = fmt(d.playerAverage);
-            if (d.closestLeague) {
-                const l = d.leagueStats.find(x => x.league === d.closestLeague);
-                if (l) {
-                    const df = d.playerAverage - l.averageAmount;
-                    document.getElementById("closestInfo").textContent =
-                        `Вы зарабатываете на ${df >= 0 ? '+' : ''}${fmt(Math.abs(df))} ${df >= 0 ? 'больше' : 'меньше'}, чем в среднем в лиге ${d.closestLeague}`;
-                }
-            }
-            buildLeagueChart(d);
-        } catch (e) {}
-    }
-
-    async function loadMonthly() {
-        if (!playerId) return;
-        const year = document.getElementById("yearSelect").value;
-        monthlyYear = parseInt(year);
-        document.getElementById("monthlyAvgPill").style.display = 'none';
-        document.getElementById("monthlyNoData").classList.add("hidden");
-        try {
-            const r = await fetch(`/api/player/${playerId}/monthly-income?year=${year}`, { credentials: "same-origin" });
-            if (!r.ok) throw new Error();
-            const d = await r.json();
-            if (!d.months || d.months.length === 0 || d.months.every(m => m.total === 0)) {
-                if (monthlyChart) monthlyChart.destroy();
-                document.getElementById("monthlyNoData").classList.remove("hidden");
-            } else {
-                buildMonthlyChart(d.months, d.overallAverage);
-            }
-        } catch (e) { document.getElementById("monthlyNoData").classList.remove("hidden"); }
-    }
-
-    async function loadDaily() {
-        if (!playerId) return;
-        updateDailyLabel();
-        document.getElementById("dailyNoData").classList.add("hidden");
-        document.getElementById("dailyTotal").textContent = '...';
-        document.getElementById("dailyAvg").textContent = '...';
-        document.getElementById("dailyBest").textContent = '...';
-        try {
-            const r = await fetch(`/api/player/${playerId}/daily-income?year=${dailyYear}&month=${dailyMonth}`, { credentials: "same-origin" });
-            if (!r.ok) throw new Error();
-            const d = await r.json();
-            if (!d.days || d.days.length === 0 || d.days.every(day => day.total === 0)) {
-                if (dailyChart) dailyChart.destroy();
-                document.getElementById("dailyNoData").classList.remove("hidden");
-                document.getElementById("dailyTotal").textContent = '0 ₽';
-                document.getElementById("dailyAvg").textContent = '0 ₽';
-                document.getElementById("dailyBest").textContent = '—';
-            } else {
-                buildDailyChart(d);
-                document.getElementById("dailyTotal").textContent = fmt(d.monthTotal);
-                document.getElementById("dailyAvg").textContent = fmt(d.dailyAverage);
-                const best = d.days.reduce((max, x) => x.total > max.total ? x : max, {day:0,total:0});
-                document.getElementById("dailyBest").textContent = best.total > 0 ? `${best.day} числа — ${fmt(best.total)}` : '—';
-            }
-        } catch (e) {
-            document.getElementById("dailyNoData").classList.remove("hidden");
-            document.getElementById("dailyTotal").textContent = '—';
-            document.getElementById("dailyAvg").textContent = '—';
-            document.getElementById("dailyBest").textContent = '—';
-        }
-    }
-
-    function buildLeagueChart(data) {
-        if (!data?.leagueStats?.length) return; if (leagueChart) leagueChart.destroy();
-        const ctx = document.getElementById("leagueChart").getContext("2d");
-        const all = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE']; const colors = { 'A': '#fbbf24', 'B': '#60a5fa', 'C': '#34d399', 'D': '#c084fc', 'SUPER_LEAGUE': '#fca5a5' };
-        const labels = [], values = [], bgColors = [];
-        all.forEach(l => { const f = data.leagueStats.find(s => s.league === l); labels.push(l === 'SUPER_LEAGUE' ? 'СУПЕР' : l); values.push(f ? Math.round(f.averageAmount) : 0); bgColors.push(f ? colors[l] + 'DD' : 'rgba(255,255,255,0.04)'); });
-        leagueChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: 8, borderSkipped: false, barPercentage: 0.5 }] },
-            options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1200, easing: 'easeOutBounce' },
-                plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 11 }, formatter: v => v > 0 ? fmt(v) : '' } },
-                scales: { y: { max: Math.max(...values, 1) * 1.2, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: 9 }, padding: 4 } },
-                    x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 12 }, padding: 6 } } } }, plugins: [ChartDataLabels] });
-    }
-
-    function buildMonthlyChart(data, overallAvg) {
-        if (!data?.length) return; if (monthlyChart) monthlyChart.destroy();
-        const ctx = document.getElementById("monthlyChart").getContext("2d");
-        const months = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-        const labels = data.map(m => months[parseInt(m.month.split('-')[1]) - 1]); const values = data.map(m => Math.round(m.total));
-        monthlyChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ data: values, backgroundColor: '#fbbf24CC', borderRadius: 8, borderSkipped: false, barPercentage: 0.5 }] },
-            options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1200, easing: 'easeOutBounce' },
-                plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', offset: 2, color: '#fff', font: { weight: '700', size: 10 }, formatter: v => v > 0 ? fmt(v) : '' } },
-                scales: { y: { beginAtZero: true, max: Math.max(...values, 1) * 1.2, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: 9 }, padding: 4 } },
-                    x: { grid: { display: false }, ticks: { color: '#fff', font: { weight: '600', size: 11 }, padding: 4 } } } }, plugins: [ChartDataLabels] });
-        document.getElementById("monthlyAvgPill").style.display = 'inline-flex'; document.getElementById("monthlyAvg").textContent = fmt(overallAvg);
-    }
-
-    function buildDailyChart(data) {
-        if (!data?.days?.length) return; if (dailyChart) dailyChart.destroy();
-        const ctx = document.getElementById("dailyChart").getContext("2d");
-        const labels = data.days.map(d => d.day); const values = data.days.map(d => Math.round(d.total));
-        const bgColors = data.days.map(d => d.total > 0 ? '#fbbf24DD' : 'rgba(255,255,255,0.03)');
-        const isMobile = window.innerWidth < 768;
-        dailyChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: isMobile ? 2 : 4, borderSkipped: false, barPercentage: isMobile ? 0.95 : 0.85 }] },
-            options: { responsive: true, maintainAspectRatio: false, animation: { duration: 400, easing: 'easeOutQuart' },
-                plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw > 0 ? fmt(ctx.raw) : 'Нет дохода' } } },
-                scales: { y: { beginAtZero: true, max: Math.max(...values, 1) * 1.3, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', callback: v => fmt(v), font: { size: isMobile ? 7 : 9 }, padding: isMobile ? 2 : 6 } },
-                    x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: isMobile ? 7 : 9 }, padding: 0, maxRotation: 0, autoSkip: true, autoSkipPadding: isMobile ? 0 : 2 } } } } });
-    }
-
-    function fmt(v) { if (v == null) return "0 ₽"; return new Intl.NumberFormat("ru-RU").format(Math.round(v)) + " ₽"; }
-    init();
+        container.innerHTML = html;
+    })();
 </script>
 </body>
 </html>
