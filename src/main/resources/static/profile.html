@@ -8,346 +8,181 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
     <style>
-        * { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; min-height: 100dvh; background: #0a0a14; position: relative; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        .bg-mesh { position: fixed; inset: 0; z-index: -5; background-image: radial-gradient(circle at 20% 30%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(139,92,246,0.08) 0%, transparent 50%), radial-gradient(circle at 50% 50%, rgba(59,130,246,0.05) 0%, transparent 70%); }
-        .bg-grid { position: fixed; inset: 0; z-index: -4; opacity: 0.15; background-image: linear-gradient(rgba(99,102,241,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.1) 1px, transparent 1px); background-size: 60px 60px; }
-        .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -3; animation: orbFloat 8s ease-in-out infinite; }
-        .bg-orb-1 { width: 400px; height: 400px; background: rgba(99,102,241,0.06); top: -100px; right: -100px; }
-        .bg-orb-2 { width: 300px; height: 300px; background: rgba(139,92,246,0.06); bottom: -50px; left: -50px; animation-delay: -4s; }
-        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, -30px) scale(1.1); } }
-        .glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
-        .glass-sidebar { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.06); }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 10px; cursor: pointer; color: #9ca3af; border-left: 3px solid transparent; user-select: none; -webkit-user-select: none; }
-        .nav-item:hover { background: rgba(99,102,241,0.1); color: #a5b4fc; }
-        .nav-item.active { background: rgba(99,102,241,0.15); color: #818cf8; border-left-color: #818cf8; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; }
-        .modal-box { background: #1a1a2e; border-radius: 20px; padding: 28px 24px; max-width: 400px; width: 90%; border: 1px solid rgba(255,255,255,0.1); text-align: center; animation: modalIn 0.3s ease; }
-        @keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
         .toggle-wrapper { position: relative; display: inline-flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; -webkit-user-select: none; }
-        .toggle-track { width: 56px; height: 30px; border-radius: 30px; position: relative; transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-        .toggle-track.on { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 0 20px rgba(16,185,129,0.35), inset 0 1px 2px rgba(0,0,0,0.2); }
-        .toggle-track.off { background: rgba(255,255,255,0.08); box-shadow: inset 0 1px 3px rgba(0,0,0,0.4); }
-        .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-        .toggle-thumb.on { left: 29px; box-shadow: 0 2px 12px rgba(16,185,129,0.5); }
-        .toggle-icon { position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px; transition: opacity 0.3s; }
-        .toggle-icon.on { right: 7px; opacity: 0; }
-        .toggle-icon.off { left: 7px; opacity: 0; }
-        .toggle-track.on .toggle-icon.on { opacity: 1; }
-        .toggle-track.off .toggle-icon.off { opacity: 1; }
+        .toggle-track { width: 52px; height: 28px; border-radius: 28px; position: relative; transition: 0.3s ease; }
+        .toggle-track.on { background: #6366f1; }
+        .toggle-track.off { background: rgba(255,255,255,0.08); }
+        .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: 0.3s ease; }
+        .toggle-thumb.on { left: 27px; }
+        .input-field { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; color: #e5e5e5; padding: 10px 14px; font-size: 0.88rem; font-family: 'Inter'; width: 100%; outline: none; transition: all 0.2s ease; }
+        .input-field:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.10); }
+        .btn-indigo { background: #6366f1; color: #fff; font-weight: 600; border: none; border-radius: 10px; padding: 10px 18px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s ease; }
+        .btn-indigo:hover { background: #4f46e5; }
+        .btn-indigo:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-outline { background: transparent; color: #e5e5e5; font-weight: 500; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 18px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s ease; }
+        .btn-outline:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.15); }
     </style>
 </head>
 <body class="flex min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
+<div class="stars" id="starsContainer"></div>
 
 <aside class="glass-sidebar w-20 md:w-56 min-h-screen p-3 md:p-4 flex flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-2 md:gap-3 mb-8 justify-center md:justify-start">
         <img src="/img.png" alt="PulseCore" class="w-9 h-9 md:w-10 md:h-10 rounded-xl shadow-lg object-cover shrink-0">
-        <div class="hidden md:block"><h1 class="text-sm md:text-lg font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">PulseCore</h1></div>
+        <div class="hidden md:block"><h1 class="text-sm md:text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1></div>
     </div>
     <nav class="flex flex-col gap-1 flex-1">
-        <a href="/dashboard" class="nav-item justify-center md:justify-start"><span class="text-lg">🏠</span><span class="hidden md:inline text-sm">Главная</span></a>
-        <div class="nav-item active justify-center md:justify-start"><span class="text-lg">👤</span><span class="hidden md:inline text-sm">Профиль</span></div>
+        <a href="/dashboard" class="nav-item justify-center md:justify-start">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="hidden md:inline text-sm">Главная</span>
+        </a>
+        <div class="nav-item active justify-center md:justify-start">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="hidden md:inline text-sm">Профиль</span>
+        </div>
     </nav>
-    <button onclick="logout()" class="flex items-center justify-center md:justify-start gap-2 text-gray-500 hover:text-red-400 text-xs md:text-sm mt-auto py-2"><span>🚪</span><span class="hidden md:inline">Выйти</span></button>
+    <button onclick="logout()" class="flex items-center justify-center md:justify-start gap-2 text-zinc-500 hover:text-red-400 text-xs md:text-sm mt-auto py-2 px-2 rounded-lg hover:bg-red-500/5">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span class="hidden md:inline">Выйти</span>
+    </button>
 </aside>
 
-<main class="flex-1 p-4 md:p-8 relative z-10 overflow-y-auto max-h-screen">
-    <div class="max-w-2xl mx-auto">
+<main class="flex-1 p-4 md:p-10 relative z-10 overflow-y-auto max-h-screen">
+    <div class="max-w-lg">
 
-        <div class="flex items-center gap-3 md:gap-4 mb-6">
-            <img src="/img.png" alt="PulseCore" class="w-12 h-12 md:w-14 md:h-14 rounded-xl shadow-lg object-cover shrink-0">
+        <div class="flex items-center gap-3 md:gap-4 mb-8">
+            <img src="/img.png" alt="PulseCore" class="w-12 h-12 md:w-14 md:h-14 rounded-xl shadow-lg object-cover shrink-0 ring-1 ring-white/10">
             <div>
                 <h2 class="text-xl md:text-2xl font-bold text-white" id="profileName">Загрузка...</h2>
-                <p class="text-xs md:text-sm text-gray-500">Настройки аккаунта</p>
+                <p class="text-xs md:text-sm text-zinc-500">Настройки аккаунта</p>
             </div>
         </div>
 
-        <div class="glass rounded-xl md:rounded-2xl p-4 md:p-5 mb-4">
+        <div class="widget-card rounded-2xl p-4 md:p-5 mb-3">
             <div class="flex items-center justify-between gap-2 md:gap-3">
-                <div class="flex items-center gap-2 md:gap-3">
-                    <span class="text-xl">🔔</span>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
                     <div>
-                        <h3 class="font-semibold text-white text-sm md:text-base">Уведомления на почту</h3>
-                        <p class="text-xs text-gray-500" id="notifLabel">Загрузка...</p>
+                        <h3 class="font-semibold text-white text-sm">Уведомления на почту</h3>
+                        <p class="text-xs text-zinc-500" id="notifLabel">Загрузка...</p>
                     </div>
                 </div>
                 <div class="toggle-wrapper" onclick="toggleNotifications()">
-                    <div class="toggle-track off" id="toggleTrack">
-                        <span class="toggle-icon off">🔕</span>
-                        <span class="toggle-icon on">🔔</span>
-                        <div class="toggle-thumb" id="toggleThumb"></div>
-                    </div>
+                    <div class="toggle-track off" id="toggleTrack"><div class="toggle-thumb" id="toggleThumb"></div></div>
                 </div>
             </div>
         </div>
 
-        <div class="glass rounded-xl md:rounded-2xl p-4 md:p-5 mb-4">
+        <div class="widget-card rounded-2xl p-4 md:p-5 mb-3">
             <div class="flex items-center justify-between gap-2 md:gap-3">
-                <div class="flex items-center gap-2 md:gap-3">
-                    <span class="text-xl">📲</span>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </div>
                     <div>
-                        <h3 class="font-semibold text-white text-sm md:text-base">Push-уведомления</h3>
-                        <p class="text-xs text-gray-500" id="pushLabel">Загрузка...</p>
+                        <h3 class="font-semibold text-white text-sm">Push-уведомления</h3>
+                        <p class="text-xs text-zinc-500" id="pushLabel">Загрузка...</p>
                     </div>
                 </div>
                 <div class="toggle-wrapper" onclick="togglePush()">
-                    <div class="toggle-track off" id="pushToggleTrack">
-                        <span class="toggle-icon off">🔕</span>
-                        <span class="toggle-icon on">📲</span>
-                        <div class="toggle-thumb" id="pushToggleThumb"></div>
-                    </div>
+                    <div class="toggle-track off" id="pushToggleTrack"><div class="toggle-thumb" id="pushToggleThumb"></div></div>
                 </div>
             </div>
         </div>
 
-        <div class="glass rounded-xl md:rounded-2xl p-4 md:p-5 mb-4">
-            <div class="flex items-center gap-2 md:gap-3 mb-3">
-                <span class="text-xl">📧</span>
-                <div><h3 class="font-semibold text-white text-sm md:text-base">Email</h3></div>
+        <div class="widget-card rounded-2xl p-4 md:p-5 mb-3">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M6 16h.01M10 16h.01M14 16h.01"/></svg>
+                </div>
+                <div><h3 class="font-semibold text-white text-sm">Email</h3></div>
             </div>
-            <input id="emailInput" type="email" class="input input-bordered input-sm md:input-md w-full bg-white/5 text-white placeholder-gray-500 text-sm" placeholder="your@email.com">
-            <button onclick="saveEmail()" id="saveEmailBtn" class="btn btn-sm w-full mt-3 bg-gradient-to-r from-indigo-500 to-purple-600 border-0 text-white text-xs">💾 Сохранить email</button>
+            <input id="emailInput" type="email" class="input-field mb-3" placeholder="your@email.com">
+            <button onclick="saveEmail()" id="saveEmailBtn" class="btn-indigo w-full">Сохранить email</button>
         </div>
 
-        <div class="glass rounded-xl md:rounded-2xl p-4 md:p-5 mb-4">
-            <div class="flex items-center gap-2 md:gap-3 mb-3">
-                <span class="text-xl">🔐</span>
-                <div><h3 class="font-semibold text-white text-sm md:text-base">Смена пароля</h3></div>
+        <div class="widget-card rounded-2xl p-4 md:p-5 mb-3">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <div><h3 class="font-semibold text-white text-sm">Смена пароля</h3></div>
             </div>
-            <button onclick="showPasswordForm()" id="changePasswordBtn" class="btn btn-sm w-full bg-white/10 hover:bg-white/20 text-white border-0">🔐 Изменить пароль</button>
+            <button onclick="showPasswordForm()" id="changePasswordBtn" class="btn-outline w-full">Изменить пароль</button>
             <div id="passwordForm" class="hidden mt-4 space-y-3">
                 <div id="stepOld" class="space-y-3">
                     <div>
-                        <label class="text-xs text-gray-400 mb-1 block">Введите старый пароль</label>
+                        <label class="text-xs text-zinc-400 mb-1 block">Текущий пароль</label>
                         <div class="relative">
-                            <input id="oldPasswordInput" type="password" class="input input-bordered input-sm md:input-md w-full bg-white/5 text-white placeholder-gray-500 text-sm pr-10" placeholder="Текущий пароль">
-                            <button onclick="togglePassword('oldPasswordInput', this)" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-lg cursor-pointer bg-transparent border-0 p-1">👁️</button>
+                            <input id="oldPasswordInput" type="password" class="input-field pr-10" placeholder="Введите старый пароль">
+                            <button onclick="togglePassword('oldPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer bg-transparent border-0 p-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
                         </div>
                     </div>
                     <p id="oldPasswordError" class="text-xs text-red-400 hidden"></p>
-                    <button onclick="checkOldPassword()" id="checkOldBtn" class="btn btn-sm w-full bg-indigo-600 hover:bg-indigo-500 text-white border-0">Проверить →</button>
+                    <button onclick="checkOldPassword()" id="checkOldBtn" class="btn-indigo w-full">Проверить</button>
                 </div>
                 <div id="stepNew" class="hidden space-y-3">
-                    <div class="border-t border-white/10 pt-3"><label class="text-xs text-emerald-400 mb-1 block">✅ Старый пароль верен</label></div>
+                    <div class="border-t border-white/5 pt-3"><p class="text-xs text-emerald-400">Старый пароль подтверждён</p></div>
                     <div>
-                        <label class="text-xs text-gray-400 mb-1 block">Введите новый пароль</label>
+                        <label class="text-xs text-zinc-400 mb-1 block">Новый пароль</label>
                         <div class="relative">
-                            <input id="newPasswordInput" type="password" class="input input-bordered input-sm md:input-md w-full bg-white/5 text-white placeholder-gray-500 text-sm pr-10" placeholder="Минимум 6 символов">
-                            <button onclick="togglePassword('newPasswordInput', this)" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-lg cursor-pointer bg-transparent border-0 p-1">👁️</button>
+                            <input id="newPasswordInput" type="password" class="input-field pr-10" placeholder="Минимум 6 символов">
+                            <button onclick="togglePassword('newPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer bg-transparent border-0 p-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
                         </div>
                     </div>
                     <p id="newPasswordError" class="text-xs text-red-400 hidden"></p>
-                    <button onclick="changePassword()" id="changeBtn" class="btn btn-sm w-full bg-emerald-600 hover:bg-emerald-500 text-white border-0">Сменить пароль ✅</button>
+                    <button onclick="changePassword()" id="changeBtn" class="btn-indigo w-full">Сменить пароль</button>
                 </div>
             </div>
         </div>
 
-        <div class="glass rounded-xl md:rounded-2xl p-4 md:p-5 mb-4">
-            <div class="flex items-center gap-2 md:gap-3">
-                <span class="text-xl">📅</span>
-                <div><h3 class="font-semibold text-white text-sm md:text-base">Дата регистрации</h3><p class="text-xs md:text-sm text-gray-400" id="createdAt">—</p></div>
+        <div class="widget-card rounded-2xl p-4 md:p-5 mb-3">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-white text-sm">Дата регистрации</h3>
+                    <p class="text-xs text-zinc-500" id="createdAt">—</p>
+                </div>
             </div>
         </div>
 
-        <div id="messageBox" class="text-xs md:text-sm text-center mb-4 hidden"></div>
+        <div id="messageBox" class="text-xs md:text-sm mb-4 hidden"></div>
     </div>
 </main>
 
+<script type="module" src="/js/profile-app.js"></script>
 <script>
-    let playerId = null;
-    let notificationsEnabled = true;
-    let pushEnabled = true;
-
-    async function init() {
-        try {
-            const res = await fetch("/api/auth/me", { credentials: "same-origin" });
-            if (!res.ok) { window.location.href = "/"; return; }
-            const data = await res.json();
-            playerId = data.id;
-            document.getElementById("profileName").textContent = data.name;
-            document.getElementById("emailInput").value = data.email || '';
-            if (data.createdAt) document.getElementById("createdAt").textContent = new Date(data.createdAt).toLocaleDateString("ru-RU");
-            await loadNotificationState();
-            await loadPushState();
-        } catch (e) { window.location.href = "/"; }
-    }
-
-    async function loadNotificationState() {
-        try {
-            const res = await fetch(`/api/player/notifications/status`)
-            if (res.ok) {
-                const data = await res.json();
-                notificationsEnabled = data.enabled;
-                updateNotificationToggleUI();
-            }
-        } catch(e) { updateNotificationToggleUI(); }
-    }
-
-    async function loadPushState() {
-        try {
-            const res = await fetch('/api/push/push-status', { credentials: 'same-origin' });
-            if (res.ok) {
-                const data = await res.json();
-                pushEnabled = data.pushEnabled;
-                updatePushToggleUI();
-            }
-        } catch(e) { updatePushToggleUI(); }
-    }
-
-    function updateNotificationToggleUI() {
-        const track = document.getElementById("toggleTrack");
-        const thumb = document.getElementById("toggleThumb");
-        const label = document.getElementById("notifLabel");
-        if (notificationsEnabled) {
-            track.className = "toggle-track on";
-            thumb.className = "toggle-thumb on";
-            label.textContent = "Включены";
-            label.className = "text-xs text-emerald-400";
-        } else {
-            track.className = "toggle-track off";
-            thumb.className = "toggle-thumb";
-            label.textContent = "Отключены";
-            label.className = "text-xs text-gray-500";
+    (function() {
+        const container = document.getElementById('starsContainer');
+        if (!container) return;
+        const count = 100;
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            const size = Math.random() * 2.5 + 0.5;
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const duration = Math.random() * 3 + 2;
+            const delay = Math.random() * 5;
+            html += `<div class="star" style="
+                width:${size}px; height:${size}px;
+                left:${x}%; top:${y}%;
+                --duration:${duration}s;
+                --delay:${delay}s;
+            "></div>`;
         }
-    }
-
-    function updatePushToggleUI() {
-        const track = document.getElementById("pushToggleTrack");
-        const thumb = document.getElementById("pushToggleThumb");
-        const label = document.getElementById("pushLabel");
-        if (pushEnabled) {
-            track.className = "toggle-track on";
-            thumb.className = "toggle-thumb on";
-            label.textContent = "Включены";
-            label.className = "text-xs text-emerald-400";
-        } else {
-            track.className = "toggle-track off";
-            thumb.className = "toggle-thumb";
-            label.textContent = "Отключены";
-            label.className = "text-xs text-gray-500";
-        }
-    }
-
-    async function toggleNotifications() {
-        notificationsEnabled = !notificationsEnabled;
-        updateNotificationToggleUI();
-        try {
-            await fetch(`/api/player/notifications?enabled=${notificationsEnabled}`, { method: "PUT" });
-        } catch(e) {
-            notificationsEnabled = !notificationsEnabled;
-            updateNotificationToggleUI();
-        }
-    }
-
-    async function togglePush() {
-        pushEnabled = !pushEnabled;
-        updatePushToggleUI();
-        try {
-            const res = await fetch('/api/push/toggle', { method: 'POST', credentials: 'same-origin' });
-            if (res.ok) {
-                const data = await res.json();
-                pushEnabled = data.pushEnabled;
-                updatePushToggleUI();
-            }
-        } catch(e) {
-            pushEnabled = !pushEnabled;
-            updatePushToggleUI();
-        }
-    }
-
-    function togglePassword(inputId, btn) {
-        const input = document.getElementById(inputId);
-        input.type = input.type === "password" ? "text" : "password";
-        btn.textContent = input.type === "password" ? "👁️" : "🙈";
-    }
-
-    function showPasswordForm() {
-        document.getElementById("passwordForm").classList.remove("hidden");
-        document.getElementById("changePasswordBtn").classList.add("hidden");
-        document.getElementById("stepOld").classList.remove("hidden");
-        document.getElementById("stepNew").classList.add("hidden");
-        document.getElementById("oldPasswordInput").value = "";
-        document.getElementById("oldPasswordInput").disabled = false;
-        document.getElementById("newPasswordInput").value = "";
-        document.getElementById("oldPasswordError").classList.add("hidden");
-        document.getElementById("checkOldBtn").disabled = false;
-        document.getElementById("checkOldBtn").innerHTML = "Проверить →";
-    }
-
-    async function checkOldPassword() {
-        const oldPassword = document.getElementById("oldPasswordInput").value;
-        const errorEl = document.getElementById("oldPasswordError");
-        errorEl.classList.add("hidden");
-        if (!oldPassword) { errorEl.textContent = "Введите старый пароль"; errorEl.classList.remove("hidden"); return; }
-        const btn = document.getElementById("checkOldBtn");
-        btn.disabled = true; btn.innerHTML = "⏳ Проверка...";
-        try {
-            const res = await fetch("/api/auth/verify-password", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ password: oldPassword }) });
-            if (!res.ok) { const err = await res.json(); errorEl.textContent = err.message || "Неверный пароль"; errorEl.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Проверить →"; return; }
-            document.getElementById("stepNew").classList.remove("hidden");
-            document.getElementById("checkOldBtn").classList.add("hidden");
-            document.getElementById("oldPasswordInput").disabled = true;
-            document.getElementById("newPasswordInput").focus();
-        } catch (e) { errorEl.textContent = "Ошибка соединения"; errorEl.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Проверить →"; }
-    }
-
-    async function changePassword() {
-        const oldPassword = document.getElementById("oldPasswordInput").value;
-        const newPassword = document.getElementById("newPasswordInput").value;
-        const errorEl = document.getElementById("newPasswordError");
-        errorEl.classList.add("hidden");
-        if (!newPassword || newPassword.length < 6) { errorEl.textContent = "Минимум 6 символов"; errorEl.classList.remove("hidden"); return; }
-        const btn = document.getElementById("changeBtn");
-        btn.disabled = true; btn.innerHTML = "⏳";
-        try {
-            const res = await fetch(`/api/player/change-password`, { method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ oldPassword, newPassword }) });
-            if (!res.ok) { const err = await res.json(); errorEl.textContent = err.message || "Ошибка"; errorEl.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Сменить пароль ✅"; return; }
-            showMessage("✅ Пароль изменён!", "text-emerald-400");
-            resetPasswordForm();
-        } catch (e) { errorEl.textContent = "Ошибка"; errorEl.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Сменить пароль ✅"; }
-    }
-
-    function resetPasswordForm() {
-        document.getElementById("passwordForm").classList.add("hidden");
-        document.getElementById("changePasswordBtn").classList.remove("hidden");
-        document.getElementById("stepNew").classList.add("hidden");
-        document.getElementById("oldPasswordInput").value = "";
-        document.getElementById("oldPasswordInput").disabled = false;
-        document.getElementById("newPasswordInput").value = "";
-    }
-
-    async function saveEmail() {
-        const msgBox = document.getElementById("messageBox");
-        const btn = document.getElementById("saveEmailBtn");
-        msgBox.classList.add("hidden");
-        const email = document.getElementById("emailInput").value.trim();
-        btn.disabled = true; btn.innerHTML = "⏳";
-        try {
-            const res = await fetch(`/api/player/profile`,  { method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ email }) });
-            if (!res.ok) { const err = await res.json(); showMessage("❌ " + (err.message || "Ошибка"), "text-red-400"); }
-            else showMessage("✅ Email обновлён!", "text-emerald-400");
-        } catch (e) { showMessage("❌ Ошибка", "text-red-400"); }
-        finally { btn.disabled = false; btn.innerHTML = "💾 Сохранить email"; }
-    }
-
-    function showMessage(text, className) {
-        const msgBox = document.getElementById("messageBox");
-        msgBox.textContent = text;
-        msgBox.className = "text-xs md:text-sm text-center mb-4 " + className;
-        msgBox.classList.remove("hidden");
-        setTimeout(() => msgBox.classList.add("hidden"), 3000);
-    }
-
-    async function logout() {
-        await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-        window.location.replace("/");
-    }
-    function formatMoney(v) { if (v == null) return "0 ₽"; return new Intl.NumberFormat("ru-RU").format(Math.round(v)) + " ₽"; }
-    init();
+        container.innerHTML = html;
+    })();
 </script>
 </body>
 </html>
