@@ -2,11 +2,34 @@ import { API } from '../core/api.js';
 import { state } from '../core/state.js';
 import { capitalizeName } from '../core/utils.js';
 
+function isPro() {
+    return !document.getElementById('proBadge').classList.contains('hidden');
+}
+
 export async function loadTopWeek(league) {
     const panel = document.getElementById('topWeekPanel');
     const period = state.currentPeriod.toUpperCase();
     const periodLabel = period === 'WEEK' ? '7 дней' : period === 'MONTH' ? '30 дней' : '365 дней';
     const topTitle = period === 'WEEK' ? 'недели' : period === 'MONTH' ? 'за месяц' : 'за год';
+
+    if (!isPro()) {
+        panel.innerHTML = `
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-white text-sm">🏆 Топ ${topTitle}</h3>
+                <span class="cursor-pointer text-zinc-400 hover:text-red-400 text-lg" onclick="toggleTopWeek()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </span>
+            </div>
+            <div class="text-center py-8">
+                <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
+                <p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы видеть топ игроков</p>
+                <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a>
+            </div>`;
+        return;
+    }
 
     const leagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
     const labels = { 'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер' };
@@ -32,7 +55,6 @@ export async function loadTopWeek(league) {
         html += `<span class="league-tab ${isActive ? 'active' : ''} ${isMy ? 'my-league' : ''}" onclick="switchLeague('${l}')">${labels[l]}</span>`;
     });
     html += '</div>';
-
     html += '<div id="topWeekList" class="min-h-[200px]">';
 
     try {
@@ -66,7 +88,7 @@ export async function loadTopWeek(league) {
             }
         }
     } catch (e) {
-        html += `<div class="text-center py-6"><p class="text-red-400 text-sm">❌ Ошибка</p></div>`;
+        html += `<div class="text-center py-6"><p class="text-red-400 text-sm">Ошибка</p></div>`;
     }
 
     html += '</div>';
@@ -74,6 +96,7 @@ export async function loadTopWeek(league) {
 }
 
 export async function loadTopWeekPreview() {
+    if (!isPro()) return;
     try {
         const data = await API.getTop('WEEK', state.primaryLeague || 'A');
         if (data?.top5?.length > 0) {
@@ -96,9 +119,7 @@ export function toggleTopWeek() {
     }
 }
 
-export function switchLeague(league) {
-    loadTopWeek(league);
-}
+export function switchLeague(league) { loadTopWeek(league); }
 
 export function switchPeriod(period) {
     state.currentPeriod = period;
