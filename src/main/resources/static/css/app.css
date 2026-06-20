@@ -24,16 +24,15 @@ body {
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     color: #d4d4d8;
-    padding-top: env(safe-area-inset-top);
 }
 
 /* Галактический фон */
 .bg-mesh {
-    position: fixed; inset: 0; z-index: -5; opacity: 0.6;
+    position: fixed; inset: 0; z-index: -5; opacity: 0.5;
     background:
-            radial-gradient(ellipse at 20% 40%, rgba(99,102,241,0.06) 0%, transparent 55%),
-            radial-gradient(ellipse at 70% 30%, rgba(79,70,229,0.04) 0%, transparent 55%),
-            radial-gradient(ellipse at 50% 70%, rgba(129,140,248,0.03) 0%, transparent 60%);
+            radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.08) 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 40%, rgba(139,92,246,0.05) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 80%, rgba(79,70,229,0.04) 0%, transparent 55%);
 }
 
 .bg-grid {
@@ -50,6 +49,18 @@ body {
 
 .bg-orb { display: none; }
 
+/* Туманность */
+.nebula {
+    position: fixed; inset: 0; z-index: -3; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 50%, rgba(99,102,241,0.04) 0%, transparent 70%);
+    animation: nebulaBreathe 8s ease-in-out infinite;
+}
+
+@keyframes nebulaBreathe {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
 /* Звёзды */
 .stars { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
 .star {
@@ -60,6 +71,19 @@ body {
 @keyframes twinkle {
     0%, 100% { opacity: 0.2; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.8); }
+}
+
+/* Карточки */
+.widget-card {
+    background: rgba(255,255,255,0.02); border-radius: 14px;
+    padding: clamp(14px, 2.5vw, 20px); border: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer; display: flex; flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.widget-card:hover {
+    background: rgba(255,255,255,0.04); border-color: rgba(99,102,241,0.25);
+    transform: translateY(-2px);
 }
 
 /* Стекло */
@@ -93,18 +117,6 @@ body {
 .nav-item.active { background: rgba(99,102,241,0.10); color: var(--accent-light); border-left-color: var(--accent); }
 .nav-item .nav-icon { font-size: 1.05rem; width: 20px; text-align: center; }
 .nav-item.admin-item { border-left-color: #10b981; }
-
-/* Карточки */
-.widget-card {
-    background: rgba(255,255,255,0.02); border-radius: 14px;
-    padding: clamp(14px, 2.5vw, 20px); border: 1px solid rgba(255,255,255,0.05);
-    cursor: pointer; display: flex; flex-direction: column;
-}
-
-.widget-card:hover {
-    background: rgba(255,255,255,0.04); border-color: rgba(99,102,241,0.25);
-    transform: translateY(-2px);
-}
 
 /* Кнопки */
 .btn-gold {
@@ -168,13 +180,9 @@ body {
 .ptr-indicator.active { height: 48px; }
 .ptr-indicator.done { color: #34d399; }
 
-/* PWA Safe Area */
 #mobileHeader {
-    padding-top: max(6px, env(safe-area-inset-top));
-    padding-bottom: 6px;
-}
-main {
     padding-top: 0;
+    padding-bottom: 0;
 }
 
 .hall-checkbox-card { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); }

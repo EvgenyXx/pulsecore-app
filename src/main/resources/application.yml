@@ -21,11 +21,9 @@ spring:
                                     user-name-attribute: id
 
       cache:
-            type: caffeine
-            caffeine:
-                  spec: expireAfterWrite=15m
-            cache-names:
-                  - allTournaments
+            type: redis
+            redis:
+                  time-to-live: 6h
       datasource:
             url: ${SPRING_DATASOURCE_URL}
             username: ${SPRING_DATASOURCE_USERNAME}

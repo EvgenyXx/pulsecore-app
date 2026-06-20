@@ -19,11 +19,9 @@ spring:
             user-info-uri: https://login.yandex.ru/info
             user-name-attribute: id
   cache:
-    type: caffeine
-    caffeine:
-      spec: expireAfterWrite=15m
-    cache-names:
-      - allTournaments
+    type: redis
+    redis:
+      time-to-live: 6h
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -63,6 +61,8 @@ logging:
     org.hibernate.SQL: warn
     org.flywaydb: debug
     ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
+    org.springframework.cache: TRACE                 # ← добавить
+    org.springframework.data.redis.cache: DEBUG      # ← добавить
 
 app:
   vapid:

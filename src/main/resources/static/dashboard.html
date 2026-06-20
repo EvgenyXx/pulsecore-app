@@ -23,6 +23,7 @@
 <div class="bg-grid"></div>
 <div class="bg-orb bg-orb-1"></div>
 <div class="bg-orb bg-orb-2"></div>
+<div class="nebula"></div>
 <div class="stars" id="starsContainer"></div>
 <div id="ptrIndicator" class="ptr-indicator"></div>
 
@@ -41,19 +42,6 @@
         </div>
         <p id="editTournamentError" class="text-red-400 text-xs mt-2 hidden"></p>
     </div>
-</div>
-
-<div id="mobileHeader" class="md:hidden glass-strong sticky top-0 z-40 px-4 py-1.5 border-b border-white/5 flex items-center justify-between">
-    <div class="flex items-center gap-2.5">
-        <img src="/img.png" alt="PulseCore" class="w-7 h-7 rounded-lg object-cover">
-        <div>
-            <h1 class="text-sm font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1>
-            <p id="mobilePlayerName" class="text-[11px] text-zinc-400 leading-tight"></p>
-        </div>
-    </div>
-    <button id="burgerBtn" onclick="toggleMobileMenu()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
 </div>
 
 <div id="mobileMenuOverlay" class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden" onclick="toggleMobileMenu()"></div>
@@ -151,9 +139,14 @@
     <div id="contentArea" class="max-w-5xl mx-auto w-full">
         <div id="homePage">
             <div class="mb-6 sm:mb-8">
-                <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white"><span id="playerName"></span></h2>
-                    <span id="proBadge" class="pro-badge hidden"><span class="pro-diamond">💎</span>PRO</span>
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white"><span id="playerName"></span></h2>
+                        <span id="proBadge" class="pro-badge hidden"><span class="pro-diamond">💎</span>PRO</span>
+                    </div>
+                    <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
                 </div>
                 <p class="text-zinc-400 mt-1 text-xs sm:text-sm" id="subStatusText"></p>
                 <div id="pushToggleContainer" class="hidden mb-3 flex items-center gap-2">
@@ -198,24 +191,20 @@
 <script type="module" src="/js/app.js"></script>
 <script>
     (function() {
-        const container = document.getElementById('starsContainer');
-        if (!container) return;
-        const count = 100;
-        let html = '';
-        for (let i = 0; i < count; i++) {
-            const size = Math.random() * 2.5 + 0.5;
-            const x = Math.random() * 100;
-            const y = Math.random() * 100;
-            const duration = Math.random() * 3 + 2;
-            const delay = Math.random() * 5;
-            html += `<div class="star" style="
-                width:${size}px; height:${size}px;
-                left:${x}%; top:${y}%;
-                --duration:${duration}s;
-                --delay:${delay}s;
-            "></div>`;
+        const stars = document.getElementById('starsContainer');
+        if (stars) {
+            let html = '';
+            for (let i = 0; i < 100; i++) {
+                const size = Math.random() * 2.5 + 0.5;
+                html += `<div class="star" style="
+                    width:${size}px; height:${size}px;
+                    left:${Math.random()*100}%; top:${Math.random()*100}%;
+                    --duration:${Math.random()*3+2}s;
+                    --delay:${Math.random()*5}s;
+                "></div>`;
+            }
+            stars.innerHTML = html;
         }
-        container.innerHTML = html;
     })();
 </script>
 </body>

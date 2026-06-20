@@ -40,7 +40,7 @@ function renderPlans() {
         .sort((a, b) => a.months - b.months);
 
     if (entries.length === 0) {
-        container.innerHTML = '<p class="text-zinc-500 text-center col-span-full">Нет доступных тарифов</p>';
+        container.innerHTML = '<p class="text-zinc-500 text-center w-full">Нет доступных тарифов</p>';
         return;
     }
 
@@ -55,16 +55,16 @@ function renderPlans() {
         const hasDiscount = plan.months > 1 && plan.price < fullPrice;
 
         return `
-            <div class="plan-card text-center ${isPopular ? 'popular' : ''}" id="plan${plan.months}" onclick="selectPlan(${plan.months})">
-                <div class="text-3xl mb-4">${index === 0 ? '⭐' : '🌟'}</div>
-                <h3 class="text-lg font-bold text-white mb-1">${getMonthLabel(plan.months)}</h3>
-                <p class="text-xs text-zinc-500 mb-3">
-                    ${hasDiscount ? 'Экономия ' + discount + '%' : 'Полный доступ ко всем функциям'}
+            <div class="plan-card ${isPopular ? 'popular' : ''}" id="plan${plan.months}" onclick="selectPlan(${plan.months})">
+                <div class="text-2xl mb-3">${index === 0 ? '⭐' : '🌟'}</div>
+                <h3 class="text-base font-bold text-white mb-1">${getMonthLabel(plan.months)}</h3>
+                <p class="text-[11px] text-zinc-500 mb-2">
+                    ${hasDiscount ? 'Экономия ' + discount + '%' : 'Полный доступ'}
                 </p>
-                <p class="text-3xl font-bold amount-gold">${plan.price} ₽</p>
-                <p class="text-xs text-zinc-500 mt-1">
+                <p class="text-2xl font-bold amount-gold">${plan.price} ₽</p>
+                <p class="text-[11px] text-zinc-500 mt-1">
                     ${hasDiscount ? '<span class="price-old">' + fullPrice + ' ₽</span> ' : ''}
-                    ${perMonth} ₽ / месяц
+                    ${perMonth} ₽ / мес
                 </p>
             </div>
         `;
