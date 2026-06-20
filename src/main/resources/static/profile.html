@@ -11,6 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/app.css">
     <style>
+        body {
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+        #mobileMenu {
+            top: env(safe-area-inset-top, 0px);
+        }
         .toggle-wrapper { position: relative; display: inline-flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; -webkit-user-select: none; }
         .toggle-track { width: 52px; height: 28px; border-radius: 28px; position: relative; transition: 0.3s ease; }
         .toggle-track.on { background: #6366f1; }
@@ -34,7 +40,7 @@
 
 <!-- Mobile Menu -->
 <div id="mobileMenuOverlay" class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden" onclick="toggleMobileMenu()"></div>
-<div id="mobileMenu" class="md:hidden fixed top-0 right-0 h-full w-[300px] max-w-[85vw] glass-sidebar z-50 p-5 flex flex-col transform translate-x-full transition-transform duration-300 ease-out shadow-2xl" onclick="event.stopPropagation()">
+<div id="mobileMenu" class="md:hidden fixed right-0 h-full w-[300px] max-w-[85vw] glass-sidebar z-50 p-5 flex flex-col transform translate-x-full transition-transform duration-300 ease-out shadow-2xl" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between mb-6">
         <span class="font-bold text-white text-sm">Меню</span>
         <button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 active:scale-90 text-white">
