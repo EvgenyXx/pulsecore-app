@@ -1,7 +1,9 @@
-// ==================== TopPeriodService.java ====================
 package ru.pulsecore.app.modules.player.service.analytic.top;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.player.api.dto.TopLeagueResponse;
 import ru.pulsecore.app.modules.player.api.dto.TopPlayerDto;
@@ -20,11 +22,13 @@ public class TopPeriodService {
     private final TopPlayersViewRepository repository;
     private final PlayerService playerService;
 
+    @Cacheable(value = "top-all", key = "#period")
     public TopLeagueResponse getTopAllLeagues(String period, UUID playerId) {
         List<TopPlayersView> all = repository.findByPeriodOrderByTotalDesc(period);
         return buildResponse(all, playerId);
     }
 
+    @Cacheable(value = "top-league", key = "#period + ':' + #league")
     public TopLeagueResponse getTopByLeague(String period, String league, UUID playerId) {
         Player player = playerService.getById(playerId);
 
@@ -41,6 +45,13 @@ public class TopPeriodService {
         List<TopPlayersView> all = repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
         return buildResponse(all, playerId);
     }
+
+    @CacheEvict(value = {"top-all", "top-league"}, allEntries = true)
+    @Scheduled(fixedRate = 300_000)
+    public void evictCache() {}
+
+    @CacheEvict(value = {"top-all", "top-league"}, allEntries = true)
+    public void evictOnNewResult() {}
 
     private TopLeagueResponse buildResponse(List<TopPlayersView> all, UUID playerId) {
         List<TopPlayersView> top5 = all.size() > 5 ? all.subList(0, 5) : all;

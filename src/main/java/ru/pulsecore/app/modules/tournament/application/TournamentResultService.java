@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.player.service.analytic.top.TopPeriodService;
 import ru.pulsecore.app.modules.shared.exception.TournamentNotFoundException;
 import ru.pulsecore.app.modules.tournament.exception.TournamentResultNotFoundException;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
@@ -26,8 +27,8 @@ public class TournamentResultService {
 
     private final TournamentResultRepository tournamentResultRepository;
     private final TournamentRepository tournamentRepository;
+    private final TopPeriodService topPeriodService;
 
-    // ==================== TournamentResultService.java — добавить ====================
     public Page<TournamentResultEntity> getResultsByPeriod(Player player, LocalDate start, LocalDate end, Pageable pageable) {
         return tournamentResultRepository.findByPlayerAndDateBetweenOrderByDateAsc(player, start, end, pageable);
     }
@@ -39,6 +40,7 @@ public class TournamentResultService {
         if (amount != null) result.setAmount(amount);
         if (bonus != null) result.setBonus(bonus);
         tournamentResultRepository.save(result);
+        topPeriodService.evictOnNewResult();
     }
 
     public TournamentResultEntity save(TournamentResultEntity entity) {
@@ -54,7 +56,9 @@ public class TournamentResultService {
         }
 
         try {
-            return tournamentResultRepository.save(entity);
+            TournamentResultEntity saved = tournamentResultRepository.save(entity);
+            topPeriodService.evictOnNewResult();
+            return saved;
         } catch (Exception e) {
             log.error("SAVE ERROR: player={}, tournament={}",
                     entity.getPlayer().getName(),
