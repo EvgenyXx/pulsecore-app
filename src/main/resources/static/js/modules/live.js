@@ -5,6 +5,16 @@ let allHalls = [];
 
 async function loadLive() {
     try {
+        // Проверка подписки
+        const sub = await fetch('/api/player/subscription', { credentials: 'same-origin' }).then(r => r.json()).catch(() => null);
+        if (!sub || !sub.active) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('noSubBlock').classList.remove('hidden');
+            document.getElementById('hallFilter').classList.add('hidden');
+            document.getElementById('subtitle').textContent = 'Требуется PRO';
+            return;
+        }
+
         const today = new Date().toISOString().split('T')[0];
 
         const [tournamentsRes, lineupsRes] = await Promise.all([

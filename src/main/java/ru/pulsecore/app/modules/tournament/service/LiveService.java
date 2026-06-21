@@ -17,7 +17,7 @@ public class LiveService {
     private final LineupRepository lineupRepository;
     private final LineupLiveMapper mapper;
 
-    private static final int TOURNAMENT_MAX_DURATION_HOURS = 6;
+    private static final int TOURNAMENT_MAX_DURATION_HOURS = 7;
 
     public List<TournamentLiveDto> getLive() {
         LocalDate today = LocalDate.now();

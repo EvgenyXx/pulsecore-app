@@ -1,11 +1,10 @@
-import { AnalyticsAPI } from './core/analytics-api.js';
+import { AnalyticsAPI, checkSubscription } from './core/analytics-api.js';
 import { state } from './core/state.js';
 import { loadLeagueAvg } from './modules/analytics-league.js';
 import { initMonthlyYear, loadMonthly, prevMonthlyYear, nextMonthlyYear, onYearChange } from './modules/analytics-monthly.js';
 import { initDailyMonth, loadDaily, prevDailyMonth, nextDailyMonth } from './modules/analytics-daily.js';
 import { loadBestTime, setBestTimePeriod } from './modules/analytics-best-time.js';
 
-// Глобальные функции
 window.switchTab = switchTab;
 window.prevDailyMonth = prevDailyMonth;
 window.nextDailyMonth = nextDailyMonth;
@@ -72,22 +71,12 @@ async function init() {
     try {
         const user = await AnalyticsAPI.getMe();
         if (!user || !user.id) { window.location.href = '/'; return; }
-
-        // Сохраняем playerId в state для использования в API
         state.playerId = user.id;
 
-        const sub = await AnalyticsAPI.getSubscription();
-        if (!sub || !sub.active) {
-            document.getElementById('loading').innerHTML = '';
+        const hasSub = await checkSubscription();
+        if (!hasSub) {
             document.getElementById('loading').classList.add('hidden');
-            document.querySelector('main').innerHTML = `
-                <div class="glass rounded-2xl p-8 text-center max-w-md mx-auto mt-20">
-                    <div class="text-5xl mb-4">🔒</div>
-                    <h3 class="text-xl font-bold text-amber-400 mb-2">Требуется подписка</h3>
-                    <p class="text-gray-400 text-sm mb-6">Оформите подписку чтобы открыть аналитику</p>
-                    <a href="/subscribe" class="inline-block bg-amber-500 hover:bg-amber-400 text-black font-semibold px-8 py-3 rounded-xl">💳 Оформить подписку</a>
-                    <br><a href="/dashboard" class="text-xs text-gray-500 mt-4 inline-block">← На главную</a>
-                </div>`;
+            document.getElementById('noSubBlock').classList.remove('hidden');
             return;
         }
 

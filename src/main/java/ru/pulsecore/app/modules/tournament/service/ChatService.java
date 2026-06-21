@@ -1,8 +1,10 @@
 package ru.pulsecore.app.modules.tournament.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.modules.push.service.WebPushService;
 import ru.pulsecore.app.modules.tournament.api.dto.ChatMessageDto;
 import ru.pulsecore.app.modules.tournament.mapper.ChatMessageMapper;
 import ru.pulsecore.app.modules.tournament.persistence.entity.ChatMessage;
@@ -11,12 +13,14 @@ import ru.pulsecore.app.modules.tournament.persistence.repository.ChatMessageRep
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMessageMapper chatMessageMapper;
+    private final WebPushService webPushService;
 
     @Transactional(readOnly = true)
     public List<ChatMessageDto> getMessages(Long lineupId) {
@@ -41,11 +45,25 @@ public class ChatService {
                 entity.setReplyTo(replyTo);
                 entity.setReplyToContent(replyTo.getMessage());
                 entity.setReplyToSenderName(replyTo.getPlayerName());
+                sendReplyPush(replyTo, msg);
             });
         }
 
         ChatMessage saved = chatMessageRepository.save(entity);
         return chatMessageMapper.toDto(saved);
+    }
+
+    private void sendReplyPush(ChatMessage originalMsg, ChatMessageDto replyMsg) {
+        try {
+            webPushService.sendToPlayer(
+                    originalMsg.getPlayerId(),
+                    "Новый ответ",
+                    replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
+                    "/live/" + originalMsg.getLineupId()
+            );
+        } catch (Exception e) {
+            log.warn("Не удалось отправить push за ответ: {}", e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
