@@ -19,3 +19,12 @@ export const AnalyticsAPI = {
         return apiRequest(`/player/best-time?${query}`);
     }
 };
+
+export async function checkSubscription() {
+    try {
+        const sub = await AnalyticsAPI.getSubscription();
+        return sub && sub.active;
+    } catch (e) {
+        return false;
+    }
+}
