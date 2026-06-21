@@ -1,0 +1,24 @@
+package ru.pulsecore.app.modules.tournament.api;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ru.pulsecore.app.modules.tournament.api.dto.TournamentLiveDto;
+import ru.pulsecore.app.modules.tournament.service.LiveService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(TournamentApi.BASE_PATH)
+@RequiredArgsConstructor
+public class LiveController {
+
+    private final LiveService liveService;
+
+    @GetMapping(TournamentApi.LIVE)
+    public ResponseEntity<List<TournamentLiveDto>> getLive() {
+        return ResponseEntity.ok(liveService.getLive());
+    }
+}

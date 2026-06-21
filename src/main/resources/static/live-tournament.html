@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>PulseCore — Трансляция</title>
+    <link rel="icon" type="image/png" href="/img.png">
+    <link rel="stylesheet" href="/css/app.css">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2/bundles/stomp.umd.min.js"></script>
+    <style>
+        body {
+            padding-top: env(safe-area-inset-top, 0px);
+            overscroll-behavior: none;
+        }
+        #videoWrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+        }
+        #chatMessages {
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="p-3 md:p-6">
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="nebula"></div>
+<div class="stars" id="starsContainer"></div>
+
+<div class="max-w-4xl mx-auto">
+
+    <div class="flex items-center gap-2 mb-2">
+        <a href="/live" class="text-zinc-500 hover:text-zinc-300 flex-shrink-0">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <span class="live-badge"><span class="w-2 h-2 rounded-full bg-white"></span> LIVE</span>
+        <span class="text-sm font-bold text-white truncate" id="leagueTitle">Загрузка...</span>
+        <span id="onlineCount" style="display:none; font-size:0.75rem; color:#818cf8; margin-left:6px;"></span>
+        <span class="text-zinc-500 text-xs flex-shrink-0" id="tournamentInfo"></span>
+    </div>
+
+    <div class="flex flex-wrap gap-1.5 mb-2" id="playersList"></div>
+
+    <div id="loading" class="text-center py-20">
+        <div class="spinner mb-4"></div>
+        <p class="text-zinc-500 text-sm">Загрузка...</p>
+    </div>
+
+    <div id="content" class="hidden">
+        <div class="mb-3 rounded-2xl overflow-hidden border border-white/5 bg-black flex justify-center" id="videoWrapper">
+            <button onclick="toggleFullscreen()" class="fullscreen-btn" id="fullscreenBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                На весь экран
+            </button>
+            <div id="videoPlaceholder" style="display: flex; align-items: center; justify-content: center; color: #52525b; font-size: 0.85rem; padding: 40px 20px;">Загрузка трансляции...</div>
+            <iframe id="streamFrame" style="border: 0; display: none; background: #000;" allow="fullscreen" src="" scrolling="no"></iframe>
+        </div>
+
+        <h3 class="text-sm font-semibold text-zinc-400 mb-2">💬 Чат</h3>
+        <div style="height: 420px; display: flex; flex-direction: column; background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 12px;">
+            <div id="chatMessages" class="space-y-1 mb-2" style="flex: 1; overflow-y: auto;">
+                <div class="text-center text-zinc-600 text-xs py-4">Сообщений пока нет</div>
+            </div>
+
+            <div id="replyBar" class="reply-bar hidden">
+                <div class="reply-bar-info">
+                    <div class="reply-bar-sender" id="replyBarSender"></div>
+                    <div class="reply-bar-text" id="replyBarText"></div>
+                </div>
+                <span class="reply-bar-close" onclick="cancelReply()">✕</span>
+            </div>
+
+            <div class="flex gap-2">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение..." maxlength="300">
+                <button onclick="sendMessage()" id="sendBtn" class="btn-send">➤</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const stars = document.getElementById('starsContainer');
+        if (stars) {
+            let html = '';
+            for (let i = 0; i < 100; i++) {
+                const size = Math.random() * 2.5 + 0.5;
+                html += `<div class="star" style="
+                    width:${size}px; height:${size}px;
+                    left:${Math.random()*100}%; top:${Math.random()*100}%;
+                    --duration:${Math.random()*3+2}s;
+                    --delay:${Math.random()*5}s;
+                "></div>`;
+            }
+            stars.innerHTML = html;
+        }
+    })();
+</script>
+<script src="/js/modules/live-tournament.js"></script>
+</body>
+</html>

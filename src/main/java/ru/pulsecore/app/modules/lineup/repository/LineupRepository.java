@@ -7,9 +7,12 @@ import org.springframework.data.repository.query.Param;
 import ru.pulsecore.app.modules.lineup.domain.Lineup;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 public interface LineupRepository extends JpaRepository<Lineup, Long> {
+
+    List<Lineup> findByDateAndTime(LocalDate date, String time);
 
     @Modifying
     @Query(value = """
@@ -39,4 +42,6 @@ public interface LineupRepository extends JpaRepository<Lineup, Long> {
     @Modifying
     @Query("DELETE FROM Lineup WHERE date < :date")
     void deleteByDateBefore(@Param("date") LocalDate date);
+
+    Collection<Object> findByDateAndTimeAfter(LocalDate today, String now);
 }

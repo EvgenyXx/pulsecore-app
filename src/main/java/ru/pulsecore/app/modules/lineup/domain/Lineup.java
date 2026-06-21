@@ -40,4 +40,7 @@ public class Lineup {
 
     @Column(nullable = false)
     private LocalDate date;
+
+    @Column(length = 500)
+    private String streamUrl;
 }
