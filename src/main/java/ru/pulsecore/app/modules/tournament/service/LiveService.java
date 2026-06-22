@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.tournament.api.dto.TournamentLiveDto;
+import ru.pulsecore.app.modules.tournament.domain.LiveStatus;
 import ru.pulsecore.app.modules.tournament.mapper.LineupLiveMapper;
 
 import java.time.LocalDate;
@@ -25,11 +26,18 @@ public class LiveService {
 
         return lineupRepository.findByDate(today)
                 .stream()
-                .filter(l -> {
+                .map(l -> {
+                    TournamentLiveDto dto = mapper.toDto(l);
                     LocalTime startTime = LocalTime.parse(l.getTime());
-                    return !startTime.isAfter(now) && startTime.plusHours(TOURNAMENT_MAX_DURATION_HOURS).isAfter(now);
+                    if (startTime.isAfter(now)) {
+                        dto.setStatus(LiveStatus.UPCOMING);
+                    } else if (startTime.plusHours(TOURNAMENT_MAX_DURATION_HOURS).isAfter(now)) {
+                        dto.setStatus(LiveStatus.LIVE);
+                    } else {
+                        dto.setStatus(LiveStatus.FINISHED);
+                    }
+                    return dto;
                 })
-                .map(mapper::toDto)
                 .toList();
     }
 }

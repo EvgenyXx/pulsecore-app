@@ -8,6 +8,7 @@ import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
 import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import ru.pulsecore.app.modules.lineup.mapper.LineupMapper;
+import ru.pulsecore.app.modules.lineup.repository.HallStreamRepository;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.lineup.validator.TournamentValidator;
 
@@ -26,6 +27,7 @@ public class LineupService {
     private final MastersApiClient apiClient;
     private final LineupMapper mapper;
     private final TournamentValidator validator;
+    private final HallStreamRepository hallStreamRepository;
 
 
     @Transactional
@@ -82,6 +84,16 @@ public class LineupService {
                 .toList();
 
         for (Lineup lineup : lineups) {
+            if (lineup.getStreamUrl() == null || lineup.getStreamUrl().isBlank()) {
+                try {
+                    String url = hallStreamRepository.findStreamUrlByHall(lineup.getHall());
+                    if (url != null) {
+                        lineup.setStreamUrl(url);
+                    }
+                } catch (Exception e) {
+                    log.warn("No stream URL for hall {}", lineup.getHall());
+                }
+            }
             lineupRepository.upsertLineup(
                     lineup.getDate(),
                     lineup.getLeague(),
