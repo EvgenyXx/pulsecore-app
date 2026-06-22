@@ -66,7 +66,6 @@ public class LineupService {
         List<TournamentDto> all = apiClient.loadTournaments(date.toString());
         if (all == null || all.isEmpty()) return;
 
-        // Сохраняем ВСЕ турниры, без фильтрации по игрокам
         List<TournamentDto> valid = all.stream()
                 .filter(validator::isValid)
                 .filter(t -> date.equals(extractDate(t)))
@@ -74,7 +73,6 @@ public class LineupService {
 
         if (valid.isEmpty()) return;
 
-        // Для будущих дат чистим перед вставкой
         if (date.isAfter(LocalDate.now())) {
             lineupRepository.deleteAllByDate(date);
         }
@@ -99,20 +97,19 @@ public class LineupService {
                     lineup.getLeague(),
                     lineup.getTime(),
                     lineup.getHall(),
-                    lineup.getPlayers()
+                    lineup.getPlayers(),
+                    lineup.getStreamUrl()
             );
         }
 
         log.info("{} lineups saved for date {}", lineups.size(), date);
     }
 
-    // Составы по выбранным залам — из БД
     public List<Lineup> getLineupsForHalls(LocalDate date, List<String> halls) {
         if (halls == null || halls.isEmpty()) return List.of();
         return lineupRepository.findByDateAndHallIn(date, halls);
     }
 
-    // Сгруппировать по залам
     public Map<String, List<Lineup>> groupByHall(List<Lineup> lineups) {
         return lineups.stream()
                 .collect(Collectors.groupingBy(l -> l.getHall() != null ? l.getHall() : "Без зала",

@@ -35,8 +35,8 @@ function startPolling() { if (!pollInterval) pollInterval = setInterval(loadNewM
 
 async function loadNewMessages() {
     try {
-        const msgs = await (await fetch('/api/chat/' + lineupId + '?after=' + lastMessageId, { credentials: 'same-origin' })).json();
-        msgs.forEach(function(m) { if (m.id > lastMessageId) { lastMessageId = m.id; addMessageToChat(m); } });
+        const msgs = await (await fetch(`/api/chat/${lineupId}?after=${lastMessageId}`, { credentials: 'same-origin' })).json();
+        msgs.forEach(m => { if (m.id > lastMessageId) { lastMessageId = m.id; addMessageToChat(m); } });
     } catch(e) {}
 }
 
@@ -50,29 +50,29 @@ function onTouchMove(e) {
     if (!currentMsg) return;
     const dx = e.touches[0].clientX - startX, dy = e.touches[0].clientY - startY;
     if (Math.abs(dx) > Math.abs(dy) && dx < -5) {
-        e.preventDefault(); currentMsg.style.transform = 'translateX(' + Math.max(dx, -80) + 'px)'; currentMsg.style.transition = 'none';
+        e.preventDefault(); currentMsg.style.transform = `translateX(${Math.max(dx, -80)}px)`; currentMsg.style.transition = 'none';
     }
 }
 
 function onTouchEnd(e) {
     if (!currentMsg) return;
-    const dx = (e.changedTouches[0] ? e.changedTouches[0].clientX : startX) - startX;
-    const dy = Math.abs((e.changedTouches[0] ? e.changedTouches[0].clientY : startY) - startY);
+    const dx = (e.changedTouches[0]?.clientX || startX) - startX;
+    const dy = Math.abs((e.changedTouches[0]?.clientY || startY) - startY);
     currentMsg.style.transition = 'transform 0.2s ease';
     if (dx < -60 && Math.abs(dx) > dy) {
         currentMsg.style.transform = 'translateX(-70px)'; swipedMsg = currentMsg;
-        const mid = currentMsg.dataset.messageId, snd = currentMsg.dataset.sender, cnt = currentMsg.dataset.content;
-        if (mid && snd) setReply(mid, snd, cnt);
+        const msgId = currentMsg.dataset.messageId, sender = currentMsg.dataset.sender, content = currentMsg.dataset.content;
+        if (msgId && sender) setReply(msgId, sender, content);
     } else { currentMsg.style.transform = ''; swipedMsg = null; }
     currentMsg = null; startX = 0; startY = 0;
 }
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', (e) => {
     if (swipedMsg && !e.target.closest('.chat-message')) { swipedMsg.style.transform = ''; swipedMsg = null; }
 });
 
 function setReply(messageId, sender, content) {
-    replyTo = { id: messageId, sender: sender, content: content };
+    replyTo = { id: messageId, sender, content };
     document.getElementById('replyBarSender').textContent = sender;
     document.getElementById('replyBarText').textContent = content;
     document.getElementById('replyBar').classList.remove('hidden');
@@ -90,12 +90,12 @@ function renderMessage(m) {
     const t = m.createdAt ? new Date(m.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
     const sender = escapeHtml(m.playerName || ''), content = escapeHtml(m.message || '');
     let replyHtml = '';
-    if (m.replyToId) replyHtml = '<div class="reply-preview-bar"><div class="reply-sender">' + escapeHtml(m.replyToSenderName || '') + '</div><div class="reply-content">' + escapeHtml(m.replyToContent || '') + '</div></div>';
-    return '<div class="chat-message" data-message-id="' + (m.id || '') + '" data-sender="' + sender.replace(/"/g, '&quot;') + '" data-content="' + content.replace(/"/g, '&quot;') + '">' + replyHtml + '<div class="flex items-center gap-2 mb-0.5"><span class="chat-name">' + sender + '</span><span class="chat-time">' + t + '</span></div><div class="chat-text">' + content + '</div></div>';
+    if (m.replyToId) replyHtml = `<div class="reply-preview-bar"><div class="reply-sender">${escapeHtml(m.replyToSenderName || '')}</div><div class="reply-content">${escapeHtml(m.replyToContent || '')}</div></div>`;
+    return `<div class="chat-message" data-message-id="${m.id || ''}" data-sender="${sender.replace(/"/g, '&quot;')}" data-content="${content.replace(/"/g, '&quot;')}">${replyHtml}<div class="flex items-center gap-2 mb-0.5"><span class="chat-name">${sender}</span><span class="chat-time">${t}</span></div><div class="chat-text">${content}</div></div>`;
 }
 
 function bindSwipes(container) {
-    container.querySelectorAll('.chat-message').forEach(function(el) {
+    container.querySelectorAll('.chat-message').forEach(el => {
         el.removeEventListener('touchstart', onTouchStart); el.removeEventListener('touchmove', onTouchMove); el.removeEventListener('touchend', onTouchEnd);
         el.addEventListener('touchstart', onTouchStart, { passive: false }); el.addEventListener('touchmove', onTouchMove, { passive: false }); el.addEventListener('touchend', onTouchEnd, { passive: false });
     });
@@ -115,11 +115,11 @@ function addMessageToChat(m) {
 
 async function loadChatHistory() {
     try {
-        const msgs = await (await fetch('/api/chat/' + lineupId, { credentials: 'same-origin' })).json();
+        const msgs = await (await fetch(`/api/chat/${lineupId}`, { credentials: 'same-origin' })).json();
         const container = document.getElementById('chatMessages');
         if (msgs.length > 0) {
             lastMessageId = msgs[msgs.length - 1].id || 0;
-            container.innerHTML = msgs.map(function(m) { return renderMessage(m); }).join('');
+            container.innerHTML = msgs.map(m => renderMessage(m)).join('');
             container.scrollTop = container.scrollHeight; bindSwipes(container);
         }
     } catch(e) {}
@@ -129,17 +129,26 @@ async function sendMessage() {
     const input = document.getElementById('chatInput'), msg = input.value.trim(); if (!msg) return;
     const btn = document.getElementById('sendBtn'); btn.disabled = true;
     try {
-        const body = { playerId: playerId, playerName: playerName, message: msg };
+        const body = { playerId, playerName, message: msg };
         if (replyTo) body.replyToId = replyTo.id;
-        const res = await fetch('/api/chat/' + lineupId, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) });
+        const res = await fetch(`/api/chat/${lineupId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) });
         const saved = await res.json(); if (saved.id > lastMessageId) lastMessageId = saved.id;
         input.value = ''; addMessageToChat(saved); cancelReply();
     } catch(e) {} finally { btn.disabled = false; }
 }
 
+function toggleFullscreen() {
+    const wrapper = document.getElementById('videoWrapper');
+    if (!document.fullscreenElement) {
+        wrapper.requestFullscreen().catch(() => {});
+    } else {
+        document.exitFullscreen();
+    }
+}
+
 async function loadOnline() {
     try {
-        const res = await fetch('/api/chat/' + lineupId + '/online', { credentials: 'same-origin' });
+        const res = await fetch(`/api/chat/${lineupId}/online`, { credentials: 'same-origin' });
         if (res.ok) {
             const count = await res.json();
             const el = document.getElementById('onlineCount');
@@ -151,24 +160,28 @@ async function loadOnline() {
 
 async function loadData() {
     try {
-        const me = await (await fetch('/api/auth/me', { credentials: 'same-origin' })).json().catch(function() { return {}; });
+        const me = await (await fetch('/api/auth/me', { credentials: 'same-origin' })).json().catch(() => ({}));
         playerName = me.name || 'Аноним';
         playerId = me.id || '00000000-0000-0000-0000-000000000000';
 
-        const lineup = await (await fetch('/api/lineups/' + lineupId, { credentials: 'same-origin' })).json();
+        const lineup = await (await fetch(`/api/lineups/${lineupId}`, { credentials: 'same-origin' })).json();
 
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('content').classList.remove('hidden');
         document.getElementById('leagueTitle').textContent = lineup.league || 'Турнир';
-        document.getElementById('tournamentInfo').textContent = (lineup.hall || '') + ' • ' + (lineup.time || '');
-        document.getElementById('playersList').innerHTML = (lineup.players ? lineup.players.split(', ') : []).map(function(p) { return '<span class="player-tag">' + escapeHtml(p) + '</span>'; }).join('');
+        document.getElementById('tournamentInfo').textContent = `${lineup.hall || ''} • ${lineup.time || ''}`;
+        document.getElementById('playersList').innerHTML = (lineup.players ? lineup.players.split(', ') : []).map(p => `<span class="player-tag">${escapeHtml(p)}</span>`).join('');
 
-        if (lineup.streamUrl) {
+        const streamUrl = lineup.streamUrl || lineup.stream_url;
+        if (streamUrl) {
             const placeholder = document.getElementById('videoPlaceholder');
             const frame = document.getElementById('streamFrame');
             placeholder.style.display = 'none';
-            frame.src = lineup.streamUrl;
+            frame.src = streamUrl;
             frame.style.display = 'block';
+        } else {
+            const placeholder = document.getElementById('videoPlaceholder');
+            placeholder.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;color:#a1a1aa;font-size:0.95rem;padding:20px;">📡 Трансляция недоступна</div>`;
         }
 
         await loadChatHistory();
@@ -180,5 +193,6 @@ async function loadData() {
 
 window.sendMessage = sendMessage;
 window.cancelReply = cancelReply;
-document.getElementById('chatInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+window.toggleFullscreen = toggleFullscreen;
+document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
 loadData();

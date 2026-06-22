@@ -14,8 +14,9 @@
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2/bundles/stomp.umd.min.js"></script>
     <style>
         body { padding-top: env(safe-area-inset-top, 0px); }
+        #videoWrapper { position: relative; display: flex; justify-content: center; align-items: center; min-height: 180px; }
         #chatMessages { overflow-y: auto; }
-        .ml_tour_photo { border-width: 0px; overflow: hidden; }
+        #streamFrame { border: 0; display: none; background: #000; width: 100%; aspect-ratio: 16/9; border-radius: 16px; }
     </style>
 </head>
 <body class="flex min-h-screen">
@@ -45,14 +46,17 @@
         </div>
 
         <div id="content" class="hidden">
-            <div class="mb-3 rounded-2xl overflow-hidden border border-white/5 bg-black ml_tour_photo" id="videoWrapper">
-                <iframe id="streamFrame" width="100%" height="300" frameBorder="0" allowfullscreen="true" src="" style="display:none;"></iframe>
-                <div id="videoPlaceholder" style="display:flex;align-items:center;justify-content:center;color:#52525b;font-size:0.85rem;padding:40px 20px;">Загрузка трансляции...</div>
+            <div class="mb-3 rounded-2xl overflow-hidden border border-white/5 bg-black flex justify-center" id="videoWrapper">
+                <button onclick="toggleFullscreen()" style="position:absolute;top:8px;right:8px;z-index:10;background:rgba(0,0,0,0.4);border:none;color:white;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.7;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" title="На весь экран">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                </button>
+                <div id="videoPlaceholder" style="display: flex; align-items: center; justify-content: center; color: #52525b; font-size: 0.85rem; padding: 40px 20px;">Загрузка трансляции...</div>
+                <iframe id="streamFrame" style="border: 0; display: none; background: #000;" allow="fullscreen" src="" scrolling="no"></iframe>
             </div>
 
             <h3 class="text-sm font-semibold text-zinc-400 mb-2">💬 Чат</h3>
-            <div style="height:420px;display:flex;flex-direction:column;background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:12px;">
-                <div id="chatMessages" class="space-y-1 mb-2" style="flex:1;overflow-y:auto;">
+            <div style="height: 420px; display: flex; flex-direction: column; background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 12px;">
+                <div id="chatMessages" class="space-y-1 mb-2" style="flex: 1; overflow-y: auto;">
                     <div class="text-center text-zinc-600 text-xs py-4">Сообщений пока нет</div>
                 </div>
                 <div id="replyBar" class="reply-bar hidden">
@@ -72,7 +76,17 @@
 </main>
 
 <script>
-    (function(){var s=document.getElementById('starsContainer');if(s){var h='';for(var i=0;i<100;i++){var z=Math.random()*2.5+.5;h+='<div class="star" style="width:'+z+'px;height:'+z+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--duration:'+(Math.random()*3+2)+'s;--delay:'+Math.random()*5+'s;"></div>'}s.innerHTML=h}})();
+    (function() {
+        const stars = document.getElementById('starsContainer');
+        if (stars) {
+            let html = '';
+            for (let i = 0; i < 100; i++) {
+                const size = Math.random() * 2.5 + 0.5;
+                html += `<div class="star" style="width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`;
+            }
+            stars.innerHTML = html;
+        }
+    })();
 </script>
 <script src="/js/modules/live-tournament.js"></script>
 </body>

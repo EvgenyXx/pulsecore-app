@@ -16,16 +16,18 @@ public interface LineupRepository extends JpaRepository<Lineup, Long> {
 
     @Modifying
     @Query(value = """
-    INSERT INTO lineup (date, league, time, hall, players)
-    VALUES (:date, :league, :time, :hall, :players)
+    INSERT INTO lineup (date, league, time, hall, players, stream_url)
+    VALUES (:date, :league, :time, :hall, :players, :streamUrl)
     ON CONFLICT (league, time, date, hall) DO UPDATE 
-        SET players = EXCLUDED.players
+        SET players = EXCLUDED.players,
+            stream_url = COALESCE(EXCLUDED.stream_url, lineup.stream_url)
 """, nativeQuery = true)
     void upsertLineup(@Param("date") LocalDate date,
                       @Param("league") String league,
                       @Param("time") String time,
                       @Param("hall") String hall,
-                      @Param("players") String players);
+                      @Param("players") String players,
+                      @Param("streamUrl") String streamUrl);
 
     List<Lineup> findByDate(LocalDate date);
 
