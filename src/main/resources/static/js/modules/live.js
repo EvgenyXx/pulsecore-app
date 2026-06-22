@@ -5,7 +5,6 @@ let allHalls = [];
 
 async function loadLive() {
     try {
-        // Проверка подписки
         const sub = await fetch('/api/player/subscription', { credentials: 'same-origin' }).then(r => r.json()).catch(() => null);
         if (!sub || !sub.active) {
             document.getElementById('loading').classList.add('hidden');
@@ -59,13 +58,8 @@ async function loadAllOnlineCounts() {
                 const count = await res.json();
                 const el = document.querySelector(`.online-count-${id}`);
                 if (el) {
-                    if (count > 0) {
-                        el.textContent = count;
-                        el.style.display = 'inline';
-                    } else {
-                        el.textContent = '0';
-                        el.style.display = 'inline';
-                    }
+                    el.textContent = count > 0 ? count : '0';
+                    el.style.display = 'inline';
                 }
             }
         } catch(e) {}
@@ -99,6 +93,24 @@ function applyFilter() {
     renderLineups(filteredLineups);
 }
 
+function getStatusBadge(status) {
+    switch(status) {
+        case 'LIVE': return '<span class="live-badge"><span class="w-2 h-2 rounded-full bg-white"></span> LIVE</span>';
+        case 'UPCOMING': return '<span style="background:#f59e0b;color:#000;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;">⏳ Скоро</span>';
+        case 'FINISHED': return '<span style="background:#52525b;color:#a1a1aa;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;">✓ Завершён</span>';
+        default: return '';
+    }
+}
+
+function getButton(status, externalId) {
+    switch(status) {
+        case 'LIVE': return `<button class="btn-live">▶ Смотреть трансляцию</button>`;
+        case 'UPCOMING': return `<button class="btn-live" style="background:linear-gradient(135deg,#f59e0b,#d97706);" disabled>⏳ Ожидание</button>`;
+        case 'FINISHED': return `<button class="btn-live" style="background:linear-gradient(135deg,#52525b,#404040);">💬 Чат</button>`;
+        default: return `<button class="btn-live">▶ Смотреть</button>`;
+    }
+}
+
 function renderTournaments(tournaments) {
     const list = document.getElementById('liveList');
     const empty = document.getElementById('empty');
@@ -112,13 +124,15 @@ function renderTournaments(tournaments) {
 
     empty.classList.add('hidden');
     list.classList.remove('hidden');
-    document.getElementById('subtitle').textContent = tournaments.length + ' активных трансляций';
+
+    const liveCount = tournaments.filter(t => t.status === 'LIVE').length;
+    document.getElementById('subtitle').textContent = tournaments.length + ' турниров • ' + liveCount + ' в эфире';
 
     list.innerHTML = tournaments.map(t => `
-        <div class="live-card" onclick="window.location.href='/live/${t.externalId}'">
+        <div class="live-card" onclick="window.location.href='/live/${t.externalId}'" style="${t.status === 'FINISHED' ? 'opacity:0.7;' : ''}${t.status === 'UPCOMING' ? 'border-color:rgba(245,158,11,0.25);' : ''}">
             <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-3">
-                    <span class="live-badge"><span class="w-2 h-2 rounded-full bg-white"></span> LIVE</span>
+                    ${getStatusBadge(t.status)}
                     <h3 class="text-lg font-bold text-white">${escapeHtml(t.league || 'Турнир')}</h3>
                 </div>
                 <div class="flex items-center gap-2">
@@ -135,7 +149,7 @@ function renderTournaments(tournaments) {
             <div class="flex flex-wrap gap-1.5 mb-4">
                 ${t.players.map(p => `<span class="text-xs bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-zinc-300">${escapeHtml(p)}</span>`).join('')}
             </div>` : ''}
-            <button class="btn-live">▶ Смотреть трансляцию</button>
+            ${getButton(t.status, t.externalId)}
         </div>
     `).join('');
 
