@@ -6,7 +6,6 @@ import { loadTopWeekPreview, toggleTopWeek, switchLeague, switchPeriod, loadTopW
 import { loadSelectedHalls, loadHallsContent, switchHallsDate, toggleAllHalls, toggleHallsCheckboxes, saveSelectedHalls } from './modules/lineup.js';
 import { executeSum, openEditTournamentModal, closeEditTournamentModal, saveTournamentEdit, changePage } from './modules/sum.js';
 
-// ===== Глобальные функции для onclick =====
 window.goHome = goHome;
 window.showAction = showAction;
 window.toggleTopWeek = toggleTopWeek;
@@ -23,7 +22,17 @@ window.toggleHallsCheckboxes = toggleHallsCheckboxes;
 window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 
-// ===== Навигация =====
+function showSubscriptionBlock(content) {
+    content.innerHTML = `<div class="widget-card rounded-2xl p-8 text-center">
+        <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
+        <p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы открыть все функции</p>
+        <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a>
+    </div>`;
+}
+
 function showAction(action) {
     document.getElementById('homePage').style.display = 'none';
     document.getElementById('actionPage').classList.remove('hidden');
@@ -40,26 +49,17 @@ function showAction(action) {
     if (action === 'halls') {
         title.innerHTML = 'Расписание турниров' + burgerBtn;
         subtitle.textContent = 'Составы по выбранным залам';
-        if (document.getElementById('proBadge').classList.contains('hidden')) {
-            content.innerHTML = `<div class="widget-card rounded-2xl p-8 text-center"><div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3><p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы видеть составы</p><a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a></div>`;
-            return;
-        }
+        if (!state.hasSubscription) { showSubscriptionBlock(content); return; }
         loadHallsContent();
     } else if (action === 'sum') {
         title.innerHTML = '💰 Сумма за период' + burgerBtn;
         subtitle.textContent = 'Подсчёт заработка и список турниров';
-        if (document.getElementById('proBadge').classList.contains('hidden')) {
-            content.innerHTML = `<div class="widget-card rounded-2xl p-8 text-center"><div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3><p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы посчитать заработок</p><a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a></div>`;
-            return;
-        }
+        if (!state.hasSubscription) { showSubscriptionBlock(content); return; }
         state.currentSumPage = 0;
-        content.innerHTML = `<div class="widget-card rounded-2xl p-6 text-center"><div class="spinner mx-auto mb-4"></div><p class="text-zinc-400 text-sm">Проверка доступа...</p></div>`;
+        content.innerHTML = `<div class="widget-card rounded-2xl p-6 text-center"><div class="spinner mx-auto mb-4"></div><p class="text-zinc-400 text-sm">Загрузка...</p></div>`;
         fetch('/api/player/sum?start=2026-01-01&end=' + new Date().toISOString().split('T')[0], { credentials: 'same-origin' })
             .then(r => {
-                if (r.status === 402) {
-                    content.innerHTML = `<div class="text-center py-8"><div class="text-5xl mb-4">🔒</div><h3 class="text-xl font-bold text-indigo-400 mb-2">Требуется подписка</h3></div>`;
-                    return;
-                }
+                if (r.status === 402) { showSubscriptionBlock(content); return; }
                 content.innerHTML = `
                     <div class="widget-card rounded-2xl p-4 mb-4">
                         <p class="text-sm font-semibold text-indigo-300 mb-2">📖 Как пользоваться:</p>
@@ -78,19 +78,15 @@ function showAction(action) {
                 flatpickr('#dateStart', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
                 flatpickr('#dateEnd', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
             })
-            .catch(() => {
-                content.innerHTML = '<div class="text-center py-8 text-red-400">❌ Ошибка</div>';
-            });
+            .catch(() => { content.innerHTML = '<div class="text-center py-8 text-red-400">❌ Ошибка</div>'; });
     }
 }
 
-// ===== Logout =====
 async function logout() {
     await API.logout();
     window.location.replace('/');
 }
 
-// ===== Push =====
 async function checkPushStatus() {
     try {
         const reg = await navigator.serviceWorker.ready;
@@ -99,7 +95,6 @@ async function checkPushStatus() {
         if (toggle && sub) toggle.checked = true;
     } catch(e) {}
 }
-
 window.checkPushStatus = checkPushStatus;
 
 async function togglePush() {
@@ -111,44 +106,25 @@ async function togglePush() {
         await disablePushNotifications();
     }
 }
-
 window.togglePush = togglePush;
 
 async function enablePushNotifications() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        alert('Ваш браузер не поддерживает push-уведомления');
-        return false;
-    }
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) { alert('Браузер не поддерживает push'); return false; }
     try {
         const reg = await navigator.serviceWorker.register('/sw.js');
         const vapidKey = await API.getVapidKey();
-        const sub = await reg.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlB64ToUint8Array(vapidKey)
-        });
-        await API.subscribePush({
-            endpoint: sub.endpoint,
-            p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))),
-            auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth'))))
-        });
+        const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8Array(vapidKey) });
+        await API.subscribePush({ endpoint: sub.endpoint, p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))), auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')))) });
         return true;
-    } catch(e) {
-        console.error('Ошибка подписки:', e);
-        return false;
-    }
+    } catch(e) { console.error(e); return false; }
 }
 
 async function disablePushNotifications() {
     try {
         const reg = await navigator.serviceWorker.ready;
         const sub = await reg.pushManager.getSubscription();
-        if (sub) {
-            await sub.unsubscribe();
-            await API.unsubscribePush({ endpoint: sub.endpoint });
-        }
-    } catch(e) {
-        console.error('Ошибка отписки:', e);
-    }
+        if (sub) { await sub.unsubscribe(); await API.unsubscribePush({ endpoint: sub.endpoint }); }
+    } catch(e) {}
 }
 
 function urlB64ToUint8Array(base64String) {
@@ -156,24 +132,21 @@ function urlB64ToUint8Array(base64String) {
     const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
     const rawData = window.atob(base64);
     const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
+    for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
     return outputArray;
 }
 
-// ===== Инициализация =====
 async function init() {
     try {
         const data = await API.getMe();
         state.playerId = data.id;
         state.isAdmin = data.admin || false;
+        state.hasSubscription = data.subscription?.active || false;
 
         if (data.admin) {
             document.getElementById('nav-admin')?.classList.remove('hidden');
             document.getElementById('mobile-nav-admin')?.classList.remove('hidden');
         }
-
         document.getElementById('playerName').textContent = capitalizeName(data.name);
         document.getElementById('sidebarPlayerName').textContent = capitalizeName(data.name);
         const mobileName = document.getElementById('mobilePlayerName');
@@ -183,73 +156,26 @@ async function init() {
         loadTopWeekPreview();
         loadSelectedHalls();
 
-        if (data.subscription?.active) {
-            checkPushStatus();
-        }
-    } catch (e) {
-        window.location.href = '/';
-    }
+        if (state.hasSubscription) checkPushStatus();
+    } catch (e) { window.location.href = '/'; }
 }
 
-// ===== Pull-to-Refresh =====
 const ptr = document.getElementById('ptrIndicator');
 let ptrStart = 0, ptrTriggered = false;
+document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientX; ptrTriggered = false; } }, { passive: true });
+document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientX - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, { passive: true });
+document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeekPreview(); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => ptr.classList.remove('active', 'done'), 1200); }, 500); } ptrStart = 0; });
 
-document.addEventListener('touchstart', e => {
-    if (window.scrollY <= 5) {
-        ptrStart = e.touches[0].clientX;
-        ptrTriggered = false;
-    }
-}, { passive: true });
-
-document.addEventListener('touchmove', e => {
-    if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return;
-    if (e.touches[0].clientX - ptrStart > 60) {
-        ptrTriggered = true;
-        ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...';
-        ptr.classList.add('active');
-    }
-}, { passive: true });
-
-document.addEventListener('touchend', () => {
-    if (ptrTriggered) {
-        loadDashboardWidgets();
-        loadTopWeekPreview();
-        setTimeout(() => {
-            ptr.innerHTML = '✓ Обновлено';
-            ptr.classList.add('done');
-            setTimeout(() => {
-                ptr.classList.remove('active', 'done');
-            }, 1200);
-        }, 500);
-    }
-    ptrStart = 0;
-});
-
-// ===== Mobile Menu =====
 window.toggleMobileMenu = function() {
-    const menu = document.getElementById('mobileMenu');
-    const overlay = document.getElementById('mobileMenuOverlay');
-    if (menu.classList.contains('translate-x-0')) {
-        menu.classList.remove('translate-x-0');
-        menu.classList.add('translate-x-full');
-        overlay.classList.add('hidden');
-    } else {
-        menu.classList.remove('translate-x-full');
-        menu.classList.add('translate-x-0');
-        overlay.classList.remove('hidden');
-    }
+    const menu = document.getElementById('mobileMenu'), overlay = document.getElementById('mobileMenuOverlay');
+    if (menu.classList.contains('translate-x-0')) { menu.classList.remove('translate-x-0'); menu.classList.add('translate-x-full'); overlay.classList.add('hidden'); }
+    else { menu.classList.remove('translate-x-full'); menu.classList.add('translate-x-0'); overlay.classList.remove('hidden'); }
 };
-
 window.mobileNav = function(action, el) {
     toggleMobileMenu();
-    document.querySelectorAll('.mobile-nav-item').forEach(i => {
-        i.classList.remove('bg-indigo-500/10', 'border-indigo-500/20');
-    });
-    el.classList.add('bg-indigo-500/10', 'border-indigo-500/20');
-    if (action === 'home') goHome();
-    else showAction(action);
+    document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('bg-indigo-500/10','border-indigo-500/20'));
+    el.classList.add('bg-indigo-500/10','border-indigo-500/20');
+    if (action === 'home') goHome(); else showAction(action);
 };
 
-// ===== Запуск =====
 document.addEventListener('DOMContentLoaded', init);
