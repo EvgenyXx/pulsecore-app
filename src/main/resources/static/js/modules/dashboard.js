@@ -2,9 +2,10 @@ import { API } from '../core/api.js';
 import { state } from '../core/state.js';
 import { formatMoney, formatDateShort, capitalizeName } from '../core/utils.js';
 
+let dashboardLoaded = false;
+
 export async function loadDashboardWidgets() {
     const container = document.getElementById('dashboardWidgets');
-    container.innerHTML = `<div class="col-span-full flex flex-col items-center py-16 text-zinc-400"><div class="spinner mb-4"></div><p>Загрузка...</p></div>`;
 
     try {
         const data = await API.getDashboard(state.playerId);
@@ -13,8 +14,8 @@ export async function loadDashboardWidgets() {
         document.getElementById('proBadge').classList.remove('hidden');
         document.getElementById('subStatusText').textContent = 'Подписка до ' + new Date(data.subscription.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
         document.getElementById('pushToggleContainer')?.classList.remove('hidden');
-        checkPushStatus();
-        loadOnlineCount();
+        if (typeof checkPushStatus === 'function') checkPushStatus();
+        if (typeof loadOnlineCount === 'function') loadOnlineCount();
 
         const lastHtml = data.lastResult
             ? `<div class="widget-card" onclick="window.open('${data.lastResult.tournamentLink}','_blank')"><div class="flex items-center gap-2 mb-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg><h3 class="font-bold text-sm text-indigo-300">Последний результат</h3></div><p class="text-2xl font-extrabold amount-gold mt-1">${formatMoney(data.lastResult.amount)}</p><p class="text-xs text-zinc-500 mt-auto pt-1">📅 ${data.lastResult.date}</p></div>`
@@ -44,6 +45,7 @@ export async function loadDashboardWidgets() {
         lineupHtml += `</div></div>`;
 
         container.innerHTML = lastHtml + lineupHtml;
+        dashboardLoaded = true;
     } catch (e) {
         container.innerHTML = `
             <div class="col-span-full widget-card rounded-2xl p-8 text-center">
@@ -51,7 +53,7 @@ export async function loadDashboardWidgets() {
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </div>
                 <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
-                <p class="text-zinc-400 text-sm mb-5">Оформите подписку чтобы открыть все функции</p>
+                <p class="text-zinc-400 text-sm mb-5">Оформите подписку</p>
                 <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a>
             </div>`;
     }
@@ -70,21 +72,21 @@ async function loadOnlineCount() {
 setInterval(loadOnlineCount, 10000);
 
 export function goHome() {
-    document.getElementById('homePage').style.display = 'block';
-    document.getElementById('actionPage').classList.add('hidden');
+    const homePage = document.getElementById('homePage');
+    const actionPage = document.getElementById('actionPage');
+    actionPage.style.opacity = '0';
+    actionPage.style.transition = 'opacity 0.12s ease';
+    setTimeout(() => {
+        actionPage.classList.add('hidden');
+        homePage.style.display = 'block';
+        homePage.style.opacity = '0';
+        homePage.style.transition = 'opacity 0.12s ease';
+        requestAnimationFrame(() => { homePage.style.opacity = '1'; });
+    }, 120);
     highlightNav('nav-home');
-    loadDashboardWidgets();
 }
 
 export function highlightNav(id) {
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     document.getElementById(id)?.classList.add('active');
-}
-
-const urlParams = new URLSearchParams(window.location.search);
-const pageParam = urlParams.get('page');
-if (pageParam === 'sum') {
-    setTimeout(() => { if (typeof showAction === 'function') showAction('sum'); }, 300);
-} else if (pageParam === 'halls') {
-    setTimeout(() => { if (typeof showAction === 'function') showAction('halls'); }, 300);
 }

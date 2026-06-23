@@ -109,7 +109,7 @@ export function toggleHallsCheckboxes() {
 
 export async function loadHallsContent() {
     const c = document.getElementById('actionContent');
-    c.innerHTML = '<div class="text-center py-8"><div class="spinner mx-auto"></div></div>';
+    c.innerHTML = '<div class="text-center py-8"></div>';
 
     const uiState = loadHallsUIState();
 

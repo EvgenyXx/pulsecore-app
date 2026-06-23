@@ -1,5 +1,6 @@
 package ru.pulsecore.app.modules.shared.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.catalina.connector.ClientAbortException;
@@ -61,10 +62,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAll(Exception e) {
-        log.error("Внутренняя ошибка", e);  // ← добавь эту строку
+    public ResponseEntity<?> handleAll(Exception e, HttpServletRequest request) {
+        String accept = request.getHeader("Accept");
+        if (accept != null && accept.contains("application/javascript")) {
+            // SockJS ожидает JavaScript — возвращаем пустой ответ
+            return ResponseEntity.status(500).header("Content-Type", "application/javascript").body("");
+        }
+        log.error("Внутренняя ошибка", e);
         ErrorResponse response = ErrorResponse.builder()
-
                 .status(500)
                 .error("Internal Server Error")
                 .message("Внутренняя ошибка сервера")
