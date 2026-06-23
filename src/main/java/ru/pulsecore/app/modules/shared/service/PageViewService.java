@@ -1,4 +1,3 @@
-// modules/shared/service/PageViewService.java
 package ru.pulsecore.app.modules.shared.service;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import java.util.UUID;
 public class PageViewService {
 
     private final PageViewRepository pageViewRepository;
+    private final OnlineService onlineService;
 
     @Async
     public void save(UUID playerId, String email, String path, String method, String userAgent, String ip) {
@@ -30,6 +30,9 @@ public class PageViewService {
                     .ip(ip)
                     .createdAt(Instant.now())
                     .build());
+            if (playerId != null) {
+                onlineService.markOnline(playerId);
+            }
         } catch (Exception e) {
             log.error("Ошибка сохранения page view: {}", e.getMessage());
         }

@@ -19,12 +19,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <style>
-        body {
-            padding-top: env(safe-area-inset-top, 0px);
-        }
-        #mobileMenu {
-            top: env(safe-area-inset-top, 0px);
-        }
+        body { padding-top: env(safe-area-inset-top, 0px); }
+        #mobileMenu { top: env(safe-area-inset-top, 0px); }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -173,6 +169,10 @@
                         <div class="w-9 h-5 bg-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
                     </label>
                 </div>
+                <div id="onlineCounter" class="hidden mb-3 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs text-zinc-400">Онлайн: <span id="onlineCount" class="text-emerald-400 font-semibold">0</span></span>
+                </div>
             </div>
 
             <div id="topWeekBanner" class="hidden mb-4 px-4 py-2.5 bg-[rgba(255,255,255,0.025)] border border-white/5 rounded-xl flex items-center gap-3 cursor-pointer transition-all duration-300 hover:bg-[rgba(255,255,255,0.06)]" onclick="toggleTopWeek()">
@@ -213,12 +213,7 @@
             let html = '';
             for (let i = 0; i < 100; i++) {
                 const size = Math.random() * 2.5 + 0.5;
-                html += `<div class="star" style="
-                    width:${size}px; height:${size}px;
-                    left:${Math.random()*100}%; top:${Math.random()*100}%;
-                    --duration:${Math.random()*3+2}s;
-                    --delay:${Math.random()*5}s;
-                "></div>`;
+                html += `<div class="star" style="width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`;
             }
             stars.innerHTML = html;
         }
