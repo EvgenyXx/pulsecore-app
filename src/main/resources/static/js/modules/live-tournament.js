@@ -24,15 +24,20 @@ function isUserAtBottom() {
 function connectWebSocket() {
     try {
         const socket = new SockJS('/ws');
-        stompClient = Stomp.over(socket);
-        stompClient.debug = null;
-        stompClient.connect({}, function() {
-            stompClient.subscribe('/topic/chat/' + lineupId, function(message) {
-                const msg = JSON.parse(message.body);
-                if (msg.id > lastMessageId) { lastMessageId = msg.id; addMessageToChat(msg); }
-            });
-            if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
-        }, function() { startPolling(); });
+        stompClient = new StompJs.Client({
+            webSocketFactory: () => socket,
+            debug: function() {},
+            onConnect: function() {
+                stompClient.subscribe('/topic/chat/' + lineupId, function(message) {
+                    const msg = JSON.parse(message.body);
+                    if (msg.id > lastMessageId) { lastMessageId = msg.id; addMessageToChat(msg); }
+                });
+                if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+            },
+            onDisconnect: function() { startPolling(); },
+            onStompError: function() { startPolling(); }
+        });
+        stompClient.activate();
     } catch(e) { startPolling(); }
 }
 
@@ -144,9 +149,17 @@ async function sendMessage() {
     try {
         const body = { playerId, playerName, message: msg };
         if (replyTo) body.replyToId = replyTo.id;
-        const res = await fetch(`/api/chat/${lineupId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) });
-        const saved = await res.json(); if (saved.id > lastMessageId) lastMessageId = saved.id;
-        input.value = ''; addMessageToChat(saved); cancelReply();
+
+        if (stompClient && stompClient.active) {
+            stompClient.publish({ destination: '/app/chat/' + lineupId, body: JSON.stringify(body) });
+        } else {
+            const res = await fetch(`/api/chat/${lineupId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) });
+            const saved = await res.json(); if (saved.id > lastMessageId) lastMessageId = saved.id;
+            addMessageToChat(saved);
+        }
+
+        input.value = '';
+        cancelReply();
     } catch(e) {} finally { btn.disabled = false; }
 }
 
