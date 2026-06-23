@@ -1,10 +1,11 @@
-package ru.pulsecore.app.modules.tournament.api;
+package ru.pulsecore.app.modules.tournament.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.core.dto.TournamentDto;
+import ru.pulsecore.app.modules.tournament.api.TournamentApi;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentRequest;
 import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
 import ru.pulsecore.app.modules.tournament.service.TournamentFacade;

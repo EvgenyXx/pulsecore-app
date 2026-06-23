@@ -5,6 +5,7 @@ package ru.pulsecore.app.modules.shared.repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.pulsecore.app.modules.admin.dto.PageViewStatsProjection;
 import ru.pulsecore.app.modules.shared.model.PageView;
 
@@ -12,6 +13,9 @@ import java.time.Instant;
 import java.util.List;
 
 public interface PageViewRepository extends JpaRepository<PageView, Long> {
+
+    @Query(value = "SELECT COUNT(DISTINCT player_id) FROM page_views WHERE created_at >= :since", nativeQuery = true)
+    long countUniqueVisitorsSince(@Param("since") Instant since);
 
     // PageViewRepository.java — метод
     @Query(value = """

@@ -13,8 +13,6 @@
     <link rel="stylesheet" href="/css/app.css">
     <style>
         body { font-family: 'Inter', sans-serif; min-height: 100dvh; background: #0c0c18; -webkit-font-smoothing: antialiased; padding-top: env(safe-area-inset-top, 0px); }
-        #mobileMenu { top: env(safe-area-inset-top, 0px); }
-        #mobileHeader { top: env(safe-area-inset-top, 0px); }
         .btn { font-weight: 600; border: none; border-radius: 10px; padding: 10px 16px; cursor: pointer; font-size: 0.85rem; width: 100%; text-align: center; }
         .btn-indigo { background: #6366f1; color: #fff; }
         .btn-indigo:hover { background: #4f46e5; }
@@ -37,65 +35,45 @@
         @media (min-width: 768px) { .btn { width: auto; } }
         .spinner-sm { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.12); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        .tab-sheet-overlay {
+            position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: flex-end; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .tab-sheet-overlay.open { opacity: 1; pointer-events: auto; }
+        .tab-sheet {
+            background: #18181b; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px;
+            padding: 20px 16px 32px; transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+            border: 1px solid rgba(255,255,255,0.06); border-bottom: none;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+        }
+        .tab-sheet-overlay.open .tab-sheet { transform: translateY(0); }
+        .tab-sheet-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 18px; }
+        .tab-sheet-btn {
+            display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px;
+            border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer;
+            border: none; text-align: left; color: #d4d4d8;
+            background: rgba(255,255,255,0.03); margin-bottom: 4px;
+        }
+        .tab-sheet-btn:hover { background: rgba(99,102,241,0.08); }
+        .tab-sheet-btn.active { background: rgba(99,102,241,0.12); color: #c7d2fe; font-weight: 600; }
+        .tabs-btn {
+            display: flex; align-items: center; gap: 5px; padding: 6px 12px;
+            border-radius: 8px; font-size: 0.78rem; font-weight: 500; cursor: pointer;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            color: #a1a1aa; transition: all 0.2s;
+        }
+        .tabs-btn:hover { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.25); color: #c7d2fe; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
 <div class="stars" id="starsContainer"></div>
 
-<div id="mobileHeader" class="md:hidden glass-strong sticky z-40 px-4 py-3 border-b border-white/5 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-        <img src="/img.png" class="w-8 h-8 rounded-lg object-cover">
-        <h1 class="text-sm font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1>
-    </div>
-    <button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-</div>
-
-<div id="mobileMenuOverlay" class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden" onclick="toggleMobileMenu()"></div>
-<div id="mobileMenu" class="md:hidden fixed right-0 h-full w-[280px] max-w-[85vw] glass-sidebar z-50 p-5 flex flex-col transform translate-x-full transition-transform duration-300 ease-out" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between mb-6">
-        <span class="font-bold text-white text-sm">Меню</span>
-        <button onclick="toggleMobileMenu()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-    </div>
-    <nav class="flex flex-col gap-1 flex-1">
-        <div class="mobile-nav-item active" onclick="mobileNav('players', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-            Игроки
-        </div>
-        <div class="mobile-nav-item" onclick="mobileNav('subscriptions', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            Подписки
-        </div>
-        <div class="mobile-nav-item" onclick="mobileNav('prices', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Цены
-        </div>
-        <div class="mobile-nav-item" onclick="mobileNav('calculate', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/></svg>
-            Расчёт
-        </div>
-        <div class="mobile-nav-item" onclick="mobileNav('broadcast', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/></svg>
-            Рассылка
-        </div>
-        <div class="mobile-nav-item" onclick="mobileNav('stats', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            Статистика
-        </div>
-    </nav>
-    <a href="/dashboard" class="nav-item mt-3">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Дашборд
-    </a>
-    <button onclick="logout()" class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Выйти
-    </button>
-</div>
+<div id="burgerMenuContainer"></div>
 
 <aside class="hidden md:flex glass-sidebar w-64 min-h-screen p-5 flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-2.5 mb-8 px-1">
@@ -145,7 +123,15 @@
     <div class="max-w-2xl">
 
         <div id="section-players">
-            <h2 class="text-lg font-extrabold text-white mb-4">Игроки</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-white">Игроки</h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="widget-card rounded-2xl p-4 mb-3">
                 <input id="playerSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('players')">
                 <div id="playerSearchResults" class="mt-3 space-y-1 hidden"></div>
@@ -168,7 +154,15 @@
         </div>
 
         <div id="section-subscriptions" class="hidden">
-            <h2 class="text-lg font-extrabold text-white mb-4">Подписки</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-white">Подписки</h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="widget-card rounded-2xl p-4 mb-3">
                 <input id="subSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('sub')">
                 <div id="subSearchResults" class="mt-3 space-y-1 hidden"></div>
@@ -189,7 +183,15 @@
         </div>
 
         <div id="section-prices" class="hidden">
-            <h2 class="text-lg font-extrabold text-white mb-4">Цены</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-white">Цены</h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="widget-card rounded-2xl p-4 mb-3">
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div><label class="text-xs text-zinc-400 mb-1 block">1 мес (₽)</label><input id="price1Input" type="number" min="1" class="input"></div>
@@ -204,7 +206,15 @@
         </div>
 
         <div id="section-calculate" class="hidden">
-            <h2 class="text-lg font-extrabold text-white mb-4">Расчёт</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-white">Расчёт</h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="widget-card rounded-2xl p-4 mb-3">
                 <div class="flex flex-col gap-3 mb-3">
                     <div><label class="text-xs text-zinc-400 mb-1 block">Имя и фамилия</label><input id="calcName" type="text" placeholder="Павлов Евгений" class="input"></div>
@@ -225,7 +235,15 @@
         </div>
 
         <div id="section-broadcast" class="hidden">
-            <h2 class="text-lg font-extrabold text-white mb-4">Рассылка</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-white">Рассылка</h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="widget-card rounded-2xl p-4 mb-3">
                 <textarea id="broadcastMessage" rows="3" placeholder="Текст сообщения..." class="input resize-none mb-3"></textarea>
                 <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-amber">Отправить всем</button>
@@ -234,7 +252,15 @@
         </div>
 
         <div id="section-stats" class="hidden">
-            <h2 class="text-lg font-extrabold text-white mb-4">Статистика</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-white">Статистика</h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="widget-card rounded-2xl p-4 mb-3">
                 <div class="flex items-center gap-2 mb-3">
                     <select id="statsDays" onchange="loadPageStats()" class="input w-auto">
@@ -255,13 +281,47 @@
         </div>
 
     </div>
+
+    <div class="tab-sheet-overlay" id="adminSheetOverlay" onclick="toggleAdminSheet()">
+        <div class="tab-sheet" onclick="event.stopPropagation()">
+            <div class="tab-sheet-handle"></div>
+            <button class="tab-sheet-btn active" id="sheet-players" onclick="showSection('players');toggleAdminSheet()">Игроки</button>
+            <button class="tab-sheet-btn" id="sheet-subscriptions" onclick="showSection('subscriptions');toggleAdminSheet()">Подписки</button>
+            <button class="tab-sheet-btn" id="sheet-prices" onclick="showSection('prices');toggleAdminSheet()">Цены</button>
+            <button class="tab-sheet-btn" id="sheet-calculate" onclick="showSection('calculate');toggleAdminSheet()">Расчёт</button>
+            <button class="tab-sheet-btn" id="sheet-broadcast" onclick="showSection('broadcast');toggleAdminSheet()">Рассылка</button>
+            <button class="tab-sheet-btn" id="sheet-stats" onclick="showSection('stats');toggleAdminSheet()">Статистика</button>
+        </div>
+    </div>
 </main>
 
+<script type="module">
+    import { initBurgerMenu } from '/js/modules/burger-menu.js';
+    import { initRoleCheck } from '/js/modules/role-check.js';
+    initBurgerMenu();
+    initRoleCheck();
+</script>
 <script type="module" src="/js/admin-app.js"></script>
 <script>
-    window.toggleMobileMenu=function(){const m=document.getElementById('mobileMenu'),o=document.getElementById('mobileMenuOverlay');if(m.classList.contains('translate-x-0')){m.classList.remove('translate-x-0');m.classList.add('translate-x-full');o.classList.add('hidden');}else{m.classList.remove('translate-x-full');m.classList.add('translate-x-0');o.classList.remove('hidden');}};
-    window.mobileNav=function(s,el){toggleMobileMenu();document.querySelectorAll('#mobileMenu .mobile-nav-item').forEach(i=>i.classList.remove('bg-indigo-500/10','border-indigo-500/20','active'));el.classList.add('bg-indigo-500/10','border-indigo-500/20','active');showSection(s);};
-    (function(){const c=document.getElementById('starsContainer');if(!c)return;let h='';for(let i=0;i<50;i++){const s=Math.random()*2+0.5;h+=`<div class="star" style="width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`;}c.innerHTML=h;})();
+    window.toggleAdminSheet = function() {
+        document.getElementById('adminSheetOverlay').classList.toggle('open');
+        updateAdminSheetActive();
+    };
+    function updateAdminSheetActive() {
+        const sections = ['players','subscriptions','prices','calculate','broadcast','stats'];
+        const active = sections.find(s => !document.getElementById('section-'+s).classList.contains('hidden'));
+        document.querySelectorAll('.tab-sheet-btn').forEach(b => b.classList.remove('active'));
+        if (active) document.getElementById('sheet-'+active)?.classList.add('active');
+    }
+    const origShow = window.showSection;
+    window.showSection = function(s) {
+        origShow(s);
+        setTimeout(updateAdminSheetActive, 100);
+    };
+    (function() {
+        const c = document.getElementById('starsContainer'); if (!c) return;
+        let h = ''; for (let i = 0; i < 50; i++) { const s = Math.random()*2+0.5; h += `<div class="star" style="width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`; } c.innerHTML = h;
+    })();
 </script>
 </body>
 </html>

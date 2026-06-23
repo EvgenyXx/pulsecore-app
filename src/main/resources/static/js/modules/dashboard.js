@@ -14,6 +14,7 @@ export async function loadDashboardWidgets() {
         document.getElementById('subStatusText').textContent = 'Подписка до ' + new Date(data.subscription.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
         document.getElementById('pushToggleContainer')?.classList.remove('hidden');
         checkPushStatus();
+        loadOnlineCount();
 
         const lastHtml = data.lastResult
             ? `<div class="widget-card" onclick="window.open('${data.lastResult.tournamentLink}','_blank')"><div class="flex items-center gap-2 mb-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg><h3 class="font-bold text-sm text-indigo-300">Последний результат</h3></div><p class="text-2xl font-extrabold amount-gold mt-1">${formatMoney(data.lastResult.amount)}</p><p class="text-xs text-zinc-500 mt-auto pt-1">📅 ${data.lastResult.date}</p></div>`
@@ -44,7 +45,6 @@ export async function loadDashboardWidgets() {
 
         container.innerHTML = lastHtml + lineupHtml;
     } catch (e) {
-        // 402 Payment Required — нет подписки
         container.innerHTML = `
             <div class="col-span-full widget-card rounded-2xl p-8 text-center">
                 <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
@@ -57,6 +57,18 @@ export async function loadDashboardWidgets() {
     }
 }
 
+async function loadOnlineCount() {
+    try {
+        const res = await fetch('/api/online');
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById('onlineCount').textContent = data.online;
+            document.getElementById('onlineCounter').classList.remove('hidden');
+        }
+    } catch(e) {}
+}
+setInterval(loadOnlineCount, 10000);
+
 export function goHome() {
     document.getElementById('homePage').style.display = 'block';
     document.getElementById('actionPage').classList.add('hidden');
@@ -67,4 +79,12 @@ export function goHome() {
 export function highlightNav(id) {
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     document.getElementById(id)?.classList.add('active');
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const pageParam = urlParams.get('page');
+if (pageParam === 'sum') {
+    setTimeout(() => { if (typeof showAction === 'function') showAction('sum'); }, 300);
+} else if (pageParam === 'halls') {
+    setTimeout(() => { if (typeof showAction === 'function') showAction('halls'); }, 300);
 }
