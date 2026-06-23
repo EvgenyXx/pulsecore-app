@@ -80,3 +80,11 @@ export function highlightNav(id) {
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     document.getElementById(id)?.classList.add('active');
 }
+
+const urlParams = new URLSearchParams(window.location.search);
+const pageParam = urlParams.get('page');
+if (pageParam === 'sum') {
+    setTimeout(() => { if (typeof showAction === 'function') showAction('sum'); }, 300);
+} else if (pageParam === 'halls') {
+    setTimeout(() => { if (typeof showAction === 'function') showAction('halls'); }, 300);
+}

@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="/css/app.css">
     <style>
         body { padding-top: env(safe-area-inset-top, 0px); }
-        #mobileMenu { top: env(safe-area-inset-top, 0px); }
         .chart-card { background: rgba(255,255,255,0.025); border-radius: 16px; padding: 16px 12px; border: 1px solid rgba(99,102,241,0.12); }
         .chart-wrap { position: relative; height: 280px; }
         @media (min-width: 480px) { .chart-wrap { height: 340px; } .chart-card { padding: 24px 20px; } }
@@ -52,6 +51,38 @@
         .flatpickr-input:focus { border-color: rgba(99,102,241,0.5)!important; box-shadow: 0 0 16px rgba(99,102,241,0.10)!important; outline: none!important; }
         .spinner { width: 32px; height: 32px; border: 2px solid rgba(255,255,255,0.05); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.6s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        .tab-sheet-overlay {
+            position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: flex-end; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .tab-sheet-overlay.open { opacity: 1; pointer-events: auto; }
+        .tab-sheet {
+            background: #18181b; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px;
+            padding: 20px 16px 32px; transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+            border: 1px solid rgba(255,255,255,0.06); border-bottom: none;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+        }
+        .tab-sheet-overlay.open .tab-sheet { transform: translateY(0); }
+        .tab-sheet-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 18px; }
+        .tab-sheet-btn {
+            display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px;
+            border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer;
+            border: none; text-align: left; color: #d4d4d8;
+            background: rgba(255,255,255,0.03); margin-bottom: 4px;
+        }
+        .tab-sheet-btn:hover { background: rgba(99,102,241,0.08); }
+        .tab-sheet-btn.active { background: rgba(99,102,241,0.12); color: #c7d2fe; font-weight: 600; }
+        .tabs-btn {
+            display: flex; align-items: center; gap: 5px; padding: 6px 12px;
+            border-radius: 8px; font-size: 0.78rem; font-weight: 500; cursor: pointer;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            color: #a1a1aa; transition: all 0.2s;
+        }
+        .tabs-btn:hover { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.25); color: #c7d2fe; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -59,27 +90,12 @@
 <div class="nebula"></div>
 <div class="stars" id="starsContainer"></div>
 
-<div id="mobileMenuOverlay" class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden" onclick="toggleMobileMenu()"></div>
-<div id="mobileMenu" class="md:hidden fixed right-0 h-full w-[300px] max-w-[85vw] glass-sidebar z-50 p-5 flex flex-col transform translate-x-full transition-transform duration-300 ease-out shadow-2xl" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between mb-6">
-        <span class="font-bold text-white text-sm">Аналитика</span>
-        <button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-    </div>
-    <nav class="flex flex-col gap-1 flex-1 overflow-y-auto">
-        <div class="mobile-nav-item active" onclick="mobileNavAnalytics('league', this)">Средняя по лигам</div>
-        <div class="mobile-nav-item" onclick="mobileNavAnalytics('monthly', this)">Доход по месяцам</div>
-        <div class="mobile-nav-item" onclick="mobileNavAnalytics('daily', this)">Доход по дням</div>
-        <div class="mobile-nav-item" onclick="mobileNavAnalytics('best-time', this)">Лучшее время</div>
-        <a href="/dashboard" class="mobile-nav-item mt-3">На главную</a>
-    </nav>
-</div>
+<div id="burgerMenuContainer"></div>
 
 <aside class="hidden md:flex glass-sidebar w-64 min-h-screen p-6 flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-3 mb-10 px-1">
         <div class="w-11 h-11 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         </div>
         <div><h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">Аналитика</h1><p class="text-xs text-zinc-400">Статистика</p></div>
     </div>
@@ -89,7 +105,7 @@
         <div class="nav-item" id="nav-daily" onclick="switchTab('daily')"><span>Доход по дням</span></div>
         <div class="nav-item" id="nav-best-time" onclick="switchTab('best-time')"><span>Лучшее время</span></div>
     </nav>
-    <a href="/dashboard" class="flex items-center gap-2 text-zinc-500 hover:text-zinc-300 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-white/5 transition-colors w-full">На главную</a>
+    <a href="/dashboard" class="flex items-center gap-2 text-zinc-500 hover:text-zinc-300 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-white/5 w-full">На главную</a>
 </aside>
 
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8">
@@ -101,7 +117,7 @@
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
             <h3 class="text-xl font-bold text-white mb-2">Требуется подписка</h3>
-            <p class="text-zinc-400 text-sm mb-5">Оформите подписку PRO для доступа к аналитике</p>
+            <p class="text-zinc-400 text-sm mb-5">Оформите подписку PRO</p>
             <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a>
             <br><a href="/dashboard" class="text-xs text-zinc-500 mt-4 inline-block hover:text-zinc-300">← На главную</a>
         </div>
@@ -109,10 +125,15 @@
 
     <div id="tab-league" class="hidden content-panel max-w-2xl mx-auto">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-extrabold text-white">Средняя по лигам</h2>
-            <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
+            <div class="flex items-center gap-2">
+                <h2 class="text-xl font-extrabold text-white">Средняя по лигам</h2>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleTabsSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
         </div>
         <p class="text-zinc-400 text-sm mb-5">Средний заработок за турнир по всем игрокам</p>
         <div class="chart-card"><div class="chart-wrap"><canvas id="leagueChart"></canvas></div>
@@ -120,37 +141,63 @@
     </div>
 
     <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
-        <div class="flex items-center justify-between mb-4"><h2 class="text-xl font-extrabold text-white">Доход по месяцам</h2></div>
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+                <h2 class="text-xl font-extrabold text-white">Доход по месяцам</h2>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleTabsSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
         <div class="flex items-center gap-2 mb-5"><span class="text-zinc-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-zinc-400 text-sm">год</span></div>
-        <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap" style="position:relative"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных за этот год</div></div></div>
-        <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill" style="display:none"><span class="text-zinc-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
-        <p class="swipe-hint">← листай влево/вправо для смены года →</p>
+        <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+        <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill"><span class="text-zinc-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
+        <p class="swipe-hint">← листай влево/вправо →</p>
     </div>
 
     <div id="tab-daily" class="hidden content-panel max-w-2xl mx-auto">
-        <div class="flex items-center justify-between mb-4"><h2 class="text-xl font-extrabold text-white">Доход по дням</h2></div>
-        <div class="daily-header">
-            <button onclick="prevDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;flex-shrink:0;display:flex;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <span class="daily-month-title" id="dailyMonthLabel">Июнь 2026</span>
-            <button onclick="nextDailyMonth()" class="daily-nav-btn nav-arrows-desktop" style="width:40px;height:40px;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;flex-shrink:0;display:flex;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+                <h2 class="text-xl font-extrabold text-white">Доход по дням</h2>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleTabsSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
         </div>
-        <div class="chart-card" id="dailyChartCard"><div class="chart-wrap" style="position:relative"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных за этот месяц</div></div></div>
+        <div class="daily-header">
+            <button onclick="prevDailyMonth()" class="nav-arrows-desktop" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;">◂</button>
+            <span class="daily-month-title" id="dailyMonthLabel">Июнь 2026</span>
+            <button onclick="nextDailyMonth()" class="nav-arrows-desktop" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;">▸</button>
+        </div>
+        <div class="chart-card"><div class="chart-wrap"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
         <div class="daily-stats-row">
             <div class="daily-stat"><div class="daily-stat-value" id="dailyTotal">0 ₽</div><div class="daily-stat-label">За месяц</div></div>
-            <div class="daily-stat"><div class="daily-stat-value" id="dailyAvg">0 ₽</div><div class="daily-stat-label">В день (сред)</div></div>
+            <div class="daily-stat"><div class="daily-stat-value" id="dailyAvg">0 ₽</div><div class="daily-stat-label">В день</div></div>
             <div class="daily-stat"><div class="daily-stat-value" id="dailyBest">0 ₽</div><div class="daily-stat-label">Лучший день</div></div>
         </div>
-        <p class="swipe-hint">← листай влево/вправо для смены месяца →</p>
+        <p class="swipe-hint">← листай влево/вправо →</p>
     </div>
 
     <div id="tab-best-time" class="hidden content-panel max-w-2xl mx-auto">
-        <div class="flex items-center justify-between mb-4"><h2 class="text-xl font-extrabold text-white">Лучшее время</h2></div>
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+                <h2 class="text-xl font-extrabold text-white">Лучшее время</h2>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleTabsSheet()" class="md:hidden tabs-btn">Меню ▴</button>
+                <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
         <p class="text-zinc-400 text-sm mb-5">В какое время суток вы зарабатываете больше всего</p>
-        <div class="flex flex-wrap items-center gap-2 mb-4">
+        <div class="flex flex-wrap gap-2 mb-4">
             <button onclick="setBestTimePeriod('all')" id="bt-all" class="period-btn active">Всё время</button>
             <button onclick="setBestTimePeriod('month')" id="bt-month" class="period-btn">Месяц</button>
             <button onclick="setBestTimePeriod('week')" id="bt-week" class="period-btn">Неделя</button>
@@ -160,43 +207,47 @@
             <input type="text" id="bestTimeEnd" class="flatpickr-input" placeholder="Дата по">
             <button onclick="setBestTimePeriod('custom')" class="period-btn">Применить</button>
         </div>
-        <p class="text-xs text-zinc-500 mb-4" id="bestTimePeriodLabel">Показаны данные за всё время</p>
-        <div class="chart-card">
-            <div class="chart-wrap"><canvas id="bestTimeChart"></canvas></div>
-            <table class="best-time-table">
-                <thead><tr><th>Время</th><th>Игр</th><th>Средний</th><th>Всего</th></tr></thead>
-                <tbody id="bestTimeTableBody"></tbody>
-            </table>
+        <div class="chart-card"><div class="chart-wrap"><canvas id="bestTimeChart"></canvas></div>
+            <table class="best-time-table"><thead><tr><th>Время</th><th>Игр</th><th>Средний</th><th>Всего</th></tr></thead><tbody id="bestTimeTableBody"></tbody></table>
+        </div>
+    </div>
+
+    <div class="tab-sheet-overlay" id="tabsSheetOverlay" onclick="toggleTabsSheet()">
+        <div class="tab-sheet" onclick="event.stopPropagation()">
+            <div class="tab-sheet-handle"></div>
+            <button class="tab-sheet-btn active" id="sheet-league" onclick="switchTab('league');toggleTabsSheet()">Средняя по лигам</button>
+            <button class="tab-sheet-btn" id="sheet-monthly" onclick="switchTab('monthly');toggleTabsSheet()">Доход по месяцам</button>
+            <button class="tab-sheet-btn" id="sheet-daily" onclick="switchTab('daily');toggleTabsSheet()">Доход по дням</button>
+            <button class="tab-sheet-btn" id="sheet-best-time" onclick="switchTab('best-time');toggleTabsSheet()">Лучшее время</button>
         </div>
     </div>
 </main>
 
+<script type="module">
+    import { initBurgerMenu } from '/js/modules/burger-menu.js';
+    import { initRoleCheck } from '/js/modules/role-check.js';
+    initBurgerMenu();
+    initRoleCheck();
+</script>
 <script type="module" src="/js/analytics-app.js"></script>
 <script>
-    window.toggleMobileMenu = function() {
-        const menu = document.getElementById('mobileMenu');
-        const overlay = document.getElementById('mobileMenuOverlay');
-        if (menu.classList.contains('translate-x-0')) {
-            menu.classList.remove('translate-x-0'); menu.classList.add('translate-x-full'); overlay.classList.add('hidden');
-        } else {
-            menu.classList.remove('translate-x-full'); menu.classList.add('translate-x-0'); overlay.classList.remove('hidden');
-        }
+    window.toggleTabsSheet = function() {
+        document.getElementById('tabsSheetOverlay').classList.toggle('open');
+        updateSheetActive();
     };
-    window.mobileNavAnalytics = function(tab, el) {
-        toggleMobileMenu();
-        document.querySelectorAll('#mobileMenu .mobile-nav-item').forEach(i => i.classList.remove('bg-indigo-500/10','border-indigo-500/20','active'));
-        el.classList.add('bg-indigo-500/10','border-indigo-500/20','active');
-        switchTab(tab);
+    function updateSheetActive() {
+        const activeTab = ['league','monthly','daily','best-time'].find(t => !document.getElementById('tab-'+t).classList.contains('hidden'));
+        document.querySelectorAll('.tab-sheet-btn').forEach(b => b.classList.remove('active'));
+        if (activeTab) document.getElementById('sheet-'+activeTab)?.classList.add('active');
+    }
+    const origSwitchTab = window.switchTab;
+    window.switchTab = function(tab) {
+        origSwitchTab(tab);
+        setTimeout(updateSheetActive, 100);
     };
     (function() {
-        const container = document.getElementById('starsContainer');
-        if (!container) return;
-        let html = '';
-        for (let i = 0; i < 100; i++) {
-            const size = Math.random() * 2.5 + 0.5;
-            html += `<div class="star" style="width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`;
-        }
-        container.innerHTML = html;
+        const c = document.getElementById('starsContainer'); if (!c) return;
+        let h = ''; for (let i = 0; i < 100; i++) { const s = Math.random()*2.5+0.5; h += `<div class="star" style="width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`; } c.innerHTML = h;
     })();
 </script>
 </body>

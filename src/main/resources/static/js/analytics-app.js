@@ -96,3 +96,8 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+const tabParam = new URLSearchParams(window.location.search).get('tab');
+if (tabParam && ['league', 'monthly', 'daily', 'best-time'].includes(tabParam)) {
+    setTimeout(() => switchTab(tabParam), 200);
+}
