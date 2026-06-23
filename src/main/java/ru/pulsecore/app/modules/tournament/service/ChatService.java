@@ -21,6 +21,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMessageMapper chatMessageMapper;
     private final WebPushService webPushService;
+    private final ChatMentionService chatMentionService;
 
     @Transactional(readOnly = true)
     public List<ChatMessageDto> getMessages(Long lineupId) {
@@ -50,7 +51,9 @@ public class ChatService {
         }
 
         ChatMessage saved = chatMessageRepository.save(entity);
-        return chatMessageMapper.toDto(saved);
+        ChatMessageDto result = chatMessageMapper.toDto(saved);
+        chatMentionService.processMentions(lineupId, result);
+        return result;
     }
 
     private void sendReplyPush(ChatMessage originalMsg, ChatMessageDto replyMsg) {

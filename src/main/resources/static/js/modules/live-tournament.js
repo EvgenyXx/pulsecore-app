@@ -6,6 +6,11 @@ let stompClient = null;
 let lastMessageId = 0;
 let pollInterval = null;
 
+let mentionList = [];
+let mentionIndex = -1;
+let mentionStart = -1;
+let mentionJustSelected = false;
+
 function escapeHtml(text) {
     if (!text) return '';
     return text.replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]);
@@ -69,6 +74,10 @@ function onTouchEnd(e) {
 
 document.addEventListener('click', (e) => {
     if (swipedMsg && !e.target.closest('.chat-message')) { swipedMsg.style.transform = ''; swipedMsg = null; }
+    if (!e.target.closest('#mentionDropdown') && !e.target.closest('#chatInput')) {
+        const dd = document.getElementById('mentionDropdown');
+        if (dd) dd.style.display = 'none';
+    }
 });
 
 function setReply(messageId, sender, content) {
@@ -88,10 +97,14 @@ function cancelReply() {
 
 function renderMessage(m) {
     const t = m.createdAt ? new Date(m.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
-    const sender = escapeHtml(m.playerName || ''), content = escapeHtml(m.message || '');
+    const sender = escapeHtml(m.playerName || ''), content = highlightMentions(escapeHtml(m.message || ''));
     let replyHtml = '';
     if (m.replyToId) replyHtml = `<div class="reply-preview-bar"><div class="reply-sender">${escapeHtml(m.replyToSenderName || '')}</div><div class="reply-content">${escapeHtml(m.replyToContent || '')}</div></div>`;
-    return `<div class="chat-message" data-message-id="${m.id || ''}" data-sender="${sender.replace(/"/g, '&quot;')}" data-content="${content.replace(/"/g, '&quot;')}">${replyHtml}<div class="flex items-center gap-2 mb-0.5"><span class="chat-name">${sender}</span><span class="chat-time">${t}</span></div><div class="chat-text">${content}</div></div>`;
+    return `<div class="chat-message" data-message-id="${m.id || ''}" data-sender="${sender.replace(/"/g, '&quot;')}" data-content="${escapeHtml(m.message || '').replace(/"/g, '&quot;')}">${replyHtml}<div class="flex items-center gap-2 mb-0.5"><span class="chat-name">${sender}</span><span class="chat-time">${t}</span></div><div class="chat-text">${content}</div></div>`;
+}
+
+function highlightMentions(text) {
+    return text.replace(/@([\p{L}]+\s+[\p{L}]+)/gu, '<span style="color:#818cf8;font-weight:600;">@$1</span>');
 }
 
 function bindSwipes(container) {
@@ -158,6 +171,122 @@ async function loadOnline() {
     } catch(e) {}
 }
 
+function buildMentionDropdown() {
+    if (document.getElementById('mentionDropdown')) return;
+    const input = document.getElementById('chatInput');
+    const container = document.createElement('div');
+    container.id = 'mentionDropdown';
+    container.style.cssText = 'position:absolute;bottom:48px;left:0;right:0;background:#18181b;border:1px solid rgba(255,255,255,0.08);border-radius:10px;max-height:170px;overflow-y:auto;display:none;z-index:30;box-shadow:0 -4px 20px rgba(0,0,0,0.5);';
+    input.parentElement.style.position = 'relative';
+    input.parentElement.appendChild(container);
+}
+
+function setupMentions() {
+    buildMentionDropdown();
+    const input = document.getElementById('chatInput');
+
+    const lineupPlayers = [];
+    const playersEl = document.getElementById('playersList');
+    if (playersEl) {
+        playersEl.querySelectorAll('.player-tag').forEach(el => lineupPlayers.push({ id: '', name: el.textContent.trim() }));
+    }
+
+    function hasCompleteMention(text) {
+        const match = text.match(/@([\p{L}]+\s+[\p{L}]+)/gu);
+        return match !== null;
+    }
+
+    function fetchAndShow(query, atIndex) {
+        fetch('/api/chat/players/search?q=' + encodeURIComponent(query))
+            .then(r => r.json())
+            .then(players => {
+                if (players.length > 0) {
+                    showMentions(players, atIndex);
+                } else {
+                    const local = lineupPlayers.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+                    showMentions(local.length > 0 ? local : [], atIndex);
+                }
+            })
+            .catch(() => {
+                const local = lineupPlayers.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+                showMentions(local.length > 0 ? local : [], atIndex);
+            });
+    }
+
+    input.addEventListener('input', function() {
+        if (mentionJustSelected) { mentionJustSelected = false; return; }
+        const val = input.value, cursorPos = input.selectionStart;
+        const textBefore = val.substring(0, cursorPos);
+        const atIndex = textBefore.lastIndexOf('@');
+
+        if (atIndex === -1) { hideMentions(); return; }
+        if (atIndex > 0 && textBefore[atIndex - 1] !== ' ') { hideMentions(); return; }
+
+        const afterAt = textBefore.substring(atIndex);
+        if (hasCompleteMention(afterAt)) { hideMentions(); return; }
+
+        const query = textBefore.substring(atIndex + 1).trim();
+        fetchAndShow(query, atIndex);
+    });
+
+    input.addEventListener('keydown', function(e) {
+        if (mentionList.length === 0) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); mentionIndex = Math.min(mentionIndex + 1, mentionList.length - 1); highlightMentionItem(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); mentionIndex = Math.max(mentionIndex - 1, 0); highlightMentionItem(); }
+        else if (e.key === 'Enter' && mentionIndex >= 0) { e.preventDefault(); selectMention(mentionIndex); }
+        else if (e.key === 'Escape') { hideMentions(); }
+        else if (e.key === 'Tab' && mentionList.length > 0) { e.preventDefault(); selectMention(Math.max(0, mentionIndex)); }
+    });
+}
+
+function showMentions(players, atIndex) {
+    const container = document.getElementById('mentionDropdown');
+    if (!container) return;
+    mentionList = players;
+    mentionIndex = -1;
+    mentionStart = atIndex;
+    if (players.length > 0) {
+        container.innerHTML = players.map((p, i) => `<div class="mention-item" data-idx="${i}" style="padding:9px 14px;cursor:pointer;color:#e4e4e7;font-size:0.85rem;border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;">${escapeHtml(p.name)}</div>`).join('');
+        container.style.display = 'block';
+        container.scrollTop = 0;
+        container.querySelectorAll('.mention-item').forEach(el => {
+            el.addEventListener('click', function() { selectMention(parseInt(this.dataset.idx)); });
+            el.addEventListener('mouseenter', function() { mentionIndex = parseInt(this.dataset.idx); highlightMentionItem(); });
+        });
+    } else {
+        container.innerHTML = '<div style="padding:9px 14px;color:#71717a;font-size:0.85rem;">Ничего не найдено</div>';
+        container.style.display = 'block';
+    }
+}
+
+function hideMentions() {
+    const container = document.getElementById('mentionDropdown');
+    if (container) container.style.display = 'none';
+    mentionList = [];
+    mentionIndex = -1;
+    mentionStart = -1;
+}
+
+function highlightMentionItem() {
+    const container = document.getElementById('mentionDropdown');
+    if (!container) return;
+    container.querySelectorAll('.mention-item').forEach((el, i) => {
+        el.style.background = i === mentionIndex ? 'rgba(99,102,241,0.25)' : 'transparent';
+        if (i === mentionIndex) el.scrollIntoView({ block: 'nearest' });
+    });
+}
+
+function selectMention(idx) {
+    if (idx < 0 || idx >= mentionList.length) return;
+    const input = document.getElementById('chatInput');
+    const before = input.value.substring(0, mentionStart);
+    const after = input.value.substring(input.selectionStart);
+    input.value = before + '@' + mentionList[idx].name + ' ' + after;
+    mentionJustSelected = true;
+    hideMentions();
+    input.focus();
+}
+
 async function loadData() {
     try {
         const me = await (await fetch('/api/auth/me', { credentials: 'same-origin' })).json().catch(() => ({}));
@@ -174,25 +303,24 @@ async function loadData() {
 
         const streamUrl = lineup.streamUrl || lineup.stream_url;
         if (streamUrl) {
-            const placeholder = document.getElementById('videoPlaceholder');
+            document.getElementById('videoPlaceholder').style.display = 'none';
             const frame = document.getElementById('streamFrame');
-            placeholder.style.display = 'none';
             frame.src = streamUrl;
             frame.style.display = 'block';
         } else {
-            const placeholder = document.getElementById('videoPlaceholder');
-            placeholder.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;color:#a1a1aa;font-size:0.95rem;padding:20px;">📡 Трансляция недоступна</div>`;
+            document.getElementById('videoPlaceholder').innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;color:#a1a1aa;font-size:0.95rem;padding:20px;">📡 Трансляция недоступна</div>`;
         }
 
         await loadChatHistory();
         connectWebSocket();
         loadOnline();
         setInterval(loadOnline, 30000);
+        setupMentions();
     } catch(e) { document.getElementById('loading').innerHTML = '<p class="text-red-400">Ошибка загрузки</p>'; }
 }
 
 window.sendMessage = sendMessage;
 window.cancelReply = cancelReply;
 window.toggleFullscreen = toggleFullscreen;
-document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && mentionList.length === 0) sendMessage(); });
 loadData();

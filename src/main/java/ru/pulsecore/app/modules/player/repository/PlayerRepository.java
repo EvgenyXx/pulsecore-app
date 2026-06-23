@@ -17,6 +17,8 @@ import java.util.UUID;
 public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
 
+    @Query("SELECT p FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Player> searchByName(@Param("query") String query);
 
     Optional<Player> findByNameIgnoreCase(String name);
 

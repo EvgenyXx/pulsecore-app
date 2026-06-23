@@ -1,10 +1,12 @@
-package ru.pulsecore.app.modules.tournament.api;
+package ru.pulsecore.app.modules.tournament.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import ru.pulsecore.app.modules.tournament.api.ChatApi;
+import ru.pulsecore.app.modules.tournament.api.ChatSocketApi;
 import ru.pulsecore.app.modules.tournament.api.dto.ChatMessageDto;
 import ru.pulsecore.app.modules.tournament.service.ChatService;
 
