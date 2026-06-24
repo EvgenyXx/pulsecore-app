@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>PulseCore — Профиль</title>
+    <title>PulseCore — Настройки</title>
     <script type="module">
         import { initThemeSync } from '/js/modules/theme-sync.js';
         initThemeSync();
@@ -29,7 +29,26 @@
         .btn-indigo:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-outline { background: transparent; color: #e5e5e5; font-weight: 500; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 18px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s ease; }
         .btn-outline:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.15); }
-        .divider { height: 1px; background: rgba(255,255,255,0.04); margin: 0; }
+        .settings-item {
+            display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+            border-radius: 10px; cursor: pointer; transition: all 0.15s;
+            color: #d4d4d8; text-decoration: none;
+        }
+        .settings-item:hover { background: rgba(255,255,255,0.04); }
+        .settings-item-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: rgba(99,102,241,0.1); display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .settings-item-arrow { color: #52525b; flex-shrink: 0; }
+        .back-btn {
+            display: flex; align-items: center; gap: 4px;
+            color: #a1a1aa; cursor: pointer; font-size: 0.9rem;
+            font-weight: 500; transition: color 0.15s;
+            background: none; border: none; padding: 0;
+        }
+        .back-btn:hover { color: #fff; }
+        .back-btn svg { width: 28px; height: 28px; }
     </style>
 </head>
 <body class="flex min-h-screen">
@@ -49,123 +68,149 @@
         <a href="/dashboard" class="nav-item"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <span>Расписание</span></a>
         <a href="/dashboard" class="nav-item"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> <span>Сумма за период</span></a>
         <a href="/analytics" class="nav-item"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> <span>Аналитика</span></a>
-        <a href="/subscribe" class="nav-item"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> <span>Подписка</span></a>
-        <div class="nav-item active"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <span>Профиль</span></div>
+        <div class="nav-item active"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <span>Настройки</span></div>
     </nav>
     <button onclick="logout()" class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Выйти</button>
 </aside>
 
-<main class="flex-1 p-4 md:p-10 relative z-10 overflow-y-auto">
+<main class="flex-1 p-4 md:p-8 relative z-10 overflow-y-auto">
     <div class="max-w-lg">
-        <div class="flex items-center justify-between gap-3 mb-6">
-            <div class="flex items-center gap-3">
-                <img src="/img.png" alt="PulseCore" class="w-10 h-10 rounded-xl object-cover ring-1 ring-white/10">
+
+        <div id="settings-main">
+            <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h2 class="text-lg font-bold text-white" id="profileName">Загрузка...</h2>
-                    <p class="text-xs text-zinc-500">Настройки аккаунта</p>
+                    <h2 class="text-lg font-bold text-white">Настройки</h2>
+                    <p class="text-xs text-zinc-500 mt-1"><span id="profileName">Загрузка...</span> · <span id="createdAt">—</span></p>
                 </div>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
             </div>
-            <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
-        </div>
 
-        <div class="widget-card rounded-2xl p-4 mb-2">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-white text-sm">Уведомления на почту</h3>
-                        <p class="text-xs text-zinc-500" id="notifLabel">Загрузка...</p>
-                    </div>
+            <div class="space-y-1">
+                <div class="settings-item" onclick="showSettingsPage('account')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Аккаунт</div><div class="text-xs text-zinc-500">Email, уведомления</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                 </div>
-                <div class="toggle-wrapper" onclick="toggleNotifications()">
-                    <div class="toggle-track off" id="toggleTrack"><div class="toggle-thumb" id="toggleThumb"></div></div>
+                <div class="settings-item" onclick="showSettingsPage('subscription')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Подписка</div><div class="text-xs text-zinc-500">Статус и управление</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                 </div>
-            </div>
-        </div>
-
-        <div class="widget-card rounded-2xl p-4 mb-2">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-white text-sm">Push-уведомления</h3>
-                        <p class="text-xs text-zinc-500" id="pushLabel">Загрузка...</p>
-                    </div>
+                <div class="settings-item" onclick="showSettingsPage('appearance')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Оформление</div><div class="text-xs text-zinc-500">Тема приложения</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                 </div>
-                <div class="toggle-wrapper" onclick="togglePush()">
-                    <div class="toggle-track off" id="pushToggleTrack"><div class="toggle-thumb" id="pushToggleThumb"></div></div>
+                <div class="settings-item" onclick="showSettingsPage('security')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Безопасность</div><div class="text-xs text-zinc-500">Смена пароля</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                 </div>
             </div>
         </div>
 
-        <div class="divider my-3"></div>
-
-        <div class="widget-card rounded-2xl p-4 mb-2">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01"/></svg>
-                </div>
-                <div><h3 class="font-semibold text-white text-sm">Email</h3></div>
+        <div id="settings-account" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
             </div>
-            <input id="emailInput" type="email" class="input-field mb-3" placeholder="your@email.com">
-            <button onclick="saveEmail()" id="saveEmailBtn" class="btn-indigo w-full">Сохранить email</button>
-        </div>
-
-        <div class="widget-card rounded-2xl p-4 mb-2">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <h3 class="text-base font-semibold text-white mb-4">Аккаунт</h3>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01"/></svg></div>
+                    <div><h3 class="font-semibold text-white text-sm">Email</h3></div>
                 </div>
-                <div><h3 class="font-semibold text-white text-sm">Смена пароля</h3></div>
+                <input id="emailInput" type="email" class="input-field mb-3" placeholder="your@email.com">
+                <button onclick="saveEmail()" id="saveEmailBtn" class="btn-indigo w-full">Сохранить email</button>
             </div>
-            <button onclick="showPasswordForm()" id="changePasswordBtn" class="btn-outline w-full">Изменить пароль</button>
-            <div id="passwordForm" class="hidden mt-3 space-y-3">
-                <div id="stepOld" class="space-y-3">
-                    <div class="relative">
-                        <input id="oldPasswordInput" type="password" class="input-field pr-10" placeholder="Текущий пароль">
-                        <button onclick="togglePassword('oldPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer bg-transparent border-0 p-1">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div><h3 class="font-semibold text-white text-sm">Уведомления на почту</h3><p class="text-xs text-zinc-500" id="notifLabel">Загрузка...</p></div>
                     </div>
-                    <p id="oldPasswordError" class="text-xs text-red-400 hidden"></p>
-                    <button onclick="checkOldPassword()" id="checkOldBtn" class="btn-indigo w-full">Проверить</button>
+                    <div class="toggle-wrapper" onclick="toggleNotifications()"><div class="toggle-track off" id="toggleTrack"><div class="toggle-thumb" id="toggleThumb"></div></div></div>
                 </div>
-                <div id="stepNew" class="hidden space-y-3">
-                    <div class="pt-2"><p class="text-xs text-emerald-400">Старый пароль подтверждён</p></div>
-                    <div class="relative">
-                        <input id="newPasswordInput" type="password" class="input-field pr-10" placeholder="Новый пароль (мин. 6)">
-                        <button onclick="togglePassword('newPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer bg-transparent border-0 p-1">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
+            </div>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+                        <div><h3 class="font-semibold text-white text-sm">Push-уведомления</h3><p class="text-xs text-zinc-500" id="pushLabel">Загрузка...</p></div>
                     </div>
-                    <p id="newPasswordError" class="text-xs text-red-400 hidden"></p>
-                    <button onclick="changePassword()" id="changeBtn" class="btn-indigo w-full">Сменить пароль</button>
+                    <div class="toggle-wrapper" onclick="togglePush()"><div class="toggle-track off" id="pushToggleTrack"><div class="toggle-thumb" id="pushToggleThumb"></div></div></div>
                 </div>
             </div>
         </div>
 
-        <div class="divider my-3"></div>
+        <div id="settings-subscription" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Подписка</h3>
+            <div class="widget-card rounded-2xl p-4 mb-3 text-center">
+                <p class="text-sm" id="subInfoText">Загрузка...</p>
+            </div>
+            <button id="subActionBtn" onclick="window.location.href='/subscribe'" class="btn-indigo w-full" style="display:none;">Оформить подписку</button>
+        </div>
 
-        <div class="widget-card rounded-2xl p-4 mb-2">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div id="settings-appearance" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Оформление</h3>
+            <p class="text-sm text-zinc-400 mb-4">Выберите тему оформления</p>
+            <div class="space-y-2" id="themeListInline"></div>
+        </div>
+
+        <div id="settings-security" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Безопасность</h3>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                    <div><h3 class="font-semibold text-white text-sm">Смена пароля</h3></div>
                 </div>
-                <div>
-                    <h3 class="font-semibold text-white text-sm">Дата регистрации</h3>
-                    <p class="text-xs text-zinc-500" id="createdAt">—</p>
+                <button onclick="showPasswordForm()" id="changePasswordBtn" class="btn-outline w-full">Изменить пароль</button>
+                <div id="passwordForm" class="hidden mt-3 space-y-3">
+                    <div id="stepOld" class="space-y-3">
+                        <div class="relative"><input id="oldPasswordInput" type="password" class="input-field pr-10" placeholder="Текущий пароль"><button onclick="togglePassword('oldPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer bg-transparent border-0 p-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                        <p id="oldPasswordError" class="text-xs text-red-400 hidden"></p>
+                        <button onclick="checkOldPassword()" id="checkOldBtn" class="btn-indigo w-full">Проверить</button>
+                    </div>
+                    <div id="stepNew" class="hidden space-y-3">
+                        <div class="pt-2"><p class="text-xs text-emerald-400">Старый пароль подтверждён</p></div>
+                        <div class="relative"><input id="newPasswordInput" type="password" class="input-field pr-10" placeholder="Новый пароль (мин. 6)"><button onclick="togglePassword('newPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer bg-transparent border-0 p-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                        <p id="newPasswordError" class="text-xs text-red-400 hidden"></p>
+                        <button onclick="changePassword()" id="changeBtn" class="btn-indigo w-full">Сменить пароль</button>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div id="messageBox" class="text-xs text-center mb-4 hidden"></div>
     </div>
 </main>
 
@@ -185,6 +230,15 @@
     initThemePicker();
     window.toggleThemeSheet = toggleThemeSheet;
     window.setTheme = setTheme;
+</script>
+<script>
+    function showSettingsPage(page) {
+        document.getElementById('settings-main').style.display = page === 'main' ? 'block' : 'none';
+        ['account','subscription','appearance','security'].forEach(t => {
+            const el = document.getElementById('settings-' + t);
+            if (el) el.style.display = t === page ? 'block' : 'none';
+        });
+    }
 </script>
 </body>
 </html>

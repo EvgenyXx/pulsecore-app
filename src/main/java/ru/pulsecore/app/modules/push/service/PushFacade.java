@@ -62,6 +62,7 @@ public class PushFacade {
         Player player = playerService.getById(playerId);
         player.setPushEnabled(!player.isPushEnabled());
         playerService.save(player);
+        log.info("📲 Push-уведомления {} для игрока {} ({})", player.isPushEnabled() ? "включены" : "отключены", player.getName(), playerId);
         return player.isPushEnabled();
     }
 

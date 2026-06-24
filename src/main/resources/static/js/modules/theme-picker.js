@@ -44,6 +44,7 @@ export function initThemePicker() {
     document.body.appendChild(overlay);
 
     updateActiveInSheet();
+    renderThemeListInline();
 }
 
 export function toggleThemeSheet() {
@@ -58,6 +59,7 @@ export function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     updateActiveInSheet();
+    renderThemeListInline();
 
     fetch('/api/auth/me/theme', {
         method: 'POST',
@@ -75,4 +77,28 @@ function updateActiveInSheet() {
             check.style.display = btn.dataset.theme === current ? 'inline' : 'none';
         }
     });
+}
+
+function renderThemeListInline() {
+    const container = document.getElementById('themeListInline');
+    if (!container) return;
+
+    const themes = [
+        { id: 'dark', name: 'Deep Space', desc: 'Тёмно-синие звёзды, фиолетовые туманности', color: '#6366f1', checkColor: '#818cf8' },
+        { id: 'ocean', name: 'Северное сияние', desc: 'Бирюзовые переливы, ледяное свечение', color: '#06b6d4', checkColor: '#22d3ee' },
+        { id: 'mars', name: 'Марсианская пустыня', desc: 'Тёплый песок, оранжевые дюны', color: '#f59e0b', checkColor: '#fbbf24' }
+    ];
+
+    const current = document.documentElement.getAttribute('data-theme');
+
+    container.innerHTML = themes.map(t => `
+        <button class="theme-sheet-btn" style="width:100%;" onclick="window.setTheme('${t.id}')">
+            <span style="width:40px;height:24px;border-radius:6px;background:${t.color};flex-shrink:0;"></span>
+            <div style="flex:1;">
+                <div class="theme-name">${t.name}</div>
+                <div class="theme-desc">${t.desc}</div>
+            </div>
+            <span class="theme-check" style="color:${t.checkColor};font-size:1.2rem;display:${t.id === current ? 'inline' : 'none'};">✓</span>
+        </button>
+    `).join('');
 }

@@ -38,6 +38,27 @@ async function init() {
         }
 
         await Promise.all([loadNotificationState(), loadPushState()]);
+
+        // Загрузка статуса подписки
+        try {
+            const sub = await ProfileAPI.getSubscription();
+            const subText = document.getElementById('subInfoText');
+            const subBtn = document.getElementById('subActionBtn');
+            if (sub && sub.active) {
+                const until = new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                subText.innerHTML = '✅ <span class="text-emerald-400">Активна</span> до ' + until;
+                if (subBtn) subBtn.style.display = 'none';
+            } else if (sub && sub.expiresAt) {
+                const until = new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                subText.innerHTML = '❌ <span class="text-red-400">Истекла</span> ' + until;
+                if (subBtn) { subBtn.style.display = 'block'; subBtn.textContent = 'Оформить подписку'; }
+            } else {
+                subText.innerHTML = '❌ <span class="text-red-400">Не оформлена</span>';
+                if (subBtn) { subBtn.style.display = 'block'; subBtn.textContent = 'Оформить подписку'; }
+            }
+        } catch(e) {
+            document.getElementById('subInfoText').textContent = 'Не удалось загрузить';
+        }
     } catch(e) {
         window.location.href = '/';
     }

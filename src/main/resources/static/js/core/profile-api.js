@@ -12,13 +12,12 @@ async function apiRequest(endpoint, options = {}) {
 export const ProfileAPI = {
     getMe: () => apiRequest('/auth/me'),
     getNotificationStatus: () => apiRequest('/player/notifications/status'),
-    setNotification: (enabled) => apiRequest('/player/notifications', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled })
+    setNotification: (enabled) => apiRequest(`/player/notifications?enabled=${enabled}`, {
+        method: 'PUT'
     }),
     getPushStatus: () => apiRequest('/push/push-status'),
     togglePush: () => apiRequest('/push/toggle', { method: 'POST' }),
+    getSubscription: () => apiRequest('/player/subscription'),
     verifyPassword: (password) => apiRequest('/auth/verify-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

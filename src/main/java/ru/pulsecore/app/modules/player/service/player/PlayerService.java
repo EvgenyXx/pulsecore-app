@@ -1,6 +1,8 @@
 package ru.pulsecore.app.modules.player.service.player;
 
 import lombok.RequiredArgsConstructor;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
@@ -37,6 +40,7 @@ public class PlayerService {
         Player player = getById(id);
         player.setNotificationsEnabled(enabled);
         playerRepository.save(player);
+        log.info("🔔 Уведомления {} для игрока {} ({})", enabled ? "включены" : "отключены", player.getName(), id);
     }
 
     public Player getById(UUID id) {
