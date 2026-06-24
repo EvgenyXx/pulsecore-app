@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>PulseCore — Админ-панель</title>
+    <script type="module">
+        import { initThemeSync } from '/js/modules/theme-sync.js';
+        initThemeSync();
+    </script>
     <link rel="icon" type="image/png" href="/img.png">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -318,10 +322,16 @@
         origShow(s);
         setTimeout(updateAdminSheetActive, 100);
     };
-    (function() {
-        const c = document.getElementById('starsContainer'); if (!c) return;
-        let h = ''; for (let i = 0; i < 50; i++) { const s = Math.random()*2+0.5; h += `<div class="star" style="width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`; } c.innerHTML = h;
-    })();
+</script>
+<script type="module">
+    import { initStars } from '/js/modules/stars.js';
+    initStars();
+</script>
+<script type="module">
+    import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
+    initThemePicker();
+    window.toggleThemeSheet = toggleThemeSheet;
+    window.setTheme = setTheme;
 </script>
 </body>
 </html>

@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>PulseCore — Live</title>
+    <script type="module">
+        import { initThemeSync } from '/js/modules/theme-sync.js';
+        initThemeSync();
+    </script>
     <link rel="icon" type="image/png" href="/img.png">
     <link rel="stylesheet" href="/css/app.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
@@ -118,18 +122,17 @@
         await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
         window.location.href = '/';
     }
-    (function() {
-        const stars = document.getElementById('starsContainer');
-        if (stars) {
-            let html = '';
-            for (let i = 0; i < 100; i++) {
-                const size = Math.random() * 2.5 + 0.5;
-                html += `<div class="star" style="width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s;"></div>`;
-            }
-            stars.innerHTML = html;
-        }
-    })();
+</script>
+<script type="module">
+    import { initStars } from '/js/modules/stars.js';
+    initStars();
 </script>
 <script src="/js/modules/live.js"></script>
+<script type="module">
+    import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
+    initThemePicker();
+    window.toggleThemeSheet = toggleThemeSheet;
+    window.setTheme = setTheme;
+</script>
 </body>
 </html>

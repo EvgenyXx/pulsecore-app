@@ -1,0 +1,51 @@
+/* ===== PulseCore — Cosmic Theme (default) ===== */
+[data-theme="dark"] {
+    --bg: #0c0c18;
+    --accent: #6366f1;
+    --accent-light: #818cf8;
+    --accent-dim: #4f46e5;
+}
+
+/* Галактический фон */
+[data-theme="dark"] .bg-mesh {
+    position: fixed; inset: 0; z-index: -5; opacity: 0.5;
+    background:
+            radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.08) 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 40%, rgba(139,92,246,0.05) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 80%, rgba(79,70,229,0.04) 0%, transparent 55%);
+}
+
+[data-theme="dark"] .bg-grid {
+    position: fixed; inset: 0; z-index: -4; opacity: 0.05;
+    background-image:
+            linear-gradient(rgba(99,102,241,0.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(99,102,241,0.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+}
+
+@media (max-width: 767px) {
+    [data-theme="dark"] .bg-grid { background-size: 30px 30px; }
+}
+
+[data-theme="dark"] .nebula {
+    position: fixed; inset: 0; z-index: -3; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 50%, rgba(99,102,241,0.04) 0%, transparent 70%);
+    animation: nebulaBreathe 8s ease-in-out infinite;
+}
+
+[data-theme="dark"] .stars { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+[data-theme="dark"] .star {
+    position: absolute; background: #fff; border-radius: 50%;
+    animation: twinkle var(--duration) ease-in-out infinite;
+    animation-delay: var(--delay); opacity: 0;
+}
+
+@keyframes nebulaBreathe {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.8); }
+}
