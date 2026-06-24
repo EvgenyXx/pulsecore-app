@@ -9,6 +9,7 @@ import ru.pulsecore.app.modules.tournament.persistence.entity.ChatMessage;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
@@ -19,4 +20,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     @Query("SELECT c FROM ChatMessage c WHERE c.lineupId = :lineupId AND c.id > :afterId ORDER BY c.createdAt ASC")
     List<ChatMessage> findByIdAfterAndLineupIdOrderByCreatedAtAsc(@Param("afterId") Long afterId, @Param("lineupId") Long lineupId);
+
+    void deleteByPlayerId(UUID id);
 }

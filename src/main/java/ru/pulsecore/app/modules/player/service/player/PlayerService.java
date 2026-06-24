@@ -17,6 +17,7 @@ import ru.pulsecore.app.modules.player.exception.SamePasswordException;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
 import ru.pulsecore.app.modules.shared.service.NameNormalizer;
+import ru.pulsecore.app.modules.tournament.persistence.repository.ChatMessageRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,7 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final PasswordEncoder passwordEncoder;
     private final NameNormalizer nameNormalizer;  // 🔥 ДОБАВЛЕНО
+    private final ChatMessageRepository chatMessageRepository;
 
     public boolean isNotificationsEnabled(UUID id) {
         return getById(id).isNotificationsEnabled();
@@ -115,7 +117,8 @@ public class PlayerService {
     }
 
     @Transactional
-    public void deletePlayer(UUID id){
+    public void deletePlayer(UUID id) {
+        chatMessageRepository.deleteByPlayerId(id);
         playerRepository.deleteById(id);
     }
 
