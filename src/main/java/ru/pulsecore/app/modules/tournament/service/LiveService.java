@@ -18,7 +18,7 @@ public class LiveService {
     private final LineupRepository lineupRepository;
     private final LineupLiveMapper mapper;
 
-    private static final int TOURNAMENT_MAX_DURATION_HOURS = 7;
+    private static final int TOURNAMENT_MAX_DURATION_HOURS = 6;
 
     public List<TournamentLiveDto> getLive() {
         LocalDate today = LocalDate.now();
@@ -29,15 +29,24 @@ public class LiveService {
                 .map(l -> {
                     TournamentLiveDto dto = mapper.toDto(l);
                     LocalTime startTime = LocalTime.parse(l.getTime());
-                    if (startTime.isAfter(now)) {
-                        dto.setStatus(LiveStatus.UPCOMING);
-                    } else if (startTime.plusHours(TOURNAMENT_MAX_DURATION_HOURS).isAfter(now)) {
-                        dto.setStatus(LiveStatus.LIVE);
-                    } else {
-                        dto.setStatus(LiveStatus.FINISHED);
-                    }
+                    dto.setStatus(calculateStatus(startTime, now));
                     return dto;
                 })
                 .toList();
+    }
+
+    private LiveStatus calculateStatus(LocalTime startTime, LocalTime now) {
+        if (startTime.isAfter(now)) {
+            return LiveStatus.UPCOMING;
+        }
+
+        LocalTime endTime = startTime.plusHours(TOURNAMENT_MAX_DURATION_HOURS);
+
+        // Если endTime раньше startTime — значит перешли через полночь, турнир ещё идёт
+        if (endTime.isBefore(startTime) || endTime.isAfter(now)) {
+            return LiveStatus.LIVE;
+        }
+
+        return LiveStatus.FINISHED;
     }
 }

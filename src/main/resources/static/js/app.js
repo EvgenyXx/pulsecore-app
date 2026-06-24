@@ -21,6 +21,7 @@ window.toggleAllHalls = toggleAllHalls;
 window.toggleHallsCheckboxes = toggleHallsCheckboxes;
 window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
+window.toggleTheme = toggleTheme;
 
 const subBlockHtml = () => `<div class="widget-card rounded-2xl p-8 text-center" style="animation: fadeIn 0.2s ease">
     <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
@@ -93,6 +94,19 @@ function showAction(action) {
 
 async function logout() { await API.logout(); window.location.replace('/'); }
 
+function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'ocean' : 'dark';
+    html.setAttribute('data-theme', next);
+    fetch('/api/auth/me/theme', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ theme: next })
+    }).catch(() => {});
+}
+
 async function checkPushStatus() {
     try {
         const reg = await navigator.serviceWorker.ready;
@@ -151,6 +165,10 @@ async function init() {
         document.getElementById('sidebarPlayerName').textContent = capitalizeName(data.name);
         const mobileName = document.getElementById('mobilePlayerName');
         if (mobileName) mobileName.textContent = capitalizeName(data.name);
+
+        if (data.theme) {
+            document.documentElement.setAttribute('data-theme', data.theme);
+        }
 
         const p = new URLSearchParams(window.location.search).get('page');
         if (p === 'sum' || p === 'halls') {

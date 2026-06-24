@@ -15,11 +15,12 @@ import ru.pulsecore.app.modules.auth.api.dto.AuthResponse;
 import ru.pulsecore.app.modules.auth.api.dto.LoginRequest;
 import ru.pulsecore.app.modules.auth.api.dto.MeResponse;
 import ru.pulsecore.app.modules.auth.mapping.PlayerDtoMapper;
-
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.shared.properties.SessionProperties;
+import ru.pulsecore.app.modules.shared.service.ThemeService;
 import ru.pulsecore.app.modules.shared.service.auth.PlayerAuthenticationService;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -31,6 +32,7 @@ public class LoginController {
     private final PlayerService playerService;
     private final PlayerDtoMapper mapper;
     private final SessionProperties sessionProperties;
+    private final ThemeService themeService;
 
     @PostMapping(AuthApi.LOGIN)
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request,
@@ -56,13 +58,27 @@ public class LoginController {
         }
 
         var player = playerService.findById(UUID.fromString(user.getPlayerId()));
+        String theme = themeService.getTheme(UUID.fromString(user.getPlayerId()));
+
         return ResponseEntity.ok(new MeResponse(
                 user.getPlayerId(),
                 user.getPlayerName(),
                 user.getEmail(),
                 player != null ? player.getCreatedAt() : null,
-                player != null && player.isAdmin()
+                player != null && player.isAdmin(),
+                theme
         ));
+    }
+
+    @PostMapping("/me/theme")
+    public ResponseEntity<Void> setTheme(@RequestBody Map<String, String> body) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof SecurityUser user)) {
+            return ResponseEntity.status(401).build();
+        }
+        String theme = body.getOrDefault("theme", "dark");
+        themeService.setTheme(UUID.fromString(user.getPlayerId()), theme);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping(AuthApi.LOGOUT)
