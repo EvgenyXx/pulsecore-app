@@ -116,3 +116,5 @@ server:
                         name: PULSECORE_SESSION
                         secure: true
                         max-age: 30d
+                        http-only: true
+                        sameSite: lax
