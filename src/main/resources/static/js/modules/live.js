@@ -1,7 +1,9 @@
-let selectedHall = null;
+let selectedTab = 'all';
 let allTournaments = [];
 let allLineups = [];
 let allHalls = [];
+let savedHalls = [];
+let hallsCollapsed = false;
 
 async function loadLive() {
     try {
@@ -9,6 +11,7 @@ async function loadLive() {
         if (!sub || !sub.active) {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('noSubBlock').classList.remove('hidden');
+            document.getElementById('tabFilter').classList.add('hidden');
             document.getElementById('hallFilter').classList.add('hidden');
             document.getElementById('subtitle').textContent = 'Требуется PRO';
             return;
@@ -16,23 +19,22 @@ async function loadLive() {
 
         const today = new Date().toISOString().split('T')[0];
 
-        const [tournamentsRes, lineupsRes] = await Promise.all([
+        const [tournamentsRes, lineupsRes, hallsRes] = await Promise.all([
             fetch('/api/tournament/live', { credentials: 'same-origin' }),
-            fetch(`/api/lineups?date=${today}`, { credentials: 'same-origin' })
+            fetch(`/api/lineups?date=${today}`, { credentials: 'same-origin' }),
+            fetch('/api/lineups/live-halls', { credentials: 'same-origin' })
         ]);
 
         document.getElementById('loading').classList.add('hidden');
 
-        if (tournamentsRes.ok) {
-            allTournaments = await tournamentsRes.json();
-        } else {
-            allTournaments = [];
-        }
+        if (tournamentsRes.ok) allTournaments = await tournamentsRes.json(); else allTournaments = [];
+        if (lineupsRes.ok) allLineups = await lineupsRes.json(); else allLineups = [];
 
-        if (lineupsRes.ok) {
-            allLineups = await lineupsRes.json();
+        if (hallsRes.ok) {
+            const text = await hallsRes.text();
+            savedHalls = text ? text.split(',').map(h => h.trim()).filter(h => h) : [];
         } else {
-            allLineups = [];
+            savedHalls = [];
         }
 
         const hallsSet = new Set();
@@ -40,6 +42,9 @@ async function loadLive() {
         allLineups.forEach(l => { if (l.hall) hallsSet.add(l.hall); });
         allHalls = [...hallsSet].sort();
 
+        hallsCollapsed = localStorage.getItem('liveHallsCollapsed') === 'true';
+
+        document.getElementById('tabFilter').classList.remove('hidden');
         if (allHalls.length > 0) renderHallFilter();
         applyFilter();
     } catch (e) {
@@ -69,45 +74,104 @@ async function loadAllOnlineCounts() {
 function renderHallFilter() {
     const container = document.getElementById('hallFilter');
     container.classList.remove('hidden');
-    container.innerHTML = `<span class="hall-filter-tag active" onclick="filterByHall(null)">Все залы</span>` +
-        allHalls.map(h => `<span class="hall-filter-tag" onclick="filterByHall('${escapeHtml(h)}')">${escapeHtml(h)}</span>`).join('');
+
+    const allSelected = savedHalls.length === 0 || savedHalls.length === allHalls.length;
+
+    container.innerHTML = `
+        <div class="widget-card rounded-2xl p-4 mb-4 w-full">
+            <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleHallsCheckboxes()">
+                <div class="flex items-center gap-3">
+                    <h3 class="text-sm font-semibold text-white">Выберите залы</h3>
+                    <label class="hall-checkbox-card" style="padding: 4px 10px; gap: 6px;" onclick="event.stopPropagation()">
+                        <input type="checkbox" id="allLiveHallsCheckbox" ${allSelected ? 'checked' : ''} onchange="toggleAllLiveHalls()" class="accent-indigo-500 w-4 h-4">
+                        <span class="text-xs text-zinc-300 select-none">Все</span>
+                    </label>
+                </div>
+                <span class="toggle-arrow text-zinc-400 text-xs ${hallsCollapsed ? 'rotate-180' : ''}" id="liveHallsToggleArrow">▼</span>
+            </div>
+            <div id="liveHallsCheckboxesWrapper" class="${hallsCollapsed ? 'hidden' : ''}">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="liveHallsCheckboxes">
+                    ${allHalls.map(hall => {
+        const checked = savedHalls.includes(hall);
+        return `<label class="hall-checkbox-card ${checked ? 'selected' : ''}"><input type="checkbox" value="${escapeHtml(hall)}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)"><span class="text-sm text-white">${escapeHtml(hall)}</span></label>`;
+    }).join('')}
+                </div>
+                <button onclick="saveSelectedLiveHalls()" class="btn-gold w-full mt-3 py-2 text-sm">Сохранить выбранные залы</button>
+            </div>
+        </div>
+    `;
 }
 
-function filterByHall(hall) {
-    selectedHall = hall;
-    document.querySelectorAll('.hall-filter-tag').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
+function toggleHallsCheckboxes() {
+    const wrapper = document.getElementById('liveHallsCheckboxesWrapper');
+    const arrow = document.getElementById('liveHallsToggleArrow');
+    if (!wrapper || !arrow) return;
+    wrapper.classList.toggle('hidden');
+    arrow.classList.toggle('rotate-180');
+    hallsCollapsed = !hallsCollapsed;
+    localStorage.setItem('liveHallsCollapsed', hallsCollapsed);
+}
+
+function toggleAllLiveHalls() {
+    const allCheckbox = document.getElementById('allLiveHallsCheckbox');
+    const checkboxes = document.querySelectorAll('#liveHallsCheckboxes input[type="checkbox"]');
+    const selectAll = allCheckbox.checked;
+    checkboxes.forEach(cb => { cb.checked = selectAll; cb.parentElement.classList.toggle('selected', selectAll); });
+}
+
+async function saveSelectedLiveHalls() {
+    const checkboxes = document.querySelectorAll('#liveHallsCheckboxes input[type="checkbox"]:checked');
+    savedHalls = Array.from(checkboxes).map(cb => cb.value);
+    const hallsStr = savedHalls.join(',');
+    await fetch('/api/lineups/live-halls', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        credentials: 'same-origin',
+        body: hallsStr
+    });
     applyFilter();
+    renderHallFilter();
 }
 
 function applyFilter() {
-    const filteredTournaments = selectedHall
-        ? allTournaments.filter(t => t.hall === selectedHall)
-        : allTournaments;
+    let filtered = allTournaments;
 
-    const filteredLineups = selectedHall
-        ? allLineups.filter(l => l.hall === selectedHall)
-        : allLineups;
+    if (selectedTab === 'live') {
+        filtered = filtered.filter(t => t.status === 'LIVE');
+    } else if (selectedTab === 'upcoming') {
+        filtered = filtered.filter(t => t.status === 'UPCOMING');
+    } else if (selectedTab === 'finished') {
+        filtered = filtered.filter(t => t.status === 'FINISHED');
+    }
 
-    renderTournaments(filteredTournaments);
+    if (savedHalls.length > 0) {
+        filtered = filtered.filter(t => savedHalls.includes(t.hall));
+    }
+
+    let filteredLineups = allLineups;
+    if (savedHalls.length > 0) {
+        filteredLineups = filteredLineups.filter(l => savedHalls.includes(l.hall));
+    }
+
+    renderTournaments(filtered);
     renderLineups(filteredLineups);
 }
 
 function getStatusBadge(status) {
     switch(status) {
         case 'LIVE': return '<span class="live-badge"><span class="w-2 h-2 rounded-full bg-white"></span> LIVE</span>';
-        case 'UPCOMING': return '<span style="background:#f59e0b;color:#000;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;">⏳ Скоро</span>';
-        case 'FINISHED': return '<span style="background:#52525b;color:#a1a1aa;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;">✓ Завершён</span>';
+        case 'UPCOMING': return '<span style="background:#f59e0b;color:#000;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;">Скоро</span>';
+        case 'FINISHED': return '<span style="background:#52525b;color:#a1a1aa;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;">Завершён</span>';
         default: return '';
     }
 }
 
 function getButton(status, externalId) {
     switch(status) {
-        case 'LIVE': return `<button class="btn-live">▶ Смотреть трансляцию</button>`;
-        case 'UPCOMING': return `<button class="btn-live" style="background:linear-gradient(135deg,#f59e0b,#d97706);" disabled>⏳ Ожидание</button>`;
-        case 'FINISHED': return `<button class="btn-live" style="background:linear-gradient(135deg,#52525b,#404040);">💬 Чат</button>`;
-        default: return `<button class="btn-live">▶ Смотреть</button>`;
+        case 'LIVE': return `<button class="btn-live">Смотреть трансляцию</button>`;
+        case 'UPCOMING': return `<button class="btn-live" style="background:linear-gradient(135deg,#f59e0b,#d97706);" disabled>Ожидание</button>`;
+        case 'FINISHED': return `<button class="btn-live" style="background:linear-gradient(135deg,#52525b,#404040);">Чат</button>`;
+        default: return `<button class="btn-live">Смотреть</button>`;
     }
 }
 
@@ -186,5 +250,17 @@ function escapeHtml(text) {
     return text.replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]);
 }
 
-window.filterByHall = filterByHall;
+window.toggleHallsCheckboxes = toggleHallsCheckboxes;
+window.toggleAllLiveHalls = toggleAllLiveHalls;
+window.saveSelectedLiveHalls = saveSelectedLiveHalls;
+
+document.getElementById('tabFilter').querySelectorAll('.tab-filter-tag').forEach(tag => {
+    tag.addEventListener('click', function() {
+        document.querySelectorAll('.tab-filter-tag').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        selectedTab = this.dataset.tab;
+        applyFilter();
+    });
+});
+
 loadLive();

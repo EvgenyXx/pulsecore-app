@@ -7,37 +7,36 @@ export let bestTimePeriod = 'all';
 export function setBestTimePeriod(period) {
     bestTimePeriod = period;
     document.querySelectorAll('#tab-best-time .period-btn').forEach(b => b.classList.remove('active'));
+
     if (period === 'custom') {
-        document.getElementById('bt-all').classList.add('active');
+        // Ничего не подсвечиваем, оставляем кнопки неактивными
     } else {
-        document.getElementById('bt-' + period)?.classList.add('active');
+        const btn = document.getElementById('bt-' + period);
+        if (btn) btn.classList.add('active');
     }
-    const label = document.getElementById('bestTimePeriodLabel');
-    if (period === 'all') label.textContent = 'Показаны данные за всё время';
-    else if (period === 'month') label.textContent = 'Показаны данные за последние 30 дней';
-    else if (period === 'week') label.textContent = 'Показаны данные за последние 7 дней';
-    else if (period === 'custom') label.textContent = 'Показаны данные за выбранный период';
+
     loadBestTime();
 }
 
 export async function loadBestTime() {
     try {
-        let start, end;
-        const now = new Date();
-        if (bestTimePeriod === 'week') {
-            start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-            end = now.toISOString().split('T')[0];
-        } else if (bestTimePeriod === 'month') {
-            start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-            end = now.toISOString().split('T')[0];
-        } else if (bestTimePeriod === 'custom') {
-            start = document.getElementById('bestTimeStart').value;
-            end = document.getElementById('bestTimeEnd').value;
-        }
-
         const params = {};
-        if (start) params.start = start;
-        if (end) params.end = end;
+        const now = new Date();
+
+        if (bestTimePeriod === 'week') {
+            const d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            params.start = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            params.end = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        } else if (bestTimePeriod === 'month') {
+            const d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            params.start = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            params.end = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        } else if (bestTimePeriod === 'custom') {
+            const start = document.getElementById('bestTimeStart')?.value;
+            const end = document.getElementById('bestTimeEnd')?.value;
+            if (start) params.start = start;
+            if (end) params.end = end;
+        }
 
         const data = await AnalyticsAPI.getBestTime(params);
 

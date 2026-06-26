@@ -23,6 +23,9 @@ window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 window.toggleTheme = toggleTheme;
 
+// Сплэш-лоадер для плавного старта
+document.body.insertAdjacentHTML('afterbegin', '<div id="appLoader" style="position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;"><div class="spinner"></div></div>');
+
 const subBlockHtml = () => `<div class="widget-card rounded-2xl p-8 text-center" style="animation: fadeIn 0.2s ease">
     <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -187,7 +190,9 @@ async function init() {
         }
 
         if (data.subscription?.active) checkPushStatus();
-    } catch (e) { window.location.href = '/'; }
+    } catch (e) { window.location.href = '/'; } finally {
+        document.getElementById('appLoader')?.remove();
+    }
 }
 
 const ptr = document.getElementById('ptrIndicator');

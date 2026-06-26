@@ -19,6 +19,14 @@ public class LineupFacade {
     private final LineupRepository lineupRepository;
     private final PlayerService playerService;
 
+    public void saveLiveSelectedHalls(UUID playerId, String halls) {
+        playerService.saveLiveSelectedHalls(playerId, halls);
+    }
+
+    public String getLiveSelectedHalls(UUID playerId) {
+        return playerService.getLiveSelectedHalls(playerId);
+    }
+
     public Map<String, List<LineupDto>> getAllGroupedByHall(LocalDate date) {
         List<Lineup> all = lineupRepository.findByDate(date);
         return groupByHall(all.stream().map(this::toDto).toList());

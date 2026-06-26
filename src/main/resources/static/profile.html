@@ -109,6 +109,20 @@
                     <div class="flex-1"><div class="font-medium text-sm">Безопасность</div><div class="text-xs text-zinc-500">Смена пароля</div></div>
                     <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                 </div>
+                <div class="settings-item" onclick="showSettingsPage('share')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Поделиться</div><div class="text-xs text-zinc-500">QR-код приложения</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                </div>
+            </div>
+
+            <div class="mt-8 md:hidden">
+                <div class="settings-item" onclick="logout()">
+                    <div class="settings-item-icon" style="background: rgba(248,113,113,0.1);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    </div>
+                    <div class="flex-1"><div class="font-medium text-sm" style="color: #f87171;">Выйти</div></div>
+                </div>
             </div>
         </div>
 
@@ -211,6 +225,22 @@
                 </div>
             </div>
         </div>
+
+        <div id="settings-share" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Поделиться приложением</h3>
+            <div class="widget-card rounded-2xl p-0 overflow-hidden" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                <img src="/api/shared/qr" alt="QR-код" style="width:100%;display:block;">
+            </div>
+            <p class="text-sm text-zinc-400 mt-3 text-center">Наведите камеру телефона</p>
+        </div>
     </div>
 </main>
 
@@ -234,7 +264,7 @@
 <script>
     function showSettingsPage(page) {
         document.getElementById('settings-main').style.display = page === 'main' ? 'block' : 'none';
-        ['account','subscription','appearance','security'].forEach(t => {
+        ['account','subscription','appearance','security','share'].forEach(t => {
             const el = document.getElementById('settings-' + t);
             if (el) el.style.display = t === page ? 'block' : 'none';
         });
