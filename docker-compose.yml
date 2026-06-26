@@ -63,7 +63,7 @@ services:
       YOOKASSA_RETURN_URL: ${YOOKASSA_RETURN_URL}
       YOOKASSA_CURRENCY: RUB
       APP_BASE_URL: ${APP_BASE_URL}
-      QR_COLOR: ${QR_COLOR:#6366f1}
+      QR_COLOR: "${QR_COLOR:#6366f1}"
 
 volumes:
   pgdata:
