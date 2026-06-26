@@ -60,6 +60,8 @@ spring:
       session:
             store-type: redis
             timeout: 30d
+            redis:
+                  repository-type: indexed
 
 logging:
       level:
