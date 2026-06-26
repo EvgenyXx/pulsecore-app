@@ -56,7 +56,7 @@ spring:
             redis:
                   host: redis
                   port: 6379
-                  password: ${REDIS_PASSWORD}
+                  password: ${SPRING_REDIS_PASSWORD}
       session:
             store-type: redis
             timeout: 30d
