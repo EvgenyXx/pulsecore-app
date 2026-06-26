@@ -56,6 +56,8 @@ spring:
   session:
     store-type: redis
     timeout: 14d
+    redis:
+      repository-type: indexed
 
 logging:
   level:
@@ -66,6 +68,8 @@ logging:
     org.springframework.data.redis.cache: DEBUG      # ← добавить
 
 app:
+  base-url: http://192.168.0.110:8080
+  qr-color: "#14b8a6"  # цвет QR-кода
   vapid:
     public-key: ${VAPID_PUBLIC_KEY}
     private-key: ${VAPID_PRIVATE_KEY}

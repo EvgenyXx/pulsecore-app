@@ -100,6 +100,10 @@ public class Player {
     @Builder.Default
     private boolean notificationsEnabled = true;
 
+    @Column(name = "live_selected_halls", length = 500)
+    @Builder.Default
+    private String liveSelectedHalls = "";
+
     public boolean hasActiveSubscription() {
         return subscription != null && subscription.isActiveNow();
     }

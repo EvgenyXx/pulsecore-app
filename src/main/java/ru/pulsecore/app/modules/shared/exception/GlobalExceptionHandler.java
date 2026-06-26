@@ -64,10 +64,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAll(Exception e, HttpServletRequest request) {
         String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/javascript")) {
-            // SockJS ожидает JavaScript — возвращаем пустой ответ
+        String contentType = request.getContentType();
+
+        if ((accept != null && accept.contains("application/javascript"))
+                || (contentType != null && contentType.contains("javascript"))) {
             return ResponseEntity.status(500).header("Content-Type", "application/javascript").body("");
         }
+
         log.error("Внутренняя ошибка", e);
         ErrorResponse response = ErrorResponse.builder()
                 .status(500)

@@ -70,6 +70,8 @@ logging:
             ru.pulsecore.app.modules.player.service.subscription.SubscriptionService: WARN
 
 app:
+      base-url: ${APP_BASE_URL}
+      qr-color: ${QR_COLOR:#6366f1}
 
       vapid:
             public-key: ${VAPID_PUBLIC_KEY}

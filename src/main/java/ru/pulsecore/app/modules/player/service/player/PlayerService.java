@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
@@ -32,6 +34,7 @@ public class PlayerService {
     private final PasswordEncoder passwordEncoder;
     private final NameNormalizer nameNormalizer;  // 🔥 ДОБАВЛЕНО
     private final ChatMessageRepository chatMessageRepository;
+    private final RedisIndexedSessionRepository sessionRepository;
 
     public boolean isNotificationsEnabled(UUID id) {
         return getById(id).isNotificationsEnabled();
@@ -119,6 +122,12 @@ public class PlayerService {
     @Transactional
     public void deletePlayer(UUID id) {
         chatMessageRepository.deleteByPlayerId(id);
+
+        String principalName = id.toString();
+        sessionRepository.findByPrincipalName(principalName).forEach((sessionId, session) -> {
+            sessionRepository.deleteById(sessionId);
+        });
+
         playerRepository.deleteById(id);
     }
 
@@ -144,5 +153,16 @@ public class PlayerService {
 
     public String getSelectedHalls(UUID playerId) {
         return getById(playerId).getSelectedHalls();
+    }
+
+    @Transactional
+    public void saveLiveSelectedHalls(UUID playerId, String halls) {
+        Player player = getById(playerId);
+        player.setLiveSelectedHalls(halls);
+        playerRepository.save(player);
+    }
+
+    public String getLiveSelectedHalls(UUID playerId) {
+        return getById(playerId).getLiveSelectedHalls();
     }
 }

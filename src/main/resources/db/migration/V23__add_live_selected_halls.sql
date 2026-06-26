@@ -1,0 +1,1 @@
+ALTER TABLE players ADD COLUMN live_selected_halls VARCHAR(500) DEFAULT '';

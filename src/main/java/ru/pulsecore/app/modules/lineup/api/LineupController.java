@@ -3,10 +3,7 @@ package ru.pulsecore.app.modules.lineup.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.lineup.api.dto.LineupDto;
 import ru.pulsecore.app.modules.lineup.service.LineupFacade;
 import ru.pulsecore.app.security.CurrentPlayer;
@@ -34,5 +31,18 @@ public class LineupController {
             @CurrentPlayer PlayerPrincipal principal,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(lineupFacade.getMyGroupedByHall(principal.playerId(), date));
+    }
+
+    @GetMapping(LineupApi.LIVE_HALLS)
+    public ResponseEntity<String> getLiveHalls(@CurrentPlayer PlayerPrincipal principal) {
+        return ResponseEntity.ok(lineupFacade.getLiveSelectedHalls(principal.playerId()));
+    }
+
+    @PostMapping(LineupApi.LIVE_HALLS)
+    public ResponseEntity<Void> saveLiveHalls(
+            @CurrentPlayer PlayerPrincipal principal,
+            @RequestBody String halls) {
+        lineupFacade.saveLiveSelectedHalls(principal.playerId(), halls);
+        return ResponseEntity.ok().build();
     }
 }
