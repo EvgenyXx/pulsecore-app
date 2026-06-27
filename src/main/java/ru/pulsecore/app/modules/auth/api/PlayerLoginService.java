@@ -15,7 +15,7 @@ import java.io.IOException;
 @Service
 public class PlayerLoginService {
 
-    public void login(Player player, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void login(Player player, HttpServletRequest request) {
         SecurityUser securityUser = new SecurityUser(player);
         var authToken = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                 securityUser, null, securityUser.getAuthorities()
@@ -25,7 +25,10 @@ public class PlayerLoginService {
         HttpSession session = request.getSession(true);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext());
+    }
 
+    public void loginAndRedirect(Player player, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        login(player, request);
         response.sendRedirect("/dashboard.html");
     }
 }

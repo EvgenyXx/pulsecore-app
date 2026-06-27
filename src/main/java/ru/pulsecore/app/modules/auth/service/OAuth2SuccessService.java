@@ -145,7 +145,7 @@ public class OAuth2SuccessService {
             }
         }
         playerRepository.save(player);
-        playerLoginService.login(player, request, response);
+        playerLoginService.loginAndRedirect(player, request, response);
     }
 
     private void storeInSession(HttpServletRequest request, String provider, OAuthUserData data) {

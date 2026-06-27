@@ -2,7 +2,6 @@
 package ru.pulsecore.app.modules.auth.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ import ru.pulsecore.app.modules.tournament.service.TournamentCascadeSyncService;
 import ua_parser.Client;
 import ua_parser.Parser;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -52,8 +50,7 @@ public class OAuthFinishService {
     private final Parser uaParser;
 
     @Transactional
-    public void complete(OAuthFinishRequest request, HttpServletRequest httpRequest,
-                         HttpServletResponse httpResponse) throws IOException {
+    public void complete(OAuthFinishRequest request, HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession();
 
         Player player = createPlayer(request, session);
@@ -75,7 +72,7 @@ public class OAuthFinishService {
                 client.device.family, client.os.family, client.userAgent.family);
 
         clearSession(session);
-        playerLoginService.login(player, httpRequest, httpResponse);
+        playerLoginService.login(player, httpRequest);
     }
 
     private Player createPlayer(OAuthFinishRequest request, HttpSession session) {
