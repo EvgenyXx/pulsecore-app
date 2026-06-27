@@ -16,4 +16,10 @@ public class CacheEvictionService {
         cacheManager.getCache("daily_income").clear();
         cacheManager.getCache("best_time").clear();
     }
+
+
+    public void evictHallOfFame() {
+        cacheManager.getCache("top-all").clear();
+        cacheManager.getCache("top-league").clear();
+    }
 }

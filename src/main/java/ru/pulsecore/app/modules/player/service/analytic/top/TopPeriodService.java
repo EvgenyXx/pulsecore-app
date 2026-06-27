@@ -1,9 +1,7 @@
 package ru.pulsecore.app.modules.player.service.analytic.top;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.player.api.dto.TopLeagueResponse;
 import ru.pulsecore.app.modules.player.api.dto.TopPlayerDto;
@@ -19,16 +17,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TopPeriodService {
 
+    public static final String CACHE_TOP_ALL = "top-all";
+    public static final String CACHE_TOP_LEAGUE = "top-league";
+    public static final String KEY_PERIOD = "#period";
+    public static final String KEY_PERIOD_LEAGUE = "#period + ':' + #league";
+
     private final TopPlayersViewRepository repository;
     private final PlayerService playerService;
 
-    @Cacheable(value = "top-all", key = "#period")
+    @Cacheable(value = CACHE_TOP_ALL, key = KEY_PERIOD)
     public TopLeagueResponse getTopAllLeagues(String period, UUID playerId) {
         List<TopPlayersView> all = repository.findByPeriodOrderByTotalDesc(period);
         return buildResponse(all, playerId);
     }
 
-    @Cacheable(value = "top-league", key = "#period + ':' + #league")
+    @Cacheable(value = CACHE_TOP_LEAGUE, key = KEY_PERIOD_LEAGUE)
     public TopLeagueResponse getTopByLeague(String period, String league, UUID playerId) {
         Player player = playerService.getById(playerId);
 
@@ -45,13 +48,6 @@ public class TopPeriodService {
         List<TopPlayersView> all = repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
         return buildResponse(all, playerId);
     }
-
-    @CacheEvict(value = {"top-all", "top-league"}, allEntries = true)
-    @Scheduled(fixedRate = 300_000)
-    public void evictCache() {}
-
-    @CacheEvict(value = {"top-all", "top-league"}, allEntries = true)
-    public void evictOnNewResult() {}
 
     private TopLeagueResponse buildResponse(List<TopPlayersView> all, UUID playerId) {
         List<TopPlayersView> top5 = all.size() > 5 ? all.subList(0, 5) : all;
