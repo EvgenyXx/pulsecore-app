@@ -21,25 +21,25 @@ public class LineupScheduler implements ApplicationRunner {
         lineupService.loadLineups();
     }
 
-    // Сегодня — каждые 10 минут (вместо раза в час)
+
     @Scheduled(cron = "0 */10 * * * *")
     public void loadToday() {
         lineupService.loadTodayOnly();
     }
 
-    // Завтра — каждые 20 минут (часто меняется)
+
     @Scheduled(cron = "0 */20 * * * *")
     public void loadTomorrow() {
         lineupService.loadTomorrowOnly();
     }
 
-    // Послезавтра — раз в 3 часа (редко меняется)
+
     @Scheduled(cron = "0 0 */3 * * *")
     public void loadDayAfterTomorrow() {
         lineupService.loadDayAfterTomorrow();
     }
 
-    // Очистка старых — в 4 утра
+
     @Scheduled(cron = "0 0 4 * * *")
     public void cleanup() {
         lineupService.cleanupOld();

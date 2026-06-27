@@ -16,13 +16,20 @@ public class RedisCacheConfig {
 
     @Bean
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
-        return builder -> builder.cacheDefaults(
-                RedisCacheConfiguration.defaultCacheConfig()
-                        .entryTtl(Duration.ofMinutes(5))
-                        .serializeValuesWith(
-                                RedisSerializationContext.SerializationPair
-                                        .fromSerializer(new GenericJackson2JsonRedisSerializer())
-                        )
-        );
+        return builder -> builder
+                .withCacheConfiguration("subscription",
+                        RedisCacheConfiguration.defaultCacheConfig()
+                                .entryTtl(Duration.ofMinutes(10)))
+                .withCacheConfiguration("monthly_income",
+                        RedisCacheConfiguration.defaultCacheConfig()
+                                .entryTtl(Duration.ofMinutes(30)))
+                .cacheDefaults(
+                        RedisCacheConfiguration.defaultCacheConfig()
+                                .entryTtl(Duration.ofMinutes(5))
+                                .serializeValuesWith(
+                                        RedisSerializationContext.SerializationPair
+                                                .fromSerializer(new GenericJackson2JsonRedisSerializer())
+                                )
+                );
     }
 }

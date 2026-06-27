@@ -11,6 +11,7 @@ import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.analytic.top.TopPeriodService;
 import ru.pulsecore.app.modules.shared.exception.TournamentNotFoundException;
+import ru.pulsecore.app.modules.shared.service.CacheEvictionService;
 import ru.pulsecore.app.modules.tournament.exception.TournamentResultNotFoundException;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
@@ -28,6 +29,7 @@ public class TournamentResultService {
     private final TournamentResultRepository tournamentResultRepository;
     private final TournamentRepository tournamentRepository;
     private final TopPeriodService topPeriodService;
+    private final CacheEvictionService cacheEvictionService;
 
     public Page<TournamentResultEntity> getResultsByPeriod(Player player, LocalDate start, LocalDate end, Pageable pageable) {
         return tournamentResultRepository.findByPlayerAndDateBetweenOrderByDateAsc(player, start, end, pageable);
@@ -41,6 +43,7 @@ public class TournamentResultService {
         if (bonus != null) result.setBonus(bonus);
         tournamentResultRepository.save(result);
         topPeriodService.evictOnNewResult();
+        cacheEvictionService.evictAnalytics();
     }
 
     public TournamentResultEntity save(TournamentResultEntity entity) {
@@ -58,6 +61,7 @@ public class TournamentResultService {
         try {
             TournamentResultEntity saved = tournamentResultRepository.save(entity);
             topPeriodService.evictOnNewResult();
+            cacheEvictionService.evictAnalytics();
             return saved;
         } catch (Exception e) {
             log.error("SAVE ERROR: player={}, tournament={}",
@@ -67,9 +71,7 @@ public class TournamentResultService {
         }
     }
 
-    public List<TournamentResultEntity> getResultsByPeriod(Player player, LocalDate start, LocalDate end) {
-        return tournamentResultRepository.findByPlayerAndDateBetweenOrderByDateAsc(player, start, end);
-    }
+
 
     public PeriodStatsProjection getStatsByPeriod(Player player, LocalDate start, LocalDate end) {
         return tournamentResultRepository.getStats(player, start, end);
