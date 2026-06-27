@@ -68,14 +68,31 @@
             if (r.ok) {
                 window.location.href = '/dashboard';
             } else {
-                const e = await r.text();
-                err.textContent = e || 'Ошибка';
+                const status = r.status;
+                const ct = r.headers.get('content-type') || '';
+                let e;
+                if (ct.includes('text/html')) {
+                    e = '[HTML ответ, статус ' + status + ']';
+                } else {
+                    e = await r.text();
+                }
+                err.textContent = 'Ошибка ' + status + ': ' + (e || 'пустой ответ');
                 err.classList.remove('hidden');
                 btn.disabled = false;
                 btn.textContent = 'Завершить регистрацию';
             }
         } catch(e) {
-            err.textContent = 'Ошибка соединения: ' + e.message;
+            let msg;
+            if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
+                msg = 'Сервер недоступен. Проверьте интернет.';
+            } else if (e.name === 'TypeError' && e.message.includes('NetworkError')) {
+                msg = 'Ошибка сети. Попробуйте снова.';
+            } else if (e.name === 'AbortError') {
+                msg = 'Запрос прерван (таймаут).';
+            } else {
+                msg = e.name + ': ' + e.message;
+            }
+            err.textContent = msg;
             err.classList.remove('hidden');
             btn.disabled = false;
             btn.textContent = 'Завершить регистрацию';
