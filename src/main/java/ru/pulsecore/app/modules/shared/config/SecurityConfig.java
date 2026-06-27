@@ -44,7 +44,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/index.html", "/register.html","api/players",
+                                "/", "/index.html", "/register.html","/api/players",
                                 "/subscribe.html", "/profile.html", "/dashboard.html",
                                 "/img.png", "/favicon.ico", "/robots.txt", "/error",
                                 "/api/auth/**", "/api/payment/webhook","/oauth-finish.html"
