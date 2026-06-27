@@ -61,7 +61,6 @@
             const r = await fetch('/api/auth/oauth-finish', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({ lastName, firstName })
             });
 
