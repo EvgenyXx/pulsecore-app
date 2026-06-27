@@ -2,6 +2,8 @@ package ru.pulsecore.app.modules.player.service.subscription;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.player.domain.Player;
@@ -16,9 +18,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubscriptionService {
 
+    private static final String SUBSCRIPTION_CACHE = "subscription";
+    private static final String PLAYER_ID_KEY = "#playerId";
+
     private final SubscriptionRepository subscriptionRepository;
     private final PlayerService playerService;
 
+    @CacheEvict(value = SUBSCRIPTION_CACHE, key = PLAYER_ID_KEY)
     @Transactional
     public void deactivate(UUID playerId) {
         Player player = playerService.getById(playerId);
@@ -30,6 +36,7 @@ public class SubscriptionService {
         }
     }
 
+    @CacheEvict(value = SUBSCRIPTION_CACHE, key = PLAYER_ID_KEY)
     @Transactional
     public void activate(UUID playerId, int days) {
         Player player = playerService.getById(playerId);
@@ -51,6 +58,7 @@ public class SubscriptionService {
         return player.getSubscription();
     }
 
+    @Cacheable(value = SUBSCRIPTION_CACHE, key = PLAYER_ID_KEY)
     @Transactional(readOnly = true)
     public boolean hasActiveSubscription(UUID playerId) {
         var sub = subscriptionRepository.findByPlayerId(playerId);

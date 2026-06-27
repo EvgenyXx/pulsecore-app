@@ -1,12 +1,18 @@
 package ru.pulsecore.app.modules.player.api.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
-public class DailyIncomeResponse {
+@NoArgsConstructor
+@AllArgsConstructor
+public class DailyIncomeResponse implements Serializable {
     private String playerName;
     private int year;
     private int month;
@@ -16,7 +22,9 @@ public class DailyIncomeResponse {
 
     @Data
     @Builder
-    public static class DayStat {
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DayStat implements  Serializable {
         private int day;
         private double total;
         private int count;
