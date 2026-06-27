@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.analytic.top.TopPeriodService;
 import ru.pulsecore.app.modules.shared.exception.TournamentNotFoundException;
 import ru.pulsecore.app.modules.shared.service.CacheEvictionService;
 import ru.pulsecore.app.modules.tournament.exception.TournamentResultNotFoundException;
@@ -28,7 +27,6 @@ public class TournamentResultService {
 
     private final TournamentResultRepository tournamentResultRepository;
     private final TournamentRepository tournamentRepository;
-    private final TopPeriodService topPeriodService;
     private final CacheEvictionService cacheEvictionService;
 
     public Page<TournamentResultEntity> getResultsByPeriod(Player player, LocalDate start, LocalDate end, Pageable pageable) {
@@ -42,7 +40,7 @@ public class TournamentResultService {
         if (amount != null) result.setAmount(amount);
         if (bonus != null) result.setBonus(bonus);
         tournamentResultRepository.save(result);
-        topPeriodService.evictOnNewResult();
+        cacheEvictionService.evictHallOfFame();
         cacheEvictionService.evictAnalytics();
     }
 
@@ -60,7 +58,7 @@ public class TournamentResultService {
 
         try {
             TournamentResultEntity saved = tournamentResultRepository.save(entity);
-            topPeriodService.evictOnNewResult();
+            cacheEvictionService.evictHallOfFame();
             cacheEvictionService.evictAnalytics();
             return saved;
         } catch (Exception e) {

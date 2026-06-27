@@ -64,10 +64,9 @@ logging:
     org.hibernate.SQL: warn
     org.flywaydb: debug
     ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
-    # Кэш и Redis:
     org.springframework.cache: TRACE
-    org.springframework.data.redis: DEBUG
-    io.lettuce.core: DEBUG
+    org.springframework.data.redis: WARN
+    io.lettuce.core: WARN
 
 app:
   base-url: http://192.168.0.110:8080

@@ -75,7 +75,7 @@
                 btn.textContent = 'Завершить регистрацию';
             }
         } catch(e) {
-            err.textContent = 'Ошибка соединения';
+            err.textContent = 'Ошибка соединения: ' + e.message;
             err.classList.remove('hidden');
             btn.disabled = false;
             btn.textContent = 'Завершить регистрацию';
