@@ -3,10 +3,10 @@ package ru.pulsecore.app.modules.player.service.analytic.league;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.modules.player.api.dto.AnalyticsResponse;
+import ru.pulsecore.app.modules.player.api.dto.analytics.AnalyticsResponse;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.analytic.mapper.AnalyticsMapper;
-import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.projection.LeagueStatProjection;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentResultRepository;
 
 import java.time.LocalDate;

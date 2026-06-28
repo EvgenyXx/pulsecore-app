@@ -2,6 +2,7 @@ package ru.pulsecore.app.modules.tournament.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.push.service.WebPushService;
@@ -22,6 +23,12 @@ public class ChatService {
     private final ChatMessageMapper chatMessageMapper;
     private final WebPushService webPushService;
     private final ChatMentionService chatMentionService;
+    private final SimpMessagingTemplate messagingTemplate;
+
+
+    public List<Long> getActiveLineupIds() {
+        return chatMessageRepository.findActiveLineupIds(LocalDateTime.now().minusMinutes(2));
+    }
 
     @Transactional(readOnly = true)
     public List<ChatMessageDto> getMessages(Long lineupId) {
@@ -53,6 +60,11 @@ public class ChatService {
         ChatMessage saved = chatMessageRepository.save(entity);
         ChatMessageDto result = chatMessageMapper.toDto(saved);
         chatMentionService.processMentions(lineupId, result);
+
+        // Отправляем обновлённый онлайн в WebSocket
+        long onlineCount = chatMessageRepository.countDistinctPlayerIdByLineupIdAndCreatedAtAfter(lineupId, LocalDateTime.now().minusMinutes(2));
+        messagingTemplate.convertAndSend("/topic/chat/" + lineupId + "/online", onlineCount);
+
         return result;
     }
 

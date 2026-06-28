@@ -32,6 +32,16 @@ function connectWebSocket() {
                     const msg = JSON.parse(message.body);
                     if (msg.id > lastMessageId) { lastMessageId = msg.id; addMessageToChat(msg); }
                 });
+                stompClient.subscribe('/topic/chat/' + lineupId + '/online', function(message) {
+                    const count = JSON.parse(message.body);
+                    const el = document.getElementById('onlineCount');
+                    if (count > 0) {
+                        el.textContent = '👁 ' + count;
+                        el.style.display = 'inline';
+                    } else {
+                        el.style.display = 'none';
+                    }
+                });
                 if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
             },
             onDisconnect: function() { startPolling(); },
@@ -170,18 +180,6 @@ function toggleFullscreen() {
     } else {
         document.exitFullscreen();
     }
-}
-
-async function loadOnline() {
-    try {
-        const res = await fetch(`/api/chat/${lineupId}/online`, { credentials: 'same-origin' });
-        if (res.ok) {
-            const count = await res.json();
-            const el = document.getElementById('onlineCount');
-            if (count > 0) { el.textContent = '👁 ' + count; el.style.display = 'inline'; }
-            else { el.style.display = 'none'; }
-        }
-    } catch(e) {}
 }
 
 function buildMentionDropdown() {
@@ -326,8 +324,6 @@ async function loadData() {
 
         await loadChatHistory();
         connectWebSocket();
-        loadOnline();
-        setInterval(loadOnline, 30000);
         setupMentions();
     } catch(e) { document.getElementById('loading').innerHTML = '<p class="text-red-400">Ошибка загрузки</p>'; }
 }

@@ -42,7 +42,6 @@ public class LiveService {
 
         LocalTime endTime = startTime.plusHours(TOURNAMENT_MAX_DURATION_HOURS);
 
-        // Если endTime раньше startTime — значит перешли через полночь, турнир ещё идёт
         if (endTime.isBefore(startTime) || endTime.isAfter(now)) {
             return LiveStatus.LIVE;
         }

@@ -10,10 +10,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.tournament.api.dto.DailyIncomeProjection;
-import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;
-import ru.pulsecore.app.modules.tournament.api.dto.MonthlyIncomeProjection;
-import ru.pulsecore.app.modules.tournament.api.dto.WeeklyStatsProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.projection.DailyIncomeProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.projection.LeagueStatProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.projection.MonthlyIncomeProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.projection.WeeklyStatsProjection;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
 
 import java.time.LocalDate;

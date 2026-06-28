@@ -33,23 +33,13 @@ public class TournamentFinishService {
                                   List<PlayerNotification> notifications,
                                   Document doc)  {
 
-
-
         ParsedResult parsed = resultService.calculateAll(doc);
         if (parsed.status() != TournamentStatus.FINISHED) return false;
-
         processService.processTournament(notifications, parsed);
-
-        // 🔥 ВАЖНО — СТАВИМ ФЛАГИ
         t.setFinished(true);
         t.setProcessed(true);
-
-        // 🔥 ВАЖНО — СОХРАНЯЕМ ТУРНИР
         tournamentRepository.save(t);
-
-        // 🔥 потом уже нотификации
         repo.saveAll(notifications);
-
         log.info("🏁 tournament finished: id={}, users={}, results={}",
                 t.getExternalId(),
                 notifications.size(),

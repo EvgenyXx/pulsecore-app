@@ -1,121 +1,43 @@
+// TournamentProcessService.java
 package ru.pulsecore.app.modules.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.player.PlayerService;
-import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
-import ru.pulsecore.app.modules.shared.exception.TournamentParseException;
-import ru.pulsecore.app.modules.shared.exception.UnauthorizedException;
-import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
-import ru.pulsecore.app.modules.tournament.application.ResultService;
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
 import ru.pulsecore.app.modules.tournament.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TournamentProcessService {
 
-    private static final long REQUEST_DELAY_MS = 3000;
-
     private final TournamentResultService tournamentResultService;
-    private final ResultService resultService;
     private final TournamentRepository tournamentRepository;
-    private final PlayerService playerService;
 
     @Transactional
     public void processTournament(List<PlayerNotification> notifications, ParsedResult parsed) {
-        if (isEmpty(notifications)) return;
+        if (notifications == null || notifications.isEmpty()) return;
         TournamentEntity tournament = notifications.get(0).getTournament();
         if (tournament == null) return;
 
-        log.info("🏁 process finish: tournamentId={}, users={}", parsed.tournamentId(), notifications.size());
         updateTournamentDates(tournament, parsed);
 
-        int processed = 0;
-        int foundCount = 0;
         for (PlayerNotification pn : notifications) {
             Player player = pn.getPlayer();
             if (player == null) continue;
-            processed++;
-            if (processPlayerResults(player, parsed)) foundCount++;
+            processPlayerResults(player, parsed);
         }
 
         tournament.setFinished(true);
-        log.info("✅ process finish done: tournamentId={}, processed={}, found={}",
-                tournament.getExternalId(), processed, foundCount);
-    }
-
-    public AddTournamentResponse processByUrl(String url, String playerId) {
-        return processSingleUrl(url, playerId);
-    }
-
-    public List<AddTournamentResponse> processByUrls(List<String> urls, String playerId) {
-        if (playerId == null) throw new UnauthorizedException();
-        findPlayer(playerId); // просто проверить что существует
-
-        List<AddTournamentResponse> responses = new ArrayList<>();
-        for (int i = 0; i < urls.size(); i++) {
-            String url = urls.get(i);
-            try {
-                responses.add(processSingleUrl(url, playerId));
-                delayIfNotLast(i, urls.size());
-            } catch (Exception e) {
-                log.error("❌ Ошибка обработки URL: {}", url, e);
-                responses.add(buildErrorResponse(e));
-            }
-        }
-        return responses;
-    }
-
-    private AddTournamentResponse processSingleUrl(String url, String playerId) {
-        Player player = findPlayer(playerId);
-        ParsedResult parsed = parseUrl(url);
-        TournamentEntity tournament = findOrCreateTournament(parsed, url);
-        updateTournamentDates(tournament, parsed);
-
-        tournamentResultService.processResults(
-                parsed.results(), player, parsed.tournamentId(),
-                parsed.nightBonus(),
-                parsed.isFinished() || parsed.isFinalRemoved(),
-                parsed.hasRemoved(),
-                parsed.league());
-
-        return buildSuccessResponse(parsed);
-    }
-
-    private Player findPlayer(String playerId) {
-        Player player = playerService.findById(UUID.fromString(playerId));
-        if (player == null) throw new PlayerNotFoundException(playerId);
-        return player;
-    }
-
-    private ParsedResult parseUrl(String url) {
-        try {
-            return resultService.calculateAll(url);
-        } catch (Exception e) {
-            throw new TournamentParseException(url, e);
-        }
-    }
-
-    private TournamentEntity findOrCreateTournament(ParsedResult parsed, String url) {
-        return tournamentRepository.findByExternalId(parsed.tournamentId())
-                .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder()
-                        .externalId(parsed.tournamentId())
-                        .link(url)
-                        .build()));
     }
 
     private void updateTournamentDates(TournamentEntity tournament, ParsedResult parsed) {
@@ -139,47 +61,12 @@ public class TournamentProcessService {
         }
     }
 
-    private boolean processPlayerResults(Player player, ParsedResult parsed) {
-        return tournamentResultService.processResults(
+    private void processPlayerResults(Player player, ParsedResult parsed) {
+        tournamentResultService.processResults(
                 parsed.results(), player, parsed.tournamentId(),
                 parsed.nightBonus(),
                 parsed.isFinished() || parsed.isFinalRemoved(),
                 parsed.hasRemoved(),
                 parsed.league());
-    }
-
-    private boolean isEmpty(List<?> list) {
-        if (list == null || list.isEmpty()) {
-            log.warn("⏭ processTournament skip: empty notifications");
-            return true;
-        }
-        return false;
-    }
-
-    private void delayIfNotLast(int index, int total) {
-        if (index < total - 1) {
-            try {
-                Thread.sleep(REQUEST_DELAY_MS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
-    private AddTournamentResponse buildSuccessResponse(ParsedResult parsed) {
-        return AddTournamentResponse.builder()
-                .message("Турнир обработан")
-                .tournamentId(parsed.tournamentId())
-                .resultsCount(parsed.results().size())
-                .results(parsed.results())
-                .build();
-    }
-
-    private AddTournamentResponse buildErrorResponse(Exception e) {
-        return AddTournamentResponse.builder()
-                .message("Ошибка: " + e.getMessage())
-                .resultsCount(0)
-                .results(List.of())
-                .build();
     }
 }

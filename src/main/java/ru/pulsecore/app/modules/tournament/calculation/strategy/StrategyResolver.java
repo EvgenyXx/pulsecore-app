@@ -31,9 +31,7 @@ public class StrategyResolver {
             throw new IllegalStateException("No strategy found for type: " + type);
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("▶ Strategy resolved: type={}", type);
-        }
+
 
         return strategy;
     }

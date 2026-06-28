@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.modules.player.api.PlayerApi;
-import ru.pulsecore.app.modules.player.api.dto.AnalyticsResponse;
-import ru.pulsecore.app.modules.player.api.dto.BestTimeResponse;
-import ru.pulsecore.app.modules.player.api.dto.DailyIncomeResponse;
-import ru.pulsecore.app.modules.player.api.dto.MonthlyIncomeResponse;
+import ru.pulsecore.app.modules.player.api.dto.analytics.AnalyticsResponse;
+import ru.pulsecore.app.modules.player.api.dto.analytics.BestTimeResponse;
+import ru.pulsecore.app.modules.player.api.dto.analytics.DailyIncomeResponse;
+import ru.pulsecore.app.modules.player.api.dto.analytics.MonthlyIncomeResponse;
 import ru.pulsecore.app.modules.player.service.analytic.facade.AnalyticsFacade;
 import ru.pulsecore.app.security.CurrentPlayer;
 import ru.pulsecore.app.security.PlayerPrincipal;
@@ -26,7 +26,7 @@ public class AnalyticsController {
 
     private final AnalyticsFacade analyticsFacade;
 
-    // ── Аналитика ─────────────────────────────
+
     @GetMapping(PlayerApi.ANALYTICS)
     public ResponseEntity<AnalyticsResponse> getAnalytics(
             @CurrentPlayer PlayerPrincipal principal,

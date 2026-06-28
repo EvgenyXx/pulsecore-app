@@ -21,7 +21,7 @@ public class RemovedInThirdPlaceHandler implements RemovedPlayerHandler {
 
     @Override
     public MatchProcessingResult handle(TournamentContext ctx) {
-        // Снятие в матче за 3-е место — просто считаем без него
+
         return defaultStrategy.process(ctx);
     }
 }

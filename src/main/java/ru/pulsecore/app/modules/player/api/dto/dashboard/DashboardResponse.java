@@ -1,0 +1,17 @@
+package ru.pulsecore.app.modules.player.api.dto.dashboard;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@Builder
+public class DashboardResponse {
+    private String playerName;
+    private LastResultDto lastResult;
+    private List<UpcomingLineupDto> upcomingLineups;
+    private SubscriptionInfoDto subscription;
+
+    private String primaryLeague;
+}

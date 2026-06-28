@@ -3,9 +3,9 @@ package ru.pulsecore.app.modules.player.service.analytic.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.modules.player.api.dto.DashboardResponse;
-import ru.pulsecore.app.modules.player.api.dto.SumResponse;
-import ru.pulsecore.app.modules.player.api.dto.TopLeagueResponse;
+import ru.pulsecore.app.modules.player.api.dto.dashboard.DashboardResponse;
+import ru.pulsecore.app.modules.player.api.dto.sum.SumResponse;
+import ru.pulsecore.app.modules.player.api.dto.top.TopLeagueResponse;
 import ru.pulsecore.app.modules.player.service.analytic.dashboard.DashboardService;
 import ru.pulsecore.app.modules.player.service.analytic.income.SumService;
 import ru.pulsecore.app.modules.player.service.analytic.top.TopPeriodService;

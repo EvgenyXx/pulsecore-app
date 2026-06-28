@@ -34,8 +34,8 @@ public final class PlayerApi {
     public static final String ANALYTICS = "/analytics";
     public static final String BEST_TIME = "/best-time";
 
-    public static final String MONTHLY_INCOME = "/{id}/monthly-income";
-    public static final String DAILY_INCOME = "/{id}/daily-income";
+    public static final String MONTHLY_INCOME = "/monthly-income";
+    public static final String DAILY_INCOME = "/daily-income";
 
     // ── Webhook ──
     public static final String WEBHOOK = "/api/payment/webhook";

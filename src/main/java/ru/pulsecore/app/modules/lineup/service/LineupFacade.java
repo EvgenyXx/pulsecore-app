@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.lineup.api.dto.LineupDto;
 import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
+import ru.pulsecore.app.modules.player.service.player.PlayerHallsService;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 
 import java.time.LocalDate;
@@ -18,13 +19,14 @@ public class LineupFacade {
     private final LineupService lineupService;
     private final LineupRepository lineupRepository;
     private final PlayerService playerService;
+    private final PlayerHallsService hallsService;
 
     public void saveLiveSelectedHalls(UUID playerId, String halls) {
-        playerService.saveLiveSelectedHalls(playerId, halls);
+        hallsService.saveLiveSelectedHalls(playerId, halls);
     }
 
     public String getLiveSelectedHalls(UUID playerId) {
-        return playerService.getLiveSelectedHalls(playerId);
+        return hallsService.getLiveSelectedHalls(playerId);
     }
 
     public Map<String, List<LineupDto>> getAllGroupedByHall(LocalDate date) {
@@ -33,7 +35,7 @@ public class LineupFacade {
     }
 
     public Map<String, List<LineupDto>> getMyGroupedByHall(UUID playerId, LocalDate date) {
-        String hallsStr = playerService.getSelectedHalls(playerId);
+        String hallsStr = hallsService.getSelectedHalls(playerId);
         if (hallsStr == null || hallsStr.isBlank()) {
             return Map.of();
         }

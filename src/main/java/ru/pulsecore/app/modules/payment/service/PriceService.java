@@ -37,7 +37,7 @@ public class PriceService {
     public void update(int price1, int price2) {
         setValue("price_1month", String.valueOf(price1));
         setValue("price_2months", String.valueOf(price2));
-        log.warn("Цены обновлены: 1мес={}, 2мес={}", price1, price2);
+        log.info("Цены обновлены: 1мес={}, 2мес={}", price1, price2);
     }
 
     private void setValue(String key, String value) {

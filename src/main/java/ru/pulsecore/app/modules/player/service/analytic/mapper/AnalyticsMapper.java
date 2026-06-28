@@ -1,10 +1,10 @@
 package ru.pulsecore.app.modules.player.service.analytic.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.modules.player.api.dto.AnalyticsResponse;
-import ru.pulsecore.app.modules.player.api.dto.MonthlyIncomeResponse;
-import ru.pulsecore.app.modules.tournament.api.dto.LeagueStatProjection;
-import ru.pulsecore.app.modules.tournament.api.dto.MonthlyIncomeProjection;
+import ru.pulsecore.app.modules.player.api.dto.analytics.AnalyticsResponse;
+import ru.pulsecore.app.modules.player.api.dto.analytics.MonthlyIncomeResponse;
+import ru.pulsecore.app.modules.tournament.api.dto.projection.LeagueStatProjection;
+import ru.pulsecore.app.modules.tournament.api.dto.projection.MonthlyIncomeProjection;
 
 import java.util.List;
 

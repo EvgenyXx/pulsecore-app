@@ -26,26 +26,18 @@ public class TournamentStartScheduler {
     @Transactional
     public void checkStart() {
         List<PlayerNotification> notifications = repo.findPendingWithTournament();
-
-        log.info("🔄 StartScheduler tick: totalNotifications={}", notifications.size());
+        if (notifications.isEmpty()) return;
 
         Map<String, List<PlayerNotification>> grouped = notifications.stream()
                 .filter(p -> p.getTournament() != null)
                 .collect(Collectors.groupingBy(p -> p.getTournament().getLink()));
 
-        int processed = 0;
         List<String> links = List.copyOf(grouped.keySet());
-
         for (int i = 0; i < links.size(); i++) {
-            String link = links.get(i);
-            processor.process(link, grouped.get(link));
-            processed++;
-
+            processor.process(links.get(i), grouped.get(links.get(i)));
             if (i < links.size() - 1) {
                 try { Thread.sleep(REQUEST_DELAY_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             }
         }
-
-        log.info("✅ StartScheduler done: processed={}", processed);
     }
 }

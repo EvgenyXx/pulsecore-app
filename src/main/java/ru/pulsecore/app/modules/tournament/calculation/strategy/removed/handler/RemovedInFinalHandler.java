@@ -21,8 +21,6 @@ public class RemovedInFinalHandler implements RemovedPlayerHandler {
 
     @Override
     public MatchProcessingResult handle(TournamentContext ctx) {
-        // Снятие в финале — просто считаем без удалённого игрока
-        // (финал отменён, значит результат уже посчитан без финального матча)
         return defaultStrategy.process(ctx);
     }
 }

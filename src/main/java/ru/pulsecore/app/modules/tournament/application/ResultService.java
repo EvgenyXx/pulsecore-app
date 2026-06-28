@@ -29,7 +29,7 @@ public class ResultService {
     private final TournamentExtractor tournamentExtractor;
     private final StrategyResolver strategyResolver;
     private final ResultBuilder resultBuilder;
-    private final NameNormalizer nameNormalizer;  // 🔥 ДОБАВЛЕНО
+    private final NameNormalizer nameNormalizer;
 
     public ParsedResult calculateAll(String url) {
         Document doc = loader.load(url);
@@ -42,50 +42,61 @@ public class ResultService {
 
     private ParsedResult calculate(Document doc) {
         TournamentContext ctx = tournamentExtractor.extract(doc);
-        MatchCalculationStrategy strategy = strategyResolver.resolve(ctx);
-        MatchProcessingResult matchResult = strategy.process(ctx);
-        List<ResultDto> results = resultBuilder.build(matchResult, ctx);
-
-        // 🔥 НОРМАЛИЗУЕМ ИМЕНА ИГРОКОВ В РЕЗУЛЬТАТАХ
-        for (ResultDto result : results) {
-            String normalizedName = nameNormalizer.normalize(result.getPlayer());
-            result.setPlayer(normalizedName);
-        }
-
-        // Применяем праздничный бонус к итоговой сумме каждого игрока
-        LocalDate tournamentDate = null;
-        String dateStr = ctx.getDate();
-        if (dateStr != null && !dateStr.isEmpty()) {
-            tournamentDate = LocalDate.parse(dateStr);
-        }
-
-        if (tournamentDate != null) {
-            for (ResultDto result : results) {
-                int total = PointsCalculatorUtils.applyDoubleBonus(result.getTotal(), tournamentDate);
-                result.setTotal(total);
-            }
-        }
-
+        List<ResultDto> results = buildResults(ctx);
+        normalizeNames(results);
+        applyBonusPoints(ctx, results);
         results.sort((a, b) -> Integer.compare(b.getTotal(), a.getTotal()));
-
-        if (results.isEmpty() && ctx.getTournamentStatus() != null) {
-            log.info("Tournament {}: no results (status={})", ctx.getTournamentId(), ctx.getTournamentStatus());
-        } else {
-            log.info("Tournament {}: {} results, status={}", ctx.getTournamentId(), results.size(), ctx.getTournamentStatus());
-        }
-
-        boolean hasRemoved = ctx.getRemovedStage() != null && ctx.getRemovedStage() != RemovedStage.NONE;
-        boolean isFinalRemoved = ctx.getRemovedStage() == RemovedStage.FINAL;
+        logResults(ctx, results);
 
         return new ParsedResult(
                 ctx.getTournamentId(),
                 results,
                 ctx.getTournamentStatus(),
                 ctx.getNightBonus(),
-                hasRemoved,
-                isFinalRemoved,
+                hasRemoved(ctx),
+                isFinalRemoved(ctx),
                 ctx.getLeague().name(),
                 ctx.getTime()
         );
+    }
+
+    private List<ResultDto> buildResults(TournamentContext ctx) {
+        MatchCalculationStrategy strategy = strategyResolver.resolve(ctx);
+        MatchProcessingResult matchResult = strategy.process(ctx);
+        return resultBuilder.build(matchResult, ctx);
+    }
+
+    private void normalizeNames(List<ResultDto> results) {
+        for (ResultDto result : results) {
+            String normalizedName = nameNormalizer.normalize(result.getPlayer());
+            result.setPlayer(normalizedName);
+        }
+    }
+
+    private void applyBonusPoints(TournamentContext ctx, List<ResultDto> results) {
+        String dateStr = ctx.getDate();
+        if (dateStr == null || dateStr.isEmpty()) return;
+        LocalDate tournamentDate = LocalDate.parse(dateStr);
+
+        for (ResultDto result : results) {
+            int total = PointsCalculatorUtils.applyDoubleBonus(result.getTotal(), tournamentDate);
+            result.setTotal(total);
+        }
+    }
+
+    private void logResults(TournamentContext ctx, List<ResultDto> results) {
+        if (results.isEmpty() && ctx.getTournamentStatus() != null) {
+            log.info("Tournament {}: no results (status={})", ctx.getTournamentId(), ctx.getTournamentStatus());
+        } else {
+            log.info("Tournament {}: {} results, status={}", ctx.getTournamentId(), results.size(), ctx.getTournamentStatus());
+        }
+    }
+
+    private boolean hasRemoved(TournamentContext ctx) {
+        return ctx.getRemovedStage() != null && ctx.getRemovedStage() != RemovedStage.NONE;
+    }
+
+    private boolean isFinalRemoved(TournamentContext ctx) {
+        return ctx.getRemovedStage() == RemovedStage.FINAL;
     }
 }

@@ -45,4 +45,7 @@ public class LineupController {
         lineupFacade.saveLiveSelectedHalls(principal.playerId(), halls);
         return ResponseEntity.ok().build();
     }
+
+
+
 }

@@ -8,6 +8,7 @@ import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.core.stats.PlacementCalculator;
 import ru.pulsecore.app.core.stats.PointsCalculator;
 import ru.pulsecore.app.core.stats.PointsCalculatorFactory;
+import ru.pulsecore.app.modules.shared.util.StringUtils;
 import ru.pulsecore.app.modules.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 
@@ -23,8 +24,6 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
     private final PlacementCalculator placementCalculator;
     private final PointsCalculatorFactory factory;
 
-
-
     @Override
     public StrategyType getType() {
         return StrategyType.DEFAULT;
@@ -32,43 +31,26 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
 
     @Override
     public MatchProcessingResult process(TournamentContext ctx) {
-
         PointsCalculator calculator = factory.getCalculator(ctx.getLeague());
         LocalDate tournamentDate = parseDate(ctx.getDate());
 
         Map<String, Integer> pointsMap = new HashMap<>();
         Map<String, Integer> placeMap = new HashMap<>();
 
-        if (log.isDebugEnabled()) {
-            log.debug("▶ Default strategy started: tournamentId={}, matches={}",
-                    ctx.getTournamentId(),
-                    ctx.getMatches().size());
-        }
-
         for (Match m : ctx.getMatches()) {
-            if (!isCompletedMatch(m)) {
-                continue;
+            if (isCompletedMatch(m)) {
+                processMatch(m, calculator, pointsMap, placeMap, tournamentDate);
             }
-            processMatch(m, calculator, pointsMap, placeMap, tournamentDate);
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("✔ Default strategy finished: players={}, pointsCalculated={}",
-                    pointsMap.size(),
-                    pointsMap.values().stream().mapToInt(Integer::intValue).sum());
         }
 
         return new MatchProcessingResult(pointsMap, placeMap);
     }
 
-    private void processMatch(Match m,
-                              PointsCalculator calculator,
-                              Map<String, Integer> pointsMap,
-                              Map<String, Integer> placeMap,
+    private void processMatch(Match m, PointsCalculator calculator,
+                              Map<String, Integer> pointsMap, Map<String, Integer> placeMap,
                               LocalDate tournamentDate) {
-
-        String p1 = normalize(m.getPlayer1());
-        String p2 = normalize(m.getPlayer2());
+        String p1 = StringUtils.normalizeSearch(m.getPlayer1());
+        String p2 = StringUtils.normalizeSearch(m.getPlayer2());
 
         int p1Points = calculator.calculatePoints(m, tournamentDate);
         pointsMap.merge(p1, p1Points, Integer::sum);
@@ -78,9 +60,7 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
             placeMap.put(p1, p1Place);
         }
 
-        // PLAYER 2 (reverse)
         Match reversed = m.reverse();
-
         int p2Points = calculator.calculatePoints(reversed, tournamentDate);
         pointsMap.merge(p2, p2Points, Integer::sum);
 
@@ -96,18 +76,6 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
                 && (m.getScore1() + m.getScore2() > 0);
     }
 
-    private String normalize(String name) {
-        if (name == null) return "";
-        return name.toLowerCase()
-                .replace("\u00A0", " ")
-                .replaceAll("\\s+", " ")
-                .trim();
-    }
-
-
-
-
-    // В parseDate заменить DATE_FORMAT на DateConstants.TOURNAMENT_DATE_FORMAT:
     private LocalDate parseDate(String date) {
         if (date == null) return null;
         try {

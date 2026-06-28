@@ -5,11 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.auth.api.dto.ChangePasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.UpdateProfileRequest;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
-import ru.pulsecore.app.modules.player.api.dto.NotificationsStatusResponse;
-import ru.pulsecore.app.modules.player.api.dto.PlayerProfileResponse;
-import ru.pulsecore.app.modules.player.api.dto.PlayerResponse;
+import ru.pulsecore.app.modules.player.api.dto.subscription.NotificationsStatusResponse;
+import ru.pulsecore.app.modules.player.api.dto.player.PlayerProfileResponse;
+import ru.pulsecore.app.modules.player.api.dto.player.PlayerResponse;
 import ru.pulsecore.app.modules.shared.service.SessionService;
-
 
 import java.util.List;
 import java.util.UUID;
@@ -18,15 +17,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayerFacade {
 
+    private final PlayerProfileService profileService;
+    private final PlayerNotificationService notificationService;
+    private final PlayerHallsService hallsService;
     private final PlayerService playerService;
     private final SessionService sessionService;
 
     public PlayerProfileResponse updateProfile(UUID playerId, UpdateProfileRequest request) {
-        return playerService.updateProfile(playerId, request);
+        return profileService.updateProfile(playerId, request);
     }
 
     public MessageResponse changePassword(UUID playerId, ChangePasswordRequest request) {
-        playerService.changePassword(playerId, request);
+        profileService.changePassword(playerId, request);
         return new MessageResponse("Пароль изменён");
     }
 
@@ -41,19 +43,19 @@ public class PlayerFacade {
     }
 
     public MessageResponse toggleNotifications(UUID playerId, boolean enabled) {
-        playerService.setNotificationsEnabled(playerId, enabled);
+        notificationService.setNotificationsEnabled(playerId, enabled);
         return new MessageResponse(enabled ? "Уведомления включены" : "Уведомления отключены");
     }
 
     public NotificationsStatusResponse getNotificationsStatus(UUID playerId) {
-        return new NotificationsStatusResponse(playerService.isNotificationsEnabled(playerId));
+        return new NotificationsStatusResponse(notificationService.isNotificationsEnabled(playerId));
     }
 
     public void saveSelectedHalls(UUID playerId, String halls) {
-        playerService.saveSelectedHalls(playerId, halls);
+        hallsService.saveSelectedHalls(playerId, halls);
     }
 
     public String getSelectedHalls(UUID playerId) {
-        return playerService.getSelectedHalls(playerId);
+        return hallsService.getSelectedHalls(playerId);
     }
 }

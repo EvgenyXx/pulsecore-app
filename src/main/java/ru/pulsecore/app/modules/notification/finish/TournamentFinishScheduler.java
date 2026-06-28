@@ -26,38 +26,20 @@ public class TournamentFinishScheduler {
 
         List<PlayerNotification> list = repo.findNotFinishedFull();
 
-        if (list.isEmpty()) {
-            log.debug("FinishScheduler: no pending notifications");
-            return;
-        }
+        if (list.isEmpty()) return;
 
         Map<String, List<PlayerNotification>> grouped = list.stream()
                 .filter(p -> p.getTournament() != null)
                 .collect(Collectors.groupingBy(p -> p.getTournament().getLink()));
 
-        int processed = 0;
-        int finished = 0;
-        int cancelled = 0;
-
         List<String> links = List.copyOf(grouped.keySet());
         for (int i = 0; i < links.size(); i++) {
             String link = links.get(i);
-            TournamentFinishProcessor.Result result = processor.process(link, grouped.get(link));
-
-            if (result == null) continue;
-
-            processed++;
-            if (result.finished()) finished++;
-            if (result.cancelled()) cancelled++;
+            processor.process(link, grouped.get(link));
 
             if (i < links.size() - 1) {
                 try { Thread.sleep(REQUEST_DELAY_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             }
-        }
-
-        if (processed > 0) {
-            log.info("FinishScheduler: processed {} tournaments, finished={}, cancelled={}",
-                    processed, finished, cancelled);
         }
     }
 }
