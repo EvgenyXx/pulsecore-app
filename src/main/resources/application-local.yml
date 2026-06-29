@@ -21,7 +21,7 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: 6h
+      time-to-live: 15d
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}

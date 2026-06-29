@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 
 import java.time.Duration;
@@ -14,22 +15,26 @@ import java.time.Duration;
 @EnableCaching
 public class RedisCacheConfig {
 
+    private static final RedisSerializationContext.SerializationPair<String> KEY_SERIALIZER =
+            RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer());
+
+    private static final RedisSerializationContext.SerializationPair<Object> VALUE_SERIALIZER =
+            RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer());
+
     @Bean
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
         return builder -> builder
                 .withCacheConfiguration("subscription",
-                        RedisCacheConfiguration.defaultCacheConfig()
-                                .entryTtl(Duration.ofMinutes(10)))
-                .withCacheConfiguration("monthly_income",
-                        RedisCacheConfiguration.defaultCacheConfig()
-                                .entryTtl(Duration.ofMinutes(30)))
+                        defaultConfig().entryTtl(Duration.ofMinutes(10)))
+                .withCacheConfiguration("prices",
+                        defaultConfig().entryTtl(Duration.ofDays(30)))
                 .cacheDefaults(
-                        RedisCacheConfiguration.defaultCacheConfig()
-                                .entryTtl(Duration.ofMinutes(5))
-                                .serializeValuesWith(
-                                        RedisSerializationContext.SerializationPair
-                                                .fromSerializer(new GenericJackson2JsonRedisSerializer())
-                                )
-                );
+                        defaultConfig().entryTtl(Duration.ofHours(6)));
+    }
+
+    private static RedisCacheConfiguration defaultConfig() {
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .serializeKeysWith(KEY_SERIALIZER)
+                .serializeValuesWith(VALUE_SERIALIZER);
     }
 }

@@ -2,10 +2,13 @@
 package ru.pulsecore.app.modules.tournament.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.tournament.api.ChatApi;
 import ru.pulsecore.app.modules.tournament.api.dto.ChatMessageDto;
 import ru.pulsecore.app.modules.tournament.service.ChatFacade;
+import ru.pulsecore.app.security.CurrentPlayer;
+import ru.pulsecore.app.security.PlayerPrincipal;
 
 import java.util.List;
 import java.util.Map;
@@ -31,5 +34,24 @@ public class ChatController {
     @GetMapping(ChatApi.PLAYERS_SEARCH)
     public List<Map<String, String>> searchPlayers(@RequestParam String q) {
         return chatFacade.searchPlayers(q);
+    }
+
+
+    @DeleteMapping(ChatApi.MESSAGE)
+    public ResponseEntity<Void> deleteMessage(
+            @PathVariable(ChatApi.PARAM_MESSAGE_ID) Long messageId,
+            @CurrentPlayer PlayerPrincipal principal) {
+        chatFacade.deleteMessage(messageId, principal.playerId());
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @PatchMapping(ChatApi.MESSAGE)
+    public ResponseEntity<Void> updateMessage(
+            @PathVariable(ChatApi.PARAM_MESSAGE_ID) Long messageId,
+            @CurrentPlayer PlayerPrincipal principal,
+            @RequestBody ChatMessageDto msg) {
+        chatFacade.updateMessage(messageId, principal.playerId(), msg.getMessage());
+        return ResponseEntity.ok().build();
     }
 }

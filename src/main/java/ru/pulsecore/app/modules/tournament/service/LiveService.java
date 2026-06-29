@@ -10,6 +10,7 @@ import ru.pulsecore.app.modules.tournament.mapper.LineupLiveMapper;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class LiveService {
 
     private final LineupRepository lineupRepository;
     private final LineupLiveMapper mapper;
+    private final ChatWebSocketService  chatWebSocketService;
 
     private static final int TOURNAMENT_MAX_DURATION_HOURS = 6;
 
@@ -34,6 +36,12 @@ public class LiveService {
                 })
                 .toList();
     }
+
+    public Map<Long, Long> getOnlineCounts() {
+        return chatWebSocketService.getAllOnlineCounts();
+    }
+
+
 
     private LiveStatus calculateStatus(LocalTime startTime, LocalTime now) {
         if (startTime.isAfter(now)) {

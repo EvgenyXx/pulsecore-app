@@ -1,25 +1,24 @@
 package ru.pulsecore.app.modules.tournament.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
+
 
 @Service
 @RequiredArgsConstructor
 public class ChatOnlineBroadcaster {
 
-    private final ChatService chatService;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final ChatWebSocketService chatWebSocketService;
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 5000)
     public void broadcastOnlineCounts() {
-        List<Long> activeLineupIds = chatService.getActiveLineupIds();
+        Set<Long> activeLineupIds = chatWebSocketService.getActiveLineupIds();
         for (Long lineupId : activeLineupIds) {
-            long count = chatService.getOnlineCount(lineupId);
-            messagingTemplate.convertAndSend("/topic/chat/" + lineupId + "/online", count);
+            long count = chatWebSocketService.getOnlineCount(lineupId);
+            chatWebSocketService.sendOnlineCount(lineupId, count);
         }
     }
 }

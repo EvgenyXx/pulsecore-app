@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.admin.controller;
+package ru.pulsecore.app.modules.admin.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.pulsecore.app.modules.admin.AdminApi;
+import ru.pulsecore.app.modules.admin.api.AdminApi;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
 import ru.pulsecore.app.modules.tournament.api.dto.response.AdminCalculateResponse;
 import ru.pulsecore.app.modules.tournament.application.AdminCalculateService;

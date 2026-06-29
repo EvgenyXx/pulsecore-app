@@ -1,10 +1,10 @@
-package ru.pulsecore.app.modules.admin.controller;
+package ru.pulsecore.app.modules.admin.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import ru.pulsecore.app.modules.admin.AdminApi;
+import ru.pulsecore.app.modules.admin.api.AdminApi;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
 import ru.pulsecore.app.modules.player.service.role.RoleManagementService;
 

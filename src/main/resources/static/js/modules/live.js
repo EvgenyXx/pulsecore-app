@@ -3,29 +3,23 @@ let allTournaments = [];
 let allHalls = [];
 let savedHalls = [];
 let hallsCollapsed = false;
-let stompClient = null;
 
-function connectWebSocket() {
-    try {
-        const socket = new SockJS('/ws');
-        stompClient = new StompJs.Client({
-            webSocketFactory: () => socket,
-            debug: function() {},
-            onConnect: function() {
-                allTournaments.forEach(t => {
-                    stompClient.subscribe('/topic/chat/' + t.externalId + '/online', function(message) {
-                        const count = JSON.parse(message.body);
-                        const el = document.querySelector('.online-count-' + t.externalId);
-                        if (el) {
-                            el.textContent = count > 0 ? count : '0';
-                            el.style.display = 'inline';
-                        }
-                    });
-                });
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]);
+}
+
+function startOnlinePolling() {
+    setInterval(async () => {
+        try {
+            const res = await fetch('/api/tournament/online/all');
+            const data = await res.json();
+            for (const [id, count] of Object.entries(data)) {
+                const el = document.querySelector('.online-count-' + id);
+                if (el) el.textContent = count;
             }
-        });
-        stompClient.activate();
-    } catch(e) {}
+        } catch(e) {}
+    }, 5000);
 }
 
 async function loadLive() {
@@ -65,7 +59,7 @@ async function loadLive() {
         document.getElementById('tabFilter').classList.remove('hidden');
         if (allHalls.length > 0) renderHallFilter();
         applyFilter();
-        connectWebSocket();
+        startOnlinePolling();
     } catch (e) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('empty').classList.remove('hidden');
@@ -196,7 +190,7 @@ function renderTournaments(tournaments) {
                     <h3 class="text-lg font-bold text-white">${escapeHtml(t.league || 'Турнир')}</h3>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span style="font-size:0.75rem; color:#a1a1aa;">👁 <b class="online-count-${t.externalId}" style="color:#818cf8;">...</b></span>
+                    <span style="font-size:0.75rem; color:#a1a1aa;">👁 <b class="online-count-${t.externalId}" style="color:#818cf8;">0</b></span>
                     <span class="text-zinc-400 text-sm">${escapeHtml(t.time || '')}</span>
                 </div>
             </div>
@@ -212,11 +206,6 @@ function renderTournaments(tournaments) {
             ${getButton(t.status, t.externalId)}
         </div>
     `).join('');
-}
-
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]);
 }
 
 window.toggleHallsCheckboxes = toggleHallsCheckboxes;

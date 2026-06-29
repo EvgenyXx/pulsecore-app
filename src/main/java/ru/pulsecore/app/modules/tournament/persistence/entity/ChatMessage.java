@@ -36,4 +36,7 @@ public class ChatMessage {
 
     @Column(name = "reply_to_sender_name")
     private String replyToSenderName;
+
+    @Column(name = "edited")
+    private boolean edited = false;
 }

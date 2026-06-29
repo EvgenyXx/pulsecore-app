@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.admin;
+package ru.pulsecore.app.modules.admin.api;
 
 public final class AdminApi {
 

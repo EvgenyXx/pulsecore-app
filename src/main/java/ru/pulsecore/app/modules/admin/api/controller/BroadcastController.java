@@ -1,12 +1,12 @@
 // modules/admin/controller/BroadcastController.java
-package ru.pulsecore.app.modules.admin.controller;
+package ru.pulsecore.app.modules.admin.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.pulsecore.app.modules.admin.AdminApi;
-import ru.pulsecore.app.modules.admin.dto.BroadcastRequest;
+import ru.pulsecore.app.modules.admin.api.AdminApi;
+import ru.pulsecore.app.modules.admin.api.dto.BroadcastRequest;
 import ru.pulsecore.app.modules.admin.service.BroadcastService;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
 

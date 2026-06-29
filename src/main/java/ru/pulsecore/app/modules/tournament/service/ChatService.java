@@ -2,10 +2,11 @@ package ru.pulsecore.app.modules.tournament.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.push.service.WebPushService;
+import ru.pulsecore.app.modules.shared.exception.ForbiddenException;
+import ru.pulsecore.app.modules.shared.exception.NotFoundException;
 import ru.pulsecore.app.modules.tournament.api.dto.ChatMessageDto;
 import ru.pulsecore.app.modules.tournament.mapper.ChatMessageMapper;
 import ru.pulsecore.app.modules.tournament.persistence.entity.ChatMessage;
@@ -13,6 +14,7 @@ import ru.pulsecore.app.modules.tournament.persistence.repository.ChatMessageRep
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -23,12 +25,8 @@ public class ChatService {
     private final ChatMessageMapper chatMessageMapper;
     private final WebPushService webPushService;
     private final ChatMentionService chatMentionService;
-    private final SimpMessagingTemplate messagingTemplate;
 
 
-    public List<Long> getActiveLineupIds() {
-        return chatMessageRepository.findActiveLineupIds(LocalDateTime.now().minusMinutes(2));
-    }
 
     @Transactional(readOnly = true)
     public List<ChatMessageDto> getMessages(Long lineupId) {
@@ -61,10 +59,6 @@ public class ChatService {
         ChatMessageDto result = chatMessageMapper.toDto(saved);
         chatMentionService.processMentions(lineupId, result);
 
-        // Отправляем обновлённый онлайн в WebSocket
-        long onlineCount = chatMessageRepository.countDistinctPlayerIdByLineupIdAndCreatedAtAfter(lineupId, LocalDateTime.now().minusMinutes(2));
-        messagingTemplate.convertAndSend("/topic/chat/" + lineupId + "/online", onlineCount);
-
         return result;
     }
 
@@ -95,5 +89,34 @@ public class ChatService {
                 .stream()
                 .map(chatMessageMapper::toDto)
                 .toList();
+    }
+
+    @Transactional
+    public Long deleteMessage(Long messageId, UUID playerId) {
+        ChatMessage msg = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new NotFoundException(messageId));
+
+        if (!msg.getPlayerId().equals(playerId)) {
+            throw new ForbiddenException();
+        }
+
+        Long lineupId = msg.getLineupId();
+        chatMessageRepository.delete(msg);
+        return lineupId;
+    }
+
+    @Transactional
+    public Long updateMessage(Long messageId, UUID playerId, String newText) {
+        ChatMessage msg = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new NotFoundException(messageId));
+
+        if (!msg.getPlayerId().equals(playerId)) {
+            throw new ForbiddenException();
+        }
+
+        msg.setMessage(newText);
+        msg.setEdited(true);
+        chatMessageRepository.save(msg);
+        return msg.getLineupId();
     }
 }

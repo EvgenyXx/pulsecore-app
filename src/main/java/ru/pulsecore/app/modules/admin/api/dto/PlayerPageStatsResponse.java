@@ -1,5 +1,5 @@
 // modules/admin/dto/PlayerPageStatsResponse.java
-package ru.pulsecore.app.modules.admin.dto;
+package ru.pulsecore.app.modules.admin.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

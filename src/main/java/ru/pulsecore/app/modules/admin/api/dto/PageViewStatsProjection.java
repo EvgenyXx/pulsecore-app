@@ -1,5 +1,5 @@
 // modules/shared/repository/PageViewStatsProjection.java
-package ru.pulsecore.app.modules.admin.dto;
+package ru.pulsecore.app.modules.admin.api.dto;
 
 public interface PageViewStatsProjection {
     String getPath();

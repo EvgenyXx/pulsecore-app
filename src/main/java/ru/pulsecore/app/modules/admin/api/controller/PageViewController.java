@@ -1,13 +1,13 @@
 // modules/admin/controller/PageViewController.java
-package ru.pulsecore.app.modules.admin.controller;
+package ru.pulsecore.app.modules.admin.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.pulsecore.app.modules.admin.AdminApi;
-import ru.pulsecore.app.modules.admin.dto.PageViewStats;
-import ru.pulsecore.app.modules.admin.dto.PlayerPageViewStats;
+import ru.pulsecore.app.modules.admin.api.AdminApi;
+import ru.pulsecore.app.modules.admin.api.dto.PageViewStats;
+import ru.pulsecore.app.modules.admin.api.dto.PlayerPageViewStats;
 import ru.pulsecore.app.modules.admin.service.PageViewStatsService;
 
 import java.util.List;

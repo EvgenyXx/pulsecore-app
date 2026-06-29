@@ -1,11 +1,11 @@
-package ru.pulsecore.app.modules.admin.controller;
+package ru.pulsecore.app.modules.admin.api.controller;
 
 
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.pulsecore.app.modules.admin.AdminApi;
+import ru.pulsecore.app.modules.admin.api.AdminApi;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

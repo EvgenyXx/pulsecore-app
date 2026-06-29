@@ -23,7 +23,7 @@ spring:
       cache:
             type: redis
             redis:
-                  time-to-live: 6h
+                  time-to-live: 30d
       datasource:
             url: ${SPRING_DATASOURCE_URL}
             username: ${SPRING_DATASOURCE_USERNAME}

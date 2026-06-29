@@ -17,6 +17,8 @@ public class TournamentApi {
     public static final String RESP_MESSAGE = "message";
     public static final String RESP_OK = "ok";
 
+    public static final String ONLINE_ALL = "/online/all";
+
 
 
 }
