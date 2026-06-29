@@ -24,7 +24,6 @@ public class LiveService {
 
     private static final int TOURNAMENT_MAX_DURATION_HOURS = 6;
 
-    @Cacheable(value = CacheNames.LIVE, key = "'today'")
     public List<TournamentLiveDto> getLive() {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now().withSecond(0).withNano(0);

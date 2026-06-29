@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TournamentLiveDto implements Serializable {
+public class TournamentLiveDto {
     private Long externalId;
     private String league;
     private String hall;

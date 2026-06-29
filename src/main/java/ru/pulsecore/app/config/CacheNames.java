@@ -7,7 +7,7 @@ public class CacheNames {
     // Имена кешей
     public static final String PRICES = "prices";
     public static final String DASHBOARD = "dashboard";
-    public static final String LIVE = "live";
+
     public static final String SUBSCRIPTION = "subscription";
     public static final String ANALYTICS = "analytics";
     public static final String MONTHLY_INCOME = "monthly_income";

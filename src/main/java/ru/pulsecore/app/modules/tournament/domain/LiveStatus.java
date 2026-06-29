@@ -1,6 +1,8 @@
 package ru.pulsecore.app.modules.tournament.domain;
 
-public enum LiveStatus {
+import java.io.Serializable;
+
+public enum LiveStatus  {
     UPCOMING,
     LIVE,
     FINISHED
