@@ -28,7 +28,7 @@ public class TournamentLinkService {
     public TournamentLinkResult process(String link, Player player) {
         ParsedResult parsed = calculateResult(link);
 
-        if (parsed.results() == null || parsed.results().isEmpty()) {
+        if (hasNoResults(parsed)) {
             return result(TournamentLinkStatus.NOT_STARTED, parsed);
         }
 
@@ -36,16 +36,34 @@ public class TournamentLinkService {
             return result(TournamentLinkStatus.NOT_PARTICIPATING, parsed);
         }
 
+        return processExistingOrNew(link, player, parsed);
+    }
+
+    private boolean hasNoResults(ParsedResult parsed) {
+        return parsed.results() == null || parsed.results().isEmpty();
+    }
+
+    private TournamentLinkResult processExistingOrNew(String link, Player player, ParsedResult parsed) {
         TournamentEntity tournament = tournamentRepository.findByLink(link).orElse(null);
+
         if (tournament != null) {
-            if (!tournament.isProcessed()) {
-                return result(TournamentLinkStatus.ALREADY_TRACKED, parsed);
-            }
-            return result(TournamentLinkStatus.FINISHED, parsed);
+            return tournament.isProcessed()
+                    ? result(TournamentLinkStatus.FINISHED, parsed)
+                    : result(TournamentLinkStatus.ALREADY_TRACKED, parsed);
         }
 
         tournament = tournamentSyncService.sync(parsed, link);
+        processPlayerResults(player, tournament, parsed);
 
+        if (parsed.status() == TournamentStatus.FINISHED) {
+            tournament.setProcessed(true);
+            return result(TournamentLinkStatus.FINISHED, parsed);
+        }
+
+        return result(TournamentLinkStatus.TRACKING_STARTED, parsed);
+    }
+
+    private void processPlayerResults(Player player, TournamentEntity tournament, ParsedResult parsed) {
         tournamentResultService.processResults(
                 parsed.results(),
                 player,
@@ -55,13 +73,6 @@ public class TournamentLinkService {
                 parsed.hasRemoved(),
                 parsed.league()
         );
-
-        if (parsed.status() == TournamentStatus.FINISHED) {
-            tournament.setProcessed(true);
-            return result(TournamentLinkStatus.FINISHED, parsed);
-        }
-
-        return result(TournamentLinkStatus.TRACKING_STARTED, parsed);
     }
 
     private ParsedResult calculateResult(String link) {

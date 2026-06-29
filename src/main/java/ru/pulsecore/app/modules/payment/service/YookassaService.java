@@ -1,4 +1,3 @@
-// src/main/java/ru/pulsecore/app/modules/payment/YookassaService.java
 package ru.pulsecore.app.modules.payment.service;
 
 import lombok.RequiredArgsConstructor;

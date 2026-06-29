@@ -3,19 +3,18 @@ package ru.pulsecore.app.modules.player.interceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import ru.pulsecore.app.config.SecurityUser;
+import ru.pulsecore.app.modules.player.exception.SubscriptionRequiredException;
 import ru.pulsecore.app.modules.player.service.subscription.SubscriptionService;
-
+import ru.pulsecore.app.modules.shared.exception.UnauthorizedException;
 
 import java.util.UUID;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SubscriptionInterceptor implements HandlerInterceptor {
@@ -25,20 +24,14 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request,
                              @NonNull HttpServletResponse response,
-                             @NonNull Object handler) throws Exception {
+                             @NonNull Object handler) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof SecurityUser user)) {
-            response.setStatus(401);
-            response.setContentType("application/json; charset=UTF-8");
-            response.getWriter().write("{\"message\":\"Не авторизован\"}");
-            return false;
+            throw new UnauthorizedException();
         }
 
         if (!subscriptionService.hasActiveSubscription(UUID.fromString(user.getPlayerId()))) {
-            response.setStatus(402);
-            response.setContentType("application/json; charset=UTF-8");
-            response.getWriter().write("{\"message\":\"Требуется активная подписка\"}");
-            return false;
+            throw new SubscriptionRequiredException();//todo добавить во фронт
         }
         return true;
     }

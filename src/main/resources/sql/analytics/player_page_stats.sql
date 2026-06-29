@@ -5,9 +5,7 @@ WITH player_stats AS (
     FROM page_views pv
              JOIN players p ON p.id = pv.player_id
     WHERE pv.created_at >= :since
-      AND pv.path NOT LIKE '/api/admin/%'
       AND pv.email != 'evgenypavlov666@yandex.ru'
-      AND pv.path != '/api/auth/me'
     GROUP BY p.name, pv.path
 ),
      player_totals AS (

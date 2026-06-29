@@ -54,7 +54,12 @@ public class CoreEndpointLabels implements EndpointLabelProvider {
                 new EndpointLabel("/api/admin/players/{id}/tournaments", "👤 Админ: удаление турниров"),
                 new EndpointLabel("/api/admin/players/{id}/tournaments/resync", "👤 Админ: перезагрузка истории"),
                 new EndpointLabel("/api/admin/prices", "💵 Админ: обновление цен"),
-                new EndpointLabel("/api/admin/tournaments/calculate", "🧮 Админ: расчёт")
+                new EndpointLabel("/api/admin/tournaments/calculate", "🧮 Админ: расчёт"),
+                new EndpointLabel("/api/chat/{lineupId}", "💬 Чат трансляции"),
+                new EndpointLabel("/api/chat/{lineupId}/online", "👁 Онлайн трансляции"),
+                new EndpointLabel("/api/chat/players/search", "🔍 Поиск игроков чата"),
+                new EndpointLabel("/api/tournament/live", "📡 Live-трансляции"),
+                new EndpointLabel("/api/lineups/live-halls", "🏛 Залы трансляций")
         );
     }
 }

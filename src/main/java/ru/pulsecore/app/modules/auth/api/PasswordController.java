@@ -14,8 +14,7 @@ import ru.pulsecore.app.modules.auth.api.dto.ForgotPasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.ResetPasswordRequest;
 import ru.pulsecore.app.modules.auth.api.dto.VerifyPasswordRequest;
 import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
-
-import ru.pulsecore.app.modules.player.service.player.PlayerService;
+import ru.pulsecore.app.modules.player.service.player.PlayerProfileService;
 import ru.pulsecore.app.modules.shared.service.auth.PlayerPasswordResetService;
 
 import java.util.UUID;
@@ -28,7 +27,7 @@ public class PasswordController {
     private static final String RESET_SESSION_KEY = "reset";
 
     private final PlayerPasswordResetService passwordResetService;
-    private final PlayerService playerService;
+    private final PlayerProfileService playerProfileService;
 
     @PostMapping(AuthApi.FORGOT_PASSWORD)
     public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request,
@@ -55,7 +54,7 @@ public class PasswordController {
         if (auth == null || !(auth.getPrincipal() instanceof SecurityUser user)) {
             return ResponseEntity.status(401).build();
         }
-        playerService.verifyPassword(UUID.fromString(user.getPlayerId()), request.getPassword());
+        playerProfileService.verifyPassword(UUID.fromString(user.getPlayerId()), request.getPassword());
         return ResponseEntity.ok(new MessageResponse(AuthApi.OK));
     }
 }

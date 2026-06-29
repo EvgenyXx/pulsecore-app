@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.notification.service.TournamentProcessService;
+import ru.pulsecore.app.modules.notification.service.TournamentUrlProcessor;
 import ru.pulsecore.app.modules.player.domain.Player;
 
 import java.time.LocalDate;
@@ -18,7 +18,7 @@ import java.util.List;
 public class TournamentAutoAddService {
 
     private final TournamentSearchService tournamentSearchService;
-    private final TournamentProcessService tournamentProcessService;
+    private final TournamentUrlProcessor tournamentUrlProcessor;
 
     @Async("taskExecutor")
     public void addRecentTournamentsForPlayer(Player player, int days) {
@@ -40,13 +40,13 @@ public class TournamentAutoAddService {
         int added = 0;
         for (TournamentDto t : tournaments) {
             try {
-                tournamentProcessService.processByUrl(t.getLink(), player.getId().toString());
+                tournamentUrlProcessor.processByUrl(t.getLink(), player.getId().toString());
                 added++;
             } catch (Exception e) {
                 log.warn("{} — {}", t.getLink(), e.getMessage());
             }
         }
-        log.info("{} — добавлено {} турниров за {} - {}", player.getName(), added, start, end);
+
         return added;
     }
 }

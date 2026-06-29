@@ -21,4 +21,5 @@ public class TournamentLiveDto {
     private List<String> players;
     private String streamUrl;
     private LiveStatus status;
+
 }

@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.modules.player.api.dto.BestTimeResponse;
+import ru.pulsecore.app.modules.player.api.dto.analytics.BestTimeResponse;
 import ru.pulsecore.app.modules.shared.service.SqlReader;
 
 import java.time.LocalDate;

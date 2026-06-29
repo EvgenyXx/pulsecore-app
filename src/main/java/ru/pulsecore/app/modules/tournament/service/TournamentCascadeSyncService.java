@@ -1,4 +1,3 @@
-// ==================== TournamentCascadeSyncService.java ====================
 package ru.pulsecore.app.modules.tournament.service;
 
 import lombok.RequiredArgsConstructor;
@@ -31,31 +30,41 @@ public class TournamentCascadeSyncService {
             return;
         }
         try {
-            YearMonth month = YearMonth.now().minusMonths(1);
-
-            while (!month.atDay(1).isBefore(STOP_AT)) {
-                try {
-                    LocalDate start = month.atDay(1);
-                    LocalDate end = month.atEndOfMonth();
-
-                    log.info("{} — синхронизация {} - {}", player.getName(), start, end);
-                    int added = tournamentAutoAddService.addTournamentsForPeriod(player, start, end);
-
-                    log.info("{} — месяц {} готов, турниров: {}", player.getName(), month, added);
-
-                    Thread.sleep(MONTH_DELAY_MS);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                } catch (Exception e) {
-                    log.warn("{} — ошибка для {}: {}", player.getName(), month, e.getMessage());
-                }
-                month = month.minusMonths(1);
-            }
-
+            syncMonthsBackwards(player);
             log.info("{} — синхронизация завершена до {}", player.getName(), STOP_AT);
         } finally {
             syncingPlayers.remove(player.getId());
+        }
+    }
+
+    private void syncMonthsBackwards(Player player) {
+        YearMonth month = YearMonth.now().minusMonths(1);
+
+        while (!month.atDay(1).isBefore(STOP_AT)) {
+            syncMonth(player, month);
+            month = month.minusMonths(1);
+            sleepBetweenMonths();
+        }
+    }
+
+    private void syncMonth(Player player, YearMonth month) {
+        try {
+            LocalDate start = month.atDay(1);
+            LocalDate end = month.atEndOfMonth();
+
+            log.info("{} — синхронизация {} - {}", player.getName(), start, end);
+            int added = tournamentAutoAddService.addTournamentsForPeriod(player, start, end);
+            log.info("{} — месяц {} готов, турниров: {}", player.getName(), month, added);
+        } catch (Exception e) {
+            log.warn("{} — ошибка для {}: {}", player.getName(), month, e.getMessage());
+        }
+    }
+
+    private void sleepBetweenMonths() {
+        try {
+            Thread.sleep(MONTH_DELAY_MS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }

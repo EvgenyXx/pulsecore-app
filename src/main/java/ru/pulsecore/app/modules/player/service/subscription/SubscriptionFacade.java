@@ -2,7 +2,7 @@ package ru.pulsecore.app.modules.player.service.subscription;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.modules.player.api.dto.SubscriptionStatusResponse;
+import ru.pulsecore.app.modules.player.api.dto.subscription.SubscriptionStatusResponse;
 import ru.pulsecore.app.modules.player.domain.Subscription;
 
 import java.util.UUID;

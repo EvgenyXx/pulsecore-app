@@ -8,6 +8,7 @@ import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.domain.Subscription;
 import ru.pulsecore.app.modules.player.repository.SubscriptionRepository;
 import ru.pulsecore.app.modules.push.service.WebPushService;
+import ru.pulsecore.app.modules.shared.util.push.PushMessageBuilder;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class SubscriptionExpiryScheduler {
     private final SubscriptionRepository subscriptionRepository;
     private final WebPushService webPushService;
 
-    // Каждый час деактивируем просроченные
+
     @Scheduled(cron = "0 0 * * * *")
     public void deactivateExpired() {
         List<Subscription> expired = subscriptionRepository.findExpired();
@@ -44,7 +45,7 @@ public class SubscriptionExpiryScheduler {
             webPushService.sendToPlayer(
                     player.getId(),
                     "⏳ Подписка заканчивается!",
-                    "Завтра истекает срок действия подписки.\n\n🔕 Push-уведомления будут отключены.\n💳 Продлите подписку, чтобы продолжить получать уведомления о турнирах.\n\nPulseCore",
+                    PushMessageBuilder.SUBSCRIPTION_EXPIRING_BODY,
                     "/subscribe"
             );
             log.info("📲 Subscription expiry push sent to {}", player.getEmail());

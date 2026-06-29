@@ -1,9 +1,26 @@
-let selectedTab = 'all';
+let selectedTab = 'live';
 let allTournaments = [];
-let allLineups = [];
 let allHalls = [];
 let savedHalls = [];
 let hallsCollapsed = false;
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]);
+}
+
+function startOnlinePolling() {
+    setInterval(async () => {
+        try {
+            const res = await fetch('/api/tournament/online/all');
+            const data = await res.json();
+            for (const [id, count] of Object.entries(data)) {
+                const el = document.querySelector('.online-count-' + id);
+                if (el) el.textContent = count;
+            }
+        } catch(e) {}
+    }, 5000);
+}
 
 async function loadLive() {
     try {
@@ -17,18 +34,14 @@ async function loadLive() {
             return;
         }
 
-        const today = new Date().toISOString().split('T')[0];
-
-        const [tournamentsRes, lineupsRes, hallsRes] = await Promise.all([
+        const [tournamentsRes, hallsRes] = await Promise.all([
             fetch('/api/tournament/live', { credentials: 'same-origin' }),
-            fetch(`/api/lineups?date=${today}`, { credentials: 'same-origin' }),
             fetch('/api/lineups/live-halls', { credentials: 'same-origin' })
         ]);
 
         document.getElementById('loading').classList.add('hidden');
 
         if (tournamentsRes.ok) allTournaments = await tournamentsRes.json(); else allTournaments = [];
-        if (lineupsRes.ok) allLineups = await lineupsRes.json(); else allLineups = [];
 
         if (hallsRes.ok) {
             const text = await hallsRes.text();
@@ -39,7 +52,6 @@ async function loadLive() {
 
         const hallsSet = new Set();
         allTournaments.forEach(t => { if (t.hall) hallsSet.add(t.hall); });
-        allLineups.forEach(l => { if (l.hall) hallsSet.add(l.hall); });
         allHalls = [...hallsSet].sort();
 
         hallsCollapsed = localStorage.getItem('liveHallsCollapsed') === 'true';
@@ -47,27 +59,11 @@ async function loadLive() {
         document.getElementById('tabFilter').classList.remove('hidden');
         if (allHalls.length > 0) renderHallFilter();
         applyFilter();
+        startOnlinePolling();
     } catch (e) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('empty').classList.remove('hidden');
         document.getElementById('subtitle').textContent = 'Ошибка загрузки';
-    }
-}
-
-async function loadAllOnlineCounts() {
-    const ids = allTournaments.map(t => t.externalId);
-    for (const id of ids) {
-        try {
-            const res = await fetch(`/api/chat/${id}/online`, { credentials: 'same-origin' });
-            if (res.ok) {
-                const count = await res.json();
-                const el = document.querySelector(`.online-count-${id}`);
-                if (el) {
-                    el.textContent = count > 0 ? count : '0';
-                    el.style.display = 'inline';
-                }
-            }
-        } catch(e) {}
     }
 }
 
@@ -148,13 +144,7 @@ function applyFilter() {
         filtered = filtered.filter(t => savedHalls.includes(t.hall));
     }
 
-    let filteredLineups = allLineups;
-    if (savedHalls.length > 0) {
-        filteredLineups = filteredLineups.filter(l => savedHalls.includes(l.hall));
-    }
-
     renderTournaments(filtered);
-    renderLineups(filteredLineups);
 }
 
 function getStatusBadge(status) {
@@ -200,7 +190,7 @@ function renderTournaments(tournaments) {
                     <h3 class="text-lg font-bold text-white">${escapeHtml(t.league || 'Турнир')}</h3>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span style="font-size:0.75rem; color:#a1a1aa;">👁 <b class="online-count-${t.externalId}" style="color:#818cf8;">...</b></span>
+                    <span style="font-size:0.75rem; color:#a1a1aa;">👁 <b class="online-count-${t.externalId}" style="color:#818cf8;">0</b></span>
                     <span class="text-zinc-400 text-sm">${escapeHtml(t.time || '')}</span>
                 </div>
             </div>
@@ -216,38 +206,6 @@ function renderTournaments(tournaments) {
             ${getButton(t.status, t.externalId)}
         </div>
     `).join('');
-
-    loadAllOnlineCounts();
-}
-
-function renderLineups(lineups) {
-    const section = document.getElementById('lineupsSection');
-    if (!lineups || lineups.length === 0) {
-        section.classList.add('hidden');
-        return;
-    }
-
-    section.classList.remove('hidden');
-    document.getElementById('lineupsContainer').innerHTML = lineups.map(l => `
-        <div class="widget-card" onclick="window.location.href='/live/${l.id}'">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-semibold text-white">${escapeHtml(l.league || '?')}</span>
-                    <span class="text-xs text-zinc-500">${escapeHtml(l.hall || '')}</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-xs text-indigo-400 font-semibold">${escapeHtml(l.time || '??:??')}</span>
-                    <span class="text-xs text-zinc-500">▶</span>
-                </div>
-            </div>
-            ${l.players ? `<p class="text-xs text-zinc-500 mt-1.5">${escapeHtml(l.players)}</p>` : ''}
-        </div>
-    `).join('');
-}
-
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]);
 }
 
 window.toggleHallsCheckboxes = toggleHallsCheckboxes;

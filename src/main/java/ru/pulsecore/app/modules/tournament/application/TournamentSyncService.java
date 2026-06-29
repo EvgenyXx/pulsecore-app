@@ -24,10 +24,10 @@ public class TournamentSyncService {
         t.setExternalId(parsed.tournamentId());
         t.setLink(link);
 
-        // ✅ корректные флаги
+
        statusMapper.apply(t,parsed.status());
 
-        // ✅ дата
+
         if (!parsed.results().isEmpty()) {
             t.setDate(LocalDate.parse(parsed.results().get(0).getDate()));
         }

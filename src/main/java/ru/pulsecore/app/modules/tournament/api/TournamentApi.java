@@ -9,20 +9,16 @@ public class TournamentApi {
     public static final String ADD = "/add";
     public static final String SEARCH = "/search";
     public static final String LIVE = "/live";
-
     public static final String PARAM_DATE = "date";
-    public static final String SESSION_PLAYER_ID = "playerId";
-    public static final String SESSION_PLAYER_NAME = "playerName";
     public static final String ADD_BATCH = "/add-batch";
     public static final String UPDATE_RESULT = "/result/{id}";
     public static final String PARAM_AMOUNT = "amount";
     public static final String PARAM_BONUS = "bonus";
     public static final String RESP_MESSAGE = "message";
     public static final String RESP_OK = "ok";
-    public static final String SEARCH_WITH_STATUS = "/search-with-status";
 
-    public static final String ADMIN_CALCULATE = "/admin/calculate";
-    public static final String PARAM_NAME = "name";
-    public static final String PARAM_START_DATE = "startDate";
-    public static final String PARAM_END_DATE = "endDate";
+    public static final String ONLINE_ALL = "/online/all";
+
+
+
 }

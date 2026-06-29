@@ -5,9 +5,10 @@ export async function loadCurrentPrices() {
     msg.classList.add('hidden');
 
     try {
-        const prices = await AdminAPI.getPrices();
-        document.getElementById('price1Input').value = prices[1] || 0;
-        document.getElementById('price2Input').value = prices[2] || 0;
+        const data = await AdminAPI.getPrices();
+        const prices = data.prices;
+        document.getElementById('price1Input').value = prices['1'] || 0;
+        document.getElementById('price2Input').value = prices['2'] || 0;
         msg.textContent = '✅ Текущие цены загружены';
         msg.className = 'text-xs text-center mt-3 text-emerald-400';
         msg.classList.remove('hidden');
@@ -36,7 +37,7 @@ export async function updatePrices() {
     msg.classList.add('hidden');
 
     try {
-        await AdminAPI.updatePrices({ '1': p1, '2': p2 });
+        await AdminAPI.updatePrices({ oneMonth: p1, twoMonths: p2 });
         msg.textContent = '✅ Цены обновлены';
         msg.className = 'text-xs text-center mt-3 text-emerald-400';
         msg.classList.remove('hidden');

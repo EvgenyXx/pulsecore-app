@@ -3,7 +3,7 @@ package ru.pulsecore.app.modules.payment.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import ru.pulsecore.app.modules.player.api.dto.PaymentResponse;
+import ru.pulsecore.app.modules.player.api.dto.payment.PaymentResponse;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 

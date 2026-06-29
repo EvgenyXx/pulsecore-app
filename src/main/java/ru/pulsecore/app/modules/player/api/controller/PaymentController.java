@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.modules.payment.service.PaymentFacade;
 import ru.pulsecore.app.modules.player.api.PlayerApi;
-import ru.pulsecore.app.modules.player.api.dto.PaymentResponse;
+import ru.pulsecore.app.modules.player.api.dto.payment.PaymentResponse;
 import ru.pulsecore.app.security.CurrentPlayer;
 import ru.pulsecore.app.security.PlayerPrincipal;
 

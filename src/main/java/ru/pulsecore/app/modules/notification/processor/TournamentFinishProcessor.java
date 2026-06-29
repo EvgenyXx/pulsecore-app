@@ -29,67 +29,49 @@ public class TournamentFinishProcessor {
     private final TournamentStatusParser tournamentStatusParser;
 
     public Result process(String link, List<PlayerNotification> notifications) {
-
         if (link == null || notifications == null || notifications.isEmpty()) return null;
 
-        try {
-            TournamentEntity t = notifications.stream()
-                    .map(PlayerNotification::getTournament)
-                    .findFirst()
-                    .orElse(null);
+        TournamentEntity t = getTournament(notifications);
+        if (t == null || t.isProcessed()) return null;
 
-            if (t.isProcessed()) return null;
-
-            // ✅ 1 HTTP
-            Document doc = documentLoader.load(link);
-
-            // ✅ единый статус
-            TournamentStatus status = tournamentStatusParser.parseStatus(doc);
-
-            // ❌ CANCELLED
-            if (handleCancelled(t, notifications, status)) {
-                return new Result(false, true);
-            }
-
-            // Проверяем, существует ли турнир в БД
-            if (!tournamentRepository.existsById(t.getId())) {
-                log.warn("⚠️ Турнир {} (ID={}) не найден в БД, пропускаем обработку", t.getExternalId(), t.getId());
-                return null;
-            }
-
-            // 🏁 FINISHED
-            if (finishService.handleFinished(t, notifications, doc)) {
-                return new Result(true, false);
-            }
-
-            return null;
-
-        } catch (Exception e) {
-            log.error("❌ failed to process tournament: link={}", link, e);
-            return null;
-        }
+        Document doc = documentLoader.load(link);
+        return processByStatus(t, notifications, doc);
     }
 
-    private boolean handleCancelled(TournamentEntity t,
-                                    List<PlayerNotification> notifications,
-                                    TournamentStatus status) {
+    private TournamentEntity getTournament(List<PlayerNotification> notifications) {
+        return notifications.stream()
+                .map(PlayerNotification::getTournament)
+                .findFirst()
+                .orElse(null);
+    }
 
-        if (status != TournamentStatus.CANCELLED) return false;
-        if (t.isCancelled()) return true;
+    private Result processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
+        TournamentStatus status = tournamentStatusParser.parseStatus(doc);
+
+        if (status == TournamentStatus.CANCELLED) {
+            return handleCancelled(t, notifications);
+        }
+
+        if (!tournamentRepository.existsById(t.getId())) {
+            log.warn("⚠️ Турнир {} (ID={}) не найден в БД, пропускаем обработку", t.getExternalId(), t.getId());
+            return null;
+        }
+
+        return finishService.handleFinished(t, notifications, doc) ? new Result(true, false) : null;
+    }
+
+    private Result handleCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
+        if (t.isCancelled()) return new Result(false, true);
 
         t.setCancelled(true);
         t.setProcessed(true);
-
-        // 🔥 сохраняем турнир
         tournamentRepository.save(t);
 
         notificationService.sendCancelled(notifications);
         repo.saveAll(notifications);
 
-        log.info("❌ tournament cancelled: id={}, users={}",
-                t.getExternalId(), notifications.size());
-
-        return true;
+        log.info("❌ tournament cancelled: id={}, users={}", t.getExternalId(), notifications.size());
+        return new Result(false, true);
     }
 
     public record Result(boolean finished, boolean cancelled) {}

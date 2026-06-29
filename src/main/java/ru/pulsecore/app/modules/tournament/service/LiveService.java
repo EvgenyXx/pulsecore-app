@@ -1,7 +1,9 @@
 package ru.pulsecore.app.modules.tournament.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.config.CacheNames;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.tournament.api.dto.TournamentLiveDto;
 import ru.pulsecore.app.modules.tournament.domain.LiveStatus;
@@ -10,6 +12,7 @@ import ru.pulsecore.app.modules.tournament.mapper.LineupLiveMapper;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,9 +20,11 @@ public class LiveService {
 
     private final LineupRepository lineupRepository;
     private final LineupLiveMapper mapper;
+    private final ChatWebSocketService  chatWebSocketService;
 
     private static final int TOURNAMENT_MAX_DURATION_HOURS = 6;
 
+    @Cacheable(value = CacheNames.LIVE, key = "'today'")
     public List<TournamentLiveDto> getLive() {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now().withSecond(0).withNano(0);
@@ -35,6 +40,12 @@ public class LiveService {
                 .toList();
     }
 
+    public Map<Long, Long> getOnlineCounts() {
+        return chatWebSocketService.getAllOnlineCounts();
+    }
+
+
+
     private LiveStatus calculateStatus(LocalTime startTime, LocalTime now) {
         if (startTime.isAfter(now)) {
             return LiveStatus.UPCOMING;
@@ -42,7 +53,6 @@ public class LiveService {
 
         LocalTime endTime = startTime.plusHours(TOURNAMENT_MAX_DURATION_HOURS);
 
-        // Если endTime раньше startTime — значит перешли через полночь, турнир ещё идёт
         if (endTime.isBefore(startTime) || endTime.isAfter(now)) {
             return LiveStatus.LIVE;
         }

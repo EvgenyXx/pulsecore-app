@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.push.service.WebPushService;
+import ru.pulsecore.app.modules.shared.exception.ForbiddenException;
+import ru.pulsecore.app.modules.shared.exception.NotFoundException;
 import ru.pulsecore.app.modules.tournament.api.dto.ChatMessageDto;
 import ru.pulsecore.app.modules.tournament.mapper.ChatMessageMapper;
 import ru.pulsecore.app.modules.tournament.persistence.entity.ChatMessage;
@@ -12,6 +14,7 @@ import ru.pulsecore.app.modules.tournament.persistence.repository.ChatMessageRep
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -22,6 +25,8 @@ public class ChatService {
     private final ChatMessageMapper chatMessageMapper;
     private final WebPushService webPushService;
     private final ChatMentionService chatMentionService;
+
+
 
     @Transactional(readOnly = true)
     public List<ChatMessageDto> getMessages(Long lineupId) {
@@ -53,6 +58,7 @@ public class ChatService {
         ChatMessage saved = chatMessageRepository.save(entity);
         ChatMessageDto result = chatMessageMapper.toDto(saved);
         chatMentionService.processMentions(lineupId, result);
+
         return result;
     }
 
@@ -83,5 +89,34 @@ public class ChatService {
                 .stream()
                 .map(chatMessageMapper::toDto)
                 .toList();
+    }
+
+    @Transactional
+    public Long deleteMessage(Long messageId, UUID playerId) {
+        ChatMessage msg = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new NotFoundException(messageId));
+
+        if (!msg.getPlayerId().equals(playerId)) {
+            throw new ForbiddenException();
+        }
+
+        Long lineupId = msg.getLineupId();
+        chatMessageRepository.delete(msg);
+        return lineupId;
+    }
+
+    @Transactional
+    public Long updateMessage(Long messageId, UUID playerId, String newText) {
+        ChatMessage msg = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new NotFoundException(messageId));
+
+        if (!msg.getPlayerId().equals(playerId)) {
+            throw new ForbiddenException();
+        }
+
+        msg.setMessage(newText);
+        msg.setEdited(true);
+        chatMessageRepository.save(msg);
+        return msg.getLineupId();
     }
 }

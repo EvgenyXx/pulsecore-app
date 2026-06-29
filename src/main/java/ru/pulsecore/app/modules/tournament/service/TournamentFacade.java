@@ -3,9 +3,9 @@ package ru.pulsecore.app.modules.tournament.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.notification.service.TournamentProcessService;
-import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentRequest;
-import ru.pulsecore.app.modules.tournament.api.dto.AddTournamentResponse;
+import ru.pulsecore.app.modules.notification.service.TournamentUrlProcessor;
+import ru.pulsecore.app.modules.tournament.api.dto.request.AddTournamentRequest;
+import ru.pulsecore.app.modules.tournament.api.dto.response.AddTournamentResponse;
 
 import ru.pulsecore.app.modules.tournament.application.TournamentResultService;
 import ru.pulsecore.app.security.PlayerPrincipal;
@@ -18,7 +18,7 @@ import java.util.List;
 public class TournamentFacade {
 
     private final PlayerPrincipalExtractor extractor;
-    private final TournamentProcessService tournamentProcessService;
+    private final TournamentUrlProcessor tournamentUrlProcessor;
     private final TournamentSearchService tournamentSearchService;
     private final TournamentResultService tournamentResultService;
 
@@ -36,11 +36,11 @@ public class TournamentFacade {
     public List<AddTournamentResponse> addByUrls(List<AddTournamentRequest> requests) {
         PlayerPrincipal principal = extractor.extract();
         List<String> urls = requests.stream().map(AddTournamentRequest::getUrl).toList();
-        return tournamentProcessService.processByUrls(urls, principal.playerId().toString());
+        return tournamentUrlProcessor.processByUrls(urls, principal.playerId().toString());
     }
 
     public void updateResult(Long tournamentId, Double amount, Double bonus) {
-        extractor.extract(); // просто проверяем авторизацию, кидаем 401 если нет
+        extractor.extract();
         tournamentResultService.updateResult(tournamentId, amount, bonus);
     }
 

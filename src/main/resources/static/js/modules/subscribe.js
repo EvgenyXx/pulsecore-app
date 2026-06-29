@@ -6,7 +6,7 @@ let prices = {};
 
 export async function loadPrices() {
     try {
-        prices = await SubscribeAPI.getPrices();
+        prices = (await SubscribeAPI.getPrices()).prices;
         renderPlans();
         document.getElementById('pageSubtitle').textContent = 'Выберите тариф';
     } catch (e) {

@@ -37,9 +37,6 @@ public class TournamentExtractor {
         LeagueType league = leagueDetector.detectLeague(doc);
         double nightBonus = nightBonusService.calculateBonus(doc, league.name());
 
-        // =========================
-        // REMOVED LOGIC
-        // =========================
         String removedPlayer = tournamentParser.findRemovedPlayer(doc);
         String time = tournamentParser.parseTime(doc);
 

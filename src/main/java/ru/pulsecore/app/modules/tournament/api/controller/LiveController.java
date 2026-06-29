@@ -10,6 +10,7 @@ import ru.pulsecore.app.modules.tournament.api.dto.TournamentLiveDto;
 import ru.pulsecore.app.modules.tournament.service.LiveService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(TournamentApi.BASE_PATH)
@@ -21,5 +22,10 @@ public class LiveController {
     @GetMapping(TournamentApi.LIVE)
     public ResponseEntity<List<TournamentLiveDto>> getLive() {
         return ResponseEntity.ok(liveService.getLive());
+    }
+
+    @GetMapping(TournamentApi.ONLINE_ALL)
+    public ResponseEntity<Map<Long, Long>> getAllOnline() {
+        return ResponseEntity.ok(liveService.getOnlineCounts());
     }
 }

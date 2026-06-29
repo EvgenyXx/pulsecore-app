@@ -1,4 +1,3 @@
-// modules/admin/service/EndpointLabelRegistry.java
 package ru.pulsecore.app.modules.admin.service;
 
 import org.springframework.stereotype.Component;

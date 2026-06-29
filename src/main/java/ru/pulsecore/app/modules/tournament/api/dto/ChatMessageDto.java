@@ -22,4 +22,5 @@ public class ChatMessageDto {
     private Long replyToId;
     private String replyToContent;
     private String replyToSenderName;
+    private boolean edited;
 }

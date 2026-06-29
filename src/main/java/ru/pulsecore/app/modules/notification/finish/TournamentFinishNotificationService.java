@@ -1,3 +1,4 @@
+// TournamentFinishNotificationService.java
 package ru.pulsecore.app.modules.notification.finish;
 
 import lombok.RequiredArgsConstructor;
@@ -6,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.notification.service.NotificationPermissionService;
 import ru.pulsecore.app.modules.push.service.WebPushService;
+import ru.pulsecore.app.modules.shared.util.push.PushMessageBuilder;
 
 import java.util.List;
 
@@ -13,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class TournamentFinishNotificationService {
-
 
     private final WebPushService webPushService;
     private final NotificationPermissionService notificationPermissionService;
@@ -26,17 +27,17 @@ public class TournamentFinishNotificationService {
             log.info("❌ Tournament cancelled: player={}, tournament={}",
                     player.getId(), tournament.getId());
 
-            // Отправляем push, если разрешено
             if (notificationPermissionService.canSendPush(player)) {
                 String time = tournament.getTime() != null ? tournament.getTime() : "?";
+                String date = tournament.getDate() != null ? tournament.getDate().toString() : "?";
                 webPushService.sendToPlayer(
                         player.getId(),
                         "❌ Турнир отменён!",
-                        "Турнир " + tournament.getDate() + " в " + time + " был отменён.\n\nPulseCore",
+                        PushMessageBuilder.buildCancelledBody(date, time),
                         "/dashboard"
                 );
             }
         }
-        log.info("📩 Cancelled notifications: {}", notifications.size());
+        log.debug("📩 Cancelled notifications: {}", notifications.size());
     }
 }

@@ -28,47 +28,64 @@ public class TournamentProcessor {
     private final TournamentStatusParser tournamentStatusParser;
 
     public void process(String link, List<PlayerNotification> notifications) {
-        if (link == null || notifications.isEmpty()) return;
+        if (link == null || notifications == null || notifications.isEmpty()) return;
+
+        TournamentEntity t = getTournament(notifications);
+        if (t == null) return;
 
         try {
-            TournamentEntity t = notifications.get(0).getTournament();
-            if (t == null) return;
-
             Document doc = documentLoader.load(link);
-            TournamentStatus status = tournamentStatusParser.parseStatus(doc);
-
-            if (handleCancelled(t, notifications, status)) return;
-
-            if (t.isStarted()) return;
-            if (!timeService.isToday(t)) return;
-
-            boolean startedByParser = status == TournamentStatus.IN_PROGRESS
-                    || status == TournamentStatus.FINISHED;
-            boolean startedByTime = timeService.isStartedByTime(t);
-
-            if (!startedByParser && !startedByTime) return;
-
-            int success = notificationService.sendStart(notifications);
-            if (success > 0) {
-                t.setStarted(true);
-                repo.saveAll(notifications);
-            }
+            processByStatus(t, notifications, doc);
         } catch (SiteUnavailableException e) {
-            // cool-down active, skip
+            log.warn("Site unavailable for tournament: link={}", link);
         } catch (Exception e) {
-            log.error("failed to process tournament: link={}", link, e);
+            log.error("Failed to process tournament: link={}", link, e);
         }
     }
 
-    private boolean handleCancelled(TournamentEntity t,
-                                    List<PlayerNotification> notifications,
-                                    TournamentStatus status) {
-        if (status != TournamentStatus.CANCELLED) return false;
-        if (t.isCancelled()) return true;
+    private TournamentEntity getTournament(List<PlayerNotification> notifications) {
+        PlayerNotification first = notifications.get(0);
+        return first != null ? first.getTournament() : null;
+    }
+
+    private void processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
+        TournamentStatus status = tournamentStatusParser.parseStatus(doc);
+
+        if (status == TournamentStatus.CANCELLED) {
+            handleCancelled(t, notifications);
+            return;
+        }
+
+        if (isAlreadyStartedOrNotToday(t)) return;
+
+        if (shouldStart(t, status)) {
+            startTournament(t, notifications);
+        }
+    }
+
+    private boolean isAlreadyStartedOrNotToday(TournamentEntity t) {
+        return t.isStarted() || !timeService.isToday(t);
+    }
+
+    private boolean shouldStart(TournamentEntity t, TournamentStatus status) {
+        return status == TournamentStatus.IN_PROGRESS
+                || status == TournamentStatus.FINISHED
+                || timeService.isStartedByTime(t);
+    }
+
+    private void startTournament(TournamentEntity t, List<PlayerNotification> notifications) {
+        int success = notificationService.sendStart(notifications);
+        if (success > 0) {
+            t.setStarted(true);
+            repo.saveAll(notifications);
+        }
+    }
+
+    private void handleCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
+        if (t.isCancelled()) return;
 
         t.setCancelled(true);
         notificationService.sendCancelled(notifications);
         repo.saveAll(notifications);
-        return true;
     }
 }

@@ -1,6 +1,7 @@
 const lineupId = window.location.pathname.split('/').pop();
 let playerName = '', playerId = '';
 let replyTo = null;
+let editingMessageId = null;
 let startX = 0, startY = 0, currentMsg = null, swipedMsg = null;
 let stompClient = null;
 let lastMessageId = 0;
@@ -21,6 +22,111 @@ function isUserAtBottom() {
     return container.scrollHeight - container.scrollTop - container.clientHeight < 60;
 }
 
+// ==================== CONTEXT MENU ====================
+
+function showContextMenu(e, msgElement) {
+    e.preventDefault();
+    e.stopPropagation();
+    removeContextMenu();
+
+    const messageId = msgElement.dataset.messageId;
+    const sender = msgElement.dataset.sender;
+    const content = msgElement.dataset.content;
+
+    const menu = document.createElement('div');
+    menu.className = 'context-menu';
+    menu.style.cssText = `
+        position: fixed; z-index: 100; background: #27272a; border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px; padding: 4px; min-width: 140px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        animation: fadeIn 0.15s ease;
+    `;
+
+    const isMyMessage = sender === playerName;
+
+    if (isMyMessage) {
+        menu.appendChild(createMenuItem('🗑 Удалить', () => deleteMessage(messageId, menu)));
+        menu.appendChild(createMenuItem('✏️ Редактировать', () => { startEdit(messageId, content); removeContextMenu(); }));
+    }
+    menu.appendChild(createMenuItem('↩ Ответить', () => { setReply(messageId, sender, content); removeContextMenu(); }));
+
+    document.body.appendChild(menu);
+
+    const rect = msgElement.getBoundingClientRect();
+    menu.style.top = Math.min(rect.top, window.innerHeight - menu.offsetHeight - 10) + 'px';
+    menu.style.left = Math.min(rect.right - menu.offsetWidth, window.innerWidth - 10) + 'px';
+
+    setTimeout(() => document.addEventListener('click', removeContextMenu, { once: true }), 0);
+}
+
+function createMenuItem(text, onClick) {
+    const item = document.createElement('div');
+    item.textContent = text;
+    item.style.cssText = 'padding:8px 12px; border-radius:8px; cursor:pointer; font-size:0.85rem; color:#e4e4e7; transition:background 0.15s;';
+    item.onmouseenter = () => item.style.background = 'rgba(255,255,255,0.08)';
+    item.onmouseleave = () => item.style.background = 'transparent';
+    item.onclick = (e) => { e.stopPropagation(); onClick(); };
+    return item;
+}
+
+function removeContextMenu() {
+    document.querySelectorAll('.context-menu').forEach(m => m.remove());
+}
+
+async function deleteMessage(messageId, menu) {
+    removeContextMenu();
+    try {
+        const res = await fetch(`/api/chat/message/${messageId}`, { method: 'DELETE', credentials: 'same-origin' });
+        if (res.ok) {
+            const msgEl = document.querySelector(`.chat-message[data-message-id="${messageId}"]`);
+            if (msgEl) msgEl.remove();
+        }
+    } catch(e) {}
+}
+
+// ==================== EDIT ====================
+
+function startEdit(messageId, content) {
+    editingMessageId = messageId;
+    replyTo = null;
+    document.getElementById('replyBarSender').textContent = 'Редактирование';
+    document.getElementById('replyBarText').textContent = content;
+    document.getElementById('replyBar').classList.remove('hidden');
+    document.getElementById('chatInput').value = content;
+    document.getElementById('chatInput').placeholder = 'Исправьте сообщение...';
+    document.getElementById('chatInput').focus();
+    document.getElementById('sendBtn').textContent = '✓';
+}
+
+async function sendEditMessage() {
+    const input = document.getElementById('chatInput'), newText = input.value.trim();
+    if (!newText || !editingMessageId) return;
+    const btn = document.getElementById('sendBtn'); btn.disabled = true;
+    try {
+        const res = await fetch(`/api/chat/message/${editingMessageId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ message: newText })
+        });
+        if (res.ok) {
+            const msgEl = document.querySelector(`.chat-message[data-message-id="${editingMessageId}"]`);
+            if (msgEl) {
+                msgEl.querySelector('.chat-text').innerHTML = highlightMentions(escapeHtml(newText));
+                msgEl.dataset.content = newText;
+                const nameEl = msgEl.querySelector('.chat-name');
+                if (nameEl && !nameEl.textContent.includes('(изм.)')) {
+                    nameEl.innerHTML += ' <span style="color:#71717a;font-size:0.65rem;">(изм.)</span>';
+                }
+            }
+        }
+    } catch(e) {} finally {
+        btn.disabled = false;
+        cancelReply();
+    }
+}
+
+// ==================== WEBSOCKET ====================
+
 function connectWebSocket() {
     try {
         const socket = new SockJS('/ws');
@@ -30,7 +136,34 @@ function connectWebSocket() {
             onConnect: function() {
                 stompClient.subscribe('/topic/chat/' + lineupId, function(message) {
                     const msg = JSON.parse(message.body);
+                    if (msg.type === 'DELETE') {
+                        const el = document.querySelector(`.chat-message[data-message-id="${msg.messageId}"]`);
+                        if (el) el.remove();
+                        return;
+                    }
+                    if (msg.type === 'EDIT') {
+                        const el = document.querySelector(`.chat-message[data-message-id="${msg.messageId}"]`);
+                        if (el) {
+                            el.querySelector('.chat-text').innerHTML = highlightMentions(escapeHtml(msg.message));
+                            el.dataset.content = msg.message;
+                            const nameEl = el.querySelector('.chat-name');
+                            if (nameEl && !nameEl.textContent.includes('(изм.)')) {
+                                nameEl.innerHTML += ' <span style="color:#71717a;font-size:0.65rem;">(изм.)</span>';
+                            }
+                        }
+                        return;
+                    }
                     if (msg.id > lastMessageId) { lastMessageId = msg.id; addMessageToChat(msg); }
+                });
+                stompClient.subscribe('/topic/chat/' + lineupId + '/online', function(message) {
+                    const count = JSON.parse(message.body);
+                    const el = document.getElementById('onlineCount');
+                    if (count > 0) {
+                        el.textContent = '👁 ' + count;
+                        el.style.display = 'inline';
+                    } else {
+                        el.style.display = 'none';
+                    }
                 });
                 if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
             },
@@ -49,6 +182,8 @@ async function loadNewMessages() {
         msgs.forEach(m => { if (m.id > lastMessageId) { lastMessageId = m.id; addMessageToChat(m); } });
     } catch(e) {}
 }
+
+// ==================== SWIPE ====================
 
 function onTouchStart(e) {
     const msg = e.target.closest('.chat-message'); if (!msg) return;
@@ -86,36 +221,65 @@ document.addEventListener('click', (e) => {
 });
 
 function setReply(messageId, sender, content) {
+    editingMessageId = null;
     replyTo = { id: messageId, sender, content };
     document.getElementById('replyBarSender').textContent = sender;
     document.getElementById('replyBarText').textContent = content;
     document.getElementById('replyBar').classList.remove('hidden');
-    document.getElementById('chatInput').placeholder = 'Ответ...'; document.getElementById('chatInput').focus();
+    document.getElementById('chatInput').placeholder = 'Ответ...';
+    document.getElementById('chatInput').value = '';
+    document.getElementById('chatInput').focus();
+    document.getElementById('sendBtn').textContent = '➤';
 }
 
 function cancelReply() {
     replyTo = null;
+    editingMessageId = null;
     document.getElementById('replyBar').classList.add('hidden');
     document.getElementById('chatInput').placeholder = 'Написать сообщение...';
+    document.getElementById('chatInput').value = '';
+    document.getElementById('sendBtn').textContent = '➤';
     if (swipedMsg) { swipedMsg.style.transform = ''; swipedMsg = null; }
 }
+
+// ==================== RENDER ====================
 
 function renderMessage(m) {
     const t = m.createdAt ? new Date(m.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
     const sender = escapeHtml(m.playerName || ''), content = highlightMentions(escapeHtml(m.message || ''));
+    const editedBadge = m.edited ? ' <span style="color:#71717a;font-size:0.65rem;">(изм.)</span>' : '';
     let replyHtml = '';
     if (m.replyToId) replyHtml = `<div class="reply-preview-bar"><div class="reply-sender">${escapeHtml(m.replyToSenderName || '')}</div><div class="reply-content">${escapeHtml(m.replyToContent || '')}</div></div>`;
-    return `<div class="chat-message" data-message-id="${m.id || ''}" data-sender="${sender.replace(/"/g, '&quot;')}" data-content="${escapeHtml(m.message || '').replace(/"/g, '&quot;')}">${replyHtml}<div class="flex items-center gap-2 mb-0.5"><span class="chat-name">${sender}</span><span class="chat-time">${t}</span></div><div class="chat-text">${content}</div></div>`;
+    return `<div class="chat-message" data-message-id="${m.id || ''}" data-sender="${sender.replace(/"/g, '&quot;')}" data-content="${escapeHtml(m.message || '').replace(/"/g, '&quot;')}">
+        <div class="flex items-center justify-between mb-0.5">
+            <div class="flex items-center gap-2">
+                <span class="chat-name">${sender}${editedBadge}</span>
+                <span class="chat-time">${t}</span>
+            </div>
+            <span class="chat-dots" onclick="event.stopPropagation(); showContextMenu(event, this.closest('.chat-message'))">⋮</span>
+        </div>
+        ${replyHtml}
+        <div class="chat-text">${content}</div>
+    </div>`;
 }
 
 function highlightMentions(text) {
     return text.replace(/@([\p{L}]+\s+[\p{L}]+)/gu, '<span style="color:#818cf8;font-weight:600;">@$1</span>');
 }
 
+function bindEvents(el) {
+    el.addEventListener('contextmenu', (e) => showContextMenu(e, el));
+    el.addEventListener('touchstart', onTouchStart, { passive: false });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: false });
+}
+
 function bindSwipes(container) {
     container.querySelectorAll('.chat-message').forEach(el => {
-        el.removeEventListener('touchstart', onTouchStart); el.removeEventListener('touchmove', onTouchMove); el.removeEventListener('touchend', onTouchEnd);
-        el.addEventListener('touchstart', onTouchStart, { passive: false }); el.addEventListener('touchmove', onTouchMove, { passive: false }); el.addEventListener('touchend', onTouchEnd, { passive: false });
+        el.removeEventListener('touchstart', onTouchStart);
+        el.removeEventListener('touchmove', onTouchMove);
+        el.removeEventListener('touchend', onTouchEnd);
+        bindEvents(el);
     });
 }
 
@@ -126,9 +290,7 @@ function addMessageToChat(m) {
     container.insertAdjacentHTML('beforeend', renderMessage(m));
     if (wasAtBottom) container.scrollTop = container.scrollHeight;
     const newMsg = container.lastElementChild;
-    if (newMsg) {
-        newMsg.addEventListener('touchstart', onTouchStart, { passive: false }); newMsg.addEventListener('touchmove', onTouchMove, { passive: false }); newMsg.addEventListener('touchend', onTouchEnd, { passive: false });
-    }
+    if (newMsg) bindEvents(newMsg);
 }
 
 async function loadChatHistory() {
@@ -138,12 +300,15 @@ async function loadChatHistory() {
         if (msgs.length > 0) {
             lastMessageId = msgs[msgs.length - 1].id || 0;
             container.innerHTML = msgs.map(m => renderMessage(m)).join('');
-            container.scrollTop = container.scrollHeight; bindSwipes(container);
+            container.scrollTop = container.scrollHeight;
+            bindSwipes(container);
         }
     } catch(e) {}
 }
 
 async function sendMessage() {
+    if (editingMessageId) { sendEditMessage(); return; }
+
     const input = document.getElementById('chatInput'), msg = input.value.trim(); if (!msg) return;
     const btn = document.getElementById('sendBtn'); btn.disabled = true;
     try {
@@ -172,17 +337,7 @@ function toggleFullscreen() {
     }
 }
 
-async function loadOnline() {
-    try {
-        const res = await fetch(`/api/chat/${lineupId}/online`, { credentials: 'same-origin' });
-        if (res.ok) {
-            const count = await res.json();
-            const el = document.getElementById('onlineCount');
-            if (count > 0) { el.textContent = '👁 ' + count; el.style.display = 'inline'; }
-            else { el.style.display = 'none'; }
-        }
-    } catch(e) {}
-}
+// ==================== MENTIONS ====================
 
 function buildMentionDropdown() {
     if (document.getElementById('mentionDropdown')) return;
@@ -205,17 +360,15 @@ function setupMentions() {
     }
 
     function hasCompleteMention(text) {
-        const match = text.match(/@([\p{L}]+\s+[\p{L}]+)/gu);
-        return match !== null;
+        return /@([\p{L}]+\s+[\p{L}]+)/gu.test(text);
     }
 
     function fetchAndShow(query, atIndex) {
         fetch('/api/chat/players/search?q=' + encodeURIComponent(query))
             .then(r => r.json())
             .then(players => {
-                if (players.length > 0) {
-                    showMentions(players, atIndex);
-                } else {
+                if (players.length > 0) showMentions(players, atIndex);
+                else {
                     const local = lineupPlayers.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
                     showMentions(local.length > 0 ? local : [], atIndex);
                 }
@@ -231,15 +384,10 @@ function setupMentions() {
         const val = input.value, cursorPos = input.selectionStart;
         const textBefore = val.substring(0, cursorPos);
         const atIndex = textBefore.lastIndexOf('@');
-
-        if (atIndex === -1) { hideMentions(); return; }
-        if (atIndex > 0 && textBefore[atIndex - 1] !== ' ') { hideMentions(); return; }
-
-        const afterAt = textBefore.substring(atIndex);
-        if (hasCompleteMention(afterAt)) { hideMentions(); return; }
-
-        const query = textBefore.substring(atIndex + 1).trim();
-        fetchAndShow(query, atIndex);
+        if (atIndex === -1 || (atIndex > 0 && textBefore[atIndex - 1] !== ' ') || hasCompleteMention(textBefore.substring(atIndex))) {
+            hideMentions(); return;
+        }
+        fetchAndShow(textBefore.substring(atIndex + 1).trim(), atIndex);
     });
 
     input.addEventListener('keydown', function(e) {
@@ -255,9 +403,7 @@ function setupMentions() {
 function showMentions(players, atIndex) {
     const container = document.getElementById('mentionDropdown');
     if (!container) return;
-    mentionList = players;
-    mentionIndex = -1;
-    mentionStart = atIndex;
+    mentionList = players; mentionIndex = -1; mentionStart = atIndex;
     if (players.length > 0) {
         container.innerHTML = players.map((p, i) => `<div class="mention-item" data-idx="${i}" style="padding:9px 14px;cursor:pointer;color:#e4e4e7;font-size:0.85rem;border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;">${escapeHtml(p.name)}</div>`).join('');
         container.style.display = 'block';
@@ -275,9 +421,7 @@ function showMentions(players, atIndex) {
 function hideMentions() {
     const container = document.getElementById('mentionDropdown');
     if (container) container.style.display = 'none';
-    mentionList = [];
-    mentionIndex = -1;
-    mentionStart = -1;
+    mentionList = []; mentionIndex = -1; mentionStart = -1;
 }
 
 function highlightMentionItem() {
@@ -299,6 +443,8 @@ function selectMention(idx) {
     hideMentions();
     input.focus();
 }
+
+// ==================== INIT ====================
 
 async function loadData() {
     try {
@@ -326,8 +472,6 @@ async function loadData() {
 
         await loadChatHistory();
         connectWebSocket();
-        loadOnline();
-        setInterval(loadOnline, 30000);
         setupMentions();
     } catch(e) { document.getElementById('loading').innerHTML = '<p class="text-red-400">Ошибка загрузки</p>'; }
 }

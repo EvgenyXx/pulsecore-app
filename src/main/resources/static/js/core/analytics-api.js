@@ -12,8 +12,8 @@ export const AnalyticsAPI = {
     getMe: () => apiRequest('/auth/me'),
     getSubscription: () => apiRequest('/player/subscription'),
     getLeagueAvg: () => apiRequest('/player/analytics'),
-    getMonthly: (year) => apiRequest(`/player/${state.playerId}/monthly-income?year=${year}`),
-    getDaily: (year, month) => apiRequest(`/player/${state.playerId}/daily-income?year=${year}&month=${month}`),
+    getMonthly: (year) => apiRequest(`/player/monthly-income?year=${year}`),
+    getDaily: (year, month) => apiRequest(`/player/daily-income?year=${year}&month=${month}`),
     getBestTime: (params) => {
         const query = new URLSearchParams(params).toString();
         return apiRequest(`/player/best-time?${query}`);

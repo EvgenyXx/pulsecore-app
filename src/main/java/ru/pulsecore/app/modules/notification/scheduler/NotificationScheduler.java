@@ -21,14 +21,9 @@ public class NotificationScheduler {
     @Scheduled(fixedDelay = 900000)
     public void checkAllUsers() {
         List<Player> players = playerService.getAll();
-
-        if (players.isEmpty()) {
-            log.debug("Scheduler: no players to check");
-            return;
-        }
+        if (players.isEmpty()) return;
 
         int errors = 0;
-
         for (Player player : players) {
             try {
                 discoveryService.checkNewTournaments(player.getId());

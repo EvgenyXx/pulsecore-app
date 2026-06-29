@@ -22,4 +22,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findByIdAfterAndLineupIdOrderByCreatedAtAsc(@Param("afterId") Long afterId, @Param("lineupId") Long lineupId);
 
     void deleteByPlayerId(UUID id);
+
+    @Query("SELECT DISTINCT c.lineupId FROM ChatMessage c WHERE c.createdAt > :after")
+    List<Long> findActiveLineupIds(@Param("after") LocalDateTime after);
 }

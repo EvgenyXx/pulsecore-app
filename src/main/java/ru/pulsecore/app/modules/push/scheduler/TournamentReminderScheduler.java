@@ -9,6 +9,7 @@ import ru.pulsecore.app.modules.notification.domain.PlayerNotification;
 import ru.pulsecore.app.modules.notification.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.modules.notification.service.NotificationPermissionService;
 import ru.pulsecore.app.modules.push.service.WebPushService;
+import ru.pulsecore.app.modules.shared.util.push.PushMessageBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -74,7 +75,7 @@ public class TournamentReminderScheduler {
         webPushService.sendToPlayer(
                 pn.getPlayer().getId(),
                 "🏆 Турнир начинается!",
-                "Начало в " + time + ". До старта " + minutes + " мин. Проверьте состав!\n\nPulseCore",
+                PushMessageBuilder.buildHourReminderBody(time, minutes),
                 "/dashboard"
         );
     }
@@ -87,7 +88,7 @@ public class TournamentReminderScheduler {
             webPushService.sendToPlayer(
                     pn.getPlayer().getId(),
                     "📅 Завтра турнир!",
-                    "Завтра в " + (time != null ? time : "?") + ". Проверьте состав и будьте готовы!",
+                    PushMessageBuilder.buildEveningReminderBody(time),
                     "/dashboard"
             );
         }
