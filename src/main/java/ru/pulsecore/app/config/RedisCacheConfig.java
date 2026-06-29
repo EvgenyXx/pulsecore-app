@@ -24,12 +24,12 @@ public class RedisCacheConfig {
     @Bean
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
         return builder -> builder
-                .withCacheConfiguration("subscription",
+                .withCacheConfiguration(CacheNames.SUBSCRIPTION,
                         defaultConfig().entryTtl(Duration.ofMinutes(10)))
-                .withCacheConfiguration("prices",
+                .withCacheConfiguration(CacheNames.PRICES,
                         defaultConfig().entryTtl(Duration.ofDays(30)))
                 .cacheDefaults(
-                        defaultConfig().entryTtl(Duration.ofHours(6)));
+                        defaultConfig().entryTtl(Duration.ofMinutes(5)));
     }
 
     private static RedisCacheConfiguration defaultConfig() {

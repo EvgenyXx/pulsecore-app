@@ -59,7 +59,7 @@ spring:
                   password: ${SPRING_REDIS_PASSWORD}
       session:
             store-type: redis
-            timeout: 30d
+            timeout: 7d
             redis:
                   repository-type: indexed
 

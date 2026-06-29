@@ -1,13 +1,18 @@
 package ru.pulsecore.app.modules.player.api.dto.dashboard;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
-public class DashboardResponse {
+@NoArgsConstructor
+@AllArgsConstructor
+public class DashboardResponse implements Serializable {
     private String playerName;
     private LastResultDto lastResult;
     private List<UpcomingLineupDto> upcomingLineups;

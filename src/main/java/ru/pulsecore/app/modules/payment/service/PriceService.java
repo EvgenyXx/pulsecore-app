@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.config.CacheNames;
 import ru.pulsecore.app.modules.admin.api.dto.PricesResponse;
 import ru.pulsecore.app.modules.payment.domain.SubscriptionPeriod;
 import ru.pulsecore.app.modules.payment.exception.PaymentException;
@@ -16,8 +17,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ru.pulsecore.app.modules.payment.domain.CacheNames.PRICES;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class PriceService {
 
     private final AppSettingsRepository repository;
 
-    @Cacheable(PRICES)
+    @Cacheable(CacheNames.PRICES)
     public PricesResponse getPrices() {
         Map<Integer, Integer> prices = Arrays.stream(SubscriptionPeriod.values())
                 .collect(Collectors.toMap(
@@ -42,7 +41,7 @@ public class PriceService {
                 .orElseThrow(() -> new PaymentException("Цена не найдена: " + key));
     }
 
-    @CacheEvict(value = PRICES, allEntries = true)
+    @CacheEvict(value = CacheNames.PRICES, allEntries = true)
     @Transactional
     public void update(int price1, int price2) {
         setValue(SubscriptionPeriod.ONE_MONTH.getPriceKey(), String.valueOf(price1));

@@ -1,7 +1,9 @@
 package ru.pulsecore.app.modules.tournament.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.config.CacheNames;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.tournament.api.dto.TournamentLiveDto;
 import ru.pulsecore.app.modules.tournament.domain.LiveStatus;
@@ -22,6 +24,7 @@ public class LiveService {
 
     private static final int TOURNAMENT_MAX_DURATION_HOURS = 6;
 
+    @Cacheable(value = CacheNames.LIVE, key = "'today'")
     public List<TournamentLiveDto> getLive() {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now().withSecond(0).withNano(0);

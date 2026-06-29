@@ -1,7 +1,9 @@
 package ru.pulsecore.app.modules.player.service.analytic.dashboard;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.config.CacheNames;
 import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
 import ru.pulsecore.app.modules.player.api.dto.dashboard.DashboardResponse;
@@ -27,6 +29,7 @@ public class DashboardService {
     private final LineupRepository lineupRepository;
     private final LeagueService leagueService;
 
+    @Cacheable(value = CacheNames.DASHBOARD,key = "#id")
     public DashboardResponse getDashboard(UUID id) {
         Player player = playerService.getById(id);
 

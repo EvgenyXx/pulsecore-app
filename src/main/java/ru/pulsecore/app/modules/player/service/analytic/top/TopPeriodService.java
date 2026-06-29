@@ -3,6 +3,7 @@ package ru.pulsecore.app.modules.player.service.analytic.top;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.config.CacheNames;
 import ru.pulsecore.app.modules.player.api.dto.top.TopLeagueResponse;
 import ru.pulsecore.app.modules.player.api.dto.top.TopPlayerDto;
 import ru.pulsecore.app.modules.player.domain.Player;
@@ -17,21 +18,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TopPeriodService {
 
-    public static final String CACHE_TOP_ALL = "top-all";
-    public static final String CACHE_TOP_LEAGUE = "top-league";
-    public static final String KEY_PERIOD = "#period";
-    public static final String KEY_PERIOD_LEAGUE = "#period + ':' + #league";
-
     private final TopPlayersViewRepository repository;
     private final PlayerService playerService;
 
-    @Cacheable(value = CACHE_TOP_ALL, key = KEY_PERIOD)
+    @Cacheable(value = CacheNames.TOP_ALL, key = CacheNames.KEY_PERIOD)
     public TopLeagueResponse getTopAllLeagues(String period, UUID playerId) {
         List<TopPlayersView> all = repository.findByPeriodOrderByTotalDesc(period);
         return buildResponse(all, playerId);
     }
 
-    @Cacheable(value = CACHE_TOP_LEAGUE, key = KEY_PERIOD_LEAGUE)
+    @Cacheable(value = CacheNames.TOP_LEAGUE, key = CacheNames.KEY_PERIOD_LEAGUE)
     public TopLeagueResponse getTopByLeague(String period, String league, UUID playerId) {
         Player player = playerService.getById(playerId);
 
