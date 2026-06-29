@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.pulsecore.app.modules.tournament.domain.LiveStatus;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TournamentLiveDto {
+public class TournamentLiveDto implements Serializable {
     private Long externalId;
     private String league;
     private String hall;
