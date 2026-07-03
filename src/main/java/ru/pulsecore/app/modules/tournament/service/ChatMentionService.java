@@ -20,7 +20,7 @@ public class ChatMentionService {
     private final PlayerRepository playerRepository;
     private final WebPushService webPushService;
 
-    public List<Map<String, String>> searchPlayers(String query) {
+    public List<Map<String, String>> searchPlayers(String query) {//todo что за вовзаращение мапы исправить
         if (query == null || query.isBlank()) return List.of();
         return playerRepository.searchByName(query).stream()
                 .map(p -> Map.of("id", p.getId().toString(), "name", p.getName()))

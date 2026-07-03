@@ -59,7 +59,7 @@ spring:
                   password: ${SPRING_REDIS_PASSWORD}
       session:
             store-type: redis
-            timeout: 7d
+            timeout: 5m
             redis:
                   repository-type: indexed
 
@@ -72,6 +72,34 @@ logging:
             ru.pulsecore.app.modules.player.service.subscription.SubscriptionService: WARN
 
 app:
+
+      security:
+            public-urls:
+                  - /
+                  - /index.html
+                  - /register.html
+                  - /api/players
+                  - /subscribe.html
+                  - /profile.html
+                  - /dashboard.html
+                  - /img.png
+                  - /favicon.ico
+                  - /robots.txt
+                  - /error
+                  - /api/auth/**
+                  - /api/payment/webhook
+                  - /oauth-finish.html
+            authenticated-urls:
+                  - /api/player/**
+            admin-urls:
+                  - /admin.html
+                  - /api/admin/**
+
+      remember-me:
+            cookie-name: REMEMBER_ME
+            max-age-seconds: 2592000
+            same-site: Lax
+
       base-url: ${APP_BASE_URL}
       qr-color: ${QR_COLOR:#6366f1}
 
@@ -110,11 +138,11 @@ server:
                   max: 100
                   min-spare: 10
       servlet:
-            session:
-                  timeout: 30d
+#            session:
+#                  timeout: 30d
                   cookie:
-                        name: PULSECORE_SESSION
+#                        name: PULSECORE_SESSION
                         secure: true
-                        max-age: 30d
+#                        max-age: 30d
                         http-only: true
-                        sameSite: lax
+                        sameSite: Lax

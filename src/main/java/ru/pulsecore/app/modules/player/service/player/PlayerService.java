@@ -69,9 +69,18 @@ public class PlayerService {
     public void deletePlayer(UUID id) {
         chatMessageRepository.deleteByPlayerId(id);
         String principalName = id.toString();
-        sessionRepository.findByPrincipalName(principalName).forEach((sessionId, session) -> {
-            sessionRepository.deleteById(sessionId);
-        });
+        sessionRepository.findByPrincipalName(principalName).forEach((sessionId, session) ->
+                sessionRepository.deleteById(sessionId));
         playerRepository.deleteById(id);
     }
+
+    public Optional<Player> findByIdOptional(UUID id) {
+        try {
+            return Optional.of(findById(id));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+
 }
