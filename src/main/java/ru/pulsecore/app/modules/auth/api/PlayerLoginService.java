@@ -1,9 +1,9 @@
-// ==================== PlayerLoginService.java ====================
 package ru.pulsecore.app.modules.auth.api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class PlayerLoginService {
 
     public void login(Player player, HttpServletRequest request) {
         SecurityUser securityUser = new SecurityUser(player);
-        var authToken = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+        var authToken = new UsernamePasswordAuthenticationToken(
                 securityUser, null, securityUser.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication(authToken);

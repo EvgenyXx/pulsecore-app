@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.auth.api.PlayerLoginService;
 import ru.pulsecore.app.modules.auth.service.finish.OAuthPlayerFinder;
-import ru.pulsecore.app.modules.auth.service.OAuthPlayerUpdater;
 import ru.pulsecore.app.modules.player.domain.Player;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ public class OAuth2SuccessService {
 
     private final OAuthDataExtractor dataExtractor;
     private final OAuthPlayerFinder playerFinder;
-    private final OAuthPlayerUpdater playerUpdater;
+
     private final OAuthSessionStorer sessionStorer;
     private final PlayerLoginService playerLoginService;
 

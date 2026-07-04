@@ -59,7 +59,7 @@ spring:
                   password: ${SPRING_REDIS_PASSWORD}
       session:
             store-type: redis
-            timeout: 5m
+            timeout: 15m
             redis:
                   repository-type: indexed
 
@@ -89,6 +89,7 @@ app:
                   - /api/auth/**
                   - /api/payment/webhook
                   - /oauth-finish.html
+                  - /manifest.json
             authenticated-urls:
                   - /api/player/**
             admin-urls:
@@ -138,11 +139,9 @@ server:
                   max: 100
                   min-spare: 10
       servlet:
-#            session:
-#                  timeout: 30d
+
                   cookie:
-#                        name: PULSECORE_SESSION
+                        name: PULSECORE_SESSION
                         secure: true
-#                        max-age: 30d
                         http-only: true
                         sameSite: Lax
