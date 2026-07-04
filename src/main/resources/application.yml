@@ -139,9 +139,10 @@ server:
                   max: 100
                   min-spare: 10
       servlet:
-
+            session: # ← ВОТ ЭТО ПРОПУЩЕНО
                   cookie:
                         name: PULSECORE_SESSION
                         secure: true
                         http-only: true
                         sameSite: Lax
+
