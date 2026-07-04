@@ -34,9 +34,10 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     List<Player> findByVerifiedFalseAndCreatedAtBefore(LocalDateTime cutoff);
 
-    // ── OAuth методы ──
+
     Optional<Player> findByOauthProviderAndOauthId(String provider, String oauthId);
 
     List<Player> findByVerifiedTrueAndIsBlockedFalse();
-    // ── конец OAuth ──
+
+
 }

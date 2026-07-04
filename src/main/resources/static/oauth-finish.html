@@ -68,14 +68,27 @@
                 window.location.href = '/dashboard';
             } else {
                 const status = r.status;
-                const ct = r.headers.get('content-type') || '';
-                let e;
-                if (ct.includes('text/html')) {
-                    e = '[HTML ответ, статус ' + status + ']';
-                } else {
-                    e = await r.text();
+                let message = '';
+
+                try {
+                    const body = await r.json();
+                    message = body.message || body.error || '';
+                } catch {
+                    message = '';
                 }
-                err.textContent = 'Ошибка ' + status + ': ' + (e || 'пустой ответ');
+
+                if (status === 409 || message.toLowerCase().includes('уже') || message.toLowerCase().includes('already') || message.toLowerCase().includes('существует')) {
+                    err.textContent = 'Вы уже зарегистрированы. Войдите через Яндекс.';
+                } else if (status === 400 && message.toLowerCase().includes('имя')) {
+                    err.textContent = 'Игрок с таким именем уже существует.';
+                } else if (status === 400 && message.toLowerCase().includes('email')) {
+                    err.textContent = 'Этот email уже используется.';
+                } else if (status === 401 || status === 403) {
+                    err.textContent = 'Сессия истекла. Попробуйте войти заново.';
+                } else {
+                    err.textContent = message || 'Ошибка ' + status;
+                }
+
                 err.classList.remove('hidden');
                 btn.disabled = false;
                 btn.textContent = 'Завершить регистрацию';

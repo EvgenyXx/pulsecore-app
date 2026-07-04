@@ -16,5 +16,7 @@ public final class AuthApi {
     public static final String OAUTH_FINISH = "/oauth-finish";
 
     public static final String OK = "ok";
+
+    public static final String ME_THEME = "/me/theme";
     public static final String CODE_EXPIRED = "Код не найден или истек";
 }

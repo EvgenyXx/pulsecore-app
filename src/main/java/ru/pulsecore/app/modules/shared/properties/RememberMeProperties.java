@@ -8,12 +8,9 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "server.servlet.session.cookie")
-public class SessionProperties {
-    private String name;
-    private boolean httpOnly;
-    private boolean secure;
-    private int maxAge;
-    private String path = "/";
+@ConfigurationProperties(prefix = "app.remember-me")
+public class RememberMeProperties {
+    private String cookieName;
+    private int maxAgeSeconds;
     private String sameSite;
 }
