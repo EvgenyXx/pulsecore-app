@@ -6,13 +6,11 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.config.CacheNames;
 import ru.pulsecore.app.modules.lineup.domain.Lineup;
 import ru.pulsecore.app.modules.lineup.repository.LineupRepository;
-import ru.pulsecore.app.modules.player.api.dto.dashboard.DashboardResponse;
-import ru.pulsecore.app.modules.player.api.dto.dashboard.LastResultDto;
-import ru.pulsecore.app.modules.player.api.dto.dashboard.SubscriptionInfoDto;
-import ru.pulsecore.app.modules.player.api.dto.dashboard.UpcomingLineupDto;
+import ru.pulsecore.app.modules.player.api.dto.dashboard.*;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.analytic.league.LeagueService;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
+
 import ru.pulsecore.app.modules.shared.util.StringUtils;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentResultRepository;
 
@@ -41,6 +39,8 @@ public class DashboardService {
                 .primaryLeague(leagueService.getPrimaryLeague(id))
                 .build();
     }
+
+
 
     private LastResultDto getLastResult(Player player) {
         return tournamentResultRepository.findTopByPlayerOrderByDateDesc(player)

@@ -13,8 +13,8 @@ import ru.pulsecore.app.modules.auth.api.dto.MeResponse;
 import ru.pulsecore.app.modules.auth.mapping.PlayerDtoMapper;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
-import ru.pulsecore.app.modules.shared.service.RememberMeService;
-import ru.pulsecore.app.modules.shared.service.ThemeService;
+import ru.pulsecore.app.modules.shared.service.session.RememberMeService;
+import ru.pulsecore.app.modules.shared.service.theme.ThemeService;
 import ru.pulsecore.app.modules.shared.service.auth.PlayerAuthenticationService;
 
 import java.util.UUID;

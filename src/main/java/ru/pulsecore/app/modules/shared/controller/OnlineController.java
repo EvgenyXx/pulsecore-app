@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.modules.shared.api.OnlineApi;
-import ru.pulsecore.app.modules.shared.service.OnlineService;
+import ru.pulsecore.app.modules.shared.service.online.OnlineService;
 
 import java.util.Map;
 

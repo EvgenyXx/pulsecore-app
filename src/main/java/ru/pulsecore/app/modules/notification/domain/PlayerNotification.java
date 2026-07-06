@@ -39,7 +39,6 @@ public class PlayerNotification {
     @Column(name = "evening_sent", nullable = false)
     private boolean eveningSent = false;
 
-    // Новые флаги только для push
     @Builder.Default
     @Column(name = "push_reminder_sent", nullable = false)
     private boolean pushReminderSent = false;

@@ -22,7 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(PlayerApi.BASE_PATH)
 @RequiredArgsConstructor
-public class PlayerController {
+public class PlayerController { //todo переименовать и сделать общую для всех юзер контроллеров
 
     private final PlayerFacade playerFacade;
 

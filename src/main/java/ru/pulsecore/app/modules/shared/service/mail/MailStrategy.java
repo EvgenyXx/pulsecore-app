@@ -1,8 +1,8 @@
 package ru.pulsecore.app.modules.shared.service.mail;
 
-import org.springframework.mail.SimpleMailMessage;
+import ru.pulsecore.app.modules.shared.service.mail.context.MailContext;
 
 public interface MailStrategy {
     String getType();
-    SimpleMailMessage createMessage(String to, Object... args);
+    void send(MailContext context);
 }

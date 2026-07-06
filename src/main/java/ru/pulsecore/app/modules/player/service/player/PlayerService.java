@@ -8,7 +8,7 @@ import ru.pulsecore.app.modules.player.api.dto.player.PlayerResponse;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
-import ru.pulsecore.app.modules.shared.service.NameNormalizer;
+import ru.pulsecore.app.modules.shared.service.name.NameNormalizer;
 import ru.pulsecore.app.modules.tournament.persistence.repository.ChatMessageRepository;
 
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;

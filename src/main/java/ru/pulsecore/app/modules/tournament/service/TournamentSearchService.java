@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.lineup.client.MastersApiClient;
-import ru.pulsecore.app.modules.shared.service.NameNormalizer;
+import ru.pulsecore.app.modules.shared.service.name.NameNormalizer;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

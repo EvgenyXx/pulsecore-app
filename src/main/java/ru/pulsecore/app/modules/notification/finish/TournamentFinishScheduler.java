@@ -38,7 +38,9 @@ public class TournamentFinishScheduler {
             processor.process(link, grouped.get(link));
 
             if (i < links.size() - 1) {
-                try { Thread.sleep(REQUEST_DELAY_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                try { Thread.sleep(REQUEST_DELAY_MS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); }
             }
         }
     }

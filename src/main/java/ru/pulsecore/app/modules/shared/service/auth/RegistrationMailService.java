@@ -7,6 +7,9 @@ import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.shared.properties.AdminProperties;
 import ru.pulsecore.app.modules.shared.service.mail.MailStrategyRegistry;
 import ru.pulsecore.app.modules.shared.service.mail.MailTypes;
+import ru.pulsecore.app.modules.shared.service.mail.context.AdminNewUserContext;
+import ru.pulsecore.app.modules.shared.service.mail.context.VerificationContext;
+import ru.pulsecore.app.modules.shared.service.mail.context.WelcomeContext;
 import ua_parser.Client;
 import ua_parser.Parser;
 
@@ -19,12 +22,12 @@ public class RegistrationMailService {
     private final Parser uaParser;
 
     public void sendVerificationCode(String email, String code) {
-        mail.send(MailTypes.VERIFICATION, email, code);
+        mail.send(MailTypes.VERIFICATION, new VerificationContext(email, code));
     }
 
     public void sendWelcome(Player player) {
         if (player.getEmail() != null && player.getEmail().contains("@")) {
-            mail.send(MailTypes.WELCOME, player.getEmail(), player.getName());
+            mail.send(MailTypes.WELCOME, new WelcomeContext(player.getEmail(), player.getName()));
         }
     }
 
@@ -34,8 +37,14 @@ public class RegistrationMailService {
         Client client = uaParser.parse(userAgent);
 
         mail.send(MailTypes.ADMIN_NEW_USER,
-                adminProperties.getEmail(),
-                player.getName(), player.getEmail(), ip, userAgent,
-                client.device.family, client.os.family, client.userAgent.family);
+                new AdminNewUserContext(
+                        adminProperties.getEmail(),
+                        player.getName(),
+                        player.getEmail(),
+                        ip,
+                        client.device.family,
+                        client.os.family,
+                        client.userAgent.family,
+                        userAgent));
     }
 }

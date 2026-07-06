@@ -1,4 +1,4 @@
-// modules/admin/service/BroadcastService.java
+// BroadcastService.java
 package ru.pulsecore.app.modules.admin.service;
 
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,7 @@ import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.push.service.WebPushService;
 import ru.pulsecore.app.modules.shared.service.mail.MailStrategyRegistry;
 import ru.pulsecore.app.modules.shared.service.mail.MailTypes;
+import ru.pulsecore.app.modules.shared.service.mail.context.BroadcastContext;
 
 import java.util.List;
 
@@ -54,7 +55,8 @@ public class BroadcastService {
     private boolean sendEmail(Player player, String message) {
         if (player.getEmail() == null || player.getEmail().isBlank()) return false;
         try {
-            mailStrategyRegistry.send(MailTypes.BROADCAST, player.getEmail(), message);
+            mailStrategyRegistry.send(MailTypes.BROADCAST,
+                  new BroadcastContext(player.getEmail(),  message));
             return true;
         } catch (Exception e) {
             log.error("Email не отправлен playerId={}: {}", player.getId(), e.getMessage());

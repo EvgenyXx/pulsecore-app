@@ -1,4 +1,3 @@
-// PushMessageBuilder.java
 package ru.pulsecore.app.modules.shared.util.push;
 
 import ru.pulsecore.app.core.dto.TournamentDto;

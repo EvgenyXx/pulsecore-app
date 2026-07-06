@@ -18,5 +18,6 @@ public class DashboardResponse implements Serializable {
     private List<UpcomingLineupDto> upcomingLineups;
     private SubscriptionInfoDto subscription;
 
+
     private String primaryLeague;
 }

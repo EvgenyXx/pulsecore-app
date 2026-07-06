@@ -4,6 +4,9 @@ package ru.pulsecore.app.modules.player.api;
 public final class PlayerApi {
 
 
+    public static final String REPORTS = "/reports" ;
+    public static final String REPORTS_PENDING = "/reports/pending";
+    public static final String REPORTS_CANCEL = "/reports/{id}/cancel";
 
     private PlayerApi() {}
 
@@ -42,6 +45,12 @@ public final class PlayerApi {
 
 
     public static final String HALLS = "/halls";
+
+
+
+
+    public static final String REPORT_CREATED = "Отчёт запланирован";
+    public static final String REPORT_CANCELLED = "Отчёт отменён";
 
 
 

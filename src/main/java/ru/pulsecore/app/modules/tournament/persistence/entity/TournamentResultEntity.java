@@ -25,7 +25,7 @@ public class TournamentResultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔥 ВМЕСТО Long tournamentId
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tournament_id", nullable = false)
     private TournamentEntity tournament;

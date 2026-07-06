@@ -15,6 +15,8 @@ public class CacheNames {
     public static final String BEST_TIME = "best_time";
     public static final String TOP_ALL = "top-all";
     public static final String TOP_LEAGUE = "top-league";
+    // CacheNames.java — добавь
+    public static final String SCHEDULED_REPORTS = "scheduled_reports";
 
     // Ключи
     public static final String KEY_PLAYER_ID = "#playerId";
