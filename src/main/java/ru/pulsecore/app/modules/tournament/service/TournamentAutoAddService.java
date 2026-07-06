@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.notification.service.TournamentUrlProcessor;
 import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.shared.config.AsyncConfig;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +21,7 @@ public class TournamentAutoAddService {
     private final TournamentSearchService tournamentSearchService;
     private final TournamentUrlProcessor tournamentUrlProcessor;
 
-    @Async("taskExecutor")
+    @Async(AsyncConfig.TASK_EXECUTOR)
     public void addRecentTournamentsForPlayer(Player player, int days) {
         LocalDate start = LocalDate.now().minusDays(days);
         LocalDate end = LocalDate.now();

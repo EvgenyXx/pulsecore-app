@@ -1,4 +1,3 @@
-// ==================== TopPlayersView.java ====================
 package ru.pulsecore.app.modules.player.domain;
 
 import jakarta.persistence.Column;

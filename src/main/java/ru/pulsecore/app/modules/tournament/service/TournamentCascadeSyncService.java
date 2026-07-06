@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.player.domain.Player;
+import ru.pulsecore.app.modules.shared.config.AsyncConfig;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -23,7 +24,7 @@ public class TournamentCascadeSyncService {
     private final TournamentAutoAddService tournamentAutoAddService;
     private final Set<UUID> syncingPlayers = ConcurrentHashMap.newKeySet();
 
-    @Async("taskExecutor")
+    @Async(AsyncConfig.TASK_EXECUTOR)
     public void syncAllHistory(Player player) {
         if (!syncingPlayers.add(player.getId())) {
             log.warn("{} — уже синхронизируется, пропускаем", player.getName());

@@ -12,5 +12,7 @@ public final class MailTypes {
 
     public static final String BROADCAST = "broadcast";
 
+    public static final String SCHEDULED_REPORT = "scheduled_report";
+
     private MailTypes() {}
 }

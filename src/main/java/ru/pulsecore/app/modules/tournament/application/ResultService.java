@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.core.integration.DocumentLoader;
 import ru.pulsecore.app.core.stats.PointsCalculatorUtils;
-import ru.pulsecore.app.modules.shared.service.NameNormalizer;
+import ru.pulsecore.app.modules.shared.service.name.NameNormalizer;
 import ru.pulsecore.app.modules.tournament.calculation.ResultBuilder;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.MatchCalculationStrategy;
 import ru.pulsecore.app.modules.tournament.calculation.strategy.StrategyResolver;

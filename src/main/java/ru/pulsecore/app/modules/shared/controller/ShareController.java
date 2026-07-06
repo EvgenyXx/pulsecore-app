@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.modules.shared.api.SharedApi;
-import ru.pulsecore.app.modules.shared.service.QrCodeService;
+import ru.pulsecore.app.modules.shared.service.qr.QrCodeService;
 
 @RestController
 @RequestMapping(SharedApi.BASE_PATH)

@@ -8,7 +8,7 @@ import ru.pulsecore.app.modules.player.api.dto.MessageResponse;
 import ru.pulsecore.app.modules.player.api.dto.subscription.NotificationsStatusResponse;
 import ru.pulsecore.app.modules.player.api.dto.player.PlayerProfileResponse;
 import ru.pulsecore.app.modules.player.api.dto.player.PlayerResponse;
-import ru.pulsecore.app.modules.shared.service.SessionService;
+import ru.pulsecore.app.modules.shared.service.session.SessionService;
 
 import java.util.List;
 import java.util.UUID;

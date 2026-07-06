@@ -70,30 +70,63 @@ function showAction(action) {
     } else if (action === 'sum') {
         title.innerHTML = '💰 Сумма за период' + burgerBtn;
         subtitle.textContent = 'Подсчёт заработка и список турниров';
-        fetch('/api/player/sum?start=2026-01-01&end=' + new Date().toISOString().split('T')[0], { credentials: 'same-origin' })
-            .then(r => {
-                if (r.status === 402) { content.innerHTML = subBlockHtml(); return; }
-                state.currentSumPage = 0;
-                content.innerHTML = `
-                    <div class="widget-card rounded-2xl p-4 mb-4">
-                        <p class="text-sm font-semibold text-indigo-300 mb-2">📖 Как пользоваться:</p>
-                        <p class="text-xs text-zinc-400 mb-1">1. Выберите даты начала и окончания (или одну)</p>
-                        <p class="text-xs text-zinc-400 mb-1">2. Нажмите «Рассчитать»</p>
-                        <p class="text-xs text-zinc-400">3. Система покажет общую сумму и список турниров</p>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                        <div><label class="text-xs text-zinc-400 mb-1 block">📅 Дата с</label><input id="dateStart" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
-                        <div><label class="text-xs text-zinc-400 mb-1 block">📅 Дата по</label><input id="dateEnd" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
-                    </div>
-                    <button onclick="executeSum()" class="btn-gold w-full">🧮 Рассчитать</button>
-                    <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
-                    <div id="actionResult" class="mt-4"></div>
-                `;
-                flatpickr('#dateStart', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
-                flatpickr('#dateEnd', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
-            });
+        state.currentSumPage = 0;
+        content.innerHTML = `
+            <div id="sumButtons" class="space-y-3">
+                <button onclick="showSumCalculator()" class="btn-gold w-full py-4 text-base font-semibold">Посмотреть в приложении</button>
+                <button onclick="showReportForm()" class="btn-gold w-full py-4 text-base font-semibold">Заказать отчёт на почту</button>
+            </div>
+            <div id="sumCalculator" class="hidden mt-4"></div>
+            <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
+            <div id="actionResult" class="mt-4"></div>
+        `;
     }
 }
+
+window.showSumCalculator = function() {
+    document.getElementById('sumButtons').classList.add('hidden');
+    document.getElementById('actionResult').innerHTML = '';
+    const calc = document.getElementById('sumCalculator');
+    calc.classList.remove('hidden');
+    calc.innerHTML = `
+        <button onclick="backToSumButtons()" class="flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-4 transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Назад
+        </button>
+        <div class="widget-card rounded-2xl p-4 mb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div><label class="text-xs text-zinc-400 mb-1 block">Дата с</label><input id="dateStart" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
+                <div><label class="text-xs text-zinc-400 mb-1 block">Дата по</label><input id="dateEnd" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
+            </div>
+            <button onclick="executeSum()" class="btn-gold w-full">Рассчитать</button>
+        </div>
+    `;
+    flatpickr('#dateStart', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
+    flatpickr('#dateEnd', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
+};
+
+// Форма заказного отчёта
+window.showReportForm = function() {
+    document.getElementById('sumButtons').classList.add('hidden');
+    document.getElementById('actionResult').innerHTML = '';
+    import('/js/modules/scheduled-report.js').then(m => {
+        const calc = document.getElementById('sumCalculator');
+        if (calc) calc.classList.add('hidden');
+        document.getElementById('actionResult').innerHTML = `
+            <button onclick="backToSumButtons()" class="flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-4 transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Назад
+            </button>
+        ` + m.renderReportForm();
+        flatpickr('#reportDateStart', { locale: 'ru', dateFormat: 'Y-m-d' });
+        flatpickr('#reportDateEnd', { locale: 'ru', dateFormat: 'Y-m-d' });
+        flatpickr('#reportScheduledDate', { locale: 'ru', dateFormat: 'Y-m-d', minDate: 'today' });
+    });
+};
+
+window.backToSumButtons = function() {
+    document.getElementById('sumButtons').classList.remove('hidden');
+    document.getElementById('sumCalculator').classList.add('hidden');
+    document.getElementById('actionResult').innerHTML = '';
+};
 
 async function logout() { await API.logout(); window.location.replace('/'); }
 
@@ -111,19 +144,39 @@ function toggleTheme() {
 }
 
 async function checkPushStatus() {
+    const container = document.getElementById('pushToggleContainer');
+    // Сразу прячем, чтобы не мелькал
+    if (container) container.style.display = 'none';
+
     try {
         const reg = await navigator.serviceWorker.ready;
         const sub = await reg.pushManager.getSubscription();
-        const toggle = document.getElementById('pushToggle');
-        if (toggle && sub) toggle.checked = true;
-    } catch(e) {}
+
+        if (sub) {
+            if (container) container.remove();
+        } else {
+            if (container) container.classList.remove('hidden');
+            if (container) container.style.display = '';
+        }
+    } catch(e) {
+        if (container) container.classList.remove('hidden');
+        if (container) container.style.display = '';
+    }
 }
 window.checkPushStatus = checkPushStatus;
 
 async function togglePush() {
     const toggle = document.getElementById('pushToggle');
-    if (toggle.checked) { const ok = await enablePushNotifications(); if (!ok) toggle.checked = false; }
-    else { await disablePushNotifications(); }
+    if (toggle.checked) {
+        const ok = await enablePushNotifications();
+        if (!ok) {
+            toggle.checked = false;
+        } else {
+            document.getElementById('pushToggleContainer')?.remove();
+        }
+    } else {
+        await disablePushNotifications();
+    }
 }
 window.togglePush = togglePush;
 
@@ -189,7 +242,7 @@ async function init() {
             loadSelectedHalls();
         }
 
-        if (data.subscription?.active) checkPushStatus();
+        checkPushStatus();
     } catch (e) { window.location.href = '/'; } finally {
         document.getElementById('appLoader')?.remove();
     }

@@ -9,6 +9,7 @@ import ru.pulsecore.app.modules.player.exception.BadResetCodeException;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
 import ru.pulsecore.app.modules.shared.service.mail.MailStrategyRegistry;
 import ru.pulsecore.app.modules.shared.service.mail.MailTypes;
+import ru.pulsecore.app.modules.shared.service.mail.context.PasswordResetContext;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -28,7 +29,9 @@ public class PlayerPasswordResetService {
     public Pending initiate(String email) {
         String normalizedEmail = email.toLowerCase().trim();
         String code = String.format("%06d", RANDOM.nextInt(999999));
-        mailStrategyRegistry.send(MailTypes.PASSWORD_RESET, normalizedEmail, code);
+        mailStrategyRegistry.send(MailTypes.PASSWORD_RESET,
+                new PasswordResetContext(normalizedEmail, code)
+                );
         return new Pending(normalizedEmail, code);
     }
 

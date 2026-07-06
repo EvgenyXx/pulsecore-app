@@ -1,9 +1,9 @@
 package ru.pulsecore.app.modules.shared.service.mail;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.player.exception.MailStrategyNotFoundException;
+import ru.pulsecore.app.modules.shared.service.mail.context.MailContext;
 
 import java.util.List;
 import java.util.Map;
@@ -14,20 +14,18 @@ import java.util.stream.Collectors;
 public class MailStrategyRegistry {
 
     private final Map<String, MailStrategy> strategies;
-    private final JavaMailSender mailSender;
 
-    public MailStrategyRegistry(List<MailStrategy> strategyList, JavaMailSender mailSender) {
+    public MailStrategyRegistry(List<MailStrategy> strategyList) {
         this.strategies = strategyList.stream()
                 .collect(Collectors.toMap(MailStrategy::getType, s -> s));
-        this.mailSender = mailSender;
     }
 
-    public void send(String type, String to, Object... args) {
+    public void send(String type, MailContext ctx) {
         MailStrategy strategy = strategies.get(type);
         if (strategy == null) {
             throw new MailStrategyNotFoundException(type);
         }
-        mailSender.send(strategy.createMessage(to, args));
-        log.info("📧 {} отправлен на {}", type, to);
+        strategy.send(ctx);
+
     }
 }

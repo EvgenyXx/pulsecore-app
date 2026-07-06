@@ -1,13 +1,12 @@
 package ru.pulsecore.app.modules.player.service.subscription;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import ru.pulsecore.app.modules.shared.properties.AdminProperties;
 import ru.pulsecore.app.modules.shared.service.mail.MailStrategyRegistry;
 import ru.pulsecore.app.modules.shared.service.mail.MailTypes;
+import ru.pulsecore.app.modules.shared.service.mail.context.AdminPaymentContext;
 
 import java.util.Map;
 import java.util.UUID;
@@ -57,8 +56,7 @@ public class WebhookService {
         String currency = (String) amountMap.get(KEY_CURRENCY);
 
         mailStrategyRegistry.send(MailTypes.ADMIN_PAYMENT_RECEIVED,
-                adminProperties.getEmail(),
-                playerId.toString(), months, amount, currency);
+                new AdminPaymentContext(adminProperties.getEmail(), playerId.toString(), months, amount, currency));
     }
 
     @SuppressWarnings("unchecked")

@@ -9,7 +9,7 @@ import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.shared.properties.MastersApiProperties;
-import ru.pulsecore.app.modules.shared.service.NameNormalizer;
+import ru.pulsecore.app.modules.shared.service.name.NameNormalizer;
 
 import java.util.List;
 

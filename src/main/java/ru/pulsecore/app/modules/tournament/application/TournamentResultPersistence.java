@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.shared.service.CacheEvictionService;
+import ru.pulsecore.app.modules.shared.service.cache.CacheEvictionService;
 import ru.pulsecore.app.modules.tournament.persistence.entity.TournamentResultEntity;
 import ru.pulsecore.app.modules.tournament.persistence.repository.TournamentResultRepository;
 

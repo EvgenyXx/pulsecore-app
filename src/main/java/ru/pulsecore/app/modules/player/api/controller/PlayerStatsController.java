@@ -43,7 +43,7 @@ public class PlayerStatsController {
         return ResponseEntity.ok(facade.getTopByLeague(period.toUpperCase(), league, principal.playerId()));
     }
 
-    // ==================== PlayerStatsController.java — поправить ====================
+
     @GetMapping(PlayerApi.SUM)
     public ResponseEntity<SumResponse> getSumById(
             @CurrentPlayer PlayerPrincipal principal,

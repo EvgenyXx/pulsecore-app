@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.repository.PlayerRepository;
-import ru.pulsecore.app.modules.shared.service.PageViewService;
+import ru.pulsecore.app.modules.shared.service.page.PageViewService;
 
 import java.io.IOException;
 import java.util.Optional;

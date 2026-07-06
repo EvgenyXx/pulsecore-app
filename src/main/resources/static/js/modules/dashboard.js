@@ -4,6 +4,29 @@ import { formatMoney, formatDateShort, capitalizeName } from '../core/utils.js';
 
 let dashboardLoaded = false;
 
+// Загрузка бейджа отчётов
+async function loadReportBadge() {
+    try {
+        const res = await fetch('/api/player/reports/pending', { credentials: 'same-origin' });
+        const reports = await res.json();
+        document.getElementById('reportBadge').innerHTML = renderReportBadge(reports);
+    } catch(e) {}
+}
+
+function renderReportBadge(reports) {
+    const pending = reports.filter(r => r.status === 'PENDING');
+    if (pending.length > 0) {
+        return `<span class="pro-badge report-badge cursor-pointer" onclick="openScheduledReports()">
+            <svg class="report-badge-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <span class="report-badge-count">${pending.length}</span>
+        </span>`;
+    }
+    return '';
+}
+
 export async function loadDashboardWidgets() {
     const container = document.getElementById('dashboardWidgets');
 
@@ -12,10 +35,12 @@ export async function loadDashboardWidgets() {
         state.primaryLeague = data.primaryLeague || 'A';
 
         document.getElementById('proBadge').classList.remove('hidden');
-        document.getElementById('subStatusText').textContent = 'Подписка до ' + new Date(data.subscription.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        // document.getElementById('subStatusText').textContent = 'Подписка до ' + new Date(data.subscription.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
         document.getElementById('pushToggleContainer')?.classList.remove('hidden');
         if (typeof checkPushStatus === 'function') checkPushStatus();
         if (typeof loadOnlineCount === 'function') loadOnlineCount();
+
+        loadReportBadge();
 
         const lastHtml = data.lastResult
             ? `<div class="widget-card" onclick="window.open('${data.lastResult.tournamentLink}','_blank')"><div class="flex items-center gap-2 mb-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg><h3 class="font-bold text-sm text-indigo-300">Последний результат</h3></div><p class="text-2xl font-extrabold amount-gold mt-1">${formatMoney(data.lastResult.amount)}</p><p class="text-xs text-zinc-500 mt-auto pt-1">📅 ${data.lastResult.date}</p></div>`

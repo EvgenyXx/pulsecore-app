@@ -17,7 +17,7 @@ import ru.pulsecore.app.config.SecurityUser;
 import ru.pulsecore.app.modules.player.domain.Player;
 import ru.pulsecore.app.modules.player.service.player.PlayerService;
 import ru.pulsecore.app.modules.shared.properties.SecurityProperties;
-import ru.pulsecore.app.modules.shared.service.RememberMeService;
+import ru.pulsecore.app.modules.shared.service.session.RememberMeService;
 
 import java.io.IOException;
 import java.util.UUID;

@@ -24,6 +24,163 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <style>
         body { padding-top: env(safe-area-inset-top, 0px); }
+
+        /* Шторка заказных отчётов сверху по центру */
+        .report-dropdown {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120%);
+            z-index: 100;
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        .report-dropdown.open {
+            transform: translateX(-50%) translateY(0);
+        }
+        .report-dropdown-handle {
+            width: 32px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin: 0 auto 16px;
+        }
+        .report-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 99;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .report-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        /* Бейдж отчёта */
+        .report-badge {
+            background: rgba(99,102,241,0.12) !important;
+            border-color: rgba(99,102,241,0.25) !important;
+            gap: 7px;
+            padding: 5px 12px !important;
+            transition: all 0.3s ease;
+        }
+        .report-badge:hover {
+            background: rgba(99,102,241,0.22) !important;
+            border-color: rgba(99,102,241,0.4) !important;
+            transform: scale(1.05);
+        }
+        .report-badge-icon {
+            animation: mailPulse 2s ease-in-out infinite;
+            color: #818cf8;
+        }
+        .report-badge-count {
+            background: #818cf8;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+        @keyframes mailPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
+        }
+
+        /* Стили карточек отчётов */
+        .report-sheet-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e5e5e5;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .report-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .report-item-period {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a78bfa;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .report-item-schedule {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a1a1aa;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+        }
+        .report-progress {
+            margin-bottom: 12px;
+        }
+        .report-progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 2px;
+            margin-bottom: 6px;
+            overflow: hidden;
+        }
+        .report-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #818cf8, #a78bfa);
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+        .report-progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #71717a;
+        }
+        .report-progress-pct {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+        .report-progress-time {
+            color: #71717a;
+        }
+        .report-cancel-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 8px;
+            background: rgba(239,68,68,0.08);
+            border: 1px solid rgba(239,68,68,0.15);
+            border-radius: 10px;
+            color: #f87171;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .report-cancel-btn:hover {
+            background: rgba(239,68,68,0.15);
+            border-color: rgba(239,68,68,0.3);
+        }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -106,6 +263,7 @@
                     <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                         <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white"><span id="playerName"></span></h2>
                         <span id="proBadge" class="pro-badge hidden"><span class="pro-diamond">💎</span>PRO</span>
+                        <span id="reportBadge"></span>
                     </div>
                     <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -150,6 +308,13 @@
     </div>
 </main>
 
+<!-- Шторка заказных отчётов -->
+<div class="report-backdrop" id="reportBackdrop" onclick="closeScheduledReports()"></div>
+<div class="report-dropdown" id="reportDropdown">
+    <div class="report-dropdown-handle"></div>
+    <div id="reportSheetContent"></div>
+</div>
+
 <script type="module" src="/js/app.js"></script>
 <script type="module">
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
@@ -167,5 +332,6 @@
     window.toggleThemeSheet = toggleThemeSheet;
     window.setTheme = setTheme;
 </script>
+<script type="module" src="/js/modules/scheduled-report.js"></script>
 </body>
 </html>
