@@ -12,7 +12,8 @@ public enum MailTemplate {
     NEW_TOURNAMENT("new_tournament"),
     TOURNAMENT_RESULT("tournament_result"),
     BROADCAST("broadcast"),
-    SCHEDULED_REPORT("scheduled_report");
+    SCHEDULED_REPORT("scheduled_report"),
+    BROKEN_URI("broken_uri");
 
     private final String fileName;
 

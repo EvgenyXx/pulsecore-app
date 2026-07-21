@@ -7,6 +7,11 @@ import ru.pulsecore.app.core.model.LeagueType;
 import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.core.parser.LeagueDetector;
 import ru.pulsecore.app.core.stats.NightBonusService;
+import ru.pulsecore.app.modules.shared.properties.AdminProperties;
+import ru.pulsecore.app.modules.shared.service.mail.MailStrategyRegistry;
+import ru.pulsecore.app.modules.shared.service.mail.MailTypes;
+import ru.pulsecore.app.modules.shared.service.mail.context.BrokenUriContext;
+
 import ru.pulsecore.app.modules.tournament.domain.TournamentContext;
 import ru.pulsecore.app.modules.tournament.domain.TournamentStatus;
 import ru.pulsecore.app.modules.tournament.parser.MatchParser;
@@ -25,6 +30,8 @@ public class TournamentExtractor {
     private final NightBonusService nightBonusService;
     private final TournamentStatusParser tournamentStatusParser;
     private final RemovedPlayerDetector removedPlayerDetector;
+    private final MailStrategyRegistry mailStrategyRegistry;
+    private final AdminProperties adminProperties;
 
     public TournamentContext extract(Document doc) {
 
@@ -35,6 +42,15 @@ public class TournamentExtractor {
         List<Match> matches = matchParser.parseMatches(doc);
 
         LeagueType league = leagueDetector.detectLeague(doc);
+        if (league == null){
+            String brokenUri = doc.baseUri();
+            mailStrategyRegistry.send(
+                    MailTypes.BROKEN_URI,
+                    new BrokenUriContext(adminProperties.getEmail(),brokenUri)
+            );
+            return null;
+        }
+
         double nightBonus = nightBonusService.calculateBonus(doc, league.name());
 
         String removedPlayer = tournamentParser.findRemovedPlayer(doc);

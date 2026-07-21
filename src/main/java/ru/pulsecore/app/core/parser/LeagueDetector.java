@@ -25,7 +25,8 @@ public class LeagueDetector {
             return fromBody;
         }
 
-        throw new LeagueDetectionException(title);
+        log.warn("Could not detect league: '{}'", title);
+        return null;
     }
 
     private LeagueType detectFromText(String text) {

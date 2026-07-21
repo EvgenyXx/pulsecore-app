@@ -42,6 +42,10 @@ public class ResultService {
 
     private ParsedResult calculate(Document doc) {
         TournamentContext ctx = tournamentExtractor.extract(doc);
+
+        if (ctx == null){
+            return null;
+        }
         List<ResultDto> results = buildResults(ctx);
         normalizeNames(results);
         applyBonusPoints(ctx, results);

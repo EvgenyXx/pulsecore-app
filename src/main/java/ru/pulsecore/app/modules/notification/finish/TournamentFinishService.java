@@ -34,6 +34,13 @@ public class TournamentFinishService {
                                   Document doc)  {
 
         ParsedResult parsed = resultService.calculateAll(doc);
+        if (parsed == null) {
+            log.warn("Tournament {} skipped: unable to parse", t.getExternalId());
+            return false;
+        }
+        if (parsed.league() == null) {
+            return false;
+        }
         if (parsed.status() != TournamentStatus.FINISHED) return false;
         processService.processTournament(notifications, parsed);
         t.setFinished(true);

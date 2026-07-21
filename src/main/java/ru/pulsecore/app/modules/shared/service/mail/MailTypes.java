@@ -13,6 +13,7 @@ public final class MailTypes {
     public static final String BROADCAST = "broadcast";
 
     public static final String SCHEDULED_REPORT = "scheduled_report";
+    public static final String BROKEN_URI = "broken_uri" ;
 
     private MailTypes() {}
 }
