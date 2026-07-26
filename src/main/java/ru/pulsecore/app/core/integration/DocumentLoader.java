@@ -28,7 +28,7 @@ public class DocumentLoader {
     }
 
     private Document fetch(String url) throws java.io.IOException {
-        log.info("Loading URL: {}", url);
+
         return Jsoup.connect(url)
                 .userAgent("Mozilla/5.0")
                 .timeout(TIMEOUT)
