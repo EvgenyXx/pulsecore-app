@@ -22,7 +22,7 @@ public class TournamentStartScheduler {
     private final TournamentProcessor processor;
     private static final long REQUEST_DELAY_MS = 3000;
 
-    @Scheduled(fixedRate = 180000)
+    @Scheduled(cron = "0 */3 * * * *")
     @Transactional
     public void checkStart() {
         List<PlayerNotification> notifications = repo.findPendingWithTournament();
