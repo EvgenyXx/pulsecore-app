@@ -36,5 +36,4 @@ build/
 .vscode/
 
 # 🔴 ВАЖНО
-.env.local
 .env
