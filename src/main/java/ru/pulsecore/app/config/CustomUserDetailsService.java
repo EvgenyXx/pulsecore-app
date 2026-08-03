@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.player.PlayerService;
+import ru.pulsecore.app.modules.player_modeles.entity.Player;
+import ru.pulsecore.app.modules.player_modeles.application.player.PlayerService;
 
 @Service
 @RequiredArgsConstructor

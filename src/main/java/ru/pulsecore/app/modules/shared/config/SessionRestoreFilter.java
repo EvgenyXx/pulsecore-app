@@ -14,8 +14,8 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.pulsecore.app.config.SecurityUser;
-import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.service.player.PlayerService;
+import ru.pulsecore.app.modules.player_modeles.entity.Player;
+import ru.pulsecore.app.modules.player_modeles.application.player.PlayerService;
 import ru.pulsecore.app.modules.shared.properties.SecurityProperties;
 import ru.pulsecore.app.modules.shared.service.session.RememberMeService;
 

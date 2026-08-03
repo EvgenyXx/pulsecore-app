@@ -11,8 +11,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.pulsecore.app.modules.player.domain.Player;
-import ru.pulsecore.app.modules.player.repository.PlayerRepository;
+import ru.pulsecore.app.modules.player_modeles.entity.Player;
+import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.modules.shared.service.page.PageViewService;
 
 import java.io.IOException;
