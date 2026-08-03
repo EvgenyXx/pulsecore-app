@@ -1,6 +1,8 @@
 # PulseCore
 
-Платформа для отслеживания результатов турниров по настольному теннису. Автоматически собирает данные с masters-league.com, уведомляет игроков о предстоящих матчах и подсчитывает заработок.
+Платформа для отслеживания результатов турниров по настольному теннису.
+Автоматически собирает данные с masters-league.com, уведомляет игроков о 
+предстоящих матчах и подсчитывает заработок.
 
 **Сайт:** [pulsecore-app.ru](https://pulsecore-app.ru)
 
@@ -20,21 +22,39 @@
 
 ## Технологии
 
-- Java 21
+- Java 17
 - Spring Boot 3.4.4
 - Spring Security, Spring Data JPA
+- Spring Session (Redis)
+- Spring WebSocket
+- Spring Cache (Caffeine)
+- Spring Validation
 - PostgreSQL 15
+- Redis 7
 - Flyway (миграции БД)
 - Docker / Docker Compose
 - Jsoup (парсинг)
 - JavaMail (email-уведомления)
 - ЮKassa API (приём платежей)
+- OAuth 2.0 (Яндекс ID)
+- Web Push (VAPID)
+- QR-коды (ZXing)
+- PDF-отчёты (iText 7)
+- Lombok, MapStruct
 
 ---
 
 ## Локальный запуск
 
-1. Установи JDK 21, Docker, Maven
-2. Подними PostgreSQL:
-   ```bash
-   docker run -d --name postgres_db -e POSTGRES_DB=botdb -e POSTGRES_USER=botuser -e POSTGRES_PASSWORD=1234 -p 5432:5432 postgres:15
+### Backend
+```bash
+git clone -b dev git@github.com:EvgenyXx/pulsecore-app.git
+cd pulsecore-app
+docker compose -f docker-compose.local.yml --env-file .env.local up -d
+```
+### Frontend
+```bash
+git clone -b dev git@github.com:EvgenyXx/pulsecore-app.git
+cd pulsecore-app
+docker compose -f docker-compose.dev.yml --env-file .dev.local up -d
+```
