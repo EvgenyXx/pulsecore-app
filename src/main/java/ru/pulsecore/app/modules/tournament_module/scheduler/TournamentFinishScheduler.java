@@ -21,7 +21,7 @@ public class TournamentFinishScheduler {
     private final TournamentFinishProcessor processor;
     private static final long REQUEST_DELAY_MS = 3000;
 
-    @Scheduled(fixedRate = 420000)
+    @Scheduled(cron = "0 */7 * * * *")
     public void checkFinished() {
 
         List<PlayerNotification> list = repo.findNotFinishedFull();
