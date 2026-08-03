@@ -1,0 +1,49 @@
+# ==================== application-prod.yml ====================
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          yandex:
+            client-id: ${YANDEX_CLIENT_ID}
+            client-secret: ${YANDEX_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "https://pulsecore-app.ru/login/oauth2/code/yandex"
+            scope:
+              - login:email
+              - login:info
+              - login:default_phone
+  data:
+    redis:
+      host: redis
+      port: 6379
+      password: ${SPRING_REDIS_PASSWORD}
+  session:
+    timeout: 15m
+  cache:
+    type: redis
+    redis:
+      time-to-live: 30d
+
+logging:
+  level:
+    root: WARN
+    ru.pulsecore.app: WARN
+    org.springframework: WARN
+    org.hibernate: WARN
+
+
+app:
+  base-url: ${APP_BASE_URL}
+  qr-color: ${QR_COLOR:#6366f1}
+
+server:
+  tomcat:
+    connection-timeout: 300000
+    threads:
+      max: 100
+      min-spare: 10
+  servlet:
+    session:
+      cookie:
+        secure: true
