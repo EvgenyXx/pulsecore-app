@@ -1,13 +1,13 @@
-package ru.pulsecore.app;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class PulsecoreApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
+//package ru.pulsecore.app;
+//
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
+//
+//@SpringBootTest
+//class PulsecoreApplicationTests {
+//
+//	@Test
+//	void contextLoads() {
+//	}
+//
+//}

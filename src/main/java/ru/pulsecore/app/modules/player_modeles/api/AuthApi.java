@@ -1,0 +1,22 @@
+// ==================== AuthApi.java ====================
+package ru.pulsecore.app.modules.player_modeles.api;
+
+public final class AuthApi {
+    private AuthApi() {}
+
+    public static final String BASE_PATH = "/api/auth";
+    public static final String REGISTER = "/register";
+    public static final String LOGIN = "/login";
+    public static final String LOGOUT = "/logout";
+    public static final String ME = "/me";
+    public static final String VERIFY_PASSWORD = "/verify-password";
+    public static final String VERIFY_EMAIL = "/verify-email";
+    public static final String FORGOT_PASSWORD = "/forgot-password";
+    public static final String RESET_PASSWORD = "/reset-password";
+    public static final String OAUTH_FINISH = "/oauth-finish";
+
+    public static final String OK = "ok";
+
+    public static final String ME_THEME = "/me/theme";
+    public static final String CODE_EXPIRED = "Код не найден или истек";
+}

@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.pulsecore.app.modules.auth.service.OAuth2SuccessHandler;
+import ru.pulsecore.app.modules.player_modeles.application.auth.oauth.OAuth2SuccessHandler;
 import ru.pulsecore.app.modules.shared.properties.SecurityProperties;
 
 @Configuration

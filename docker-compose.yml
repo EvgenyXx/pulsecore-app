@@ -23,6 +23,8 @@ services:
       - redis_data:/data
 
   app:
+    env_file:
+      - .env
     build: .
     container_name: spring_app
     restart: always
@@ -64,6 +66,7 @@ services:
       YOOKASSA_CURRENCY: RUB
       APP_BASE_URL: ${APP_BASE_URL}
       QR_COLOR: "#6366f1"
+      SPRING_PROFILES_ACTIVE: prod
 
 volumes:
   pgdata:
