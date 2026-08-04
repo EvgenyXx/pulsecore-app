@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.lineup.api;
+package ru.pulsecore.app.modules.tournament_module.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
