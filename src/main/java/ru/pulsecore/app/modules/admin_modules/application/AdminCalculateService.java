@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.admin_modules;
+package ru.pulsecore.app.modules.admin_modules.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

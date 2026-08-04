@@ -1,5 +1,4 @@
-// modules/admin/repository/PlayerStatsRepository.java
-package ru.pulsecore.app.modules.admin_modules.repository;
+package ru.pulsecore.app.modules.admin_modules.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.modules.admin_modules.api.dto.PlayerPageStatsResponse;
-import ru.pulsecore.app.modules.admin_modules.SqlReader;
+import ru.pulsecore.app.modules.shared.infrastructure.SqlReader;
 
 import java.time.Instant;
 import java.util.List;

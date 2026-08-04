@@ -1,4 +1,4 @@
 // modules/admin/service/EndpointLabel.java
-package ru.pulsecore.app.modules.admin_modules.service;
+package ru.pulsecore.app.modules.admin_modules.application;
 
 public record EndpointLabel(String path, String label) {}

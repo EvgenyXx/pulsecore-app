@@ -1,5 +1,5 @@
 // BroadcastService.java
-package ru.pulsecore.app.modules.admin_modules.service;
+package ru.pulsecore.app.modules.admin_modules.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

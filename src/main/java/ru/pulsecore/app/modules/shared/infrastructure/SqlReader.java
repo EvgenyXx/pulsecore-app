@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.admin_modules;
+package ru.pulsecore.app.modules.shared.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ResourceLoader;

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.pulsecore.app.modules.admin_modules.api.AdminApi;
 import ru.pulsecore.app.modules.admin_modules.api.dto.PageViewStats;
 import ru.pulsecore.app.modules.admin_modules.api.dto.PlayerPageViewStats;
-import ru.pulsecore.app.modules.admin_modules.service.PageViewStatsService;
+import ru.pulsecore.app.modules.admin_modules.application.PageViewStatsService;
 
 import java.util.List;
 

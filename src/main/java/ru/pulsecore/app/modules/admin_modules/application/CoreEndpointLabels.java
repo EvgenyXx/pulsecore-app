@@ -1,5 +1,5 @@
 // modules/admin/service/CoreEndpointLabels.java
-package ru.pulsecore.app.modules.admin_modules.service;
+package ru.pulsecore.app.modules.admin_modules.application;
 
 import org.springframework.stereotype.Component;
 

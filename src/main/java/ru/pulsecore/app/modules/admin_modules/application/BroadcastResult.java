@@ -1,5 +1,5 @@
 // modules/admin/service/BroadcastResult.java
-package ru.pulsecore.app.modules.admin_modules.service;
+package ru.pulsecore.app.modules.admin_modules.application;
 
 public record BroadcastResult(int totalPlayers, int pushSent, int emailSent) {
 

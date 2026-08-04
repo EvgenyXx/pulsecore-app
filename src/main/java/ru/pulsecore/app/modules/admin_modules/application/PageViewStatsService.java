@@ -1,11 +1,10 @@
-// modules/admin/service/PageViewStatsService.java
-package ru.pulsecore.app.modules.admin_modules.service;
+package ru.pulsecore.app.modules.admin_modules.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.admin_modules.api.dto.PageViewStats;
 import ru.pulsecore.app.modules.admin_modules.api.dto.PlayerPageViewStats;
-import ru.pulsecore.app.modules.admin_modules.repository.PlayerStatsRepository;
+import ru.pulsecore.app.modules.admin_modules.infrastructure.PlayerStatsRepository;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.repository.PageViewRepository;
 
 import java.time.Instant;
