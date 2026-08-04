@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.admin_modules.api.AdminApi;
-import ru.pulsecore.app.modules.player_modeles.api.dto.response.MessageResponse;
-import ru.pulsecore.app.modules.player_modeles.api.dto.response.SubscriptionStatusResponse;
+import ru.pulsecore.app.modules.shared.dto.MessageResponse;
+import ru.pulsecore.app.modules.shared.dto.SubscriptionStatusResponse;
 import ru.pulsecore.app.modules.player_modeles.entity.Subscription;
 import ru.pulsecore.app.modules.player_modeles.application.subscription.SubscriptionService;
 

@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.pulsecore.app.modules.admin_modules.api.dto.PricesResponse;
+import ru.pulsecore.app.modules.shared.dto.PricesResponse;
 import ru.pulsecore.app.modules.payment_modules.api.PriceApi;
 import ru.pulsecore.app.modules.payment_modules.application.PriceService;
 

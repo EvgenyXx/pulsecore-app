@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.config.CacheNames;
-import ru.pulsecore.app.modules.admin_modules.api.dto.PricesResponse;
+import ru.pulsecore.app.modules.shared.dto.PricesResponse;
 import ru.pulsecore.app.modules.payment_modules.domain.SubscriptionPeriod;
 import ru.pulsecore.app.modules.payment_modules.infrastructure.exception.PaymentException;
 import ru.pulsecore.app.modules.shared.model.AppSettings;
@@ -24,6 +24,7 @@ public class PriceService {
 
     private final AppSettingsRepository repository;
 
+    //todo вынести в интернел от сюад убрать
     @Cacheable(CacheNames.PRICES)
     public PricesResponse getPrices() {
         Map<Integer, Integer> prices = Arrays.stream(SubscriptionPeriod.values())
@@ -34,6 +35,7 @@ public class PriceService {
         return new PricesResponse(prices);
     }
 
+
     public int getPrice(int months) {
         String key = SubscriptionPeriod.fromMonths(months).getPriceKey();
         return repository.findByKey(key)
@@ -41,6 +43,7 @@ public class PriceService {
                 .orElseThrow(() -> new PaymentException("Цена не найдена: " + key));
     }
 
+    //todo вынести в интернел от сюад убрать
     @CacheEvict(value = CacheNames.PRICES, allEntries = true)
     @Transactional
     public void update(int price1, int price2) {

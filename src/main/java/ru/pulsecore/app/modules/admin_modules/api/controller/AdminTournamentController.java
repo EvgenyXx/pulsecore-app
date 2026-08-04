@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.modules.admin_modules.api.AdminApi;
-import ru.pulsecore.app.modules.player_modeles.api.dto.response.MessageResponse;
-import ru.pulsecore.app.modules.tournament_module.api.dto.response.AdminCalculateResponse;
+import ru.pulsecore.app.modules.shared.dto.MessageResponse;
+import ru.pulsecore.app.modules.shared.dto.AdminCalculateResponse;
 import ru.pulsecore.app.modules.admin_modules.application.AdminCalculateService;
 import ru.pulsecore.app.modules.tournament_module.application.tournament.TournamentResetService;
 

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.player_modeles.api.PlayerApi;
 import ru.pulsecore.app.modules.player_modeles.api.anatation.ScheduledReport;
-import ru.pulsecore.app.modules.player_modeles.api.dto.response.MessageResponse;
+import ru.pulsecore.app.modules.shared.dto.MessageResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.ScheduledReportResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.request.CreateScheduledReportRequest;
 import ru.pulsecore.app.modules.player_modeles.application.report.ScheduledReportFacade;

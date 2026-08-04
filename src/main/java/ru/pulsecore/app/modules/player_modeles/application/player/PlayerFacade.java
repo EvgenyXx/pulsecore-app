@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.player_modeles.api.dto.request.ChangePasswordRequest;
 import ru.pulsecore.app.modules.player_modeles.api.dto.request.UpdateProfileRequest;
-import ru.pulsecore.app.modules.player_modeles.api.dto.response.MessageResponse;
+import ru.pulsecore.app.modules.shared.dto.MessageResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.NotificationsStatusResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.PlayerProfileResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.PlayerResponse;
@@ -36,6 +36,7 @@ public class PlayerFacade {
         return playerService.searchPlayers(query);
     }
 
+    //todo выносим в интернал для аминки удаляем
     public MessageResponse deleteAccount(UUID playerId) {
         playerService.deletePlayer(playerId);
         sessionService.invalidateCurrentSession();

@@ -1,4 +1,3 @@
-// modules/admin/controller/PageViewController.java
 package ru.pulsecore.app.modules.admin_modules.api.controller;
 
 import lombok.RequiredArgsConstructor;

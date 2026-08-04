@@ -14,7 +14,7 @@ import ru.pulsecore.app.modules.player_modeles.api.AuthApi;
 import ru.pulsecore.app.modules.player_modeles.api.dto.request.ForgotPasswordRequest;
 import ru.pulsecore.app.modules.player_modeles.api.dto.request.ResetPasswordRequest;
 import ru.pulsecore.app.modules.player_modeles.api.dto.request.VerifyPasswordRequest;
-import ru.pulsecore.app.modules.player_modeles.api.dto.response.MessageResponse;
+import ru.pulsecore.app.modules.shared.dto.MessageResponse;
 import ru.pulsecore.app.modules.player_modeles.application.player.PlayerProfileService;
 import ru.pulsecore.app.modules.player_modeles.application.auth.PlayerPasswordResetService;
 
