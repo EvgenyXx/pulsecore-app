@@ -17,7 +17,7 @@ public class AdminSubscriptionController {
 
     private final PlayerClient playerClient;
 
-    //todo сделать дто ?
+    //todo сделать дто request?
     @PostMapping(AdminApi.SUBSCRIBE)
     public ResponseEntity<MessageResponse> subscribe(@PathVariable UUID id,
                                                      @RequestParam(defaultValue = "30") int days) {

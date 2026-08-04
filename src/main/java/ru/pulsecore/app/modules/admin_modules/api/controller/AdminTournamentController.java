@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.modules.admin_modules.api.AdminApi;
+import ru.pulsecore.app.modules.admin_modules.infrastructure.clinet.TournamentClient;
 import ru.pulsecore.app.modules.shared.dto.MessageResponse;
 import ru.pulsecore.app.modules.shared.dto.AdminCalculateResponse;
-import ru.pulsecore.app.modules.admin_modules.application.AdminCalculateService;
-import ru.pulsecore.app.modules.tournament_module.application.tournament.TournamentResetService;
 
 import java.util.Map;
 import java.util.UUID;
@@ -19,9 +18,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdminTournamentController {
 
-    private final AdminCalculateService adminCalculateService;
-    private final TournamentResetService tournamentResetService;
+    private final TournamentClient tournamentClient;
 
+    //todo сделать дто  не принимать мапу ...
     @PostMapping(AdminApi.TOURNAMENT_CALCULATE)
     public ResponseEntity<AdminCalculateResponse> calculate(@RequestBody Map<String, String> request) {
         String name = request.get("name");
@@ -31,21 +30,18 @@ public class AdminTournamentController {
         if (name == null || startDate == null || endDate == null) {
             return ResponseEntity.badRequest().build();
         }
-
-        return ResponseEntity.ok(adminCalculateService.calculate(name, startDate, endDate));
+        return ResponseEntity.ok(tournamentClient.calculate(name, startDate, endDate));
     }
 
-    // Удалить все турниры игрока
+
     @DeleteMapping(AdminApi.PLAYER_TOURNAMENTS)
     public ResponseEntity<MessageResponse> deletePlayerTournaments(@PathVariable UUID id) {
-        int deleted = tournamentResetService.deleteAllTournaments(id);
-        return ResponseEntity.ok(new MessageResponse("Удалено турниров: " + deleted));
+      return ResponseEntity.ok(tournamentClient.deleteAllTournaments(id));
     }
 
-    // Перезагрузить турниры игрока (как при регистрации)
+
     @PostMapping(AdminApi.PLAYER_TOURNAMENTS_RESYNC)
     public ResponseEntity<MessageResponse> resyncPlayerTournaments(@PathVariable UUID id) {
-        tournamentResetService.resyncAll(id);
-        return ResponseEntity.ok(new MessageResponse("Загрузка турниров запущена в фоне"));
+        return ResponseEntity.ok(tournamentClient.resyncAll(id));
     }
 }

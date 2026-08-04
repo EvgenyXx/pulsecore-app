@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.exception.TournamentParseException;
 import ru.pulsecore.app.modules.shared.exception.UnauthorizedException;
 import ru.pulsecore.app.modules.tournament_module.api.dto.response.AddTournamentResponse;
-import ru.pulsecore.app.modules.tournament_module.application.ResultService;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.modules.tournament_module.domain.ParsedResult;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.entity.TournamentEntity;

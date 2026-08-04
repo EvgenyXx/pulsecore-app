@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.tournament_module.application;
+package ru.pulsecore.app.modules.tournament_module.application.tournament;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,6 @@ import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.core.integration.DocumentLoader;
 import ru.pulsecore.app.core.stats.PointsCalculatorUtils;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.util.NameNormalizer;
-import ru.pulsecore.app.modules.tournament_module.application.tournament.ResultBuilder;
 import ru.pulsecore.app.modules.tournament_module.domain.MatchCalculationStrategy;
 import ru.pulsecore.app.modules.tournament_module.application.tournament.calculation.StrategyResolver;
 import ru.pulsecore.app.modules.tournament_module.domain.RemovedStage;

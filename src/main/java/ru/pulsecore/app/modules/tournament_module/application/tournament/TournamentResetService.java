@@ -23,6 +23,7 @@ public class TournamentResetService {
         return tournamentResultRepository.deleteByPlayerId(playerId);
     }
 
+    @Transactional
     public void resyncAll(UUID playerId) {
         var player = playerClient.getPlayerById(playerId);
         tournamentAutoAddService.addRecentTournamentsForPlayer(player.playerId(),player.playerName(),  30);
