@@ -8,7 +8,7 @@ import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.reposi
 import ru.pulsecore.app.modules.shared.dto.NotificationInfo;
 import ru.pulsecore.app.modules.shared.dto.PlayerData;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
-import ru.pulsecore.app.modules.tournament_module.client.PlayerClient;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.client.PlayerClient;
 import java.util.List;
 import java.util.UUID;
 

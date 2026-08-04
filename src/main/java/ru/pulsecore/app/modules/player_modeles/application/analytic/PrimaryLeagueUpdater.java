@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.repository.PlayerRepository;
-import ru.pulsecore.app.modules.tournament_module.repo.TournamentResultRepository;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.TournamentResultRepository;
 
 import java.util.List;
 

@@ -9,7 +9,7 @@ import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
 import ru.pulsecore.app.modules.shared.util.NameNormalizer;
-import ru.pulsecore.app.modules.tournament_module.repo.ChatMessageRepository;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.ChatMessageRepository;
 
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 

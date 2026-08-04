@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.modules.tournament_module.api.TournamentApi;
 import ru.pulsecore.app.modules.tournament_module.api.dto.response.TournamentLiveDto;
-import ru.pulsecore.app.modules.tournament_module.service.lineup.LiveService;
+import ru.pulsecore.app.modules.tournament_module.application.lineup.LiveService;
 
 import java.util.List;
 import java.util.Map;

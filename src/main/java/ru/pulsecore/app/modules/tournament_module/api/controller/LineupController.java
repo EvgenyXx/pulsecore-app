@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.tournament_module.api.LineupApi;
 import ru.pulsecore.app.modules.tournament_module.api.dto.response.LineupDto;
-import ru.pulsecore.app.modules.tournament_module.service.lineup.LineupFacade;
+import ru.pulsecore.app.modules.tournament_module.application.lineup.LineupFacade;
 import ru.pulsecore.app.security.CurrentPlayer;
 import ru.pulsecore.app.security.PlayerPrincipal;
 

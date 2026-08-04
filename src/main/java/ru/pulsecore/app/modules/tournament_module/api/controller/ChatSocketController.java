@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import ru.pulsecore.app.modules.tournament_module.api.ChatApi;
 import ru.pulsecore.app.modules.tournament_module.api.ChatSocketApi;
 import ru.pulsecore.app.modules.tournament_module.api.dto.response.ChatMessageDto;
-import ru.pulsecore.app.modules.tournament_module.service.chat.ChatFacade;
+import ru.pulsecore.app.modules.tournament_module.application.chat.ChatFacade;
 
 @Controller
 @RequiredArgsConstructor

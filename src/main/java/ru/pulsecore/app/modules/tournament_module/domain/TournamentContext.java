@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.pulsecore.app.core.model.LeagueType;
 import ru.pulsecore.app.core.model.Match;
-import ru.pulsecore.app.modules.tournament_module.service.calculation.strategy.removed.RemovedStage;
 
 import java.util.List;
 

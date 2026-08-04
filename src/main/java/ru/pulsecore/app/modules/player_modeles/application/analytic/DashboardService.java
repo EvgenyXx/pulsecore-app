@@ -8,14 +8,14 @@ import ru.pulsecore.app.modules.player_modeles.api.dto.response.DashboardRespons
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.LastResultDto;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.SubscriptionInfoDto;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.UpcomingLineupDto;
-import ru.pulsecore.app.modules.tournament_module.entity.Lineup;
-import ru.pulsecore.app.modules.tournament_module.repo.LineupRepository;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.entity.Lineup;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.LineupRepository;
 
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.application.player.PlayerService;
 
 import ru.pulsecore.app.modules.shared.util.StringUtils;
-import ru.pulsecore.app.modules.tournament_module.repo.TournamentResultRepository;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.TournamentResultRepository;
 
 import java.time.LocalDate;
 import java.util.*;

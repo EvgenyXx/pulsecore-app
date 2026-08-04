@@ -7,9 +7,9 @@ import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.shared.util.NameNormalizer;
 import ru.pulsecore.app.modules.tournament_module.api.dto.response.AdminCalculateResponse;
-import ru.pulsecore.app.modules.tournament_module.service.tornament.ResultService;
+import ru.pulsecore.app.modules.tournament_module.application.ResultService;
 import ru.pulsecore.app.modules.tournament_module.domain.ParsedResult;
-import ru.pulsecore.app.modules.tournament_module.service.tornament.TournamentSearchService;
+import ru.pulsecore.app.modules.tournament_module.application.tournament.TournamentSearchService;
 
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -9,7 +9,7 @@ import ru.pulsecore.app.modules.player_modeles.api.dto.response.TopPlayerDto;
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.entity.TopPlayersView;
 import ru.pulsecore.app.modules.player_modeles.application.player.PlayerService;
-import ru.pulsecore.app.modules.tournament_module.repo.TopPlayersViewRepository;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.TopPlayersViewRepository;
 
 import java.util.List;
 import java.util.UUID;
