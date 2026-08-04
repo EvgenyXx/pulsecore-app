@@ -9,5 +9,5 @@ public interface PaymentClient {
 
     PricesResponse updatePrices(int oneMonth,int twoMonths);
 
-    int getPrice(int months);
+
 }

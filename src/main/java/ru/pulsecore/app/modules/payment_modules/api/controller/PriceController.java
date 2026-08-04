@@ -20,7 +20,7 @@ public class PriceController {
 
     @GetMapping(PriceApi.PRICES)
     public ResponseEntity<PricesResponse> getPrices() {
-        return ResponseEntity.ok(priceService.getPrices());
+        return ResponseEntity.ok(priceService.getPricesData());
     }
 
 
