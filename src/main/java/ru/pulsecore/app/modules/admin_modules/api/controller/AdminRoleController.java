@@ -3,11 +3,9 @@ package ru.pulsecore.app.modules.admin_modules.api.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import ru.pulsecore.app.modules.admin_modules.api.AdminApi;
+import ru.pulsecore.app.modules.admin_modules.infrastructure.clinet.PlayerClient;
 import ru.pulsecore.app.modules.shared.dto.MessageResponse;
-import ru.pulsecore.app.modules.player_modeles.application.role.RoleManagementService;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -16,22 +14,22 @@ import java.util.UUID;
 @AdminController
 public class AdminRoleController {
 
-    private final RoleManagementService roleManagementService;
+    private final PlayerClient   playerClient;
 
     @PostMapping(AdminApi.ROLES_GRANT)
     public ResponseEntity<MessageResponse> grantRole(@PathVariable UUID id, @RequestParam String role) {
-        roleManagementService.grantRole(id, role);
-        return ResponseEntity.ok(new MessageResponse("Роль " + role + " выдана"));
+
+        return ResponseEntity.ok(playerClient.grandRole(id, role));
     }
 
     @DeleteMapping(AdminApi.ROLES_REVOKE)
     public ResponseEntity<MessageResponse> revokeRole(@PathVariable UUID id, @RequestParam String role) {
-        roleManagementService.revokeRole(id, role);
-        return ResponseEntity.ok(new MessageResponse("Роль " + role + " отозвана"));
+
+        return ResponseEntity.ok(playerClient.revokeRole(id, role));
     }
 
     @GetMapping(AdminApi.ROLES)
     public ResponseEntity<List<String>> getRoles(@PathVariable UUID id) {
-        return ResponseEntity.ok(roleManagementService.getRoleNames(id));
+        return ResponseEntity.ok(playerClient.getRoles(id));
     }
 }

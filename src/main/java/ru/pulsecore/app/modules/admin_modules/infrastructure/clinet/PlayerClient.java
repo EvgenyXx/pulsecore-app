@@ -17,8 +17,8 @@ public interface PlayerClient {
     List<String> getRoles(UUID playerId);
 
 
-    void activate(UUID playerId, int days);
-    void deactivate(UUID playerId);
+    MessageResponse activate(UUID playerId, int days);
+    MessageResponse deactivate(UUID playerId);
     SubscriptionStatusResponse getSubscription(UUID playerId);
 
 
