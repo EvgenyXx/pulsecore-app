@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.modules.shared.dto.PlayerData;
 import ru.pulsecore.app.modules.tournament_module.api.ChatApi;
 import ru.pulsecore.app.modules.tournament_module.api.dto.response.ChatMessageDto;
-import ru.pulsecore.app.modules.tournament_module.service.chat.ChatFacade;
+import ru.pulsecore.app.modules.tournament_module.application.chat.ChatFacade;
 import ru.pulsecore.app.security.CurrentPlayer;
 import ru.pulsecore.app.security.PlayerPrincipal;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(ChatApi.BASE_PATH)

@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.PeriodStatsProjection;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.SumResponse;
 
-import ru.pulsecore.app.modules.shared.util.StringUtils;
-import ru.pulsecore.app.modules.tournament_module.client.PlayerClient;
-import ru.pulsecore.app.modules.tournament_module.service.tornament.TournamentResultService;
-import ru.pulsecore.app.modules.tournament_module.entity.TournamentResultEntity;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.StringUtils;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.modules.tournament_module.application.tournament.TournamentResultService;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.entity.TournamentResultEntity;
 
 import java.time.LocalDate;
 import java.util.List;

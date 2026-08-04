@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.modules.admin_modules.api.AdminApi;
 import ru.pulsecore.app.modules.admin_modules.api.dto.PricesResponse;
 import ru.pulsecore.app.modules.admin_modules.api.dto.UpdatePricesRequest;
-import ru.pulsecore.app.modules.payment_modules.service.PriceService;
+import ru.pulsecore.app.modules.payment_modules.application.PriceService;
 
 
 @RequiredArgsConstructor

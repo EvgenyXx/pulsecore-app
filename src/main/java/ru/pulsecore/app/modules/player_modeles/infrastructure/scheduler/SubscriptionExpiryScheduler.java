@@ -8,7 +8,7 @@ import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.entity.Subscription;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.repository.SubscriptionRepository;
 import ru.pulsecore.app.modules.notification_modules.application.WebPushService;
-import ru.pulsecore.app.modules.shared.util.push.PushMessageBuilder;
+import ru.pulsecore.app.modules.shared.util.PushMessageBuilder;
 
 import java.util.List;
 

@@ -6,9 +6,9 @@ import ru.pulsecore.app.modules.player_modeles.api.dto.response.DailyIncomeRespo
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.MonthlyIncomeResponse;
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.mapping.AnalyticsMapper;
-import ru.pulsecore.app.modules.tournament_module.repo.projection.DailyIncomeProjection;
-import ru.pulsecore.app.modules.tournament_module.repo.projection.MonthlyIncomeProjection;
-import ru.pulsecore.app.modules.tournament_module.repo.TournamentResultRepository;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.projection.DailyIncomeProjection;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.projection.MonthlyIncomeProjection;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.TournamentResultRepository;
 
 import java.time.LocalDate;
 import java.util.List;

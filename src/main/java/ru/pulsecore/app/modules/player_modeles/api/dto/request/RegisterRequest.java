@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.pulsecore.app.modules.shared.validation.RussianEmail;
+import ru.pulsecore.app.modules.player_modeles.infrastructure.validation.RussianEmail;
 
 @Data
 @Builder

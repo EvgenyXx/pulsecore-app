@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.PlayerResponse;
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.repository.PlayerRepository;
-import ru.pulsecore.app.modules.shared.exception.PlayerNotFoundException;
-import ru.pulsecore.app.modules.shared.util.NameNormalizer;
-import ru.pulsecore.app.modules.tournament_module.repo.ChatMessageRepository;
+import ru.pulsecore.app.modules.player_modeles.infrastructure.exception.PlayerNotFoundException;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.NameNormalizer;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.ChatMessageRepository;
 
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 

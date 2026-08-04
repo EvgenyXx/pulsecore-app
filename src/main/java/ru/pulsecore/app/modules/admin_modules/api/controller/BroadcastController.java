@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.modules.admin_modules.api.AdminApi;
 import ru.pulsecore.app.modules.admin_modules.api.dto.BroadcastRequest;
-import ru.pulsecore.app.modules.admin_modules.service.BroadcastService;
+import ru.pulsecore.app.modules.admin_modules.application.BroadcastService;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.MessageResponse;
 
 @AdminController

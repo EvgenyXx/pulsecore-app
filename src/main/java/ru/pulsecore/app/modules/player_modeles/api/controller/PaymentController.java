@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.pulsecore.app.modules.payment_modules.service.PaymentFacade;
+import ru.pulsecore.app.modules.payment_modules.application.PaymentFacade;
 import ru.pulsecore.app.modules.player_modeles.api.PlayerApi;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.PaymentResponse;
 import ru.pulsecore.app.security.CurrentPlayer;

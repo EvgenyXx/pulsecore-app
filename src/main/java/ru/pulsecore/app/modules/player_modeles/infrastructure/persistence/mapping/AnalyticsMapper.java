@@ -3,8 +3,8 @@ package ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.mappi
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.AnalyticsResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.MonthlyIncomeResponse;
-import ru.pulsecore.app.modules.tournament_module.repo.projection.LeagueStatProjection;
-import ru.pulsecore.app.modules.tournament_module.repo.projection.MonthlyIncomeProjection;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.projection.LeagueStatProjection;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.projection.MonthlyIncomeProjection;
 
 import java.util.List;
 

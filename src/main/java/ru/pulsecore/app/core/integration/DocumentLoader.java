@@ -5,7 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.shared.exception.SiteUnavailableException;
-import ru.pulsecore.app.modules.tournament_module.circuit.MastersApiCircuitBreaker;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.circuit.MastersApiCircuitBreaker;
 
 
 @Component
