@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.payment_modules.exception;
+package ru.pulsecore.app.modules.payment_modules.infrastructure.exception;
 
 import org.springframework.http.HttpStatus;
 import ru.pulsecore.app.modules.shared.exception.BaseException;

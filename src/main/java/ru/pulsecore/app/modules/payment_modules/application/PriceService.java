@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.payment_modules.service;
+package ru.pulsecore.app.modules.payment_modules.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.config.CacheNames;
 import ru.pulsecore.app.modules.admin_modules.api.dto.PricesResponse;
 import ru.pulsecore.app.modules.payment_modules.domain.SubscriptionPeriod;
-import ru.pulsecore.app.modules.payment_modules.exception.PaymentException;
+import ru.pulsecore.app.modules.payment_modules.infrastructure.exception.PaymentException;
 import ru.pulsecore.app.modules.shared.model.AppSettings;
 import ru.pulsecore.app.modules.shared.repository.AppSettingsRepository;
 

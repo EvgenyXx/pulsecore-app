@@ -1,12 +1,12 @@
-package ru.pulsecore.app.modules.payment_modules.service;
+package ru.pulsecore.app.modules.payment_modules.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.pulsecore.app.modules.payment_modules.exception.PaymentException;
-import ru.pulsecore.app.modules.payment_modules.properties.YookassaProperties;
+import ru.pulsecore.app.modules.payment_modules.infrastructure.exception.PaymentException;
+import ru.pulsecore.app.modules.payment_modules.infrastructure.properties.YookassaProperties;
 
 import java.util.Base64;
 import java.util.Map;

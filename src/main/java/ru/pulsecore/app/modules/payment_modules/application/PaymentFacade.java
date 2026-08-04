@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.payment_modules.service;
+package ru.pulsecore.app.modules.payment_modules.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

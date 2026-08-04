@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.payment_modules.properties;
+package ru.pulsecore.app.modules.payment_modules.infrastructure.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
