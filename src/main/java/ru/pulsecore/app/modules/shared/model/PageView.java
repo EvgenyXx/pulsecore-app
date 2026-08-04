@@ -1,4 +1,3 @@
-// modules/shared/model/PageView.java
 package ru.pulsecore.app.modules.shared.model;
 
 import jakarta.persistence.*;

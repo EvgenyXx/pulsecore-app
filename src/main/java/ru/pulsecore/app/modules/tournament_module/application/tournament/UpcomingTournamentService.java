@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.client.MastersApiClient;
-import ru.pulsecore.app.modules.shared.util.NumberUtils;
-import ru.pulsecore.app.modules.shared.util.StringUtils;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.NumberUtils;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

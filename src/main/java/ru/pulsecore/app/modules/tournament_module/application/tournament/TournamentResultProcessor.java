@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.core.dto.ResultDto;
 
-import ru.pulsecore.app.modules.shared.exception.TournamentNotFoundException;
-import ru.pulsecore.app.modules.shared.util.PlayerNameMatcher;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.exception.TournamentNotFoundException;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.PlayerNameMatcher;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.exception.TournamentResultNotFoundException;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.entity.TournamentResultEntity;

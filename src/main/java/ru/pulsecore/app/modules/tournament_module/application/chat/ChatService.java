@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.modules.notification_modules.application.WebPushService;
 import ru.pulsecore.app.modules.shared.exception.ForbiddenException;
-import ru.pulsecore.app.modules.shared.exception.NotFoundException;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.exception.MessageNotFoundException;
 import ru.pulsecore.app.modules.tournament_module.api.dto.response.ChatMessageDto;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.mapper.ChatMessageMapper;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.entity.ChatMessage;
@@ -94,7 +94,7 @@ public class ChatService {
     @Transactional
     public Long deleteMessage(Long messageId, UUID playerId) {
         ChatMessage msg = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new NotFoundException(messageId));
+                .orElseThrow(() -> new MessageNotFoundException(messageId));
 
         if (!msg.getPlayerId().equals(playerId)) {
             throw new ForbiddenException();
@@ -108,7 +108,7 @@ public class ChatService {
     @Transactional
     public Long updateMessage(Long messageId, UUID playerId, String newText) {
         ChatMessage msg = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new NotFoundException(messageId));
+                .orElseThrow(() -> new MessageNotFoundException(messageId));
 
         if (!msg.getPlayerId().equals(playerId)) {
             throw new ForbiddenException();

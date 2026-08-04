@@ -2,7 +2,7 @@ package ru.pulsecore.app.modules.tournament_module.application.tournament.calcul
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.modules.shared.util.StringUtils;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.StringUtils;
 import ru.pulsecore.app.modules.tournament_module.domain.MatchStage;
 import ru.pulsecore.app.modules.tournament_module.application.tournament.calculation.DefaultMatchCalculationStrategy;
 import ru.pulsecore.app.modules.tournament_module.domain.RemovedPlayerHandler;

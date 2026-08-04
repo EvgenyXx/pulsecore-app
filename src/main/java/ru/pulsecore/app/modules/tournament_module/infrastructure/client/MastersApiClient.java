@@ -8,8 +8,8 @@ import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.dto.TournamentDto;
 import ru.pulsecore.app.modules.shared.exception.SiteUnavailableException;
-import ru.pulsecore.app.modules.shared.properties.MastersApiProperties;
-import ru.pulsecore.app.modules.shared.util.NameNormalizer;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.properties.MastersApiProperties;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.NameNormalizer;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.circuit.MastersApiCircuitBreaker;
 
 

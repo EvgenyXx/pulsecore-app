@@ -13,8 +13,8 @@ import ru.pulsecore.app.modules.player_modeles.api.dto.response.MeResponse;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.mapping.PlayerDtoMapper;
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.application.player.PlayerService;
-import ru.pulsecore.app.modules.shared.service.session.RememberMeService;
-import ru.pulsecore.app.modules.shared.service.theme.ThemeService;
+import ru.pulsecore.app.modules.player_modeles.infrastructure.session.RememberMeService;
+import ru.pulsecore.app.modules.player_modeles.application.player.ThemeService;
 
 import java.util.UUID;
 

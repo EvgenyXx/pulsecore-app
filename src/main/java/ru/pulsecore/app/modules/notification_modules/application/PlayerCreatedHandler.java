@@ -8,7 +8,7 @@ import ru.pulsecore.app.modules.notification_modules.application.mail.MailTypes;
 import ru.pulsecore.app.modules.notification_modules.application.mail.context.AdminNewUserContext;
 import ru.pulsecore.app.modules.notification_modules.application.mail.context.WelcomeContext;
 import ru.pulsecore.app.modules.shared.dto.PlayerCreatedEvent;
-import ru.pulsecore.app.modules.shared.properties.AdminProperties;
+import ru.pulsecore.app.modules.notification_modules.infrastructure.properties.AdminProperties;
 import ua_parser.Client;
 import ua_parser.Parser;
 

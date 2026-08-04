@@ -7,7 +7,7 @@ import ru.pulsecore.app.core.model.LeagueType;
 import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.core.parser.LeagueDetector;
 import ru.pulsecore.app.core.stats.NightBonusService;
-import ru.pulsecore.app.modules.shared.properties.AdminProperties;
+import ru.pulsecore.app.modules.notification_modules.infrastructure.properties.AdminProperties;
 import ru.pulsecore.app.modules.notification_modules.application.mail.MailStrategyRegistry;
 import ru.pulsecore.app.modules.notification_modules.application.mail.MailTypes;
 import ru.pulsecore.app.modules.notification_modules.application.mail.context.BrokenUriContext;

@@ -5,7 +5,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.core.model.Match;
-import ru.pulsecore.app.modules.shared.HtmlSelectors;
 import ru.pulsecore.app.modules.tournament_module.domain.Score;
 
 @SuppressWarnings("deprecation")

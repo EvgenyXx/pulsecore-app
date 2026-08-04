@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.core.dto.ResultDto;
 import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.shared.util.NameNormalizer;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.NameNormalizer;
 import ru.pulsecore.app.modules.tournament_module.api.dto.response.AdminCalculateResponse;
 import ru.pulsecore.app.modules.tournament_module.application.ResultService;
 import ru.pulsecore.app.modules.tournament_module.domain.ParsedResult;

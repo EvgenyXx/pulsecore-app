@@ -3,7 +3,7 @@ package ru.pulsecore.app.modules.player_modeles.application.subscription;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.modules.shared.properties.AdminProperties;
+import ru.pulsecore.app.modules.notification_modules.infrastructure.properties.AdminProperties;
 import ru.pulsecore.app.modules.notification_modules.application.mail.MailStrategyRegistry;
 import ru.pulsecore.app.modules.notification_modules.application.mail.MailTypes;
 import ru.pulsecore.app.modules.notification_modules.application.mail.context.AdminPaymentContext;

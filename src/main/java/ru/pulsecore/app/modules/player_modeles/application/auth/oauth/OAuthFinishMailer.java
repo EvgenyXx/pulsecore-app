@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
-import ru.pulsecore.app.modules.shared.properties.AdminProperties;
+import ru.pulsecore.app.modules.notification_modules.infrastructure.properties.AdminProperties;
 import ru.pulsecore.app.modules.notification_modules.application.mail.MailStrategyRegistry;
 import ru.pulsecore.app.modules.notification_modules.application.mail.MailTypes;
 import ru.pulsecore.app.modules.notification_modules.application.mail.context.AdminNewUserContext;

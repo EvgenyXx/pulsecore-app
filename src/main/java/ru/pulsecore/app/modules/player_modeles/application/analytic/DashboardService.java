@@ -14,7 +14,7 @@ import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.rep
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.application.player.PlayerService;
 
-import ru.pulsecore.app.modules.shared.util.StringUtils;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.StringUtils;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.TournamentResultRepository;
 
 import java.time.LocalDate;

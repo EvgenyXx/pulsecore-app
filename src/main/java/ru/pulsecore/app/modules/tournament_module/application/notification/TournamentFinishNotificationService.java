@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.entity.PlayerNotification;
 import ru.pulsecore.app.modules.notification_modules.application.WebPushService;
-import ru.pulsecore.app.modules.shared.util.push.PushMessageBuilder;
+import ru.pulsecore.app.modules.shared.util.PushMessageBuilder;
 
 import java.util.List;
 

@@ -3,8 +3,7 @@ package ru.pulsecore.app.modules.tournament_module.infrastructure.parser;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.modules.shared.HtmlSelectors;
-import ru.pulsecore.app.modules.shared.util.NameNormalizer;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.NameNormalizer;
 
 import java.util.List;
 import java.util.stream.Collectors;

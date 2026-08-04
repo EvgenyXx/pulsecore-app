@@ -9,7 +9,7 @@ import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.ent
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.modules.tournament_module.application.notification.NotificationPermissionService;
 import ru.pulsecore.app.modules.notification_modules.application.WebPushService;
-import ru.pulsecore.app.modules.shared.util.push.PushMessageBuilder;
+import ru.pulsecore.app.modules.shared.util.PushMessageBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -8,7 +8,7 @@ import ru.pulsecore.app.core.model.Match;
 import ru.pulsecore.app.core.stats.PlacementCalculator;
 import ru.pulsecore.app.core.stats.PointsCalculator;
 import ru.pulsecore.app.core.stats.PointsCalculatorFactory;
-import ru.pulsecore.app.modules.shared.util.StringUtils;
+import ru.pulsecore.app.modules.tournament_module.infrastructure.util.StringUtils;
 import ru.pulsecore.app.modules.tournament_module.domain.MatchCalculationStrategy;
 import ru.pulsecore.app.modules.tournament_module.domain.MatchProcessingResult;
 import ru.pulsecore.app.modules.tournament_module.domain.StrategyType;
