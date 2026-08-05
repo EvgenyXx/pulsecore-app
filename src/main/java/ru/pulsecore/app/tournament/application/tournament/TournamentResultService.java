@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PeriodStatsProjection;
-import ru.pulsecore.app.shared.dto.ResultDto;
+import ru.pulsecore.app.shared.dto.response.ResultDto;
 import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TournamentResultEntity;
 

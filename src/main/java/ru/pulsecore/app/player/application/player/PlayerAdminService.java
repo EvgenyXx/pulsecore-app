@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.infrastructure.client.TournamentClient;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.player.infrastructure.session.SessionService;
-import ru.pulsecore.app.shared.dto.MessageResponse;
-import ru.pulsecore.app.shared.dto.PlayerData;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 
 import java.util.List;
 import java.util.UUID;

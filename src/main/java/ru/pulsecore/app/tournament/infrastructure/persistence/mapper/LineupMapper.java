@@ -1,7 +1,7 @@
 package ru.pulsecore.app.tournament.infrastructure.persistence.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.shared.dto.TournamentDto;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.infrastructure.persistence.entity.Lineup;
 
 import java.time.LocalDate;

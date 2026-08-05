@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.admin.infrastructure.clinet.PlayerClient;
-import ru.pulsecore.app.shared.dto.MessageResponse;
-import ru.pulsecore.app.shared.dto.SubscriptionStatusResponse;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
+import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
 
 
 import java.util.UUID;

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.shared.dto.ResultDto;
+import ru.pulsecore.app.shared.dto.response.ResultDto;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.domain.PointsCalculatorUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;

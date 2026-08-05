@@ -1,7 +1,7 @@
 package ru.pulsecore.app.tournament.infrastructure.validator;
 
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.shared.dto.TournamentDto;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 
 @Component
 public class TournamentValidator {

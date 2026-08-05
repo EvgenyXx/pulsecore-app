@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.admin.api.dto.request.BroadcastRequest;
 import ru.pulsecore.app.admin.application.BroadcastService;
-import ru.pulsecore.app.shared.dto.MessageResponse;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
 
 @AdminController
 @RequiredArgsConstructor

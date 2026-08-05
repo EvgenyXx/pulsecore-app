@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.shared.dto.TournamentDto;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.exception.SiteUnavailableException;
 import ru.pulsecore.app.tournament.infrastructure.properties.MastersApiProperties;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;

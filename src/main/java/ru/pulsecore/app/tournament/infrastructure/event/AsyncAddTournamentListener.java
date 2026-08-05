@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.shared.dto.PlayerCreatedEvent;
+import ru.pulsecore.app.shared.event.PlayerCreatedEvent;
 import ru.pulsecore.app.tournament.application.tournament.TournamentAutoAddService;
 import ru.pulsecore.app.tournament.application.tournament.TournamentCascadeSyncService;
 

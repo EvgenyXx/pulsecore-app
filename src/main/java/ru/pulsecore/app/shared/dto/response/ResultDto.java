@@ -1,4 +1,4 @@
-package ru.pulsecore.app.shared.dto;
+package ru.pulsecore.app.shared.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

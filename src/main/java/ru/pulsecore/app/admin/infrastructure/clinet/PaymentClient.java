@@ -2,7 +2,7 @@ package ru.pulsecore.app.admin.infrastructure.clinet;
 
 
 
-import ru.pulsecore.app.shared.dto.PricesResponse;
+import ru.pulsecore.app.shared.dto.response.PricesResponse;
 
 
 public interface PaymentClient {

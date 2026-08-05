@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.application.WebPushService;
-import ru.pulsecore.app.shared.dto.PlayerData;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 

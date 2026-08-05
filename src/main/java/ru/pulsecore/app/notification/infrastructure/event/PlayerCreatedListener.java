@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.PlayerCreatedHandler;
-import ru.pulsecore.app.shared.dto.PlayerCreatedEvent;
+import ru.pulsecore.app.shared.event.PlayerCreatedEvent;
 
 @Component
 @RequiredArgsConstructor

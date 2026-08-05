@@ -1,6 +1,6 @@
 package ru.pulsecore.app.shared.util;
 
-import ru.pulsecore.app.shared.dto.TournamentDto;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 

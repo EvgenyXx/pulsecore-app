@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.admin.infrastructure.clinet.PlayerClient;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.BroadcastContext;
-import ru.pulsecore.app.shared.dto.MailNotificationEvent;
-import ru.pulsecore.app.shared.dto.PlayerData;
-import ru.pulsecore.app.shared.dto.PushNotificationEvent;
+import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
+import ru.pulsecore.app.shared.event.PushNotificationEvent;
 
 import java.util.List;
 import java.util.UUID;

@@ -14,7 +14,7 @@ import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.request.RegisterRequest;
 import ru.pulsecore.app.player.api.dto.request.VerifyEmailRequest;
 import ru.pulsecore.app.player.infrastructure.persistence.mapping.PlayerDtoMapper;
-import ru.pulsecore.app.shared.dto.MessageResponse;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.player.application.auth.RegistrationFacade;
 
 @RestController

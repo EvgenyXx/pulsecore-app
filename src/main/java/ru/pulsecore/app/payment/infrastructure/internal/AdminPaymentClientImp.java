@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.admin.infrastructure.clinet.PaymentClient;
 import ru.pulsecore.app.payment.application.PriceService;
-import ru.pulsecore.app.shared.dto.PricesResponse;
+import ru.pulsecore.app.shared.dto.response.PricesResponse;
 
 @Service
 @RequiredArgsConstructor

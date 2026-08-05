@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.WebPushService;
-import ru.pulsecore.app.shared.dto.PushNotificationEvent;
+import ru.pulsecore.app.shared.event.PushNotificationEvent;
 
 
 

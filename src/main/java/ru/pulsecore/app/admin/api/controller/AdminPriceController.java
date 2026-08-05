@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.admin.infrastructure.clinet.PaymentClient;
-import ru.pulsecore.app.shared.dto.PricesResponse;
+import ru.pulsecore.app.shared.dto.response.PricesResponse;
 import ru.pulsecore.app.admin.api.dto.request.UpdatePricesRequest;
 
 

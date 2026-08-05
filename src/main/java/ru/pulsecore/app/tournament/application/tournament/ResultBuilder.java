@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.tournament;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.shared.dto.ResultDto;
+import ru.pulsecore.app.shared.dto.response.ResultDto;
 import ru.pulsecore.app.tournament.domain.BonusCalculator;
 import ru.pulsecore.app.tournament.domain.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.TournamentContext;

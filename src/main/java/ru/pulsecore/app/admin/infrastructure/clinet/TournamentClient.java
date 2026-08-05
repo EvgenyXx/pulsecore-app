@@ -1,7 +1,7 @@
 package ru.pulsecore.app.admin.infrastructure.clinet;
 
-import ru.pulsecore.app.shared.dto.AdminCalculateResponse;
-import ru.pulsecore.app.shared.dto.MessageResponse;
+import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
 
 import java.util.UUID;
 

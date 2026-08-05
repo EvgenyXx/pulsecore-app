@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import ru.pulsecore.app.player.application.subscription.SubscriptionService;
-import ru.pulsecore.app.shared.dto.PaymentSuccessEvent;
+import ru.pulsecore.app.shared.event.PaymentSuccessEvent;
 
 @Component
 @RequiredArgsConstructor

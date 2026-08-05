@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.tournament;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.shared.dto.TournamentDto;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 

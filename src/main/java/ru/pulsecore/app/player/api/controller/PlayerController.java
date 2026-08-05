@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.player.api.dto.request.ChangePasswordRequest;
 import ru.pulsecore.app.player.api.dto.request.UpdateProfileRequest;
 import ru.pulsecore.app.player.api.PlayerApi;
-import ru.pulsecore.app.shared.dto.MessageResponse;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.player.api.dto.response.NotificationsStatusResponse;
 import ru.pulsecore.app.player.api.dto.response.PlayerProfileResponse;
 import ru.pulsecore.app.player.api.dto.response.PlayerResponse;

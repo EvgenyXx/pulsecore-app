@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.admin.infrastructure.clinet.TournamentClient;
-import ru.pulsecore.app.shared.dto.MessageResponse;
-import ru.pulsecore.app.shared.dto.AdminCalculateResponse;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
+import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
 
 import java.util.Map;
 import java.util.UUID;

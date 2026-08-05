@@ -6,10 +6,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import ru.pulsecore.app.player.entity.Player;
-import ru.pulsecore.app.shared.dto.MailNotificationEvent;
+import ru.pulsecore.app.shared.event.MailNotificationEvent;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.VerificationContext;
-import ru.pulsecore.app.shared.dto.PlayerCreatedEvent;
+import ru.pulsecore.app.shared.event.PlayerCreatedEvent;
 
 
 @Component

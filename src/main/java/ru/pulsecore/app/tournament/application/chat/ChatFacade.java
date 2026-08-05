@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.chat;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.shared.dto.PlayerData;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
 import java.util.List;
 

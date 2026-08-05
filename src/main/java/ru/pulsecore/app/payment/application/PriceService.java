@@ -6,7 +6,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.CacheNames;
-import ru.pulsecore.app.shared.dto.PricesResponse;
+import ru.pulsecore.app.shared.dto.response.PricesResponse;
 import ru.pulsecore.app.payment.domain.SubscriptionPeriod;
 import ru.pulsecore.app.payment.infrastructure.exception.PaymentException;
 import ru.pulsecore.app.shared.model.AppSettings;

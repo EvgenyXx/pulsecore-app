@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.api.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.pulsecore.app.shared.dto.ResultDto;
+import ru.pulsecore.app.shared.dto.response.ResultDto;
 
 import java.util.List;
 

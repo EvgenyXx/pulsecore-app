@@ -4,7 +4,7 @@ package ru.pulsecore.app.tournament.api.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.pulsecore.app.shared.dto.PlayerData;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.api.ChatApi;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
 import ru.pulsecore.app.tournament.application.chat.ChatFacade;

@@ -10,7 +10,7 @@ import ru.pulsecore.app.player.infrastructure.exception.BadResetCodeException;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.PasswordResetContext;
-import ru.pulsecore.app.shared.dto.MailNotificationEvent;
+import ru.pulsecore.app.shared.event.MailNotificationEvent;
 
 import java.io.Serializable;
 import java.security.SecureRandom;

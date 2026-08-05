@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.discovery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.shared.dto.TournamentDto;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.notification.application.WebPushService;
 import ru.pulsecore.app.notification.application.mail.MailStrategyRegistry;
 import ru.pulsecore.app.notification.application.mail.MailTypes;

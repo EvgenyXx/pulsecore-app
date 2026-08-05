@@ -1,6 +1,6 @@
 package ru.pulsecore.app.tournament.domain;
 
-import ru.pulsecore.app.shared.dto.ResultDto;
+import ru.pulsecore.app.shared.dto.response.ResultDto;
 
 import java.util.List;
 

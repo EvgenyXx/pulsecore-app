@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.player.api.PlayerApi;
-import ru.pulsecore.app.shared.dto.SubscriptionStatusResponse;
+import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
 import ru.pulsecore.app.player.application.subscription.SubscriptionFacade;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;

@@ -1,8 +1,8 @@
 package ru.pulsecore.app.tournament.infrastructure.client;
 
 
-import ru.pulsecore.app.shared.dto.NotificationInfo;
-import ru.pulsecore.app.shared.dto.PlayerData;
+import ru.pulsecore.app.shared.dto.response.NotificationInfo;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 
 
 import java.util.List;

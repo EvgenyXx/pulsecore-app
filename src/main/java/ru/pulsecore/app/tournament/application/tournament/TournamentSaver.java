@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.tournament;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.shared.dto.TournamentDto;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.infrastructure.persistence.entity.PlayerNotification;
 import ru.pulsecore.app.notification.infrastructure.factory.NotificationFactory;
 import ru.pulsecore.app.notification.infrastructure.factory.TournamentFactory;

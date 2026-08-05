@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.admin.infrastructure.clinet.PlayerClient;
-import ru.pulsecore.app.shared.dto.MessageResponse;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import java.util.List;
 import java.util.UUID;
 

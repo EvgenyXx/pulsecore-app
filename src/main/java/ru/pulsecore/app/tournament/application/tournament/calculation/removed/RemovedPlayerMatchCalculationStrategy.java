@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.application.tournament.calculation.DefaultMatchCalculationStrategy;
-import ru.pulsecore.app.modules.tournament.domain.*;
+
 import ru.pulsecore.app.tournament.domain.*;
 
 @Component

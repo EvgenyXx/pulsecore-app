@@ -1,4 +1,4 @@
-package ru.pulsecore.app.shared.dto;
+package ru.pulsecore.app.shared.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

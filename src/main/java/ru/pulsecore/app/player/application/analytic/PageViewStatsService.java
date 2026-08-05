@@ -2,8 +2,8 @@ package ru.pulsecore.app.player.application.analytic;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.shared.dto.PageViewStats;
-import ru.pulsecore.app.shared.dto.PlayerPageViewStats;
+import ru.pulsecore.app.shared.dto.response.PageViewStats;
+import ru.pulsecore.app.shared.dto.response.PlayerPageViewStats;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerStatsRepository;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PageViewRepository;
 

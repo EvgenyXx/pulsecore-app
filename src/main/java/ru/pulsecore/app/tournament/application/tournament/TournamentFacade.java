@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
-import ru.pulsecore.app.shared.dto.TournamentDto;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
 import ru.pulsecore.app.shared.security.PlayerPrincipalExtractor;
 

@@ -1,4 +1,4 @@
-package ru.pulsecore.app.shared.dto;
+package ru.pulsecore.app.shared.dto.response;
 
 import java.util.UUID;
 
