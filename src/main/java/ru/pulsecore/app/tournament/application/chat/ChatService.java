@@ -1,0 +1,122 @@
+package ru.pulsecore.app.tournament.application.chat;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.notification.application.WebPushService;
+import ru.pulsecore.app.shared.exception.ForbiddenException;
+import ru.pulsecore.app.tournament.infrastructure.exception.MessageNotFoundException;
+import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
+import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.ChatMessageMapper;
+import ru.pulsecore.app.tournament.infrastructure.persistence.entity.ChatMessage;
+import ru.pulsecore.app.tournament.infrastructure.persistence.repository.ChatMessageRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ChatService {
+
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatMessageMapper chatMessageMapper;
+    private final WebPushService webPushService;
+    private final ChatMentionService chatMentionService;
+
+
+
+    @Transactional(readOnly = true)
+    public List<ChatMessageDto> getMessages(Long lineupId) {
+        return chatMessageRepository.findByLineupIdOrderByCreatedAtAsc(lineupId)
+                .stream()
+                .map(chatMessageMapper::toDto)
+                .toList();
+    }
+
+    @Transactional
+    public ChatMessageDto sendMessage(Long lineupId, ChatMessageDto msg) {
+        ChatMessage entity = ChatMessage.builder()
+                .lineupId(lineupId)
+                .playerId(msg.getPlayerId())
+                .playerName(msg.getPlayerName())
+                .message(msg.getMessage())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        if (msg.getReplyToId() != null) {
+            chatMessageRepository.findById(msg.getReplyToId()).ifPresent(replyTo -> {
+                entity.setReplyTo(replyTo);
+                entity.setReplyToContent(replyTo.getMessage());
+                entity.setReplyToSenderName(replyTo.getPlayerName());
+                sendReplyPush(replyTo, msg);
+            });
+        }
+
+        ChatMessage saved = chatMessageRepository.save(entity);
+        ChatMessageDto result = chatMessageMapper.toDto(saved);
+        chatMentionService.processMentions(lineupId, result);
+
+        return result;
+    }
+
+    private void sendReplyPush(ChatMessage originalMsg, ChatMessageDto replyMsg) {
+        try {
+            webPushService.sendToPlayer(
+                    originalMsg.getPlayerId(),
+                    "Новый ответ",
+                    replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
+                    "/live/" + originalMsg.getLineupId()
+            );
+        } catch (Exception e) {
+            log.warn("Не удалось отправить push за ответ: {}", e.getMessage());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public long getOnlineCount(Long lineupId) {
+        return chatMessageRepository.countDistinctPlayerIdByLineupIdAndCreatedAtAfter(
+                lineupId,
+                LocalDateTime.now().minusMinutes(2)
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatMessageDto> getMessagesAfter(Long lineupId, Long afterId) {
+        return chatMessageRepository.findByIdAfterAndLineupIdOrderByCreatedAtAsc(afterId, lineupId)
+                .stream()
+                .map(chatMessageMapper::toDto)
+                .toList();
+    }
+
+    @Transactional
+    public Long deleteMessage(Long messageId, UUID playerId) {
+        ChatMessage msg = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new MessageNotFoundException(messageId));
+
+        if (!msg.getPlayerId().equals(playerId)) {
+            throw new ForbiddenException();
+        }
+
+        Long lineupId = msg.getLineupId();
+        chatMessageRepository.delete(msg);
+        return lineupId;
+    }
+
+    @Transactional
+    public Long updateMessage(Long messageId, UUID playerId, String newText) {
+        ChatMessage msg = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new MessageNotFoundException(messageId));
+
+        if (!msg.getPlayerId().equals(playerId)) {
+            throw new ForbiddenException();
+        }
+
+        msg.setMessage(newText);
+        msg.setEdited(true);
+        chatMessageRepository.save(msg);
+        return msg.getLineupId();
+    }
+}
