@@ -38,7 +38,13 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     Optional<Player> findByOauthProviderAndOauthId(String provider, String oauthId);
 
-    List<Player> findByVerifiedTrueAndIsBlockedFalse();
+
+    @Query(value = """
+            select p.id as id, p.name as name, p.email as email
+            from players p
+            where p.verified = true
+              and p.is_blocked = false""", nativeQuery = true)
+    List<PlayerDataProjection> findByVerifiedTrueAndIsBlockedFalse();
 
 
     @Query("SELECT p.id as id, p.name as name, p.email as email FROM Player p WHERE p.id = :id")

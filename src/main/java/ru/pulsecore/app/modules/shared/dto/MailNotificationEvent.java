@@ -9,6 +9,6 @@ import ru.pulsecore.app.modules.notification_modules.application.mail.context.Ma
 @NoArgsConstructor
 @AllArgsConstructor
 public class MailNotificationEvent {
-    private String type;
-    private MailContext context;
+    private String emailType;
+    private MailContext contextMessage;
 }

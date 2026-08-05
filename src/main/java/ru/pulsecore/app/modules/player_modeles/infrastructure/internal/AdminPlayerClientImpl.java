@@ -12,6 +12,7 @@ import ru.pulsecore.app.modules.player_modeles.infrastructure.client.TournamentC
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.session.SessionService;
 import ru.pulsecore.app.modules.shared.dto.MessageResponse;
+import ru.pulsecore.app.modules.shared.dto.PlayerData;
 import ru.pulsecore.app.modules.shared.dto.SubscriptionStatusResponse;
 
 import java.util.List;
@@ -39,6 +40,15 @@ public class AdminPlayerClientImpl implements PlayerClient {
         playerRepository.deleteById(playerId);
         sessionService.invalidateCurrentSession();
         return new MessageResponse("Аккаунт удалён");
+    }
+
+    @Override
+    public List<PlayerData> getPlayers() {
+       return playerRepository.findByVerifiedTrueAndIsBlockedFalse()
+               .stream()
+               .map(p->
+                       new PlayerData(p.getId(),p.getName(),p.getEmail()))
+               .toList();
     }
 
     @Override
