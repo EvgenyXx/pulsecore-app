@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import ru.pulsecore.app.modules.notification_modules.infrastructure.properties.AdminProperties;
+import ru.pulsecore.app.modules.notification.infrastructure.properties.AdminProperties;
 
 import java.util.TimeZone;
 

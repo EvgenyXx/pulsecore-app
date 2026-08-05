@@ -6,8 +6,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import ru.pulsecore.app.modules.player_modeles.infrastructure.interceptor.SubscriptionInterceptor;
-import ru.pulsecore.app.security.CurrentPlayerArgumentResolver;
+import ru.pulsecore.app.modules.player.infrastructure.interceptor.SubscriptionInterceptor;
+import ru.pulsecore.app.modules.shared.security.CurrentPlayerArgumentResolver;
 
 import java.util.List;
 
