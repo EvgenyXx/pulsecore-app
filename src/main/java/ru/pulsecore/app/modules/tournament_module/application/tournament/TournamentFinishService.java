@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.modules.tournament_module.application.ResultService;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.entity.PlayerNotification;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.modules.tournament_module.domain.ParsedResult;

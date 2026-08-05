@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.tournament_module.api.dto.response;
+package ru.pulsecore.app.modules.shared.dto;
 
 import lombok.Builder;
 import lombok.Data;

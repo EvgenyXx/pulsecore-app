@@ -15,7 +15,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TournamentInternal implements PlayerClient {
+public class TournamentPlayerClientImpl implements PlayerClient {
 
     private final PlayerRepository playerRepository;
 

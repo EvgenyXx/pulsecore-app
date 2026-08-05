@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.player_modeles.api.dto.response;
+package ru.pulsecore.app.modules.shared.dto;
 
 import lombok.Builder;
 

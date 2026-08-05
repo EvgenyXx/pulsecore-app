@@ -1,4 +1,4 @@
-package ru.pulsecore.app.modules.admin_modules.api.dto;
+package ru.pulsecore.app.modules.shared.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

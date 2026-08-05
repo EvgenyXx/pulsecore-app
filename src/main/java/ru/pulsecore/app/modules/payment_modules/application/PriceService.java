@@ -5,9 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.config.CacheNames;
-import ru.pulsecore.app.modules.admin_modules.api.dto.PricesResponse;
+import ru.pulsecore.app.modules.shared.dto.PricesResponse;
 import ru.pulsecore.app.modules.payment_modules.domain.SubscriptionPeriod;
 import ru.pulsecore.app.modules.payment_modules.infrastructure.exception.PaymentException;
 import ru.pulsecore.app.modules.shared.model.AppSettings;
@@ -24,8 +23,16 @@ public class PriceService {
 
     private final AppSettingsRepository repository;
 
+    /**
+     * Метод используется для отдачи наружу
+     * и для внутренней передачи в админ панель
+     * так же используется совместно с update в
+     * дальнейшем переделать на отдельное использование
+     * в дальнейшем переделать на дто
+     * @return возвращает мапу ключ месяц значение
+     */
     @Cacheable(CacheNames.PRICES)
-    public PricesResponse getPrices() {
+    public PricesResponse getPricesData() {
         Map<Integer, Integer> prices = Arrays.stream(SubscriptionPeriod.values())
                 .collect(Collectors.toMap(
                         SubscriptionPeriod::getMonths,
@@ -34,6 +41,12 @@ public class PriceService {
         return new PricesResponse(prices);
     }
 
+
+    /**
+     * Метод используется чисто для внутренних поисков
+     * @param months получается сколько месяцев
+     * @return возвращает цену
+     */
     public int getPrice(int months) {
         String key = SubscriptionPeriod.fromMonths(months).getPriceKey();
         return repository.findByKey(key)
@@ -41,8 +54,8 @@ public class PriceService {
                 .orElseThrow(() -> new PaymentException("Цена не найдена: " + key));
     }
 
+
     @CacheEvict(value = CacheNames.PRICES, allEntries = true)
-    @Transactional
     public void update(int price1, int price2) {
         setValue(SubscriptionPeriod.ONE_MONTH.getPriceKey(), String.valueOf(price1));
         setValue(SubscriptionPeriod.TWO_MONTHS.getPriceKey(), String.valueOf(price2));

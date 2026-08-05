@@ -1,7 +1,7 @@
 package ru.pulsecore.app.modules.player_modeles.application.role;
 
 
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class RoleManagementService {
     private final PlayerService playerService;
 
 
-    @Transactional
+
     public void grantRole(UUID playerId, String roleName) {
         Player player = playerService.getById(playerId);
         Role role = roleService.findByName(roleName);
@@ -35,7 +35,6 @@ public class RoleManagementService {
         log.info("✅ Роль {} выдана игроку {}", roleName, player.getEmail());
     }
 
-    @Transactional
     public void revokeRole(UUID playerId, String roleName) {
         Player player = playerService.getById(playerId);
         boolean removed = player.getRoles().removeIf(r -> r.getName().equals(roleName));

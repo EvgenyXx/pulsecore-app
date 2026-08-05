@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.modules.player_modeles.api.dto.request.ChangePasswordRequest;
 import ru.pulsecore.app.modules.player_modeles.api.dto.request.UpdateProfileRequest;
-import ru.pulsecore.app.modules.player_modeles.api.dto.response.MessageResponse;
+import ru.pulsecore.app.modules.shared.dto.MessageResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.NotificationsStatusResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.PlayerProfileResponse;
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.PlayerResponse;
-import ru.pulsecore.app.modules.player_modeles.infrastructure.session.SessionService;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +21,7 @@ public class PlayerFacade {
     private final PlayerNotificationService notificationService;
     private final PlayerHallsService hallsService;
     private final PlayerService playerService;
-    private final SessionService sessionService;
+
 
     public PlayerProfileResponse updateProfile(UUID playerId, UpdateProfileRequest request) {
         return profileService.updateProfile(playerId, request);
@@ -36,11 +36,6 @@ public class PlayerFacade {
         return playerService.searchPlayers(query);
     }
 
-    public MessageResponse deleteAccount(UUID playerId) {
-        playerService.deletePlayer(playerId);
-        sessionService.invalidateCurrentSession();
-        return new MessageResponse("Аккаунт удалён");
-    }
 
     public MessageResponse toggleNotifications(UUID playerId, boolean enabled) {
         notificationService.setNotificationsEnabled(playerId, enabled);

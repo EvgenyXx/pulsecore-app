@@ -3,15 +3,13 @@ package ru.pulsecore.app.modules.player_modeles.application.player;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import ru.pulsecore.app.modules.player_modeles.api.dto.response.PlayerResponse;
 import ru.pulsecore.app.modules.player_modeles.entity.Player;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.modules.player_modeles.infrastructure.exception.PlayerNotFoundException;
 import ru.pulsecore.app.modules.tournament_module.infrastructure.util.NameNormalizer;
-import ru.pulsecore.app.modules.tournament_module.infrastructure.persistence.repository.ChatMessageRepository;
 
-import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,17 +22,14 @@ public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final NameNormalizer nameNormalizer;
-    private final ChatMessageRepository chatMessageRepository;
-    private final RedisIndexedSessionRepository sessionRepository;
+
 
     public Player getById(UUID id) {
         return playerRepository.findById(id)
                 .orElseThrow(() -> new PlayerNotFoundException(id.toString()));
     }
 
-    public Player findById(UUID id) {
-        return playerRepository.findById(id).orElse(null);
-    }
+
 
     public List<Player> getAll() {
         return playerRepository.findAll();
@@ -57,7 +52,7 @@ public class PlayerService {
                 .toList();
     }
 
-    @Transactional
+
     public Player save(Player player) {
         if (player.getName() != null) {
             player.setName(nameNormalizer.normalize(player.getName()));
@@ -65,15 +60,10 @@ public class PlayerService {
         return playerRepository.save(player);
     }
 
-    @Transactional
-    public void deletePlayer(UUID id) {
-        chatMessageRepository.deleteByPlayerId(id);
-        String principalName = id.toString();
-        sessionRepository.findByPrincipalName(principalName).forEach((sessionId, session) ->
-                sessionRepository.deleteById(sessionId));
-        playerRepository.deleteById(id);
-    }
 
+    public Player findById(UUID id) {
+        return playerRepository.findById(id).orElse(null);
+    }
     public Optional<Player> findByIdOptional(UUID id) {
         try {
             return Optional.of(findById(id));

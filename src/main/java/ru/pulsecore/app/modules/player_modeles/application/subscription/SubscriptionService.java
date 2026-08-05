@@ -23,7 +23,6 @@ public class SubscriptionService {
     private final PlayerService playerService;
 
     @CacheEvict(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
-    @Transactional
     public void deactivate(UUID playerId) {
         Player player = playerService.getById(playerId);
         Subscription subscription = player.getSubscription();
@@ -35,7 +34,6 @@ public class SubscriptionService {
     }
 
     @CacheEvict(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
-    @Transactional
     public void activate(UUID playerId, int days) {
         Player player = playerService.getById(playerId);
 
@@ -57,7 +55,6 @@ public class SubscriptionService {
     }
 
     @Cacheable(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
-    @Transactional(readOnly = true)
     public boolean hasActiveSubscription(UUID playerId) {
         var sub = subscriptionRepository.findByPlayerId(playerId);
         boolean active = sub.map(Subscription::isActiveNow).orElse(false);
