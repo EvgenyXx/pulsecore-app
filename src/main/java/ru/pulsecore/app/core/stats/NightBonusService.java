@@ -2,7 +2,7 @@ package ru.pulsecore.app.core.stats;
 
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.modules.tournament_module.infrastructure.parser.HtmlSelectors;
+import ru.pulsecore.app.modules.tournament.infrastructure.parser.HtmlSelectors;
 
 import java.time.LocalTime;
 

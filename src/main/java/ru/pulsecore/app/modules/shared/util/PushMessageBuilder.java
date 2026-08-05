@@ -1,8 +1,8 @@
 package ru.pulsecore.app.modules.shared.util;
 
 import ru.pulsecore.app.core.dto.TournamentDto;
-import ru.pulsecore.app.modules.tournament_module.infrastructure.util.DateTimeUtils;
-import ru.pulsecore.app.modules.tournament_module.infrastructure.util.StringUtils;
+import ru.pulsecore.app.modules.tournament.infrastructure.util.DateTimeUtils;
+import ru.pulsecore.app.modules.tournament.infrastructure.util.StringUtils;
 
 import java.util.List;
 
