@@ -1,0 +1,26 @@
+package ru.pulsecore.app.player.api.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ru.pulsecore.app.player.api.PlayerApi;
+import ru.pulsecore.app.shared.dto.SubscriptionStatusResponse;
+import ru.pulsecore.app.player.application.subscription.SubscriptionFacade;
+import ru.pulsecore.app.shared.security.CurrentPlayer;
+import ru.pulsecore.app.shared.security.PlayerPrincipal;
+
+@RestController
+@RequestMapping(PlayerApi.BASE_PATH)
+@RequiredArgsConstructor
+public class SubscriptionController {
+
+    private final SubscriptionFacade subscriptionFacade;
+
+    @GetMapping(PlayerApi.SUBSCRIPTION)
+    public ResponseEntity<SubscriptionStatusResponse> getSubscription(
+            @CurrentPlayer PlayerPrincipal principal) {
+        return ResponseEntity.ok(subscriptionFacade.getSubscription(principal.playerId()));
+    }
+}

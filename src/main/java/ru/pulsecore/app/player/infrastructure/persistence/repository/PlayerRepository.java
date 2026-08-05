@@ -1,0 +1,55 @@
+package ru.pulsecore.app.player.infrastructure.persistence.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
+
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface PlayerRepository extends JpaRepository<Player, UUID> {
+
+
+
+
+
+    @Query("SELECT p FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Player> searchByName(@Param("query") String query);
+
+    Optional<Player> findByNameIgnoreCase(String name);
+
+
+    boolean existsByEmail(String email);
+
+    boolean existsByNameIgnoreCase(String name);
+
+    @Query("SELECT p FROM Player p WHERE LOWER(p.email) = LOWER(:email)")
+    Optional<Player> findByEmail(@Param("email") String email);
+
+    List<Player> findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(String name, String email);
+
+    List<Player> findByVerifiedFalseAndCreatedAtBefore(LocalDateTime cutoff);
+
+
+
+
+
+    Optional<Player> findByOauthProviderAndOauthId(String provider, String oauthId);
+
+
+
+    List<PlayerDataProjection> findByVerifiedTrueAndIsBlockedFalse();
+
+
+    @Query("SELECT p.id as id, p.name as name, p.email as email FROM Player p WHERE p.id = :id")
+    Optional<PlayerDataProjection> findProjectionById(@Param("id") UUID id);
+
+}
