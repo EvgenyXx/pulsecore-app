@@ -6,4 +6,5 @@ public interface PlayerDataProjection {
     UUID getId();
     String getName();
     String getEmail();
+    String getPrimaryLeague();
 }

@@ -135,7 +135,7 @@ function toggleTheme() {
     const current = html.getAttribute('data-theme') || 'dark';
     const next = current === 'dark' ? 'ocean' : 'dark';
     html.setAttribute('data-theme', next);
-    fetch('/api/auth/me/theme', {
+    fetch('/api/profile/me/theme', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',

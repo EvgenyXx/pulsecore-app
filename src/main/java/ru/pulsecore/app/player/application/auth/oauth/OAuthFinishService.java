@@ -9,7 +9,7 @@ import ru.pulsecore.app.player.api.dto.request.OAuthFinishRequest;
 import ru.pulsecore.app.player.application.auth.PlayerLoginService;
 import ru.pulsecore.app.player.application.auth.RegistrationMailPublisher;
 import ru.pulsecore.app.player.infrastructure.exception.OAuthEmailNotReceivedException;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
 import ru.pulsecore.app.player.application.subscription.TrialActivator;
 
 

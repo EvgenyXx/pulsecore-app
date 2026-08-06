@@ -6,8 +6,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.CacheNames;
-import ru.pulsecore.app.player.entity.Player;
-import ru.pulsecore.app.player.entity.Subscription;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Subscription;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
 import ru.pulsecore.app.player.application.player.PlayerService;
 

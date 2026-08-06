@@ -23,14 +23,16 @@ spring:
 
 logging:
   level:
-    root: WARN
-    ru.pulsecore.app: info
+    root: info
+    ru.pulsecore.app: warn
     org.springframework: WARN
     org.hibernate: WARN
-    ru.pulsecore.app.modules.notification_modules.infrastructure.event.PlayerCreatedListener: INFO
-    ru.pulsecore.app.modules.player_modeles.application.subscription.SubscriptionService: INFO
-    ru.pulsecore.app.modules.tournament_module.service.tornament.TournamentFinishService: INFO
-    ru.pulsecore.app.modules.tournament_module.service.tornament.TournamentCascadeSyncService: INFO
+    ru.pulsecore.app.tournament.application.discovery.DiscoveryNotificationService: info
+    ru.pulsecore.app.tournament.application.discovery.TournamentDiscoveryService: info
+    ru.pulsecore.app.player.application.analytic.PrimaryLeagueUpdater: INFO
+    ru.pulsecore.app.tournament.application.tournament.finish.TournamentFinishService: INFO
+
+
 
 
 app:

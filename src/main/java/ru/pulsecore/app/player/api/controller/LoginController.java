@@ -13,10 +13,7 @@ import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.request.LoginRequest;
 import ru.pulsecore.app.player.api.dto.response.MeResponse;
 import ru.pulsecore.app.player.application.auth.AuthFacade;
-import ru.pulsecore.app.shared.security.CurrentPlayer;
-import ru.pulsecore.app.shared.security.PlayerPrincipal;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping(AuthApi.BASE_PATH)
@@ -41,12 +38,7 @@ public class LoginController {
         return ResponseEntity.ok(authFacade.me(user.getPlayerId(), response));
     }
 
-    @PostMapping(AuthApi.ME_THEME)
-    public ResponseEntity<Void> setTheme(@CurrentPlayer PlayerPrincipal principal,
-                                         @RequestBody Map<String, String> body) {
-        authFacade.setTheme(principal.playerId().toString(), body.getOrDefault("theme", "dark"));
-        return ResponseEntity.ok().build();
-    }
+
 
     @PostMapping(AuthApi.LOGOUT)
     public ResponseEntity<Void> logout(HttpSession session, HttpServletResponse response) {

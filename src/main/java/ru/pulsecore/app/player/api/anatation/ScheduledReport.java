@@ -7,6 +7,7 @@ package ru.pulsecore.app.player.api.anatation;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.player.api.PlayerApi;
+import ru.pulsecore.app.tournament.api.TournamentApi;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,6 +17,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @RestController
-@RequestMapping(PlayerApi.BASE_PATH)
+@RequestMapping(TournamentApi.BASE_PATH)
 public @interface  ScheduledReport {
 }

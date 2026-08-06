@@ -2,7 +2,7 @@ package ru.pulsecore.app.player.application.auth.oauth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 
 import java.util.Optional;

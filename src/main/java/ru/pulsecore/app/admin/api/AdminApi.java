@@ -3,10 +3,15 @@ package ru.pulsecore.app.admin.api;
 public final class AdminApi {
 
 
+
+
     private AdminApi() {}
 
     public static final String BASE = "/api/admin";
-    public static final String PRICES = "/prices";
+
+    public static final String UPDATE_SUB_PRICE = "/update";
+    public static final String GET_PRICE_SUB = "/prices" ;
+
     public static final String ROLES_GRANT = "/players/{id}/roles/grant";
     public static final String ROLES_REVOKE = "/players/{id}/roles/revoke";
     public static final String ROLES = "/players/{id}/roles";

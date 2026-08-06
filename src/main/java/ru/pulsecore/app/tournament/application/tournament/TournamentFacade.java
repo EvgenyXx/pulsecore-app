@@ -20,6 +20,7 @@ public class TournamentFacade {
 
 
 
+    //todo удалить
     public List<TournamentDto> searchTournaments(String date, String endDate) {
         PlayerPrincipal principal = extractor.extract();
         String playerName = principal.name();
@@ -31,10 +32,9 @@ public class TournamentFacade {
 
 
 
-    public void updateResult(Long tournamentId, Double amount, Double bonus) {
-        extractor.extract();
-        tournamentResultService.updateResult(tournamentId, amount, bonus);
-    }
+
+
+
 
 
 }

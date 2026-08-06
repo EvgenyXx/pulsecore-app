@@ -3,16 +3,16 @@ package ru.pulsecore.app.tournament.application.tournament;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import ru.pulsecore.app.shared.dto.response.ResultDto;
 
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.util.PlayerNameMatcher;
-import ru.pulsecore.app.tournament.infrastructure.exception.TournamentResultNotFoundException;
+
 import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,29 +23,13 @@ import java.util.UUID;
 @Slf4j
 public class TournamentResultProcessor {
 
-    private final TournamentResultRepository tournamentResultRepository;
+
     private final TournamentRepository tournamentRepository;
     private final TournamentResultPersistence persistence;
 
-    @Transactional
-    public void updateResult(Long id, Double amount, Double bonus) {
-        TournamentResultEntity result = tournamentResultRepository.findById(id)
-                .orElseThrow(() -> new TournamentResultNotFoundException(id));
-        if (amount != null) result.setAmount(amount);
-        if (bonus != null) result.setBonus(bonus);
-        tournamentResultRepository.save(result);
-        persistence.evictCaches();
-    }
 
-    public void processResults(List<ResultDto> results,
-                               UUID playerId, String playerName, TournamentEntity tournament,
-                               double bonus, boolean isFinished, boolean hasRemoved, String league) {
-        for (ResultDto r : results) {
-            if (PlayerNameMatcher.isSamePlayer(playerName, r.getPlayer()) && isFinished) {
-                persistence.save(buildEntity(playerId, tournament, r, bonus, hasRemoved, league));
-            }
-        }
-    }
+
+
 
     public boolean processResults(List<ResultDto> results,
                                   UUID playerId, String playerName, Long tournamentId,

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 
 
@@ -21,10 +21,13 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
 
 
-    @Query("SELECT p FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
-    List<Player> searchByName(@Param("query") String query);
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as " +
+            "primaryLeague FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<PlayerDataProjection> searchByName(@Param("query") String query);
 
-    Optional<Player> findByNameIgnoreCase(String name);
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as " +
+            "primaryLeague FROM Player p WHERE LOWER(p.name) = LOWER(:name)")
+    Optional<PlayerDataProjection> findByNameIgnoreCase(@Param("name") String name);
 
 
     boolean existsByEmail(String email);
@@ -49,7 +52,8 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     List<PlayerDataProjection> findByVerifiedTrueAndIsBlockedFalse();
 
 
-    @Query("SELECT p.id as id, p.name as name, p.email as email FROM Player p WHERE p.id = :id")
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague FROM Player p WHERE p.id = :id")
     Optional<PlayerDataProjection> findProjectionById(@Param("id") UUID id);
+
 
 }

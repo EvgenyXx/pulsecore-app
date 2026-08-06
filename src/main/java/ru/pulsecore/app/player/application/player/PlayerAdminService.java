@@ -39,7 +39,7 @@ public class PlayerAdminService {
         return playerRepository.findByVerifiedTrueAndIsBlockedFalse()
                 .stream()
                 .map(p ->
-                        new PlayerData(p.getId(), p.getName(), p.getEmail()))
+                        new PlayerData(p.getId(), p.getName(), p.getEmail(), p.getPrimaryLeague()))
                 .toList();
     }
 }

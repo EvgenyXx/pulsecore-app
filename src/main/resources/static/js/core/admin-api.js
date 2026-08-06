@@ -20,8 +20,8 @@ export const AdminAPI = {
     togglePlayerRole: (playerId, role, isGrant) => apiRequest(`/admin/players/${playerId}/roles/${isGrant ? 'grant' : 'revoke'}?role=${role}`, { method: isGrant ? 'POST' : 'DELETE' }),
     giveSubscription: (playerId, days) => apiRequest(`/admin/players/${playerId}/subscribe?days=${days}`, { method: 'POST' }),
     removeSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/unsubscribe`, { method: 'DELETE' }),
-    getPrices: () => apiRequest('/prices'),
-    updatePrices: (prices) => apiRequest('/admin/prices', {
+    getPrices: () => apiRequest('/admin/prices'),
+    updatePrices: (prices) => apiRequest('/admin/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(prices)

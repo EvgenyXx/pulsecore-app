@@ -11,10 +11,10 @@ import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.response.MeResponse;
 import ru.pulsecore.app.player.infrastructure.persistence.mapping.PlayerDtoMapper;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
 import ru.pulsecore.app.player.application.player.PlayerService;
 import ru.pulsecore.app.player.infrastructure.session.RememberMeService;
-import ru.pulsecore.app.player.application.player.ThemeService;
+import ru.pulsecore.app.player.application.profile.ThemeService;
 
 import java.util.UUID;
 
@@ -57,10 +57,6 @@ public class AuthFacade {
                 player != null && player.isAdmin(),
                 theme
         );
-    }
-
-    public void setTheme(String playerId, String theme) {
-        themeService.setTheme(UUID.fromString(playerId), theme);
     }
 
     public void logout(HttpSession session, HttpServletResponse response) {

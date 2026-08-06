@@ -3,7 +3,7 @@ package ru.pulsecore.app.player.application.auth.oauth;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
 import ru.pulsecore.app.notification.infrastructure.properties.AdminProperties;
 import ru.pulsecore.app.notification.application.mail.MailStrategyRegistry;
 import ru.pulsecore.app.notification.application.mail.MailTypes;

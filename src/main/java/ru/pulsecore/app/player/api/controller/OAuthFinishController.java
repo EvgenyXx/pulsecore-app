@@ -1,4 +1,4 @@
-// ==================== OAuthFinishController.java ====================
+
 package ru.pulsecore.app.player.api.controller;
 
 import jakarta.servlet.http.HttpServletRequest;

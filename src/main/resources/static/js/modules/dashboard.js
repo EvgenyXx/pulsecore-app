@@ -7,7 +7,7 @@ let dashboardLoaded = false;
 // Загрузка бейджа отчётов
 async function loadReportBadge() {
     try {
-        const res = await fetch('/api/player/reports/pending', { credentials: 'same-origin' });
+        const res = await fetch('/api/tournament/reports/pending', { credentials: 'same-origin' });
         const reports = await res.json();
         document.getElementById('reportBadge').innerHTML = renderReportBadge(reports);
     } catch(e) {}

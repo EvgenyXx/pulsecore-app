@@ -3,8 +3,8 @@ package ru.pulsecore.app.player.infrastructure.persistence.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.player.entity.Player;
-import ru.pulsecore.app.player.entity.Subscription;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Subscription;
 
 import java.util.List;
 import java.util.Optional;

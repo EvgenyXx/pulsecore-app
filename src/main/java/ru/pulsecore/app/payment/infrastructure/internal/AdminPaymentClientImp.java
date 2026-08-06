@@ -21,4 +21,8 @@ public class AdminPaymentClientImp implements PaymentClient {
         return priceService.getPricesData();
     }
 
+    @Override
+    public PricesResponse getPrices() {
+        return priceService.getPricesData();
+    }
 }

@@ -1,17 +1,9 @@
 package ru.pulsecore.app.player.api.controller;
-
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.pulsecore.app.player.api.dto.request.ChangePasswordRequest;
-import ru.pulsecore.app.player.api.dto.request.UpdateProfileRequest;
 import ru.pulsecore.app.player.api.PlayerApi;
-import ru.pulsecore.app.shared.dto.response.MessageResponse;
-import ru.pulsecore.app.player.api.dto.response.NotificationsStatusResponse;
-import ru.pulsecore.app.player.api.dto.response.PlayerProfileResponse;
 import ru.pulsecore.app.player.api.dto.response.PlayerResponse;
-
 import ru.pulsecore.app.player.application.player.PlayerFacade;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
@@ -26,19 +18,7 @@ public class PlayerController { //todo переименовать и сдела�
 
     private final PlayerFacade playerFacade;
 
-    @PutMapping(PlayerApi.PROFILE)
-    public ResponseEntity<PlayerProfileResponse> updateProfile(
-            @CurrentPlayer PlayerPrincipal principal,
-            @Valid @RequestBody UpdateProfileRequest request) {
-        return ResponseEntity.ok(playerFacade.updateProfile(principal.playerId(), request));
-    }
 
-    @PutMapping(PlayerApi.CHANGE_PASSWORD)
-    public ResponseEntity<MessageResponse> changePassword(
-            @CurrentPlayer PlayerPrincipal principal,
-            @Valid @RequestBody ChangePasswordRequest request) {
-        return ResponseEntity.ok(playerFacade.changePassword(principal.playerId(), request));
-    }
 
     @GetMapping(PlayerApi.SEARCH)
     public ResponseEntity<List<PlayerResponse>> search(@RequestParam(PlayerApi.SEARCH_PARAM) String q) {
@@ -46,18 +26,6 @@ public class PlayerController { //todo переименовать и сдела�
     }
 
 
-    @PutMapping(PlayerApi.NOTIFICATIONS)
-    public ResponseEntity<MessageResponse> toggleNotifications(
-            @CurrentPlayer PlayerPrincipal principal,
-            @RequestParam boolean enabled) {
-        return ResponseEntity.ok(playerFacade.toggleNotifications(principal.playerId(), enabled));
-    }
-
-    @GetMapping(PlayerApi.NOTIFICATIONS_STATUS)
-    public ResponseEntity<NotificationsStatusResponse> getNotificationsStatus(
-            @CurrentPlayer PlayerPrincipal principal) {
-        return ResponseEntity.ok(playerFacade.getNotificationsStatus(principal.playerId()));
-    }
 
     @GetMapping(PlayerApi.HALLS)
     public ResponseEntity<Map<String, String>> getHalls(@CurrentPlayer PlayerPrincipal principal) {

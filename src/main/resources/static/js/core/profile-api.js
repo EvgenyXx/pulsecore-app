@@ -11,24 +11,24 @@ async function apiRequest(endpoint, options = {}) {
 
 export const ProfileAPI = {
     getMe: () => apiRequest('/auth/me'),
-    getNotificationStatus: () => apiRequest('/player/notifications/status'),
-    setNotification: (enabled) => apiRequest(`/player/notifications?enabled=${enabled}`, {
+    getNotificationStatus: () => apiRequest('/profile/notifications/status'),
+    setNotification: (enabled) => apiRequest(`/profile/notifications?enabled=${enabled}`, {
         method: 'PUT'
     }),
     getPushStatus: () => apiRequest('/push/push-status'),
     togglePush: () => apiRequest('/push/toggle', { method: 'POST' }),
     getSubscription: () => apiRequest('/player/subscription'),
-    verifyPassword: (password) => apiRequest('/auth/verify-password', {
+    verifyPassword: (password) => apiRequest('/profile/verify-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
     }),
-    changePassword: (oldPassword, newPassword) => apiRequest('/player/change-password', {
+    changePassword: (oldPassword, newPassword) => apiRequest('/profile/change-password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oldPassword, newPassword })
     }),
-    saveEmail: (email) => apiRequest('/player/profile', {
+    saveEmail: (email) => apiRequest('/profile/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })

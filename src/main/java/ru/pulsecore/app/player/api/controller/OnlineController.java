@@ -15,6 +15,7 @@ public class OnlineController {
 
     private final OnlineService onlineService;
 
+    //todo добавить куда то
     @GetMapping(OnlineApi.BASE_PATH)
     public ResponseEntity<Map<String, Long>> getOnline() {
         return ResponseEntity.ok(Map.of("online", onlineService.getOnlineCount()));

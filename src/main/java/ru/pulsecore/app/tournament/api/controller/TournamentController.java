@@ -21,25 +21,17 @@ public class TournamentController {
 
 
 
-    @GetMapping(TournamentApi.SEARCH)
-    public ResponseEntity<List<TournamentDto>> searchTournaments(
-            @RequestParam(TournamentApi.PARAM_DATE) String date,
-            @RequestParam(required = false) String endDate) {
-        return ResponseEntity.ok(tournamentFacade.searchTournaments(date, endDate));
-    }
+    //todo удалить
+//    @GetMapping(TournamentApi.SEARCH)
+//    public ResponseEntity<List<TournamentDto>> searchTournaments(
+//            @RequestParam(TournamentApi.PARAM_DATE) String date,
+//            @RequestParam(required = false) String endDate) {
+//        return ResponseEntity.ok(tournamentFacade.searchTournaments(date, endDate));
+//    }
 
 
 
-    @PutMapping(TournamentApi.UPDATE_RESULT)
-    public ResponseEntity<Map<String, String>> updateResult(
-            @PathVariable Long id,
-            @RequestBody Map<String, Double> body) {
-        tournamentFacade.updateResult(
-                id,
-                body.get(TournamentApi.PARAM_AMOUNT),
-                body.get(TournamentApi.PARAM_BONUS));
-        return ResponseEntity.ok(Map.of(TournamentApi.RESP_MESSAGE, TournamentApi.RESP_OK));
-    }
+
 
 
 }

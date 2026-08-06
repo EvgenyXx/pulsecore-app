@@ -3,7 +3,7 @@ package ru.pulsecore.app.player.application.subscription;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
-import ru.pulsecore.app.player.entity.Subscription;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Subscription;
 
 import java.util.UUID;
 

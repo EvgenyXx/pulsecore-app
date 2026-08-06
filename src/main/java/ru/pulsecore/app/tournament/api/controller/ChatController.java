@@ -1,4 +1,3 @@
-// ChatController.java — удалить getOnline
 package ru.pulsecore.app.tournament.api.controller;
 
 import lombok.RequiredArgsConstructor;

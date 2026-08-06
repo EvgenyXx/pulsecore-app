@@ -11,12 +11,12 @@ async function apiRequest(endpoint, options = {}) {
 export const AnalyticsAPI = {
     getMe: () => apiRequest('/auth/me'),
     getSubscription: () => apiRequest('/player/subscription'),
-    getLeagueAvg: () => apiRequest('/player/analytics'),
-    getMonthly: (year) => apiRequest(`/player/monthly-income?year=${year}`),
-    getDaily: (year, month) => apiRequest(`/player/daily-income?year=${year}&month=${month}`),
+    getLeagueAvg: () => apiRequest('/tournament/analytics'),
+    getMonthly: (year) => apiRequest(`/tournament/monthly-income?year=${year}`),
+    getDaily: (year, month) => apiRequest(`/tournament/daily-income?year=${year}&month=${month}`),
     getBestTime: (params) => {
         const query = new URLSearchParams(params).toString();
-        return apiRequest(`/player/best-time?${query}`);
+        return apiRequest(`/tournament/best-time?${query}`);
     }
 };
 

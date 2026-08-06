@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import ru.pulsecore.app.payment.api.PaymentResponse;
 import ru.pulsecore.app.payment.infrastructure.exception.PaymentException;
 import ru.pulsecore.app.payment.infrastructure.properties.YookassaProperties;
 
@@ -16,14 +17,14 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class YookassaService {
-
+    //todo переделывать нахуй свалка
     private final YookassaProperties props;
     private final PriceService priceService;
     private final RestTemplate restTemplate = new RestTemplate();
 
 
 
-    public record PaymentResponse(String confirmationUrl, String paymentId) {}
+
 
     public PaymentResponse createPayment(UUID playerId, int months) {
         int amount = priceService.getPrice(months);
@@ -74,6 +75,6 @@ public class YookassaService {
         String url = (String) confirmation.get("confirmation_url");
 
         log.info("Payment created: id={}, url={}", paymentId, url);
-        return new PaymentResponse(url, paymentId);
+        return new PaymentResponse(url);
     }
 }

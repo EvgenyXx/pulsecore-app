@@ -3,7 +3,7 @@ package ru.pulsecore.app.player.application.role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.player.entity.Role;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Role;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.RoleRepository;
 
 @Service

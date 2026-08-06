@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import ru.pulsecore.app.player.api.dto.response.PlayerResponse;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.player.infrastructure.exception.PlayerNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
@@ -28,6 +28,10 @@ public class PlayerService {
         return playerRepository.findById(id)
                 .orElseThrow(() -> new PlayerNotFoundException(id.toString()));
     }
+
+    public boolean existsByEmail(String email) {
+        return playerRepository.existsByEmail(email);
+    };
 
 
 

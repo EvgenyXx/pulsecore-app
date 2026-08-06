@@ -1,4 +1,4 @@
-// ==================== TournamentResultRepository.java ====================
+
 package ru.pulsecore.app.tournament.infrastructure.persistence.repository;
 
 import org.springframework.data.domain.Page;
