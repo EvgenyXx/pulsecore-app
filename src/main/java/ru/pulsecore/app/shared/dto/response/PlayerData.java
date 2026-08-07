@@ -6,7 +6,7 @@ public record PlayerData(
         UUID playerId,
         String playerName,
         String email,
-        String primaryLeague
-
-) {
-}
+        String primaryLeague,
+        boolean pushEnabled,
+        boolean notificationsEnabled
+) {}

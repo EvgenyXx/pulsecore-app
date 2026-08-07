@@ -2,8 +2,8 @@ package ru.pulsecore.app.player.application.subscription;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Subscription;
+import ru.pulsecore.app.player.domain.Player;
+import ru.pulsecore.app.player.domain.Subscription;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
 
 @Component

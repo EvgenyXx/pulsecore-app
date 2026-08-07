@@ -1,5 +1,6 @@
-// PointsCalculator.java
 package ru.pulsecore.app.tournament.domain;
+
+import ru.pulsecore.app.tournament.domain.model.Match;
 
 import java.time.LocalDate;
 

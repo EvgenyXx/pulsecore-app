@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.application.player.PlayerService;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 
 
 import java.util.UUID;

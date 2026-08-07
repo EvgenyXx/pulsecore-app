@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.lineup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.api.dto.response.LineupDto;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.Lineup;
+import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
 import ru.pulsecore.app.player.application.player.PlayerHallsService;
 import ru.pulsecore.app.player.application.player.PlayerService;

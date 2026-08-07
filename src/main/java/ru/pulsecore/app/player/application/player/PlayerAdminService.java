@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.player.infrastructure.client.TournamentClient;
+import ru.pulsecore.app.player.client.TournamentClient;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.player.infrastructure.session.SessionService;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
@@ -39,7 +39,8 @@ public class PlayerAdminService {
         return playerRepository.findByVerifiedTrueAndIsBlockedFalse()
                 .stream()
                 .map(p ->
-                        new PlayerData(p.getId(), p.getName(), p.getEmail(), p.getPrimaryLeague()))
+                        new PlayerData(p.getId(), p.getName(), p.getEmail(), p.getPrimaryLeague(),
+                                p.getPushEnabled(),p.getNotificationsEnabled()))
                 .toList();
     }
 }

@@ -3,7 +3,7 @@ package ru.pulsecore.app.player.infrastructure.config;
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 
 
 @Getter

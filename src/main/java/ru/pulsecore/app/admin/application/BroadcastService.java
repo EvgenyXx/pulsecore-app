@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.admin.infrastructure.clinet.PlayerClient;
+import ru.pulsecore.app.admin.client.PlayerClient;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.BroadcastContext;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;

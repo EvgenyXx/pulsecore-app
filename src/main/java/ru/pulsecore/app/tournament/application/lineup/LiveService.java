@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
 import ru.pulsecore.app.tournament.api.dto.response.TournamentLiveDto;
-import ru.pulsecore.app.tournament.domain.LiveStatus;
+import ru.pulsecore.app.tournament.domain.enums.LiveStatus;
 import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.LineupLiveMapper;
 import ru.pulsecore.app.tournament.application.chat.ChatWebSocketService;
 

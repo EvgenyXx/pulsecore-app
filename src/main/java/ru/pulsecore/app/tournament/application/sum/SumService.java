@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentResultNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PeriodStatsProjection;
@@ -12,8 +11,8 @@ import ru.pulsecore.app.player.api.dto.response.SumResponse;
 
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.application.tournament.TournamentResultService;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TournamentResultEntity;
+import ru.pulsecore.app.tournament.application.result.TournamentResultService;
+import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -3,11 +3,12 @@ package ru.pulsecore.app.player.infrastructure.persistence.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Subscription;
+import ru.pulsecore.app.player.domain.Player;
+import ru.pulsecore.app.player.domain.Subscription;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -18,8 +19,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
 
     void deleteByPlayer(Player p);
 
-    @Query(value = "SELECT * FROM subscription WHERE active = true AND expires_at::date = CURRENT_DATE + 1", nativeQuery = true)
-    List<Subscription> findExpiringTomorrow();
+    @Query("SELECT s.playerId FROM Subscription s WHERE s.active = true AND s.expiresAt = CURRENT_DATE + 1")
+    Set<UUID> findExpiringPlayerIds();
 
     @Query("SELECT s FROM Subscription s WHERE s.active = true AND s.expiresAt < CURRENT_TIMESTAMP")
     List<Subscription> findExpired();

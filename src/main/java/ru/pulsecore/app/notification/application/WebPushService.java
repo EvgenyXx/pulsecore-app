@@ -8,7 +8,7 @@ import nl.martijndwars.webpush.PushService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.infrastructure.config.VapidConfig;
-import ru.pulsecore.app.notification.entity.PushSubscription;
+import ru.pulsecore.app.notification.domain.PushSubscription;
 import ru.pulsecore.app.notification.infrastructure.repository.PushSubscriptionRepository;
 
 import java.security.Security;

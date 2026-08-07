@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.Lineup;
+import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.LineupMapper;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.HallStreamRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;

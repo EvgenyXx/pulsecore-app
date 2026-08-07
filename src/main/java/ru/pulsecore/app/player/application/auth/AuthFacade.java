@@ -11,7 +11,7 @@ import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.response.MeResponse;
 import ru.pulsecore.app.player.infrastructure.persistence.mapping.PlayerDtoMapper;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.application.player.PlayerService;
 import ru.pulsecore.app.player.infrastructure.session.RememberMeService;
 import ru.pulsecore.app.player.application.profile.ThemeService;

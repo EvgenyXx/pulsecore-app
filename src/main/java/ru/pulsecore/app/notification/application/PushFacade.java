@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.application.player.PlayerService;
 import ru.pulsecore.app.notification.api.dto.PushSubscriptionRequest;
 import ru.pulsecore.app.notification.infrastructure.config.VapidConfig;
-import ru.pulsecore.app.notification.entity.PushSubscription;
+import ru.pulsecore.app.notification.domain.PushSubscription;
 import ru.pulsecore.app.notification.infrastructure.repository.PushSubscriptionRepository;
 
 import java.util.UUID;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.shared.dto.response.PageViewStats;
 import ru.pulsecore.app.shared.dto.response.PlayerPageViewStats;
-import ru.pulsecore.app.admin.infrastructure.clinet.PlayerClient;
+import ru.pulsecore.app.admin.client.PlayerClient;
 
 
 import java.util.List;

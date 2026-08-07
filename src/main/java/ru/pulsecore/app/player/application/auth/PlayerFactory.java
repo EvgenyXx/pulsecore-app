@@ -3,8 +3,8 @@ package ru.pulsecore.app.player.application.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Role;
+import ru.pulsecore.app.player.domain.Player;
+import ru.pulsecore.app.player.domain.Role;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 
 import java.time.LocalDateTime;

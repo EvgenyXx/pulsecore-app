@@ -5,30 +5,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, UUID> {
-
-
-
-
-
-    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as " +
-            "primaryLeague FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
-    List<PlayerDataProjection> searchByName(@Param("query") String query);
-
-    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as " +
-            "primaryLeague FROM Player p WHERE LOWER(p.name) = LOWER(:name)")
-    Optional<PlayerDataProjection> findByNameIgnoreCase(@Param("name") String name);
-
 
     boolean existsByEmail(String email);
 
@@ -41,19 +29,21 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     List<Player> findByVerifiedFalseAndCreatedAtBefore(LocalDateTime cutoff);
 
-
-
-
-
     Optional<Player> findByOauthProviderAndOauthId(String provider, String oauthId);
 
 
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<PlayerDataProjection> searchByName(@Param("query") String query);
 
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled FROM Player p WHERE LOWER(p.name) = LOWER(:name)")
+    Optional<PlayerDataProjection> findByNameIgnoreCase(@Param("name") String name);
+
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled FROM Player p WHERE p.verified = true AND p.isBlocked = false")
     List<PlayerDataProjection> findByVerifiedTrueAndIsBlockedFalse();
 
-
-    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague FROM Player p WHERE p.id = :id")
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled FROM Player p WHERE p.id = :id")
     Optional<PlayerDataProjection> findProjectionById(@Param("id") UUID id);
 
-
+    @Query("SELECT p.id AS id, p.name AS name, p.email AS email, p.primaryLeague AS primaryLeague, p.pushEnabled AS pushEnabled, p.notificationsEnabled AS notificationsEnabled FROM Player p WHERE p.id IN :ids")
+    List<PlayerDataProjection> findProjectionsByIds(@Param("ids") Set<UUID> ids);
 }

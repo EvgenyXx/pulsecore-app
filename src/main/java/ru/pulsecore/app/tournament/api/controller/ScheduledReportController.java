@@ -6,8 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.pulsecore.app.player.api.PlayerApi;
-
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.player.api.dto.response.ScheduledReportResponse;
 import ru.pulsecore.app.player.api.dto.request.CreateScheduledReportRequest;
@@ -32,7 +30,7 @@ public class ScheduledReportController {
             @CurrentPlayer PlayerPrincipal player) {
 
         facade.createReport(player.playerId(), request.dateFrom(), request.dateTo(), request.scheduledAt());
-        return ResponseEntity.ok(new MessageResponse(PlayerApi.REPORT_CREATED));
+        return ResponseEntity.ok(new MessageResponse("Отчет успешно запланирован"));
     }
 
 

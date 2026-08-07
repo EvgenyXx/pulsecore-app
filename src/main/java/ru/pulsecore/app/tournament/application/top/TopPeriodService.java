@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.player.api.dto.response.TopLeagueResponse;
 import ru.pulsecore.app.player.api.dto.response.TopPlayerDto;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TopPlayersView;
+import ru.pulsecore.app.tournament.domain.entity.TopPlayersView;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TopPlayersViewRepository;
 

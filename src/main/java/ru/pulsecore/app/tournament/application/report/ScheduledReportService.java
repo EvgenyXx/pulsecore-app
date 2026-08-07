@@ -2,8 +2,8 @@ package ru.pulsecore.app.tournament.application.report;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.ReportStatus;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.ScheduledReport;
+import ru.pulsecore.app.player.domain.ReportStatus;
+import ru.pulsecore.app.tournament.domain.entity.ScheduledReport;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.ScheduledReportRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.ScheduledReportProjection;
 

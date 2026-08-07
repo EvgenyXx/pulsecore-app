@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.pulsecore.app.tournament.domain.LiveStatus;
+import ru.pulsecore.app.tournament.domain.enums.LiveStatus;
 
 import java.util.List;
 

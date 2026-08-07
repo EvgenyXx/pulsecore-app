@@ -6,7 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.domain.Match;
+import ru.pulsecore.app.tournament.domain.model.Match;
 
 import java.util.ArrayList;
 import java.util.List;

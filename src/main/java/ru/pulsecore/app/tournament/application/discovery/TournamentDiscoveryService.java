@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.application.tournament.TournamentSaver;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +16,7 @@ import java.util.UUID;
 public class TournamentDiscoveryService {
 
     private final PlayerClient playerClient;
-    private final TournamentFinder finder;
+    private final UpcomingTournamentService upcomingTournamentService;
     private final TournamentFilter filter;
     private final TournamentSaver saver;
     private final DiscoveryNotificationService notificationService;
@@ -40,7 +39,7 @@ public class TournamentDiscoveryService {
     }
 
     private List<TournamentDto> findNewTournaments(UUID playerId,String name) {
-        List<TournamentDto> tournaments = finder.find(name);
+        List<TournamentDto> tournaments = upcomingTournamentService.findPlayerTournaments(name);
         if (tournaments.isEmpty()) return List.of();
         return filter.findNew(playerId, tournaments);
     }

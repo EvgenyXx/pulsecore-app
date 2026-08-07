@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.ReportStatus;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.ScheduledReport;
+import ru.pulsecore.app.player.domain.ReportStatus;
+import ru.pulsecore.app.tournament.domain.entity.ScheduledReport;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.ScheduledReportProjection;
 
 import java.time.LocalDateTime;

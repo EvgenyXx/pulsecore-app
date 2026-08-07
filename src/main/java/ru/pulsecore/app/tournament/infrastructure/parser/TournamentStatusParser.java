@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.infrastructure.parser;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.domain.TournamentStatus;
+import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 
 @Service
 public class TournamentStatusParser {

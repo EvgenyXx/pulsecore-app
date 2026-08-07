@@ -7,4 +7,6 @@ public interface PlayerDataProjection {
     String getName();
     String getEmail();
     String getPrimaryLeague();
+    boolean getPushEnabled();
+    boolean getNotificationsEnabled();
 }

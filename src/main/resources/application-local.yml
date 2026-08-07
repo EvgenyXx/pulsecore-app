@@ -24,7 +24,7 @@ spring:
 logging:
   level:
     root: info
-    ru.pulsecore.app: warn
+    ru.pulsecore.app: info
     org.springframework: WARN
     org.hibernate: WARN
     ru.pulsecore.app.tournament.application.discovery.DiscoveryNotificationService: info

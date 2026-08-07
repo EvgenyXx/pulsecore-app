@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.domain.LeagueType;
+import ru.pulsecore.app.tournament.domain.enums.LeagueType;
 
 @Service
 @RequiredArgsConstructor

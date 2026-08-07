@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.infrastructure.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TopPlayersView;
+import ru.pulsecore.app.tournament.domain.entity.TopPlayersView;
 import java.util.List;
 import java.util.UUID;
 

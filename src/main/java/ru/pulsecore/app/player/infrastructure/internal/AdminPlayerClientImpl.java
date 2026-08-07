@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PageViewStats;
 import ru.pulsecore.app.shared.dto.response.PlayerPageViewStats;
-import ru.pulsecore.app.admin.infrastructure.clinet.PlayerClient;
+import ru.pulsecore.app.admin.client.PlayerClient;
 import ru.pulsecore.app.player.application.analytic.PageViewStatsService;
 import ru.pulsecore.app.player.application.player.PlayerAdminService;
 import ru.pulsecore.app.player.application.role.RoleManagementService;

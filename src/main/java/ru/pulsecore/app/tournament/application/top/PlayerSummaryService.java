@@ -3,7 +3,6 @@ package ru.pulsecore.app.tournament.application.top;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.application.LeagueService;
 import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.player.api.dto.response.PlayerSummaryResponse;
 import ru.pulsecore.app.player.api.dto.response.LastResultDto;
@@ -11,7 +10,7 @@ import ru.pulsecore.app.player.api.dto.response.SubscriptionInfoDto;
 import ru.pulsecore.app.player.api.dto.response.UpcomingLineupDto;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.Lineup;
+import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
@@ -27,7 +26,7 @@ public class PlayerSummaryService {
     private final PlayerClient  playerClient;
     private final TournamentResultRepository tournamentResultRepository;
     private final LineupRepository lineupRepository;
-    private final LeagueService leagueService;
+
 
     @Cacheable(value = CacheNames.DASHBOARD,key = "#id")
     public PlayerSummaryResponse getDashboard(UUID id) {
@@ -39,7 +38,7 @@ public class PlayerSummaryService {
                 .lastResult(getLastResult(player.playerId()))
                 .upcomingLineups(getUpcomingLineups(player.playerName()))
                 .subscription(getSubscriptionInfo(player.playerId()))
-                .primaryLeague(leagueService.getPrimaryLeague(player.playerId()))
+                .primaryLeague(player.primaryLeague())
                 .build();
     }
 

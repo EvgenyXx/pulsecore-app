@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.application.tournament.TournamentProcessor;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.PlayerNotification;
+import ru.pulsecore.app.tournament.application.start.TournamentProcessor;
+import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 
 import java.util.List;

@@ -3,11 +3,11 @@ package ru.pulsecore.app.tournament.infrastructure.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.admin.infrastructure.clinet.TournamentClient;
+import ru.pulsecore.app.admin.client.TournamentClient;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.tournament.application.admin.AdminCalculateService;
-import ru.pulsecore.app.tournament.application.tournament.TournamentResetService;
+import ru.pulsecore.app.tournament.application.admin.TournamentResetService;
 
 import java.util.UUID;
 

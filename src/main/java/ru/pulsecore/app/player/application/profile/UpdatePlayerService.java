@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.PlayerProfileResponse;
 import ru.pulsecore.app.player.application.player.PlayerService;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.exception.EmailAlreadyExistsException;
 
 

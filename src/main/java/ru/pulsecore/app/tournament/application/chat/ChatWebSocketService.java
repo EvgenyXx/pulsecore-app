@@ -5,7 +5,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpSubscription;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.domain.ChatEventType;
+import ru.pulsecore.app.tournament.domain.enums.ChatEventType;
 
 import java.util.Map;
 import java.util.Set;

@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.request.ChangePasswordRequest;
 import ru.pulsecore.app.player.application.player.PlayerService;
-import ru.pulsecore.app.player.infrastructure.persistence.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.exception.OldPasswordMismatchException;
 import ru.pulsecore.app.player.infrastructure.exception.SamePasswordException;
 
