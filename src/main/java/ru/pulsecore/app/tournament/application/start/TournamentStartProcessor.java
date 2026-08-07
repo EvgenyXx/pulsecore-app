@@ -1,9 +1,11 @@
 package ru.pulsecore.app.tournament.application.start;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
@@ -13,21 +15,46 @@ import ru.pulsecore.app.tournament.infrastructure.parser.TournamentStatusParser;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TournamentProcessor {
+public class TournamentStartProcessor {
+
+    private static final long REQUEST_DELAY_MS = 3000;
 
     private final DocumentLoader documentLoader;
     private final TournamentTimeService timeService;
-
     private final PlayerNotificationRepository repo;
     private final TournamentStatusParser tournamentStatusParser;
 
-    public void process(String link, List<PlayerNotification> notifications) {
-        if (link == null || notifications == null || notifications.isEmpty()) return;
+   
+    @Transactional
+    public void checkAll() {
+        List<PlayerNotification> notifications = repo.findPendingWithTournament();
+        if (notifications.isEmpty()) return;
 
+        Map<String, List<PlayerNotification>> grouped = notifications.stream()
+                .filter(p -> p.getTournament() != null)
+                .collect(Collectors.groupingBy(p -> p.getTournament().getLink()));
+
+        List<String> links = List.copyOf(grouped.keySet());
+        for (int i = 0; i < links.size(); i++) {
+            process(links.get(i), grouped.get(links.get(i)));
+            if (i < links.size() - 1) {
+                try {
+                    Thread.sleep(REQUEST_DELAY_MS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    private void process(String link, List<PlayerNotification> notifications) {
         TournamentEntity t = getTournament(notifications);
         if (t == null) return;
 
@@ -35,9 +62,9 @@ public class TournamentProcessor {
             Document doc = documentLoader.load(link);
             processByStatus(t, notifications, doc);
         } catch (SiteUnavailableException e) {
-            log.warn("Site unavailable for tournament: link={}", link);
+            log.warn("Сайт недоступен для турнира: link={}", link);
         } catch (Exception e) {
-            log.error("Failed to process tournament: link={}", link, e);
+            log.error("Ошибка обработки турнира: link={}", link, e);
         }
     }
 
@@ -72,17 +99,12 @@ public class TournamentProcessor {
     }
 
     private void startTournament(TournamentEntity t, List<PlayerNotification> notifications) {
-
-            t.setStarted(true);
-            repo.saveAll(notifications);
-
+        t.setStarted(true);
+        repo.saveAll(notifications);
     }
 
     private void handleCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
-
-
         t.setCancelled(true);
-
         repo.saveAll(notifications);
     }
 }

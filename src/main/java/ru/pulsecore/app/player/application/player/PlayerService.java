@@ -8,6 +8,7 @@ import ru.pulsecore.app.player.api.dto.response.PlayerResponse;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.player.infrastructure.exception.PlayerNotFoundException;
+import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 
@@ -29,10 +30,7 @@ public class PlayerService {
     public List<PlayerData> findPlayerByIds(Set<UUID> playerIds) {
         return playerRepository.findProjectionsByIds(playerIds)
                 .stream()
-                .map(p->
-                        new PlayerData(p.getId(),p.getName()
-                                ,p.getName(),p.getPrimaryLeague(),
-                                p.getPushEnabled(),p.getNotificationsEnabled()))
+                .map(PlayerDataProjection::toPlayerData)
                 .toList();
     }
 

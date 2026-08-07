@@ -29,7 +29,7 @@ public class ScheduledReportProcessor {
     private final SumService sumService;
 
 
-    public void process() {
+    public void processReport() {
         List<ScheduledReportProjection> ready = reportService.findPendingBefore(LocalDateTime.now());
 
         for (var report : ready) {

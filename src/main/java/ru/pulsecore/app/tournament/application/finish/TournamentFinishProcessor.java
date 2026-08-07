@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
@@ -34,7 +35,8 @@ public class TournamentFinishProcessor {
     private final TournamentRepository tournamentRepository;
     private final TournamentStatusParser tournamentStatusParser;
 
-    public void processAll() {
+    @Transactional
+    public void processFinish() {
         List<PlayerNotification> all = repo.findNotFinishedFull();
         if (all.isEmpty()) return;
 

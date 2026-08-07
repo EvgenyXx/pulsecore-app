@@ -8,5 +8,6 @@ public record PlayerData(
         String email,
         String primaryLeague,
         boolean pushEnabled,
-        boolean notificationsEnabled
+        boolean notificationsEnabled,
+        boolean hasActiveSubscription
 ) {}
