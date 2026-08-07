@@ -11,7 +11,6 @@ import ru.pulsecore.app.player.api.dto.response.SumResponse;
 
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.application.result.TournamentResultService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 
 import java.time.LocalDate;
@@ -23,7 +22,7 @@ import java.util.UUID;
 public class SumService {
 
     private final PlayerClient playerClient;
-    private final TournamentResultService tournamentResultService;
+    private final TournamentResultQueryService tournamentResultQueryService;
     private final TournamentResultRepository tournamentResultRepository;
 
 
@@ -44,9 +43,9 @@ public class SumService {
         if (start == null) start = end;
         if (end == null) end = start;
         PeriodStatsProjection stats =
-                tournamentResultService.getStatsByPeriod(player.playerId(), start, end);
+                tournamentResultQueryService.getStatsByPeriod(player.playerId(), start, end);
 
-        Page<TournamentResultEntity> pageResult = tournamentResultService.getResultsByPeriod(
+        Page<TournamentResultEntity> pageResult = tournamentResultQueryService.getResultsByPeriod(
                 player.playerId(), start, end, PageRequest.of(page, size));
 
         return SumResponse.builder()

@@ -7,6 +7,7 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface PlayerClient {
@@ -21,4 +22,5 @@ public interface PlayerClient {
 
     SubscriptionInfoDto getSubscriptionInfo(UUID playerId);
 
+    List<PlayerData> getPlayerDataByIds(Set<UUID> playerIds);
 }

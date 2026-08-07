@@ -5,12 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.SubscriptionInfoDto;
+import ru.pulsecore.app.player.application.player.PlayerService;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.shared.dto.response.NotificationInfo;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.player.infrastructure.exception.PlayerNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -19,9 +21,13 @@ import java.util.UUID;
 public class TournamentPlayerClientImpl implements PlayerClient {
 
     private final PlayerRepository playerRepository;
+    private final PlayerService  playerService;
 
 
-
+    @Override
+    public List<PlayerData> getPlayerDataByIds(Set<UUID> playerIds) {
+       return playerService.findPlayerByIds(playerIds);
+    }
 
     @Override
     public SubscriptionInfoDto getSubscriptionInfo(UUID playerId) {
@@ -42,7 +48,8 @@ public class TournamentPlayerClientImpl implements PlayerClient {
         log.info("getPlayerById {}", playerId);
         return playerRepository.findProjectionById(playerId)
                 .map(p ->
-                        new PlayerData(p.getId(), p.getName(), p.getEmail(),p.getPrimaryLeague()))
+                        new PlayerData(p.getId(), p.getName(),
+                                p.getEmail(),p.getPrimaryLeague(),p.getPushEnabled(),p.getNotificationsEnabled()))
                 .orElseThrow(()-> new PlayerNotFoundException(playerId.toString()));
     }
 
@@ -52,14 +59,16 @@ public class TournamentPlayerClientImpl implements PlayerClient {
         return playerRepository.searchByName(query)
                 .stream()
                 .map(p->
-                        new PlayerData(p.getId(),p.getName(),p.getEmail(),p.getPrimaryLeague()))
+                        new PlayerData(p.getId(),p.getName(),p.getEmail(),p.getPrimaryLeague(),
+                                p.getPushEnabled(),p.getNotificationsEnabled()))
                 .toList();//todo добавить проекцию
     }
 
     @Override
     public PlayerData findByName(String fullName) {
         return playerRepository.findByNameIgnoreCase(fullName)
-                .map(p -> new PlayerData(p.getId(), p.getName(), p.getEmail(), p.getPrimaryLeague()))
+                .map(p -> new PlayerData(p.getId(), p.getName(),
+                        p.getEmail(), p.getPrimaryLeague(), p.getPushEnabled(), p.getNotificationsEnabled()))
                 .orElseThrow(()-> new PlayerNotFoundException(fullName));
     }
 

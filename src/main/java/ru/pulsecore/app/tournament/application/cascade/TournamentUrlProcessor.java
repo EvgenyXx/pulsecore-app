@@ -1,72 +1,63 @@
 package ru.pulsecore.app.tournament.application.cascade;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.tournament.application.ResultService;
-import ru.pulsecore.app.tournament.application.result.TournamentResultService;
+import ru.pulsecore.app.tournament.application.finish.TournamentResultProcessor;
+import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentParseException;
-import ru.pulsecore.app.shared.exception.UnauthorizedException;
-import ru.pulsecore.app.tournament.api.dto.response.AddTournamentResponse;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
+
+/**
+ * Обрабатывает список URL турниров для одного игрока.
+ * Парсит каждый URL, находит/создает турнир, собирает результаты
+ * и сохраняет их одним батчем в рамках одной транзакции.
+ * Вызывается из TournamentAutoAddService при синхронизации истории.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TournamentUrlProcessor {
 
-    private static final long REQUEST_DELAY_MS = 3000;
 
-    private final TournamentResultService tournamentResultService;
+
+    private final TournamentResultProcessor resultProcessor;
     private final ResultService resultService;
     private final TournamentRepository tournamentRepository;
-    private final PlayerClient playerClient;
-
-    public void processByUrl(String url, UUID playerId) {
-        processSingleUrl(url, playerId);
-    }
-    //todo очень важно
-    public List<AddTournamentResponse> processByUrls(List<String> urls, UUID playerId) {
-        if (playerId == null) throw new UnauthorizedException();
 
 
-        List<AddTournamentResponse> responses = new ArrayList<>();
-        for (int i = 0; i < urls.size(); i++) {
-            String url = urls.get(i);
+
+
+    @Transactional
+    public void processUrlsForPlayer(List<String> urls, UUID playerId, String playerName) {
+        List<TournamentResultEntity> allEntities = new ArrayList<>();
+        for (String url : urls) {
             try {
-                responses.add(processSingleUrl(url, playerId));
+                ParsedResult parsed = parseUrl(url);
+                TournamentEntity tournament = findOrCreateTournament(parsed, url);
+                updateTournamentDates(tournament, parsed);
+
+                allEntities.addAll(resultProcessor.processResults(
+                        parsed.results(), playerId, playerName, tournament,
+                        parsed.nightBonus(),
+                        parsed.isFinished() || parsed.isFinalRemoved(),
+                        parsed.hasRemoved(),
+                        parsed.league()));
             } catch (Exception e) {
-                log.error("❌ Ошибка обработки URL: {}", url, e);
-                responses.add(buildErrorResponse(e));
+                log.warn("{} — {}", url, e.getMessage());
             }
-            delayIfNotLast(i, urls.size());
         }
-        return responses;
+
+        resultProcessor.saveAll(allEntities);
     }
 
-    private AddTournamentResponse processSingleUrl(String url, UUID playerId) {
-        var player = playerClient.getPlayerById(playerId);
-        ParsedResult parsed = parseUrl(url);
-        TournamentEntity tournament = findOrCreateTournament(parsed, url);
-        updateTournamentDates(tournament, parsed);
-
-        tournamentResultService.processResults(
-                parsed.results(), player.playerId(), player.playerName(), parsed.tournamentId(),
-                parsed.nightBonus(),
-                parsed.isFinished() || parsed.isFinalRemoved(),
-                parsed.hasRemoved(),
-                parsed.league());
-
-        return buildSuccessResponse(parsed);
-    }
 
 
 
@@ -107,26 +98,4 @@ public class TournamentUrlProcessor {
         }
     }
 
-    private void delayIfNotLast(int index, int total) {
-        if (index < total - 1) {
-            try { Thread.sleep(REQUEST_DELAY_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-        }
-    }
-
-    private AddTournamentResponse buildSuccessResponse(ParsedResult parsed) {
-        return AddTournamentResponse.builder()
-                .message("Турнир обработан")
-                .tournamentId(parsed.tournamentId())
-                .resultsCount(parsed.results().size())
-                .results(parsed.results())
-                .build();
-    }
-
-    private AddTournamentResponse buildErrorResponse(Exception e) {
-        return AddTournamentResponse.builder()
-                .message("Ошибка: " + e.getMessage())
-                .resultsCount(0)
-                .results(List.of())
-                .build();
-    }
 }

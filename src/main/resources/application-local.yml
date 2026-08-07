@@ -24,13 +24,14 @@ spring:
 logging:
   level:
     root: info
-    ru.pulsecore.app: info
+    ru.pulsecore.app: warn
     org.springframework: WARN
     org.hibernate: WARN
     ru.pulsecore.app.tournament.application.discovery.DiscoveryNotificationService: info
     ru.pulsecore.app.tournament.application.discovery.TournamentDiscoveryService: info
     ru.pulsecore.app.player.application.analytic.PrimaryLeagueUpdater: INFO
     ru.pulsecore.app.tournament.application.tournament.finish.TournamentFinishService: INFO
+    ru.pulsecore.app.tournament.application.finish.TournamentFinishService: info
 
 
 

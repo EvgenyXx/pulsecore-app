@@ -12,6 +12,7 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.PushNotificationEvent;
 import ru.pulsecore.app.shared.util.PushMessageBuilder;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class SubscriptionExpiryProcessor {
     }
 
     public void processCheckingSubscription() {
-        Set<UUID> expiringIds = subscriptionRepository.findExpiringPlayerIds();
+        Set<UUID> expiringIds = subscriptionRepository.findExpiringPlayerIds(LocalDate.now().plusDays(1));
         if (expiringIds.isEmpty()) return;
 
         List<PlayerData> players = playerService.findPlayerByIds(expiringIds);

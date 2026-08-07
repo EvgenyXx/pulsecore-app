@@ -14,7 +14,14 @@ import ru.pulsecore.app.tournament.infrastructure.persistence.repository.Tournam
 import ru.pulsecore.app.tournament.application.notification.TournamentFinishNotificationService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+
+/**
+ * Обрабатывает завершенные и отмененные турниры.
+ * Вызывается шедулером каждые 7 минут.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,14 +34,25 @@ public class TournamentFinishProcessor {
     private final TournamentRepository tournamentRepository;
     private final TournamentStatusParser tournamentStatusParser;
 
-    public Result process(String link, List<PlayerNotification> notifications) {
-        if (link == null || notifications == null || notifications.isEmpty()) return null;
+    public void processAll() {
+        List<PlayerNotification> all = repo.findNotFinishedFull();
+        if (all.isEmpty()) return;
 
+        Map<String, List<PlayerNotification>> grouped = all.stream()
+                .filter(p -> p.getTournament() != null)
+                .collect(Collectors.groupingBy(p -> p.getTournament().getLink()));
+
+        for (var entry : grouped.entrySet()) {
+            process(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private void process(String link, List<PlayerNotification> notifications) {
         TournamentEntity t = getTournament(notifications);
-        if (t == null || t.isProcessed()) return null;
+        if (t == null || t.isProcessed()) return;
 
         Document doc = documentLoader.load(link);
-        return processByStatus(t, notifications, doc);
+        processByStatus(t, notifications, doc);
     }
 
     private TournamentEntity getTournament(List<PlayerNotification> notifications) {
@@ -44,23 +62,24 @@ public class TournamentFinishProcessor {
                 .orElse(null);
     }
 
-    private Result processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
+    private void processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
         TournamentStatus status = tournamentStatusParser.parseStatus(doc);
 
         if (status == TournamentStatus.CANCELLED) {
-            return handleCancelled(t, notifications);
+            handleCancelled(t, notifications);
+            return;
         }
 
         if (!tournamentRepository.existsById(t.getId())) {
             log.warn("⚠️ Турнир {} (ID={}) не найден в БД, пропускаем обработку", t.getExternalId(), t.getId());
-            return null;
+            return;
         }
 
-        return finishService.handleFinished(t, notifications, doc) ? new Result(true, false) : null;
+        finishService.handleFinished(t, notifications, doc);
     }
 
-    private Result handleCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
-        if (t.isCancelled()) return new Result(false, true);
+    private void handleCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
+        if (t.isCancelled()) return;
 
         t.setCancelled(true);
         t.setProcessed(true);
@@ -70,8 +89,5 @@ public class TournamentFinishProcessor {
         repo.saveAll(notifications);
 
         log.info("❌ tournament cancelled: id={}, users={}", t.getExternalId(), notifications.size());
-        return new Result(false, true);
     }
-
-    public record Result(boolean finished, boolean cancelled) {}
 }

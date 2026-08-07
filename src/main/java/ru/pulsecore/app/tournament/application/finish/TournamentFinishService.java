@@ -19,7 +19,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class TournamentFinishService {
 
 
@@ -28,19 +27,20 @@ public class TournamentFinishService {
     private final PlayerNotificationRepository repo;
     private final TournamentRepository tournamentRepository;
 
-    public boolean handleFinished(TournamentEntity t,
-                                  List<PlayerNotification> notifications,
-                                  Document doc)  {
+    @Transactional
+    public void handleFinished(TournamentEntity t,
+                               List<PlayerNotification> notifications,
+                               Document doc)  {
 
         ParsedResult parsed = resultService.calculateAll(doc);
         if (parsed == null) {
             log.warn("Tournament {} skipped: unable to parse", t.getExternalId());
-            return false;
+            return;
         }
         if (parsed.league() == null) {
-            return false;
+            return;
         }
-        if (parsed.status() != TournamentStatus.FINISHED) return false;
+        if (parsed.status() != TournamentStatus.FINISHED) return;
         processService.processTournament(notifications, parsed);
         t.setFinished(true);
         t.setProcessed(true);
@@ -51,6 +51,5 @@ public class TournamentFinishService {
                 notifications.size(),
                 parsed.results().size());
 
-        return true;
     }
 }

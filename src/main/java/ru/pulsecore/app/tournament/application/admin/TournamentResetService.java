@@ -4,20 +4,25 @@ package ru.pulsecore.app.tournament.application.admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.tournament.application.cascade.TournamentAutoAddService;
 import ru.pulsecore.app.tournament.application.cascade.TournamentCascadeSyncService;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
-
 import java.util.UUID;
 
+/**
+ * Сервис для управления данными игроков из админки.
+ *
+ * deleteAllTournaments — удаляет все результаты игрока.
+ * resyncAll — запускает полную пересинхронизацию истории турниров с 2025 года.
+ *
+ * Используется в AdminPlayerController.
+ */
 @Service
 @RequiredArgsConstructor
 public class TournamentResetService {
 
     private final TournamentResultRepository tournamentResultRepository;
     private final PlayerClient playerClient;
-    private final TournamentAutoAddService tournamentAutoAddService;
     private final TournamentCascadeSyncService cascadeSyncService;
 
     @Transactional
@@ -28,7 +33,6 @@ public class TournamentResetService {
     @Transactional
     public void resyncAll(UUID playerId) {
         var player = playerClient.getPlayerById(playerId);
-        tournamentAutoAddService.addRecentTournamentsForPlayer(player.playerId(),player.playerName(),  30);
         cascadeSyncService.syncAllHistory(player.playerId(), player.playerName());
     }
 }

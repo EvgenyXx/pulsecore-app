@@ -1,4 +1,4 @@
-package ru.pulsecore.app.tournament.application.result;
+package ru.pulsecore.app.tournament.application.finish;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,8 @@ import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,18 +28,16 @@ public class TournamentResultPersistence {
         return tournamentResultRepository.findByPlayerIdAndDateBetweenOrderByDateAsc(playerId, start, end, pageable);
     }
 
-    public TournamentResultEntity save(TournamentResultEntity entity) {
-        if (existsByPlayerAndTournament(entity)) {
-            return findExisting(entity);
+    public void saveRoster(List<TournamentResultEntity> entities) {
+        List<TournamentResultEntity> toSave = new ArrayList<>();
+        for (TournamentResultEntity entity : entities) {
+            if (!existsByPlayerAndTournament(entity)) {
+                toSave.add(entity);
+            }
         }
-
-        try {
-            TournamentResultEntity saved = tournamentResultRepository.save(entity);
+        if (!toSave.isEmpty()) {
+            tournamentResultRepository.saveAll(toSave);
             evictCaches();
-            return saved;
-        } catch (Exception e) {
-
-            return entity;
         }
     }
 
@@ -55,9 +55,5 @@ public class TournamentResultPersistence {
                 entity.getPlayerId(), entity.getTournament().getExternalId());
     }
 
-    private TournamentResultEntity findExisting(TournamentResultEntity entity) {
-        return tournamentResultRepository
-                .findByPlayerIdAndTournament_ExternalId(entity.getPlayerId(), entity.getTournament().getExternalId())
-                .orElse(entity);
-    }
+
 }

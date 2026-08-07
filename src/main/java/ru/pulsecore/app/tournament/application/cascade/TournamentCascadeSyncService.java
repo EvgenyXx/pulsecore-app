@@ -53,9 +53,9 @@ public class TournamentCascadeSyncService {
             LocalDate start = month.atDay(1);
             LocalDate end = month.atEndOfMonth();
 
-            log.info("{} — синхронизация {} - {}", playerName, start, end);
-            int added = tournamentAutoAddService.addTournamentsForPeriod(playerId,playerName, start, end);
-            log.info("{} — месяц {} готов, турниров: {}", playerName, month, added);
+            log.warn("{} — синхронизация {} - {}", playerName, start, end);
+           tournamentAutoAddService.addTournamentsForPeriod(playerId,playerName, start, end);
+            log.warn("{} — месяц {} готов ", playerName, month);
         } catch (Exception e) {
             log.warn("{} — ошибка для {}: {}", playerName, month, e.getMessage());
         }
