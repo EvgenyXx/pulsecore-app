@@ -13,9 +13,9 @@ import ru.pulsecore.app.shared.exception.SiteUnavailableException;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.parser.TournamentStatusParser;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -33,7 +33,7 @@ public class TournamentStartProcessor {
 
    
     @Transactional
-    public void checkAll() {
+    public void checkStart() {
         List<PlayerNotification> notifications = repo.findPendingWithTournament();
         if (notifications.isEmpty()) return;
 
@@ -46,7 +46,7 @@ public class TournamentStartProcessor {
             process(links.get(i), grouped.get(links.get(i)));
             if (i < links.size() - 1) {
                 try {
-                    Thread.sleep(REQUEST_DELAY_MS);
+                    TimeUnit.MILLISECONDS.sleep(REQUEST_DELAY_MS);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -101,10 +101,13 @@ public class TournamentStartProcessor {
     private void startTournament(TournamentEntity t, List<PlayerNotification> notifications) {
         t.setStarted(true);
         repo.saveAll(notifications);
+
+        log.info("Турнир начался. Дата:{} Время:{} URL:{} ",t.getDate(),t.getTime(),t.getLink());
     }
 
     private void handleCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
         t.setCancelled(true);
         repo.saveAll(notifications);
+        log.info("Турнир отменен. Дата:{} Время:{} URL:{}", t.getDate(), t.getTime(), t.getLink());
     }
 }

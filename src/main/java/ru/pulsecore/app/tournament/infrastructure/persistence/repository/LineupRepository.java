@@ -45,4 +45,8 @@ public interface LineupRepository extends JpaRepository<Lineup, Long> {
     void deleteByDateBefore(@Param("date") LocalDate date);
 
 
+    @Query("SELECT l.id FROM Lineup l WHERE l.date < :before")
+    List<Long> findIdsByDateBefore(@Param("before") LocalDate before);
+
+
 }

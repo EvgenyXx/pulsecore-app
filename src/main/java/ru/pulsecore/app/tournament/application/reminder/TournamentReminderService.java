@@ -54,6 +54,7 @@ public class TournamentReminderService {
                 processNotification(pn, today, tomorrow, now, player);
             }
         });
+        log.info("Напоминания отправлены: игроков={}, ids={}", playerMap.size(), playerMap.keySet());
     }
 
     private void processNotification(

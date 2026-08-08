@@ -13,7 +13,7 @@ public class LeagueDetector {
 
     public LeagueType detectLeague(Document doc) {
         String title = doc.title();
-        log.info("League detection: title='{}', html length={}", title, doc.html().length());
+
 
         LeagueType fromTitle = detectFromText(title);
         if (fromTitle != null) return fromTitle;

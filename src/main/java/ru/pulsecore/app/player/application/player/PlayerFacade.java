@@ -19,6 +19,9 @@ public class PlayerFacade {
 
 
 
+    //todo перенести и расскидать логику правильно . сохранение залов в юзере
+    // получение залов через через клиента уже в туринр модуел контроллер тоже на свалку
+
     public List<PlayerResponse> searchPlayers(String query) {
         return playerService.searchPlayers(query);
     }

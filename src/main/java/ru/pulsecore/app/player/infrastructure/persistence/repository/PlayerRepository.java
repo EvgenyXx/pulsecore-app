@@ -64,8 +64,16 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
-            "CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "true as hasActiveSubscription " +
             "FROM Player p WHERE p.subscription.active = true")
     List<PlayerDataProjection> findActivePlayers();
+
+
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
+            "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
+            "CASE WHEN s.active = true AND s.expiresAt > CURRENT_TIMESTAMP THEN true ELSE false END as hasActiveSubscription " +
+            "FROM Player p LEFT JOIN p.subscription s")
+    List<PlayerDataProjection> findAllPlayers();
+
 
 }

@@ -32,6 +32,12 @@ logging:
     ru.pulsecore.app.player.application.analytic.PrimaryLeagueUpdater: INFO
     ru.pulsecore.app.tournament.application.tournament.finish.TournamentFinishService: INFO
     ru.pulsecore.app.tournament.application.finish.TournamentFinishService: info
+    ru.pulsecore.app.tournament.application.ResultService: info
+    ru.pulsecore.app.tournament.application.lineup.LineupCleanupService: info
+    ru.pulsecore.app.tournament.application.lineup.LineupUpsertService: info
+    ru.pulsecore.app.tournament.application.discovery.TournamentSaver: info
+    ru.pulsecore.app.tournament.application.cascade.TournamentAutoAddService: info
+
 
 
 

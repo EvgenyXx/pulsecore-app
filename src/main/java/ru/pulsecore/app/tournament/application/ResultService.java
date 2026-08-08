@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.ResultDto;
 import ru.pulsecore.app.tournament.application.calculation.ResultBuilder;
+import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.domain.model.PointsCalculatorUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
@@ -19,6 +20,7 @@ import ru.pulsecore.app.tournament.application.extraction.TournamentExtractor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +52,7 @@ public class ResultService {
         normalizeNames(results);
         applyBonusPoints(ctx, results);
         results.sort((a, b) -> Integer.compare(b.getTotal(), a.getTotal()));
-        logResults(ctx, results);
+        logResults(ctx, results,doc.baseUri());
 
         return new ParsedResult(
                 ctx.getTournamentId(),
@@ -72,7 +74,7 @@ public class ResultService {
 
     private void normalizeNames(List<ResultDto> results) {
         for (ResultDto result : results) {
-            String normalizedName = nameNormalizer.normalize(result.getPlayer());
+            String normalizedName = nameNormalizer.normalize(result.getPlayer());//todo сделать утил класс
             result.setPlayer(normalizedName);
         }
     }
@@ -88,12 +90,22 @@ public class ResultService {
         }
     }
 
-    private void logResults(TournamentContext ctx, List<ResultDto> results) {
-        if (results.isEmpty() && ctx.getTournamentStatus() != null) {
-            log.info("Tournament {}: no results (status={})", ctx.getTournamentId(), ctx.getTournamentStatus());
-        } else {
-            log.info("Tournament {}: {} results, status={}", ctx.getTournamentId(), results.size(), ctx.getTournamentStatus());
+    private void logResults(TournamentContext ctx, List<ResultDto> results,String url) {
+        if (ctx.getTournamentStatus() != TournamentStatus.FINISHED) {
+            String players = results.stream()
+                    .map(ResultDto::getPlayer)
+                    .collect(Collectors.joining(", "));
+            log.info("Турнир: дата={}, время={}, лига={}, статус={},участники:{}, ссылка={}",
+                    ctx.getDate(),
+                    ctx.getTime() != null ? ctx.getTime() : "?",
+                    ctx.getLeague(),
+                    ctx.getTournamentStatus(),
+                    players,
+                    url
+
+            );
         }
+
     }
 
     private boolean hasRemoved(TournamentContext ctx) {

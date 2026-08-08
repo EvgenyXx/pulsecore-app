@@ -59,8 +59,6 @@ public class TournamentUrlProcessor {
     }
 
 
-
-
     private ParsedResult parseUrl(String url) {
         try {
             return resultService.calculateAll(url);
@@ -87,6 +85,7 @@ public class TournamentUrlProcessor {
         tournamentRepository.save(tournament);
     }
 
+    //todo вынести в утил ???
     private LocalDate extractDate(ParsedResult parsed) {
         if (parsed.results().isEmpty()) return null;
         String dateStr = parsed.results().get(0).getDate();

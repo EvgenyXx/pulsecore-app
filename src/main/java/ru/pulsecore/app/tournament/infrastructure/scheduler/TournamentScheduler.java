@@ -44,6 +44,6 @@ public class TournamentScheduler {
 
     @Scheduled(cron = "0 */3 * * * *")
     public void checkStart() {
-        startProcessor.checkAll();
+        startProcessor.checkStart();
     }
 }

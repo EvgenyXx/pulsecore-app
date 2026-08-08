@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import ru.pulsecore.app.shared.config.AsyncConfig;
+import ru.pulsecore.app.tournament.infrastructure.util.MonthUtils;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -25,7 +26,7 @@ public class TournamentCascadeSyncService {
     private final Set<UUID> syncingPlayers = ConcurrentHashMap.newKeySet();
 
     @Async(AsyncConfig.TASK_EXECUTOR)
-    public void syncAllHistory(UUID playerId,String playerName) {
+    public void syncAllHistory(UUID playerId, String playerName) {
         if (!syncingPlayers.add(playerId)) {
             log.warn("{} — уже синхронизируется, пропускаем", playerName);
             return;
@@ -38,11 +39,11 @@ public class TournamentCascadeSyncService {
         }
     }
 
-    private void syncMonthsBackwards(UUID playerId,String playerName) {
+    private void syncMonthsBackwards(UUID playerId, String playerName) {
         YearMonth month = YearMonth.now().minusMonths(1);
 
         while (!month.atDay(1).isBefore(STOP_AT)) {
-            syncMonth(playerId, playerName,month);
+            syncMonth(playerId, playerName, month);
             month = month.minusMonths(1);
             sleepBetweenMonths();
         }
@@ -53,9 +54,9 @@ public class TournamentCascadeSyncService {
             LocalDate start = month.atDay(1);
             LocalDate end = month.atEndOfMonth();
 
-            log.warn("{} — синхронизация {} - {}", playerName, start, end);
-           tournamentAutoAddService.addTournamentsForPeriod(playerId,playerName, start, end);
-            log.warn("{} — месяц {} готов ", playerName, month);
+            log.warn("{} — синхронизация {}", playerName, MonthUtils.toRussianMonthYear(start));
+            tournamentAutoAddService.addTournamentsForPeriod(playerId, playerName, start, end);
+
         } catch (Exception e) {
             log.warn("{} — ошибка для {}: {}", playerName, month, e.getMessage());
         }

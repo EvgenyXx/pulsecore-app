@@ -47,6 +47,7 @@ public class TournamentFinishProcessor {
         for (var entry : grouped.entrySet()) {
             process(entry.getKey(), entry.getValue());
         }
+        log.info("Обработка завершенных турниров: найдено {} турниров", grouped.size());
     }
 
     private void process(String link, List<PlayerNotification> notifications) {

@@ -33,8 +33,9 @@ public class TournamentFinishService {
                                Document doc)  {
 
         ParsedResult parsed = resultService.calculateAll(doc);
+
         if (parsed == null) {
-            log.warn("Tournament {} skipped: unable to parse", t.getExternalId());
+            log.warn("Турнир {} пропущен: невозможно проанализировать", t.getLink());
             return;
         }
         if (parsed.league() == null) {
@@ -46,10 +47,7 @@ public class TournamentFinishService {
         t.setProcessed(true);
         tournamentRepository.save(t);
         repo.saveAll(notifications);
-        log.info("🏁 tournament finished: id={}, users={}, results={}",
-                t.getExternalId(),
-                notifications.size(),
-                parsed.results().size());
+        log.info("Турнир завершился. Дата:{},Время:{},URL:{}",t.getDate(),t.getTime(),doc.baseUri());
 
     }
 }

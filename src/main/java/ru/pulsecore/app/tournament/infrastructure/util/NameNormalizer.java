@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.infrastructure.util;
 import org.springframework.stereotype.Component;
 import java.util.List;
 
-
+//todo сделать утил
 @Component
 public class NameNormalizer {
 

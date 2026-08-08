@@ -16,10 +16,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LineupFacade {
 
-    private final LineupService lineupService;
+
     private final LineupRepository lineupRepository;
     private final PlayerService playerService;
     private final PlayerHallsService hallsService;
+
+    public List<Lineup> getLineupsForHalls(LocalDate date, List<String> halls) {
+        if (halls == null || halls.isEmpty()) return List.of();
+        return lineupRepository.findByDateAndHallIn(date, halls);
+    }
 
     public void saveLiveSelectedHalls(UUID playerId, String halls) {
         hallsService.saveLiveSelectedHalls(playerId, halls);
@@ -42,7 +47,7 @@ public class LineupFacade {
 
         String playerName = playerService.getById(playerId).getName();
         List<String> halls = Arrays.asList(hallsStr.split(",\\s*"));
-        List<Lineup> filtered = lineupService.getLineupsForHalls(date, halls);
+        List<Lineup> filtered = getLineupsForHalls(date, halls);
 
         List<LineupDto> dtos = filtered.stream()
                 .map(this::toDto)

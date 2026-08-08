@@ -17,6 +17,7 @@ import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class TournamentDiscoveryService {
 
     @Transactional
     public void checkNewTournaments() {
-        List<PlayerData> activePlayers = playerClient.getAllActivePlayers();
+        List<PlayerData> activePlayers = playerClient.getAll();
 
         if (activePlayers.isEmpty()) return;
 
@@ -57,8 +58,8 @@ public class TournamentDiscoveryService {
 
         sendEmailNotifications(notification);
         sendPushNotifications(notification);
-
-
+        log.info("Новые турниры: игроков={}, всего турниров={}", notification.size(),
+                notification.values().stream().mapToInt(List::size).sum());
     }
 
     private void sendEmailNotifications(

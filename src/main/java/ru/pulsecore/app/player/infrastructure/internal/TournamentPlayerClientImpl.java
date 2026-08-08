@@ -25,6 +25,12 @@ public class TournamentPlayerClientImpl implements PlayerClient {
     private final PlayerRepository playerRepository;
     private final PlayerService playerService;
 
+    @Override
+    public List<PlayerData> getAll() {
+        return playerRepository.findAllPlayers()
+                .stream().map(PlayerDataProjection::toPlayerData)
+                .toList();
+    }
 
     @Override
     public List<PlayerData> getPlayerDataByIds(Set<UUID> playerIds) {
@@ -47,7 +53,6 @@ public class TournamentPlayerClientImpl implements PlayerClient {
 
     @Override
     public PlayerData getPlayerById(UUID playerId) {
-        log.info("getPlayerById {}", playerId);
         return playerRepository.findProjectionById(playerId)
                 .map(PlayerDataProjection::toPlayerData)
                 .orElseThrow(() -> new PlayerNotFoundException(playerId.toString()));

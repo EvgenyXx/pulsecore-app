@@ -24,4 +24,6 @@ public interface PlayerClient {
 
     List<PlayerData>getAllActivePlayers();
 
+    List<PlayerData> getAll();
+
 }
