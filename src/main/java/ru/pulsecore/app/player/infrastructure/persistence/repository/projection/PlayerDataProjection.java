@@ -11,7 +11,7 @@ public interface PlayerDataProjection {
     String getPrimaryLeague();
     boolean getPushEnabled();
     boolean getNotificationsEnabled();
-    boolean getActiveSubscription();
+    Boolean getHasActiveSubscription();
 
     default PlayerData toPlayerData() {
         return new PlayerData(
@@ -21,7 +21,7 @@ public interface PlayerDataProjection {
                 getPrimaryLeague(),
                 getPushEnabled(),
                 getNotificationsEnabled(),
-                getActiveSubscription()
+                getHasActiveSubscription() != null && getHasActiveSubscription()
         );
     }
 }

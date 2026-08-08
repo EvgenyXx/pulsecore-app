@@ -34,39 +34,38 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague" +
             " as primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as " +
-            "notificationsEnabled, p.hasActiveSubscription as hasActiveSubscription " +
+            "notificationsEnabled, CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
             "FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<PlayerDataProjection> searchByName(@Param("query") String query);
 
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as " +
             "primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as " +
-            "notificationsEnabled, p.hasActiveSubscription as hasActiveSubscription " +
+            "notificationsEnabled, CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
             "FROM Player p WHERE LOWER(p.name) = LOWER(:name)")
     Optional<PlayerDataProjection> findByNameIgnoreCase(@Param("name") String name);
 
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague" +
             " as primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled" +
-            " as notificationsEnabled, p.hasActiveSubscription as hasActiveSubscription " +
+            " as notificationsEnabled, CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
             "FROM Player p WHERE p.verified = true AND p.isBlocked = false")
     List<PlayerDataProjection> findByVerifiedTrueAndIsBlockedFalse();
 
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague" +
             " as primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as" +
-            " notificationsEnabled, p.hasActiveSubscription as hasActiveSubscription " +
+            " notificationsEnabled, CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
             "FROM Player p WHERE p.id = :id")
     Optional<PlayerDataProjection> findProjectionById(@Param("id") UUID id);
 
     @Query("SELECT p.id AS id, p.name AS name, p.email AS email, p.primaryLeague AS primaryLeague, " +
             "p.pushEnabled AS pushEnabled, p.notificationsEnabled AS notificationsEnabled, " +
-            "p.hasActiveSubscription AS hasActiveSubscription " +
+            "CASE WHEN p.subscription.active = true THEN true ELSE false END AS hasActiveSubscription " +
             "FROM Player p WHERE p.id IN :ids")
     List<PlayerDataProjection> findProjectionsByIds(@Param("ids") Set<UUID> ids);
 
-
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
-            "p.hasActiveSubscription as hasActiveSubscription " +
-            "FROM Player p WHERE p.hasActiveSubscription = true")
+            "CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "FROM Player p WHERE p.subscription.active = true")
     List<PlayerDataProjection> findActivePlayers();
 
 }

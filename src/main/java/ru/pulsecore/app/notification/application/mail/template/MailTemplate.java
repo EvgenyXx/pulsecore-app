@@ -13,7 +13,8 @@ public enum MailTemplate {
     TOURNAMENT_RESULT("tournament_result"),
     BROADCAST("broadcast"),
     SCHEDULED_REPORT("scheduled_report"),
-    BROKEN_URI("broken_uri");
+    BROKEN_URI("broken_uri"),
+    CANCELED_TOURNAMENT("canceled_tournament");
 
     private final String fileName;
 

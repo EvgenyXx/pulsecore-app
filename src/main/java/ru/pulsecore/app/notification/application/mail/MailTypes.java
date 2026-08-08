@@ -14,6 +14,7 @@ public final class MailTypes {
 
     public static final String SCHEDULED_REPORT = "scheduled_report";
     public static final String BROKEN_URI = "broken_uri" ;
+    public static final String CANCELED_TOURNAMENT = "cancelled_tournament";
 
     private MailTypes() {}
 }

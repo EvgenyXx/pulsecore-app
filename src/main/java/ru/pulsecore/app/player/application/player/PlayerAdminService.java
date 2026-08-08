@@ -7,6 +7,7 @@ import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.client.TournamentClient;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
+import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.player.infrastructure.session.SessionService;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
@@ -38,9 +39,7 @@ public class PlayerAdminService {
     public List<PlayerData> getPlayers() {
         return playerRepository.findByVerifiedTrueAndIsBlockedFalse()
                 .stream()
-                .map(p ->
-                        new PlayerData(p.getId(), p.getName(), p.getEmail(), p.getPrimaryLeague(),
-                                p.getPushEnabled(),p.getNotificationsEnabled()))
+                .map(PlayerDataProjection::toPlayerData)
                 .toList();
     }
 }
