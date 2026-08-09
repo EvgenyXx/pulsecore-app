@@ -19,7 +19,7 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
-public class TournamentResetService {
+public class AdminTournamentManagementService {
 
     private final TournamentResultRepository tournamentResultRepository;
     private final PlayerClient playerClient;

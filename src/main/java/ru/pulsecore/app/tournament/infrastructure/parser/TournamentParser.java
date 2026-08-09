@@ -11,12 +11,8 @@ import java.util.stream.Collectors;
 @Service
 public class TournamentParser {
 
-    private final NameNormalizer nameNormalizer;
 
-    // Добавлен конструктор для внедрения NameNormalizer
-    public TournamentParser(NameNormalizer nameNormalizer) {
-        this.nameNormalizer = nameNormalizer;
-    }
+
 
     public Long parseTournamentId(Document doc) {
         Element shortLink = doc.select(HtmlSelectors.SHORTLINK).first();
@@ -49,7 +45,7 @@ public class TournamentParser {
         return doc.select(HtmlSelectors.PLAYER)
                 .stream()
                 .map(Element::text)
-                .map(nameNormalizer::normalize)
+                .map(NameNormalizer::normalize)
                 .collect(Collectors.toList());
     }
 
@@ -59,7 +55,7 @@ public class TournamentParser {
                 .stream()
                 .filter(player -> player.hasClass(HtmlSelectors.STATUS_REMOVED))
                 .map(Element::text)
-                .map(nameNormalizer::normalize)
+                .map(NameNormalizer::normalize)
                 .findFirst()
                 .orElse(null);
     }

@@ -31,9 +31,9 @@ public class BroadcastService {
         int pushSent = 0;
         int emailSent = 0;
 
-        for (var player : players) {
+        for (PlayerData player : players) {
             if (sendPush(player.playerId(), message)) pushSent++;
-            if (sendEmail(player.email(), message)) emailSent++;
+            if (sendEmail(player.email(),message)) emailSent++;
         }
 
         log.info("Рассылка завершена. Push: {}, Email: {}", pushSent, emailSent);
@@ -55,12 +55,12 @@ public class BroadcastService {
         }
     }
 
-    private boolean sendEmail(String email, String message) {
+    private boolean sendEmail( String email,String message) {
         try {
             eventPublisher.publishEvent(
                     new MailNotificationEvent(
                             MailTypes.BROADCAST,
-                            new BroadcastContext(email, message)
+                            new BroadcastContext(email,message)
                     )
             );
             return true;

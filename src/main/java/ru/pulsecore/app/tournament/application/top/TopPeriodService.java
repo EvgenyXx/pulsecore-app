@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.player.api.dto.response.TopLeagueResponse;
 import ru.pulsecore.app.player.api.dto.response.TopPlayerDto;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.domain.entity.TopPlayersView;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TopPlayersViewRepository;
@@ -20,15 +21,15 @@ public class TopPeriodService {
     private final TopPlayersViewRepository repository;
     private final PlayerClient playerClient;
 
-    @Cacheable(value = CacheNames.TOP_ALL, key = CacheNames.KEY_PERIOD)
+//    @Cacheable(value = CacheNames.TOP_ALL, key = CacheNames.KEY_PERIOD)
     public TopLeagueResponse getTopAllLeagues(String period, UUID playerId) {
         List<TopPlayersView> all = repository.findByPeriodOrderByTotalDesc(period);
         return buildResponse(all, playerId);
     }
 
-    @Cacheable(value = CacheNames.TOP_LEAGUE, key = CacheNames.KEY_PERIOD_LEAGUE)
+//    @Cacheable(value = CacheNames.TOP_LEAGUE, key = CacheNames.KEY_PERIOD_LEAGUE)
     public TopLeagueResponse getTopByLeague(String period, String league, UUID playerId) {
-       var player = playerClient.getPlayerById(playerId);
+       PlayerData player = playerClient.getPlayerById(playerId);
 
         if (!league.equals(player.primaryLeague())) {
             List<TopPlayersView> top5 = repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
@@ -44,6 +45,7 @@ public class TopPeriodService {
         return buildResponse(all, playerId);
     }
 
+    //todo вынести в другое место
     private TopLeagueResponse buildResponse(List<TopPlayersView> all, UUID playerId) {
         List<TopPlayersView> top5 = all.size() > 5 ? all.subList(0, 5) : all;
 

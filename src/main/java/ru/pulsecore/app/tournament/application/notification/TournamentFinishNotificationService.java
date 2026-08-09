@@ -47,6 +47,7 @@ public class TournamentFinishNotificationService {
             emailSend(player, time, date, tournament.getLink());
             canSendPush(player, time, date);
         }
+        log.info("Отмена турнира: уведомления отправлены {} игрокам", notifications.size());
     }
 
     private void canSendPush(PlayerData playerData,String time,String date) {

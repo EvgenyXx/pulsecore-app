@@ -35,6 +35,7 @@ public class TournamentFinishProcessor {
     private final TournamentRepository tournamentRepository;
     private final TournamentStatusParser tournamentStatusParser;
 
+
     @Transactional
     public void processFinish() {
         List<PlayerNotification> all = repo.findNotFinishedFull();
@@ -44,12 +45,16 @@ public class TournamentFinishProcessor {
                 .filter(p -> p.getTournament() != null)
                 .collect(Collectors.groupingBy(p -> p.getTournament().getLink()));
 
+        log.info("Наблюдаются {} турниров:", grouped.size());
+        grouped.forEach((link, notifications) -> {
+            TournamentEntity t = notifications.get(0).getTournament();
+            log.info("  {} {} | {} | {}", t.getDate(), t.getTime(), link, notifications.size());
+        });
+
         for (var entry : grouped.entrySet()) {
             process(entry.getKey(), entry.getValue());
         }
-        log.info("Обработка завершенных турниров: найдено {} турниров", grouped.size());
     }
-
     private void process(String link, List<PlayerNotification> notifications) {
         TournamentEntity t = getTournament(notifications);
         if (t == null || t.isProcessed()) return;
@@ -84,8 +89,10 @@ public class TournamentFinishProcessor {
     private void handleCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
         if (t.isCancelled()) return;
 
+        t.setStarted(true);
         t.setCancelled(true);
         t.setProcessed(true);
+        t.setFinished(true);
         tournamentRepository.save(t);
 
         notificationService.sendCancelled(notifications);

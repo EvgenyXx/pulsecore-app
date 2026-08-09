@@ -24,7 +24,7 @@ import java.util.UUID;
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
-    private final NameNormalizer nameNormalizer;
+
 
 
     public List<PlayerData> findPlayerByIds(Set<UUID> playerIds) {
@@ -54,7 +54,7 @@ public class PlayerService {
 
 
     public List<PlayerResponse> searchPlayers(String q) {
-        String normalizedQuery = nameNormalizer.normalizeForSearch(q);
+        String normalizedQuery = NameNormalizer.normalizeForSearch(q);
         return playerRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(normalizedQuery, q)
                 .stream()
                 .map(p -> PlayerResponse.builder()
@@ -68,7 +68,7 @@ public class PlayerService {
 
     public Player save(Player player) {
         if (player.getName() != null) {
-            player.setName(nameNormalizer.normalize(player.getName()));
+            player.setName(NameNormalizer.normalize(player.getName()));
         }
         return playerRepository.save(player);
     }

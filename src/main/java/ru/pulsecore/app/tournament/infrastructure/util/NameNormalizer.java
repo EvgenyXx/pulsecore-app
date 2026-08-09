@@ -1,44 +1,25 @@
 package ru.pulsecore.app.tournament.infrastructure.util;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import java.util.List;
+import java.util.regex.Pattern;
 
-//todo сделать утил
-@Component
+@UtilityClass
 public class NameNormalizer {
 
-    /**
-     * Нормализует одно имя:
-     * - убирает пробелы в начале и конце
-     * - заменяет все множественные пробелы на один
-     * - убирает неразрывные пробелы
-     * - удаляет текст в скобках (снят, удален и т.п.)
-     */
+    private static final Pattern BRACKETS = Pattern.compile("\\(.*?\\)");
+    private static final Pattern MULTIPLE_SPACES = Pattern.compile("\\s+");
+
     public String normalize(String name) {
         if (name == null || name.isBlank()) return "";
-
-        return name
-                .replace("\u00A0", " ")           // неразрывный пробел → обычный
-                .replaceAll("\\(.*?\\)", "")      // удаляем (снят) и т.п.
-                .trim()                           // убираем пробелы по краям
-                .replaceAll("\\s+", " ");         // все пробелы → один
+        return MULTIPLE_SPACES.matcher(
+                BRACKETS.matcher(name.replace("\u00A0", " ")).replaceAll("")
+        ).replaceAll(" ").trim();
     }
-
-    /**
-     * Нормализует список имён
-     */
-    public List<String> normalizePlayers(List<String> players) {
-        if (players == null) return null;
-        return players.stream()
-                .map(this::normalize)
-                .toList();
+    public static List<String> normalizePlayers(List<String> players) {
+        return players == null ? null : players.stream().map(NameNormalizer::normalize).toList();
     }
-
-    /**
-     * Нормализует имя для поиска (в нижний регистр)
-     */
     public String normalizeForSearch(String name) {
-        if (name == null || name.isBlank()) return "";
-        return normalize(name).toLowerCase();
+        return name == null || name.isBlank() ? "" : normalize(name).toLowerCase();
     }
 }

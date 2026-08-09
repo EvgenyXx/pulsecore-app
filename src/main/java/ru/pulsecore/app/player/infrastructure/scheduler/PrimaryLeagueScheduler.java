@@ -18,7 +18,7 @@ public class PrimaryLeagueScheduler {
         updateAllPrimaryLeagues();
     }
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(initialDelay = 0, fixedRate = 300_000)
     public void updateAllPrimaryLeagues() {
       primaryLeagueService.updatePrimaryLeague();
     }

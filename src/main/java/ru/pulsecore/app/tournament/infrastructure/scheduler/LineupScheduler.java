@@ -5,6 +5,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.shared.config.SchedulerConfig;
 import ru.pulsecore.app.tournament.application.lineup.LineupCleanupService;
 import ru.pulsecore.app.tournament.application.lineup.LineupUpsertService;
 
@@ -32,26 +33,22 @@ public class LineupScheduler implements ApplicationRunner {
     }
 
 
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 */10 * * * *", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadToday() {
         lineupUpsertService.loadDay(LocalDate.now());
-
     }
 
-
-    @Scheduled(cron = "0 */20 * * * *")
+    @Scheduled(cron = "0 */20 * * * *", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadTomorrow() {
         lineupUpsertService.loadDay(LocalDate.now().plusDays(1));
     }
 
-
-    @Scheduled(cron = "0 0 */3 * * *")
+    @Scheduled(cron = "0 0 */3 * * *", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadDayAfterTomorrow() {
-       lineupUpsertService.loadDay(LocalDate.now().plusDays(2));
+        lineupUpsertService.loadDay(LocalDate.now().plusDays(2));
     }
 
-
-    @Scheduled(initialDelay = 0, fixedRate = 60000)
+    @Scheduled(initialDelay = 0, fixedRate = 60000, scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void cleanup() {
         lineupCleanupService.cleanupOld();
     }

@@ -31,7 +31,7 @@ public class ResultService {
     private final TournamentExtractor tournamentExtractor;
     private final StrategyResolver strategyResolver;
     private final ResultBuilder resultBuilder;
-    private final NameNormalizer nameNormalizer;
+
 
     public ParsedResult calculateAll(String url) {
         Document doc = loader.load(url);
@@ -74,7 +74,7 @@ public class ResultService {
 
     private void normalizeNames(List<ResultDto> results) {
         for (ResultDto result : results) {
-            String normalizedName = nameNormalizer.normalize(result.getPlayer());//todo сделать утил класс
+            String normalizedName = NameNormalizer.normalize(result.getPlayer());
             result.setPlayer(normalizedName);
         }
     }

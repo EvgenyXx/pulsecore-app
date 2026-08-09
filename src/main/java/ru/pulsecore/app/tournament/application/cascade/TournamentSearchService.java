@@ -7,6 +7,7 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +21,11 @@ public class TournamentSearchService {
     private static final long API_DELAY_MS = 500;
 
     private final MastersApiClient mastersApiClient;
-    private final NameNormalizer nameNormalizer;
+
 
 
     public List<TournamentDto> findByDateRangeAndPlayer(String startDate, String endDate, String playerName) {
-        String searchName = nameNormalizer.normalizeForSearch(playerName);
+        String searchName = NameNormalizer.normalizeForSearch(playerName);
         List<TournamentDto> allTournaments = new ArrayList<>();
 
         LocalDate start = LocalDate.parse(startDate);
@@ -52,7 +53,7 @@ public class TournamentSearchService {
     private List<TournamentDto> filterByPlayer(List<TournamentDto> tournaments, String searchName) {
         return tournaments.stream()
                 .filter(t -> t.getPlayers() != null && t.getPlayers().stream()
-                        .anyMatch(p -> nameNormalizer.normalizeForSearch(p).contains(searchName)))
+                        .anyMatch(p -> NameNormalizer.normalizeForSearch(p).contains(searchName)))
                 .toList();
     }
 

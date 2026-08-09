@@ -40,7 +40,7 @@ public class TournamentCascadeSyncService {
     }
 
     private void syncMonthsBackwards(UUID playerId, String playerName) {
-        YearMonth month = YearMonth.now().minusMonths(1);
+        YearMonth month = YearMonth.now();
 
         while (!month.atDay(1).isBefore(STOP_AT)) {
             syncMonth(playerId, playerName, month);

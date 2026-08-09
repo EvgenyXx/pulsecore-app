@@ -7,11 +7,9 @@ import ru.pulsecore.app.tournament.domain.enums.LeagueType;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.infrastructure.parser.LeagueDetector;
 import ru.pulsecore.app.tournament.application.calculation.league.NightBonusService;
-import ru.pulsecore.app.notification.infrastructure.properties.AdminProperties;
 import ru.pulsecore.app.notification.application.mail.MailStrategyRegistry;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
-import ru.pulsecore.app.notification.application.mail.context.BrokenUriContext;
-
+import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriContext;
 import ru.pulsecore.app.tournament.domain.model.RemovedResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
@@ -32,7 +30,7 @@ public class TournamentExtractor {
     private final TournamentStatusParser tournamentStatusParser;
     private final RemovedPlayerDetector removedPlayerDetector;
     private final MailStrategyRegistry mailStrategyRegistry;
-    private final AdminProperties adminProperties;
+
 
     public TournamentContext extract(Document doc) {
 
@@ -47,7 +45,7 @@ public class TournamentExtractor {
             String brokenUri = doc.baseUri();
             mailStrategyRegistry.send(
                     MailTypes.BROKEN_URI,
-                    new BrokenUriContext(adminProperties.getEmail(),brokenUri)
+                    new BrokenUriContext(brokenUri)
             );
             return null;
         }

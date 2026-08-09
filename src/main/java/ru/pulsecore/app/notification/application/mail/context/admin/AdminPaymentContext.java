@@ -1,7 +1,8 @@
-package ru.pulsecore.app.notification.application.mail.context;
+package ru.pulsecore.app.notification.application.mail.context.admin;
+
+import ru.pulsecore.app.notification.application.mail.context.MailContext;
 
 public record AdminPaymentContext(
-        String to,
         String playerName,
         int months,
         String amount,

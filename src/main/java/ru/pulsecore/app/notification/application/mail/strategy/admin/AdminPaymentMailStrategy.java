@@ -1,5 +1,4 @@
-// AdminPaymentMailStrategy.java
-package ru.pulsecore.app.notification.application.mail.strategy;
+package ru.pulsecore.app.notification.application.mail.strategy.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -8,7 +7,7 @@ import ru.pulsecore.app.notification.application.mail.MailTemplateService;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 
-import ru.pulsecore.app.notification.application.mail.context.AdminPaymentContext;
+import ru.pulsecore.app.notification.application.mail.context.admin.AdminPaymentContext;
 import ru.pulsecore.app.notification.application.mail.context.MailContext;
 import ru.pulsecore.app.notification.application.mail.template.MailFormat;
 import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
@@ -30,6 +29,6 @@ public class AdminPaymentMailStrategy implements MailStrategy {
         AdminPaymentContext c = (AdminPaymentContext) ctx;
         String text = templates.format(MailTemplate.ADMIN_PAYMENT,
                 c.playerName(), c.months(), c.amount(), c.currency());
-        mailSender.send(MailFormat.TEXT, c.to(), "PulseCore — Новая оплата", text, null, null);
+        mailSender.adminSendEmail(MailFormat.TEXT,  "PulseCore — Новая оплата", text, null, null);
     }
 }
