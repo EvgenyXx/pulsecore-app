@@ -9,7 +9,7 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const AnalyticsAPI = {
-    getMe: () => apiRequest('/auth/me'),
+    getMe: () => apiRequest('/player/me'),
     getSubscription: () => apiRequest('/player/subscription'),
     getLeagueAvg: () => apiRequest('/tournament/analytics'),
     getMonthly: (year) => apiRequest(`/tournament/monthly-income?year=${year}`),

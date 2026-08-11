@@ -10,28 +10,28 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const ProfileAPI = {
-    getMe: () => apiRequest('/auth/me'),
-    getNotificationStatus: () => apiRequest('/profile/notifications/status'),
-    setNotification: (enabled) => apiRequest(`/profile/notifications?enabled=${enabled}`, {
+    getMe: () => apiRequest('/player/me'),
+    getNotificationStatus: () => apiRequest('/player/notifications/status'),
+    setNotification: (enabled) => apiRequest(`/player/notifications?enabled=${enabled}`, {
         method: 'PUT'
     }),
     getPushStatus: () => apiRequest('/push/push-status'),
     togglePush: () => apiRequest('/push/toggle', { method: 'POST' }),
     getSubscription: () => apiRequest('/player/subscription'),
-    verifyPassword: (password) => apiRequest('/profile/verify-password', {
+    verifyPassword: (password) => apiRequest('/player/verify-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
     }),
-    changePassword: (oldPassword, newPassword) => apiRequest('/profile/change-password', {
+    changePassword: (oldPassword, newPassword) => apiRequest('/player/change-password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oldPassword, newPassword })
     }),
-    saveEmail: (email) => apiRequest('/profile/update', {
+    saveEmail: (email) => apiRequest('/player/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
     }),
-    logout: () => fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'same-origin' })
+    logout: () => fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })
 };

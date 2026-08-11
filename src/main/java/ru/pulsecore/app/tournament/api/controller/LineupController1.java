@@ -8,6 +8,11 @@ import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
 
 
+// todo перенести в TournamentApi + LineupController или переделать на сервис
+/**
+ * Отдает состав по ID. Используется на странице лайв-трансляции.
+ * Перенести в LineupController (TournamentApi.BASE_PATH + "/{id}").
+ */
 @RestController
 @RequiredArgsConstructor
 public class LineupController1 {

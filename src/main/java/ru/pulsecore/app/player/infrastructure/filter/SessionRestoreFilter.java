@@ -13,9 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
 import ru.pulsecore.app.player.domain.Player;
-import ru.pulsecore.app.player.application.player.PlayerService;
 import ru.pulsecore.app.player.infrastructure.properties.SecurityProperties;
 import ru.pulsecore.app.player.infrastructure.session.RememberMeService;
 
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class SessionRestoreFilter extends OncePerRequestFilter {
 
     private final RememberMeService rememberMeService;
-    private final PlayerService playerService;
+    private final PlayerSearchService playerSearchService;
     private final SecurityProperties securityProperties;
 
 
@@ -51,7 +51,7 @@ public class SessionRestoreFilter extends OncePerRequestFilter {
 
     private void tryRestore(HttpServletRequest request, HttpServletResponse response) {
         rememberMeService.getPlayerId(request)
-                .flatMap(id -> playerService.findByIdOptional(UUID.fromString(id)))
+                .map(id -> playerSearchService.getById(UUID.fromString(id)))
                 .ifPresent(player -> restoreSession(request, response, player));
     }
 

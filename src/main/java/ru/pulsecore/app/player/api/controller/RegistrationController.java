@@ -1,5 +1,7 @@
 package ru.pulsecore.app.player.api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.pulsecore.app.player.api.AuthApi;
+import ru.pulsecore.app.player.api.PlayerApi;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.request.RegisterRequest;
 import ru.pulsecore.app.player.api.dto.request.VerifyEmailRequest;
@@ -17,8 +19,9 @@ import ru.pulsecore.app.player.infrastructure.persistence.mapping.PlayerDtoMappe
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.player.application.auth.RegistrationFacade;
 
+@Tag(name = "Auth", description = "Регистрация и подтверждение email")
 @RestController
-@RequestMapping(AuthApi.BASE_PATH)
+@RequestMapping(PlayerApi.BASE_PATH)
 @RequiredArgsConstructor
 public class RegistrationController {
 
@@ -27,28 +30,30 @@ public class RegistrationController {
     private final RegistrationFacade registrationService;
     private final PlayerDtoMapper mapper;
 
-    @PostMapping(AuthApi.REGISTER)
+    @Operation(summary = "Зарегистрировать нового пользователя")
+    @PostMapping(PlayerApi.REGISTER)
     public ResponseEntity<MessageResponse> register(@Valid @RequestBody RegisterRequest request,
                                                     HttpSession session) {
         var pending = registrationService.initiate(request.getName(), request.getEmail(), request.getPassword());
         session.setAttribute(PENDING_SESSION_KEY, pending);
         session.setMaxInactiveInterval(600);
-        return ResponseEntity.ok(new MessageResponse(AuthApi.OK));
+        return ResponseEntity.ok(new MessageResponse(PlayerApi.OK));
     }
 
-    @PostMapping(AuthApi.VERIFY_EMAIL)
+    @Operation(summary = "Подтвердить email кодом")
+    @PostMapping(PlayerApi.VERIFY_EMAIL)
     public ResponseEntity<AuthResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequest request,
                                                     HttpSession session,
                                                     HttpServletRequest httpRequest) {
         var pending = (RegistrationFacade.Pending) session.getAttribute(PENDING_SESSION_KEY);
 
-        var player = registrationService.complete(
+        var player = registrationService.complete(//todo убрать всю логику в сервисы
                 pending,
                 request.getCode(),
                 httpRequest.getRemoteAddr(),
                 httpRequest.getHeader("User-Agent")
         );
         session.removeAttribute(PENDING_SESSION_KEY);
-        return ResponseEntity.ok(mapper.toAuthResponse(player));//todo убрать всю логику в сервис
+        return ResponseEntity.ok(mapper.toAuthResponse(player));
     }
 }

@@ -9,5 +9,7 @@ public record PlayerData(
         String primaryLeague,
         boolean pushEnabled,
         boolean notificationsEnabled,
-        boolean hasActiveSubscription
+        boolean hasActiveSubscription,
+        String selectedHalls,
+        String liveSelectedHalls
 ) {}

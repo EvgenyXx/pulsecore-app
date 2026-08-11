@@ -5,32 +5,38 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.player.application.player.PlayerService;
+import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Subscription;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.PushNotificationEvent;
 import ru.pulsecore.app.shared.util.PushMessageBuilder;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Обработчик просроченных и истекающих подписок.
+ * Деактивирует подписки с истекшим сроком.
+ * Отправляет push-уведомления игрокам, у которых подписка истекает завтра.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class SubscriptionExpiryProcessor {
 
-    private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionCommandService subscriptionCommandService;
+    private final SubscriptionQueryService subscriptionQueryService;
     private final ApplicationEventPublisher eventPublisher;
-    private final PlayerService playerService;
+    private final PlayerSearchService playerSearchService;
 
+    @Transactional
     public void processDeactivatedSubscription() {
-        List<Subscription> expired = subscriptionRepository.findExpired();
+        List<Subscription> expired = subscriptionQueryService.findExpired();
         for (Subscription sub : expired) {
             sub.setActive(false);
-            subscriptionRepository.save(sub);
+            subscriptionCommandService.save(sub);
             log.info("❌ Подписка истекла: {}", sub.getPlayer().getEmail());
         }
         if (!expired.isEmpty()) {
@@ -39,10 +45,10 @@ public class SubscriptionExpiryProcessor {
     }
 
     public void processCheckingSubscription() {
-        Set<UUID> expiringIds = subscriptionRepository.findExpiringPlayerIds(LocalDate.now().plusDays(1));
+        Set<UUID> expiringIds = subscriptionQueryService.findExpiringPlayerIds(LocalDate.now().plusDays(1));
         if (expiringIds.isEmpty()) return;
 
-        List<PlayerData> players = playerService.findPlayerByIds(expiringIds);
+        List<PlayerData> players = playerSearchService.findPlayerByIds(expiringIds);
 
         for (PlayerData player : players) {
             if (!player.pushEnabled()) continue;

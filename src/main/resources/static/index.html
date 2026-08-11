@@ -229,7 +229,7 @@
 
 <script>
     async function checkAuth() {
-        try { const r = await fetch("/api/auth/me", { credentials: "same-origin" }); if (r.ok) window.location.href = "/dashboard"; } catch (e) {}
+        try { const r = await fetch("/api/player/me", { credentials: "same-origin" }); if (r.ok) window.location.href = "/dashboard"; } catch (e) {}
     }
     checkAuth();
 
@@ -260,7 +260,7 @@
         err.classList.add("hidden");
         if (!email || !password) { err.textContent = "Заполните все поля"; err.classList.remove("hidden"); return; }
         try {
-            const r = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ email, password }) });
+            const r = await fetch("/api/player/login", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ email, password }) });
             if (!r.ok) {
                 const data = await r.json();
                 if (data.type === "OAUTH_ONLY") {
@@ -282,7 +282,7 @@
         if (password.length < 6) { err.textContent = "Пароль минимум 6 символов"; err.classList.remove("hidden"); return; }
         const btn = document.getElementById("regBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
-            const r = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: ln + " " + fn, email, password }) });
+            const r = await fetch("/api/player/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: ln + " " + fn, email, password }) });
             if (!r.ok) {
                 const e = await r.json();
                 if (e.type === "OAUTH_EMAIL") {
@@ -305,9 +305,9 @@
         if (!code || code.length !== 6) { err.textContent = "Введите код полностью"; err.classList.remove("hidden"); return; }
         const btn = document.getElementById("verifyBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
-            const vr = await fetch("/api/auth/verify-email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, code }) });
+            const vr = await fetch("/api/player/verify-email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, code }) });
             if (!vr.ok) { err.textContent = "Неверный код"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Подтвердить"; return; }
-            const lr = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ email, password }) });
+            const lr = await fetch("/api/player/login", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ email, password }) });
             if (!lr.ok) { err.textContent = "Ошибка входа"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Подтвердить"; return; }
             window.location.href = "/dashboard";
         } catch (e) { err.textContent = "Ошибка соединения"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Подтвердить"; }
@@ -319,7 +319,7 @@
         if (!email) { err.textContent = "Введите email"; err.classList.remove("hidden"); return; }
         const btn = document.getElementById("forgotBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
-            const r = await fetch("/api/auth/forgot-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
+            const r = await fetch("/api/player/forgot-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
             if (!r.ok) { err.textContent = "Ошибка отправки"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Отправить код"; return; }
             showReset(email);
         } catch (e) { err.textContent = "Ошибка соединения"; err.classList.remove("hidden"); } finally { btn.disabled = false; btn.innerHTML = "Отправить код"; }
@@ -333,7 +333,7 @@
         if (np !== np2) { err.textContent = "Пароли не совпадают"; err.className = "text-red-400 text-xs mb-3 text-left"; err.classList.remove("hidden"); return; }
         const btn = document.getElementById("resetBtn"); btn.disabled = true; btn.innerHTML = "⏳";
         try {
-            const r = await fetch("/api/auth/reset-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, password: np }) });
+            const r = await fetch("/api/player/reset-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, password: np }) });
             if (!r.ok) { const e = await r.json(); err.textContent = e.message || "Неверный код"; err.className = "text-red-400 text-xs mb-3 text-left"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Сменить пароль"; return; }
             document.getElementById("resetForm").innerHTML = `<div class="mb-4"><div class="text-3xl mb-2">✅</div><p class="text-emerald-400 font-semibold text-base mb-1">Пароль изменён!</p><p class="text-xs text-gray-400">Войдите с новым паролем</p></div><button onclick="showLogin()" class="btn btn-primary w-full bg-gradient-to-r from-indigo-500 to-purple-600 border-0 font-semibold text-sm h-11">Войти ✨</button>`;
         } catch (e) { err.textContent = "Ошибка соединения"; err.className = "text-red-400 text-xs mb-3 text-left"; err.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = "Сменить пароль"; }

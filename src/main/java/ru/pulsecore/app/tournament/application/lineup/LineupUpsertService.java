@@ -30,7 +30,7 @@ public class LineupUpsertService {
     private final TournamentValidator validator;
     private final HallStreamRepository hallStreamRepository;
 
-
+//todo добавиит кеширование если количество составов не обновилось не перепроверять
     @Transactional
     public void loadDay(LocalDate date) {
         List<TournamentDto> all = apiClient.loadTournaments(date.toString());

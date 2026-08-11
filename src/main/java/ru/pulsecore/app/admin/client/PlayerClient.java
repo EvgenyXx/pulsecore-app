@@ -14,6 +14,7 @@ public interface PlayerClient {
     //player
     MessageResponse deletePlayer(UUID playerId);
     List<PlayerData> getPlayers();
+    List<PlayerData> searchByName(String name);
 
     //analytic
     List<PlayerPageViewStats> getPlayerStats(int days);

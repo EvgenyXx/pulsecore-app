@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.client.TournamentClient;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
@@ -24,13 +25,15 @@ public class PlayerAdminService {
     private final TournamentClient tournamentClient;
     private final RedisIndexedSessionRepository sessionRepository;
     private final SessionService sessionService;
+    private final PlayerCommandService playerCommandService;
 
+    @Transactional
     public MessageResponse deletePlayer(UUID playerId) {
         tournamentClient.deleteByPlayerId(playerId);
         String principalName = playerId.toString();
         sessionRepository.findByPrincipalName(principalName)
                 .forEach((sessionId, session) -> sessionRepository.deleteById(sessionId));
-        playerRepository.deleteById(playerId);
+        playerCommandService.deletePlayer(playerId);
         sessionService.invalidateCurrentSession();
         return new MessageResponse("Аккаунт удалён");
     }

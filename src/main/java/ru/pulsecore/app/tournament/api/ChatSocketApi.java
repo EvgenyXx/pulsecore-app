@@ -9,7 +9,6 @@ public class ChatSocketApi {
     public static final String DELETE = "/{lineupId}/delete";
 
     // Топики (сервер → клиент)
-    public static final String TOPIC = "/topic/chat/{lineupId}";
     public static final String TOPIC_CHAT = "/topic/chat/";
     public static final String TOPIC_ONLINE = "/online";
 

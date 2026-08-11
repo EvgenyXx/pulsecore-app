@@ -5,25 +5,25 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.SubscriptionInfoDto;
-import ru.pulsecore.app.player.application.player.PlayerService;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
-
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.player.infrastructure.exception.PlayerNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Реализация клиента для модуля турниров
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TournamentPlayerClientImpl implements PlayerClient {
 
     private final PlayerRepository playerRepository;
-    private final PlayerService playerService;
+
 
     @Override
     public List<PlayerData> getAll() {
@@ -34,7 +34,9 @@ public class TournamentPlayerClientImpl implements PlayerClient {
 
     @Override
     public List<PlayerData> getPlayerDataByIds(Set<UUID> playerIds) {
-        return playerService.findPlayerByIds(playerIds);
+        return playerRepository.findProjectionsByIds(playerIds)
+                .stream().map(PlayerDataProjection::toPlayerData)
+                .toList();
     }
 
     @Override

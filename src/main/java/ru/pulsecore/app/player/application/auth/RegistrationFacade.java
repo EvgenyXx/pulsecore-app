@@ -6,20 +6,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ru.pulsecore.app.player.application.player.PlayerCommandService;
+import ru.pulsecore.app.player.application.subscription.TrialSubscriptionActivator;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.exception.BadCredentialsException;
 import ru.pulsecore.app.player.application.role.RoleService;
 
 import java.io.Serializable;
 
+
+/**
+ * Фасад регистрации нового игрока.
+ * Инициирует регистрацию (валидация, код), завершает регистрацию (создание игрока, пост-обработка, уведомления).
+ */
 @Service
 @RequiredArgsConstructor
 public class RegistrationFacade {
 
     private final RegistrationValidator validator;
     private final VerificationCodeGenerator codeGenerator;
-    private final PlayerFactory playerFactory;
-    private final PostRegistrationService postRegistration;
+    private final PlayerCommandService playerCommandService;
+    private final TrialSubscriptionActivator postRegistration;
     private final RoleService roleService;
     private final RegistrationMailPublisher mailPublisher;
 
@@ -37,7 +44,7 @@ public class RegistrationFacade {
         if (!pending.code().equals(code)) throw new BadCredentialsException();
 
         var defaultRole = roleService.findRoleUser();
-        Player player = playerFactory.create(pending.name(), pending.email(), pending.password(), defaultRole);
+        Player player = playerCommandService.create(pending.name(), pending.email(), pending.password(), defaultRole);
         postRegistration.execute(player);
         mailPublisher.playerCreated(player,ip,userAgent);
         return player;

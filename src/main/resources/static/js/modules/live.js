@@ -36,7 +36,7 @@ async function loadLive() {
 
         const [tournamentsRes, hallsRes] = await Promise.all([
             fetch('/api/tournament/live', { credentials: 'same-origin' }),
-            fetch('/api/lineups/live-halls', { credentials: 'same-origin' })
+            fetch('/api/player/live/halls', { credentials: 'same-origin' })
         ]);
 
         document.getElementById('loading').classList.add('hidden');
@@ -119,7 +119,7 @@ async function saveSelectedLiveHalls() {
     const checkboxes = document.querySelectorAll('#liveHallsCheckboxes input[type="checkbox"]:checked');
     savedHalls = Array.from(checkboxes).map(cb => cb.value);
     const hallsStr = savedHalls.join(',');
-    await fetch('/api/lineups/live-halls', {
+    await fetch('/api/player/live-halls', {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         credentials: 'same-origin',

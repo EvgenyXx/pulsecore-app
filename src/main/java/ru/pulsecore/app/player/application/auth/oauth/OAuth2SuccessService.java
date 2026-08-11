@@ -12,13 +12,17 @@ import ru.pulsecore.app.player.domain.Player;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Сервис обработки OAuth входа.
+ * Извлекает данные пользователя из OAuth2 провайдера,
+ * ищет существующего игрока или сохраняет данные в сессию для завершения регистрации.
+ */
 @Service
 @RequiredArgsConstructor
 public class OAuth2SuccessService {
 
     private final OAuthDataExtractor dataExtractor;
     private final OAuthPlayerFinder playerFinder;
-
     private final OAuthSessionStorer sessionStorer;
     private final PlayerLoginService playerLoginService;
 

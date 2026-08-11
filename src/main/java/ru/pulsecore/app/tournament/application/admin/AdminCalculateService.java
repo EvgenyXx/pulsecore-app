@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.ResultDto;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
-import ru.pulsecore.app.tournament.application.ResultService;
+import ru.pulsecore.app.tournament.application.resolution.ResultService;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.application.cascade.TournamentSearchService;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;

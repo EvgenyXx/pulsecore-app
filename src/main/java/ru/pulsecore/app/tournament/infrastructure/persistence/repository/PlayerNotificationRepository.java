@@ -27,11 +27,12 @@ public interface PlayerNotificationRepository
     """)
     List<PlayerNotification> findPendingWithTournament();
 
-    @Query("""
-        SELECT pn
-        FROM PlayerNotification pn
-        JOIN FETCH pn.tournament t
-        WHERE t.finished = false
-    """)
-    List<PlayerNotification> findNotFinishedFull();
+    @Query("SELECT pn FROM PlayerNotification pn JOIN FETCH " +
+            "pn.tournament t WHERE t.started = true AND t.finished = false AND t.cancelled = false")
+    List<PlayerNotification> findStartedNotFinished();
+
+
+    @Query("SELECT pn FROM PlayerNotification pn JOIN FETCH pn.tournament" +
+            " t WHERE t.started = false AND t.cancelled = false AND t.finished = false")
+    List<PlayerNotification> findNotStartedForCancel();
 }

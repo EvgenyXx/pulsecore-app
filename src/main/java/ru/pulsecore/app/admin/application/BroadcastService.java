@@ -14,6 +14,13 @@ import ru.pulsecore.app.shared.event.PushNotificationEvent;
 import java.util.List;
 import java.util.UUID;
 
+
+/**
+ * Сервис массовых рассылок.
+ * Отправляет push и email сообщения всем игрокам.
+ * Используется в админке (BroadcastController).
+ * Возвращает статистику: сколько push и email отправлено.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

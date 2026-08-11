@@ -31,7 +31,6 @@ public class RegistrationMailPublisher {
     }
 
 
-
     public void playerCreated(Player player, String ip, String userAgent) {
         eventPublisher.publishEvent(
                 new PlayerCreatedEvent(

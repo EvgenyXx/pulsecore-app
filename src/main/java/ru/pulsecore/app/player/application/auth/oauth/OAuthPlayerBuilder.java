@@ -1,11 +1,12 @@
 package ru.pulsecore.app.player.application.auth.oauth;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.player.application.auth.RegistrationValidator;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.domain.Role;
-import ru.pulsecore.app.player.application.player.PlayerService;
+import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.role.RoleService;
 
 import java.time.LocalDate;
@@ -13,11 +14,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuthPlayerBuilder {
 
-    private final PlayerService playerService;
+    private final PlayerCommandService playerCommandService;
     private final RoleService roleService;
     private final RegistrationValidator registrationValidator;
 
@@ -38,10 +41,11 @@ public class OAuthPlayerBuilder {
             try {
                 player.setBirthday(LocalDate.parse(birthday));
             } catch (DateTimeParseException e) {
+                log.error("Пришел не валидный формат от OAuth: {}",e.getMessage());
                 // Игнорируем невалидный формат даты от OAuth-провайдера
             }
         }
         player.getRoles().add(userRole);
-        return playerService.save(player);
+        return playerCommandService.save(player);
     }
 }

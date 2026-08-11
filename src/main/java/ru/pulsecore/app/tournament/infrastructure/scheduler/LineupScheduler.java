@@ -1,6 +1,7 @@
 package ru.pulsecore.app.tournament.infrastructure.scheduler;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class LineupScheduler implements ApplicationRunner {
 
     private final LineupUpsertService lineupUpsertService;
@@ -26,29 +28,36 @@ public class LineupScheduler implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        LocalDate today = LocalDate.now();
-        lineupUpsertService.loadDay(today);
-        lineupUpsertService.loadDay(today.plusDays(1));
-        lineupUpsertService.loadDay(today.plusDays(2));
+        try {
+            Thread.sleep(10_000);
+            LocalDate today = LocalDate.now();
+            lineupUpsertService.loadDay(today);
+            Thread.sleep(3_000);
+            lineupUpsertService.loadDay(today.plusDays(1));
+            Thread.sleep(3_000);
+            lineupUpsertService.loadDay(today.plusDays(2));
+        } catch (Exception e) {
+            log.error("Ошибка загрузки составов при старте: {}", e.getMessage());
+        }
     }
 
 
-    @Scheduled(cron = "0 */10 * * * *", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
+    @Scheduled(initialDelay = 120_000, fixedRateString = "PT10M", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadToday() {
         lineupUpsertService.loadDay(LocalDate.now());
     }
 
-    @Scheduled(cron = "0 */20 * * * *", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
+    @Scheduled(cron = "30 */20 * * * *", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadTomorrow() {
         lineupUpsertService.loadDay(LocalDate.now().plusDays(1));
     }
 
-    @Scheduled(cron = "0 0 */3 * * *", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
+    @Scheduled(cron = "0 5 */3 * * *", scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadDayAfterTomorrow() {
         lineupUpsertService.loadDay(LocalDate.now().plusDays(2));
     }
 
-    @Scheduled(initialDelay = 0, fixedRate = 60000, scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
+    @Scheduled(initialDelay = 180_000, fixedRate = 60000, scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void cleanup() {
         lineupCleanupService.cleanupOld();
     }

@@ -61,7 +61,7 @@ export function setTheme(theme) {
     updateActiveInSheet();
     renderThemeListInline();
 
-    fetch('/api/profile/me/theme', {
+    fetch('/api/player/me/theme', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',

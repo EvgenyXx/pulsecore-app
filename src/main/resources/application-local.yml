@@ -21,10 +21,17 @@ spring:
   session:
     timeout: 5m
 
+spring doc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
 logging:
   level:
     root: warn
-    ru.pulsecore.app: warn
+    ru.pulsecore.app: info
     org.springframework: WARN
     org.hibernate: WARN
     ru.pulsecore.app.tournament.application.discovery.DiscoveryNotificationService: info

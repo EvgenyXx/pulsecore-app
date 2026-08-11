@@ -1,4 +1,4 @@
-// ==================== OAuth2SuccessHandler.java ====================
+
 package ru.pulsecore.app.player.application.auth.oauth;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +12,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+
+/**
+ * Обработчик успешной OAuth аутентификации.
+ * Вызывается Spring Security после входа через Яндекс/VK.
+ * Делегирует обработку в OAuth2SuccessService.
+ */
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {

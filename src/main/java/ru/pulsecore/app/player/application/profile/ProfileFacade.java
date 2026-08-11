@@ -1,14 +1,10 @@
 package ru.pulsecore.app.player.application.profile;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.player.api.dto.request.ChangePasswordRequest;
 import ru.pulsecore.app.player.api.dto.response.NotificationsStatusResponse;
 import ru.pulsecore.app.player.api.dto.response.PlayerProfileResponse;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
-
-
 import java.util.UUID;
 
 @Service
@@ -26,8 +22,8 @@ public class ProfileFacade {
         passwordService.verifyPassword(id, rawPassword);
     }
 
-    public MessageResponse changePassword(UUID id, ChangePasswordRequest request) {
-        passwordService.changePassword(id, request);
+    public MessageResponse changePassword(UUID playerId, String oldPassword,String newPassword) {
+        passwordService.changePassword(playerId, oldPassword, newPassword);
         return new MessageResponse("Пароль успешно изменен");
     }
 
@@ -44,8 +40,8 @@ public class ProfileFacade {
         return new NotificationsStatusResponse(playerNotificationService.isNotificationsEnabled(playerId));
     }
 
-    public void setTheme(String playerId, String theme) {
-        themeService.setTheme(UUID.fromString(playerId), theme);//??
+    public void setTheme(String playerId, String theme){
+            themeService.setTheme(UUID.fromString(playerId), theme);//??
     }
 
     //todo обрабоать ошибку в сервисе

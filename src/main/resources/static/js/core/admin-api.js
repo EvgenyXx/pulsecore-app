@@ -10,8 +10,10 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const AdminAPI = {
-    getMe: () => apiRequest('/auth/me'),
-    searchPlayers: (q) => apiRequest(`/player/search?q=${encodeURIComponent(q)}`),
+    getMe: () => apiRequest('/player/me'),
+    searchPlayers: (q) => apiRequest(`/admin/search?q=${encodeURIComponent(q)}`).then(players =>
+        players.map(p => ({ id: p.playerId, name: p.playerName, email: p.email }))
+    ),
     getPlayerSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/subscription`),
     getPlayerRoles: (playerId) => apiRequest(`/admin/players/${playerId}/roles`),
     deletePlayerTournaments: (playerId) => apiRequest(`/admin/players/${playerId}/tournaments`, { method: 'DELETE' }),
@@ -38,5 +40,5 @@ export const AdminAPI = {
     }),
     getPageStats: (days) => apiRequest(`/admin/stats/page-views?days=${days}`),
     getPlayerStats: (days) => apiRequest(`/admin/stats/page-views/players?days=${days}`),
-    logout: () => fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'same-origin' })
+    logout: () => fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })
 };
