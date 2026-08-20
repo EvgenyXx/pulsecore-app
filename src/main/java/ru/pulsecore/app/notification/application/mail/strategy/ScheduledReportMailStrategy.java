@@ -1,4 +1,3 @@
-// ScheduledReportMailStrategy.java
 package ru.pulsecore.app.notification.application.mail.strategy;
 
 import lombok.RequiredArgsConstructor;

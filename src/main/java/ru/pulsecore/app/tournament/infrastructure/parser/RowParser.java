@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.domain.Match;
-import ru.pulsecore.app.tournament.domain.Score;
+import ru.pulsecore.app.tournament.domain.model.Match;
+import ru.pulsecore.app.tournament.domain.model.Score;
 
 @SuppressWarnings("deprecation")
 @Component

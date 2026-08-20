@@ -5,14 +5,19 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.player.api.dto.request.OAuthFinishRequest;
 import ru.pulsecore.app.player.application.auth.PlayerLoginService;
 import ru.pulsecore.app.player.application.auth.RegistrationMailPublisher;
 import ru.pulsecore.app.player.infrastructure.exception.OAuthEmailNotReceivedException;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.application.subscription.TrialActivator;
 
 
+
+/**
+ * Завершение OAuth авторизации.
+ * Создаёт или находит игрока по данным OAuth, активирует пробную подписку,
+ * отправляет уведомление и выполняет вход.
+ */
 @Service
 @RequiredArgsConstructor
 public class OAuthFinishService {
@@ -26,14 +31,14 @@ public class OAuthFinishService {
     private final RegistrationMailPublisher publisher;
 
     @Transactional
-    public void complete(OAuthFinishRequest request, HttpServletRequest httpRequest) {
+    public void complete(String lastname,String firstname, HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession();
         var data = sessionExtractor.extract(session);
         if (data.email() == null) {
             throw new OAuthEmailNotReceivedException();
         }
 
-        String name = (request.getLastName() + " " + request.getFirstName()).toLowerCase().trim();
+        String name = (lastname + " " + firstname).toLowerCase().trim();
         String email = data.email();
         String ip = httpRequest.getRemoteAddr();
         String userAgent = httpRequest.getHeader("User-Agent");

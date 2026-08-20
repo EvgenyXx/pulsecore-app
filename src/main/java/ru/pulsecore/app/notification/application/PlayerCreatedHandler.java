@@ -5,10 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.application.mail.MailStrategyRegistry;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
-import ru.pulsecore.app.notification.application.mail.context.AdminNewUserContext;
+import ru.pulsecore.app.notification.application.mail.context.admin.AdminNewUserContext;
 import ru.pulsecore.app.notification.application.mail.context.WelcomeContext;
 import ru.pulsecore.app.shared.event.PlayerCreatedEvent;
-import ru.pulsecore.app.notification.infrastructure.properties.AdminProperties;
 import ua_parser.Client;
 import ua_parser.Parser;
 
@@ -18,7 +17,6 @@ import ua_parser.Parser;
 public class PlayerCreatedHandler {
 
     private final MailStrategyRegistry mailStrategyRegistry;
-    private final AdminProperties adminProperties;
     private final Parser uaParser;
 
 
@@ -36,7 +34,6 @@ public class PlayerCreatedHandler {
         Client client = uaParser.parse(agent);
         mailStrategyRegistry.send(MailTypes.ADMIN_NEW_USER,
                 new AdminNewUserContext(
-                        adminProperties.getEmail(),
                         event.playerName(),
                         event.email(),
                         event.ip(),

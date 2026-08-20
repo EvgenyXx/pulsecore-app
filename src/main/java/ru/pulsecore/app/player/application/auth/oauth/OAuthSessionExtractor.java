@@ -1,4 +1,3 @@
-// 1. OAuthSessionExtractor.java
 package ru.pulsecore.app.player.application.auth.oauth;
 
 import jakarta.servlet.http.HttpSession;

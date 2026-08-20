@@ -3,7 +3,7 @@ package ru.pulsecore.app.player.application.role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.player.entity.Role;
+import ru.pulsecore.app.player.domain.Role;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.RoleRepository;
 
 @Service
@@ -21,11 +21,6 @@ public class RoleService {
         return roleRepository.findByName(ROLE_USER);
     }
 
-
-
-    public Role save (Role role){
-        return roleRepository.save(role);
-    }
 
     public Role findByName(String roleName){
         return roleRepository.findByName(roleName);

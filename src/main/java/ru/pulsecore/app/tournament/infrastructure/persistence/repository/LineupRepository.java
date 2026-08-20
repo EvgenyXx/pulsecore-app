@@ -4,12 +4,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.Lineup;
+import org.springframework.stereotype.Repository;
+import ru.pulsecore.app.tournament.domain.entity.Lineup;
 
 import java.time.LocalDate;
 import java.util.List;
 
+
+@Repository
 public interface LineupRepository extends JpaRepository<Lineup, Long> {
+
+
 
 
 
@@ -43,6 +48,10 @@ public interface LineupRepository extends JpaRepository<Lineup, Long> {
     @Modifying
     @Query("DELETE FROM Lineup WHERE date < :date")
     void deleteByDateBefore(@Param("date") LocalDate date);
+
+
+    @Query("SELECT l.id FROM Lineup l WHERE l.date < :before")
+    List<Long> findIdsByDateBefore(@Param("before") LocalDate before);
 
 
 }

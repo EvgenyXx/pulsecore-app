@@ -4,7 +4,7 @@ package ru.pulsecore.app.payment.infrastructure.internal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.admin.infrastructure.clinet.PaymentClient;
+import ru.pulsecore.app.admin.client.PaymentClient;
 import ru.pulsecore.app.payment.application.PriceService;
 import ru.pulsecore.app.shared.dto.response.PricesResponse;
 
@@ -21,4 +21,8 @@ public class AdminPaymentClientImp implements PaymentClient {
         return priceService.getPricesData();
     }
 
+    @Override
+    public PricesResponse getPrices() {
+        return priceService.getPricesData();
+    }
 }

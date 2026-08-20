@@ -2,7 +2,7 @@ package ru.pulsecore.app.player.infrastructure.persistence.mapping;
 
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 
 @Component
 public class PlayerDtoMapper {

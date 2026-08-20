@@ -75,7 +75,7 @@ function removeContextMenu() {
 async function deleteMessage(messageId, menu) {
     removeContextMenu();
     try {
-        const res = await fetch(`/api/chat/message/${messageId}`, { method: 'DELETE', credentials: 'same-origin' });
+        const res = await fetch(`/api/tournament/message/${messageId}`, { method: 'DELETE', credentials: 'same-origin' });
         if (res.ok) {
             const msgEl = document.querySelector(`.chat-message[data-message-id="${messageId}"]`);
             if (msgEl) msgEl.remove();
@@ -102,7 +102,7 @@ async function sendEditMessage() {
     if (!newText || !editingMessageId) return;
     const btn = document.getElementById('sendBtn'); btn.disabled = true;
     try {
-        const res = await fetch(`/api/chat/message/${editingMessageId}`, {
+        const res = await fetch(`/api/tournament/message/${editingMessageId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',
@@ -178,7 +178,7 @@ function startPolling() { if (!pollInterval) pollInterval = setInterval(loadNewM
 
 async function loadNewMessages() {
     try {
-        const msgs = await (await fetch(`/api/chat/${lineupId}?after=${lastMessageId}`, { credentials: 'same-origin' })).json();
+        const msgs = await (await fetch(`/api/tournament/${lineupId}?after=${lastMessageId}`, { credentials: 'same-origin' })).json();
         msgs.forEach(m => { if (m.id > lastMessageId) { lastMessageId = m.id; addMessageToChat(m); } });
     } catch(e) {}
 }
@@ -295,7 +295,7 @@ function addMessageToChat(m) {
 
 async function loadChatHistory() {
     try {
-        const msgs = await (await fetch(`/api/chat/${lineupId}`, { credentials: 'same-origin' })).json();
+        const msgs = await (await fetch(`/api/tournament/${lineupId}`, { credentials: 'same-origin' })).json();
         const container = document.getElementById('chatMessages');
         if (msgs.length > 0) {
             lastMessageId = msgs[msgs.length - 1].id || 0;
@@ -318,7 +318,7 @@ async function sendMessage() {
         if (stompClient && stompClient.active) {
             stompClient.publish({ destination: '/app/chat/' + lineupId, body: JSON.stringify(body) });
         } else {
-            const res = await fetch(`/api/chat/${lineupId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) });
+            const res = await fetch(`/api/tournament/${lineupId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) });
             const saved = await res.json(); if (saved.id > lastMessageId) lastMessageId = saved.id;
             addMessageToChat(saved);
         }
@@ -364,10 +364,11 @@ function setupMentions() {
     }
 
     function fetchAndShow(query, atIndex) {
-        fetch('/api/chat/players/search?q=' + encodeURIComponent(query))
+        fetch('/api/tournament/players/search?q=' + encodeURIComponent(query))
             .then(r => r.json())
             .then(players => {
-                if (players.length > 0) showMentions(players, atIndex);
+                const list = players.map(p => ({ name: p.playerName }));
+                if (list.length > 0) showMentions(list, atIndex);
                 else {
                     const local = lineupPlayers.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
                     showMentions(local.length > 0 ? local : [], atIndex);
@@ -448,11 +449,11 @@ function selectMention(idx) {
 
 async function loadData() {
     try {
-        const me = await (await fetch('/api/auth/me', { credentials: 'same-origin' })).json().catch(() => ({}));
+        const me = await (await fetch('/api/player/me', { credentials: 'same-origin' })).json().catch(() => ({}));
         playerName = me.name || 'Аноним';
         playerId = me.id || '00000000-0000-0000-0000-000000000000';
 
-        const lineup = await (await fetch(`/api/lineups/${lineupId}`, { credentials: 'same-origin' })).json();
+        const lineup = await (await fetch(`/api/tournament/${lineupId}`, { credentials: 'same-origin' })).json();
 
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('content').classList.remove('hidden');

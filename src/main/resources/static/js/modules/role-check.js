@@ -1,6 +1,6 @@
 export async function initRoleCheck() {
     try {
-        const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+        const res = await fetch('/api/player/me', { credentials: 'same-origin' });
         if (!res.ok) return;
         const user = await res.json();
         const isAdmin = user.admin === true;

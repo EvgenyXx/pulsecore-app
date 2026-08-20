@@ -1,12 +1,14 @@
 package ru.pulsecore.app.notification.infrastructure.factory;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TournamentEntity;
+import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 
 import java.time.LocalDate;
 
+@Slf4j
 @Component
 public class TournamentFactory {
 
@@ -26,10 +28,10 @@ public class TournamentFactory {
 
     private void fillDateTime(TournamentEntity tournament, TournamentDto t) {
 
+
         if (t.getDate() == null || t.getDate().getDate() == null) return;
 
         String raw = t.getDate().getDate();
-
         if (raw.length() >= 10) {
             tournament.setDate(LocalDate.parse(raw.substring(0, 10)));
         }

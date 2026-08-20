@@ -9,9 +9,9 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const SubscribeAPI = {
-    getMe: () => apiRequest('/auth/me'),
-    getPrices: () => apiRequest('/prices'),
+    getMe: () => apiRequest('/player/me'),
+    getPrices: () => apiRequest('/payment/prices'),
     getSubscription: () => apiRequest('/player/subscription'),
-    createPayment: (months) => apiRequest(`/player/pay?months=${months}`, { method: 'POST' }),
-    logout: () => fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'same-origin' })
+    createPayment: (months) => apiRequest(`/payment/pay?months=${months}`, { method: 'POST' }),
+    logout: () => fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })
 };

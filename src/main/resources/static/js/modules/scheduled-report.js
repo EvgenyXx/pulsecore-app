@@ -79,14 +79,14 @@ function formatDateTime(dateStr) {
 }
 
 window.cancelReport = async function(id) {
-    await fetch(`/api/player/reports/${id}/cancel`, { method: 'DELETE', credentials: 'same-origin' });
+    await fetch(`/api/tournament/reports/${id}/cancel`, { method: 'DELETE', credentials: 'same-origin' });
     const card = document.querySelector(`.report-item[data-id="${id}"]`);
     if (card) {
         card.style.transition = 'opacity 0.3s, transform 0.3s';
         card.style.opacity = '0';
         card.style.transform = 'scale(0.95)';
         setTimeout(() => {
-            fetch('/api/player/reports/pending', { credentials: 'same-origin' })
+            fetch('/api/tournament/reports/pending', { credentials: 'same-origin' })
                 .then(r => r.json())
                 .then(reports => {
                     document.getElementById('reportSheetContent').innerHTML = renderScheduledReportsSheet(reports);
@@ -97,7 +97,7 @@ window.cancelReport = async function(id) {
 };
 
 window.openScheduledReports = function() {
-    fetch('/api/player/reports/pending', { credentials: 'same-origin' })
+    fetch('/api/tournament/reports/pending', { credentials: 'same-origin' })
         .then(r => r.json())
         .then(reports => {
             document.getElementById('reportSheetContent').innerHTML = renderScheduledReportsSheet(reports);
@@ -132,7 +132,7 @@ window.submitReport = async function() {
     btn.innerHTML = '⏳ Отправка...';
 
     try {
-        const res = await fetch('/api/player/reports', {
+        const res = await fetch('/api/tournament/reports', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin',

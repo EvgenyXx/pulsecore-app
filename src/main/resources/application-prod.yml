@@ -28,7 +28,7 @@ spring:
 logging:
   level:
     root: WARN
-    ru.pulsecore.app: WARN
+    ru.pulsecore.app: info
     org.springframework: WARN
     org.hibernate: WARN
 

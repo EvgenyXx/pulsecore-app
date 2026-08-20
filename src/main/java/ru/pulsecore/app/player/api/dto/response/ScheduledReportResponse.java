@@ -1,6 +1,6 @@
 package ru.pulsecore.app.player.api.dto.response;
 
-import ru.pulsecore.app.player.entity.ScheduledReport;
+import ru.pulsecore.app.tournament.domain.entity.ScheduledReport;
 
 import java.io.Serializable;
 import java.time.LocalDate;

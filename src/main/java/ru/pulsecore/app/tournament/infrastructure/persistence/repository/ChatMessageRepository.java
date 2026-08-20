@@ -1,10 +1,11 @@
 package ru.pulsecore.app.tournament.infrastructure.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.ChatMessage;
+import ru.pulsecore.app.tournament.domain.entity.ChatMessage;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.UUID;
 
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
+
+
     List<ChatMessage> findByLineupIdOrderByCreatedAtAsc(Long lineupId);
 
     @Query("SELECT COUNT(DISTINCT c.playerId) FROM ChatMessage c WHERE c.lineupId = :lineupId AND c.createdAt > :after")
@@ -22,6 +25,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     void deleteByPlayerId(UUID id);
 
-    @Query("SELECT DISTINCT c.lineupId FROM ChatMessage c WHERE c.createdAt > :after")
-    List<Long> findActiveLineupIds(@Param("after") LocalDateTime after);
+    @Modifying
+    @Query("DELETE FROM ChatMessage c WHERE c.lineupId IN :lineupIds")
+    void deleteByLineupIdIn(@Param("lineupIds") List<Long> lineupIds);
 }

@@ -18,10 +18,10 @@ public class SecurityProperties {
     private String adminAuthority = "ROLE_ADMIN";
     private int maximumSessions = 1;
     private String sessionCookieName = "PULSECORE_SESSION";
-    private String logoutUrl = "/api/auth/logout";
+    private String logoutUrl = "/api/player/logout";
     private String loginPage = "/";
     private String apiPathPrefix = "/api/";
     private int apiErrorStatus = 403;
     private String apiErrorMessage = "Forbidden";
-    private List<String> sessionRestoreExcludeUrls = List.of("/api/auth/", "/oauth-finish.html");
+    private List<String> sessionRestoreExcludeUrls = List.of("/api/player/", "/oauth-finish.html");
 }

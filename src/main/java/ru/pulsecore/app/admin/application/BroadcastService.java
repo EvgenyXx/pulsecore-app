@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.admin.infrastructure.clinet.PlayerClient;
+import ru.pulsecore.app.admin.client.PlayerClient;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.BroadcastContext;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
@@ -14,6 +14,13 @@ import ru.pulsecore.app.shared.event.PushNotificationEvent;
 import java.util.List;
 import java.util.UUID;
 
+
+/**
+ * Сервис массовых рассылок.
+ * Отправляет push и email сообщения всем игрокам.
+ * Используется в админке (BroadcastController).
+ * Возвращает статистику: сколько push и email отправлено.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,9 +38,9 @@ public class BroadcastService {
         int pushSent = 0;
         int emailSent = 0;
 
-        for (var player : players) {
+        for (PlayerData player : players) {
             if (sendPush(player.playerId(), message)) pushSent++;
-            if (sendEmail(player.email(), message)) emailSent++;
+            if (sendEmail(player.email(),message)) emailSent++;
         }
 
         log.info("Рассылка завершена. Push: {}, Email: {}", pushSent, emailSent);
@@ -55,12 +62,12 @@ public class BroadcastService {
         }
     }
 
-    private boolean sendEmail(String email, String message) {
+    private boolean sendEmail( String email,String message) {
         try {
             eventPublisher.publishEvent(
                     new MailNotificationEvent(
                             MailTypes.BROADCAST,
-                            new BroadcastContext(email, message)
+                            new BroadcastContext(email,message)
                     )
             );
             return true;

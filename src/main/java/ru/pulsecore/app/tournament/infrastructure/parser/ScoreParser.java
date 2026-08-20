@@ -1,7 +1,7 @@
 package ru.pulsecore.app.tournament.infrastructure.parser;
 
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.domain.Score;
+import ru.pulsecore.app.tournament.domain.model.Score;
 
 @Component
 public class ScoreParser {

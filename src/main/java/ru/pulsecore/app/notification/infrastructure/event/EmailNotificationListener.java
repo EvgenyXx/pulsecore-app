@@ -18,7 +18,6 @@ public class EmailNotificationListener {
 
     @EventListener
     public void handle(MailNotificationEvent events) {
-        log.info("Email уведомление {}", events.getEmailType());
         try {
             mailStrategyRegistry.send(events.getEmailType(), events.getContextMessage());
         } catch (Exception e) {

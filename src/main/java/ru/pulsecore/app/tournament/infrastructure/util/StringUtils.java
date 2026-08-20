@@ -5,9 +5,12 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class StringUtils {
 
+    //todo вынести в шаред
     public static String extractFirstName(String fullName) {
         if (fullName == null || fullName.isBlank()) return "";
-        return fullName.contains(" ") ? fullName.substring(fullName.lastIndexOf(" ") + 1) : fullName;
+        String[] parts = fullName.trim().split("\\s+");
+        String firstName = parts.length >= 2 ? parts[1] : parts[0];
+        return firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
     }
 
     public static String capitalize(String name) {

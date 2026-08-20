@@ -1,4 +1,4 @@
-// ==================== TournamentResultRepository.java ====================
+
 package ru.pulsecore.app.tournament.infrastructure.persistence.repository;
 
 import org.springframework.data.domain.Page;
@@ -8,58 +8,47 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PeriodStatsProjection;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.DailyIncomeProjection;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.LeagueStatProjection;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.MonthlyIncomeProjection;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.WeeklyStatsProjection;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TournamentResultEntity;
+import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.*;
+import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
 
 
-    @Query("""
-    SELECT p.name AS name, 
-           COUNT(tr) AS tournaments, 
-           COALESCE(ROUND(SUM(tr.amount)), 0) AS total,
-           COALESCE(ROUND(AVG(tr.amount)), 0) AS average
-    FROM TournamentResultEntity tr
-    JOIN Player p ON tr.playerId = p.id
-    WHERE tr.playerId = :playerId 
-      AND tr.date BETWEEN :from AND :to
-    GROUP BY p.name
-    """)
-    List<WeeklyStatsProjection> getWeeklyStats(@Param("playerId") UUID playerId,
-                                               @Param("from") LocalDate from,
-                                               @Param("to") LocalDate to);
 
 
     @Query(value = """
-        SELECT league FROM (
-            SELECT league, COUNT(*) as cnt
+    SELECT player_id AS playerId, league
+    FROM (
+        SELECT player_id, league, ROW_NUMBER() OVER (
+            PARTITION BY player_id ORDER BY cnt DESC, last_date DESC
+        ) AS rn
+        FROM (
+            SELECT player_id, league, COUNT(*) AS cnt, MAX(date) AS last_date
             FROM (
-                SELECT league FROM tournament_results
-                WHERE player_id = :playerId
-                ORDER BY date DESC
-                LIMIT 7
-            ) last7
-            GROUP BY league
-            ORDER BY cnt DESC
-            LIMIT 1
-        ) sub
-        """, nativeQuery = true)
-    String findPrimaryLeague(@Param("playerId") UUID playerId);
+                SELECT player_id, league, date,
+                       ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY date DESC) AS rn2
+                FROM tournament_results
+                WHERE player_id IN (:playerIds)
+            ) ranked
+            WHERE rn2 <= 7
+            GROUP BY player_id, league
+        ) grouped
+    ) ranked2
+    WHERE rn = 1 AND league IS NOT NULL
+""", nativeQuery = true)
+    List<PrimaryLeagueProjection> findPrimaryLeagues(@Param("playerIds") Set<UUID> playerIds);
 
 
 
 
-
+    // TournamentResultRepository
     @Modifying
     @Query("DELETE FROM TournamentResultEntity t WHERE t.playerId = :playerId")
     int deleteByPlayerId(@Param("playerId") UUID playerId);

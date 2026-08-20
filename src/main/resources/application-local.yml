@@ -21,16 +21,30 @@ spring:
   session:
     timeout: 5m
 
+spring doc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
 logging:
   level:
-    root: WARN
-    ru.pulsecore.app: info
+    root: warn
+    ru.pulsecore.app: debug
     org.springframework: WARN
     org.hibernate: WARN
-    ru.pulsecore.app.modules.notification_modules.infrastructure.event.PlayerCreatedListener: INFO
-    ru.pulsecore.app.modules.player_modeles.application.subscription.SubscriptionService: INFO
-    ru.pulsecore.app.modules.tournament_module.service.tornament.TournamentFinishService: INFO
-    ru.pulsecore.app.modules.tournament_module.service.tornament.TournamentCascadeSyncService: INFO
+    ru.pulsecore.app.tournament.application.discovery.DiscoveryNotificationService: info
+    ru.pulsecore.app.tournament.application.discovery.TournamentDiscoveryService: info
+    ru.pulsecore.app.player.application.analytic.PrimaryLeagueUpdater: INFO
+    ru.pulsecore.app.tournament.application.tournament.finish.TournamentFinishService: INFO
+    ru.pulsecore.app.tournament.application.finish.TournamentFinishService: info
+    ru.pulsecore.app.tournament.application.ResultService: info
+    ru.pulsecore.app.tournament.application.discovery.TournamentSaver: info
+    ru.pulsecore.app.tournament.application.cascade.TournamentAutoAddService: info
+
+
+
 
 
 app:

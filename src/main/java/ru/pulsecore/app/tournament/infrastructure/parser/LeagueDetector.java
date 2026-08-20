@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.domain.LeagueType;
+import ru.pulsecore.app.tournament.domain.enums.LeagueType;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +13,7 @@ public class LeagueDetector {
 
     public LeagueType detectLeague(Document doc) {
         String title = doc.title();
-        log.info("League detection: title='{}', html length={}", title, doc.html().length());
+
 
         LeagueType fromTitle = detectFromText(title);
         if (fromTitle != null) return fromTitle;
@@ -29,16 +29,28 @@ public class LeagueDetector {
         return null;
     }
 
+
+    //todo тестовый
     private LeagueType detectFromText(String text) {
-        if (text.contains("Лига A") || text.contains("Лига А")
-                || text.contains("Лига: A") || text.contains("Лига: А")) return LeagueType.A;
-        if (text.contains("Лига В") || text.contains("Лига B")
-                || text.contains("Лига: B") || text.contains("Лига: В")) return LeagueType.B;
-        if (text.contains("Лига С") || text.contains("Лига C")
-                || text.contains("Лига: C") || text.contains("Лига: С")) return LeagueType.C;
-        if (text.contains("Лига D") || text.contains("Лига: D")) return LeagueType.D;
-        if (text.contains("Мужская Суперлига") || text.contains("Женская Суперлига")
-                || text.contains("Суперлига")) return LeagueType.SUPER_LEAGUE;
+        String normalized = text.toLowerCase().replaceAll("\\s+", "");
+
+        if (normalized.contains("лигаa") || normalized.contains("лигаа")) return LeagueType.A;
+        if (normalized.contains("лигаb") || normalized.contains("лигав")) return LeagueType.B;
+        if (normalized.contains("лигаc") || normalized.contains("лигас")) return LeagueType.C;
+        if (normalized.contains("лигаd")) return LeagueType.D;
+        if (normalized.contains("суперлига")) return LeagueType.SUPER_LEAGUE;
         return null;
     }
+//    private LeagueType detectFromText(String text) {
+//        if (text.contains("Лига A") || text.contains("Лига А")
+//                || text.contains("Лига: A") || text.contains("Лига: А")) return LeagueType.A;
+//        if (text.contains("Лига В") || text.contains("Лига B")
+//                || text.contains("Лига: B") || text.contains("Лига: В")) return LeagueType.B;
+//        if (text.contains("Лига С") || text.contains("Лига C")
+//                || text.contains("Лига: C") || text.contains("Лига: С")) return LeagueType.C;
+//        if (text.contains("Лига D") || text.contains("Лига: D")) return LeagueType.D;
+//        if (text.contains("Мужская Суперлига") || text.contains("Женская Суперлига")
+//                || text.contains("Суперлига")) return LeagueType.SUPER_LEAGUE;
+//        return null;
+//    }
 }

@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.ResultDto;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
-import ru.pulsecore.app.tournament.application.tournament.ResultService;
-import ru.pulsecore.app.tournament.domain.ParsedResult;
-import ru.pulsecore.app.tournament.application.tournament.TournamentSearchService;
+import ru.pulsecore.app.tournament.application.resolution.ResultService;
+import ru.pulsecore.app.tournament.domain.model.ParsedResult;
+import ru.pulsecore.app.tournament.application.cascade.TournamentSearchService;
+import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,7 +22,7 @@ public class AdminCalculateService {
 
     private final TournamentSearchService tournamentSearchService;
     private final ResultService resultService;
-    private final NameNormalizer nameNormalizer;
+
 
     public AdminCalculateResponse calculate(String name, String startDate, String endDate) {
         if (endDate == null || endDate.isBlank()) {
@@ -50,7 +50,7 @@ public class AdminCalculateService {
     }
 
     private AdminCalculateResponse buildResponse(String name, String startDate, String endDate, List<TournamentDto> tournaments) {
-        String searchName = nameNormalizer.normalizeForSearch(name);
+        String searchName = NameNormalizer.normalizeForSearch(name);
         List<AdminCalculateResponse.TournamentResultItem> items = new ArrayList<>();
         double totalAmount = 0;
 
@@ -82,7 +82,7 @@ public class AdminCalculateService {
 
     private double extractPlayerAmount(ParsedResult parsed, String searchName) {
         return parsed.results().stream()
-                .filter(r -> nameNormalizer.normalizeForSearch(r.getPlayer()).contains(searchName))
+                .filter(r -> NameNormalizer.normalizeForSearch(r.getPlayer()).contains(searchName))
                 .mapToDouble(ResultDto::getTotal)
                 .sum();
     }

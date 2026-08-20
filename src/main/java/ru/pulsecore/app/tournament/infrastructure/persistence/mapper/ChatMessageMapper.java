@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.infrastructure.persistence.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.ChatMessage;
+import ru.pulsecore.app.tournament.domain.entity.ChatMessage;
 
 @Mapper(componentModel = "spring")
 public interface ChatMessageMapper {

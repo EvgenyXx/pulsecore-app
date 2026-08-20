@@ -1,4 +1,4 @@
-# ==================== application.yml (общее) ====================
+
 spring:
 
       profiles:
@@ -64,10 +64,14 @@ app:
                   - /favicon.ico
                   - /robots.txt
                   - /error
-                  - /api/auth/**
+                  - /api/player/**
                   - /api/payment/webhook
                   - /oauth-finish.html
                   - /manifest.json
+                  - /swagger-ui/**
+                  - /v3/api-docs/**
+                  - /swagger-resources/**
+                  - /swagger-ui.html
             authenticated-urls:
                   - /api/player/**
             admin-urls:

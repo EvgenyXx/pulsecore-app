@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.player.entity.Player;
-import ru.pulsecore.app.player.application.player.PlayerService;
+import ru.pulsecore.app.notification.client.PlayerClient;
+import ru.pulsecore.app.player.domain.Player;
+import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.notification.api.dto.PushSubscriptionRequest;
 import ru.pulsecore.app.notification.infrastructure.config.VapidConfig;
-import ru.pulsecore.app.notification.entity.PushSubscription;
+import ru.pulsecore.app.notification.domain.PushSubscription;
 import ru.pulsecore.app.notification.infrastructure.repository.PushSubscriptionRepository;
 
 import java.util.UUID;
@@ -21,7 +22,7 @@ public class PushFacade {
 
     private final PushSubscriptionRepository repository;
     private final VapidConfig vapidConfig;
-    private final PlayerService  playerService;
+    private final PlayerClient  playerClient;
 
     @Transactional(readOnly = true)
     public boolean isSubscribed(UUID playerId) {
@@ -59,14 +60,10 @@ public class PushFacade {
     }
 
     public boolean togglePushEnabled(UUID playerId) {
-        Player player = playerService.getById(playerId);
-        player.setPushEnabled(!player.isPushEnabled());
-        playerService.save(player);
-        log.info("📲 Push-уведомления {} для игрока {} ({})", player.isPushEnabled() ? "включены" : "отключены", player.getName(), playerId);
-        return player.isPushEnabled();
+       return playerClient.togglePushEnabled(playerId);
     }
 
     public boolean isPushEnabled(UUID playerId) {
-        return playerService.getById(playerId).isPushEnabled();
+        return playerClient.isPushEnabled(playerId);
     }
 }

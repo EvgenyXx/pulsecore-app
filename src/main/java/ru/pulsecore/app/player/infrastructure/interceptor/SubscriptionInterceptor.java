@@ -8,9 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
 import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
 import ru.pulsecore.app.player.infrastructure.exception.SubscriptionRequiredException;
-import ru.pulsecore.app.player.application.subscription.SubscriptionService;
 import ru.pulsecore.app.shared.exception.UnauthorizedException;
 
 import java.util.UUID;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubscriptionInterceptor implements HandlerInterceptor {
 
-    private final SubscriptionService subscriptionService;
+    private final SubscriptionQueryService subscriptionQueryServicenService;
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request,
@@ -30,7 +30,7 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
             throw new UnauthorizedException();
         }
 
-        if (!subscriptionService.hasActiveSubscription(UUID.fromString(user.getPlayerId()))) {
+        if (!subscriptionQueryServicenService.hasActiveSubscription(UUID.fromString(user.getPlayerId()))) {
             throw new SubscriptionRequiredException();//todo добавить во фронт
         }
         return true;

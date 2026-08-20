@@ -1,4 +1,3 @@
-// BroadcastMailStrategy.java
 package ru.pulsecore.app.notification.application.mail.strategy;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +24,6 @@ public class BroadcastMailStrategy implements MailStrategy {
     @Override
     public void send(MailContext ctx) {
         BroadcastContext c = (BroadcastContext) ctx;
-        mailSender.send(MailFormat.TEXT, c.to(), "PulseCore — Уведомление", c.text(), null, null);
+        mailSender.send(MailFormat.TEXT,c.to(),"PulseCore — Уведомление", c.text(), null, null);
     }
 }

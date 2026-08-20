@@ -3,37 +3,47 @@ package ru.pulsecore.app.player.application.player;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.player.entity.Player;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
-
+import ru.pulsecore.app.player.domain.Player;
 import java.util.UUID;
 
+
+/**
+ * Управление залами игрока для расписания и лайв-трансляций.
+ * Сохраняет и возвращает выбранные залы.
+ */
 @Service
 @RequiredArgsConstructor
 public class PlayerHallsService {
 
-    private final PlayerService playerService;
-    private final PlayerRepository playerRepository;
+    private final PlayerCommandService playerCommandService;
+    private final PlayerSearchService playerSearchService;
 
-    public String getSelectedHalls(UUID playerId) {
-        return playerService.getById(playerId).getSelectedHalls();
-    }
+
 
     @Transactional
     public void saveSelectedHalls(UUID playerId, String halls) {
-        Player player = playerService.getById(playerId);
+        Player player = playerSearchService.getById(playerId);
         player.setSelectedHalls(halls);
-        playerRepository.save(player);
+        playerCommandService.save(player);
     }
 
-    public String getLiveSelectedHalls(UUID playerId) {
-        return playerService.getById(playerId).getLiveSelectedHalls();
-    }
+
 
     @Transactional
     public void saveLiveSelectedHalls(UUID playerId, String halls) {
-        Player player = playerService.getById(playerId);
+        Player player = playerSearchService.getById(playerId);
         player.setLiveSelectedHalls(halls);
-        playerRepository.save(player);
+        playerCommandService.save(player);
+    }
+
+
+    public String getSelectedHalls(UUID playerId) {
+        Player player = playerSearchService.getById(playerId);
+        return player.getSelectedHalls();
+    }
+
+    public String getLiveSelectedHalls(UUID playerId) {
+       Player player = playerSearchService.getById(playerId);
+       return player.getLiveSelectedHalls();
     }
 }

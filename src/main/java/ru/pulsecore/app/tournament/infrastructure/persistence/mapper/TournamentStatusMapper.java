@@ -1,8 +1,8 @@
 package ru.pulsecore.app.tournament.infrastructure.persistence.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.domain.TournamentStatus;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.TournamentEntity;
+import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
+import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 
 @Component
 public class TournamentStatusMapper {

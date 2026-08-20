@@ -2,11 +2,12 @@ package ru.pulsecore.app.tournament.application.lineup;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.api.dto.response.LineupDto;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.Lineup;
+import ru.pulsecore.app.tournament.domain.entity.Lineup;
+import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
-import ru.pulsecore.app.player.application.player.PlayerHallsService;
-import ru.pulsecore.app.player.application.player.PlayerService;
+import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -16,18 +17,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LineupFacade {
 
-    private final LineupService lineupService;
+
     private final LineupRepository lineupRepository;
-    private final PlayerService playerService;
-    private final PlayerHallsService hallsService;
+    private final PlayerClient playerClient;
 
-    public void saveLiveSelectedHalls(UUID playerId, String halls) {
-        hallsService.saveLiveSelectedHalls(playerId, halls);
-    }
 
-    public String getLiveSelectedHalls(UUID playerId) {
-        return hallsService.getLiveSelectedHalls(playerId);
-    }
+
 
     public Map<String, List<LineupDto>> getAllGroupedByHall(LocalDate date) {
         List<Lineup> all = lineupRepository.findByDate(date);
@@ -35,28 +30,36 @@ public class LineupFacade {
     }
 
     public Map<String, List<LineupDto>> getMyGroupedByHall(UUID playerId, LocalDate date) {
-        String hallsStr = hallsService.getSelectedHalls(playerId);
-        if (hallsStr == null || hallsStr.isBlank()) {
+        PlayerData playerData  = playerClient.getPlayerById(playerId);
+
+        if (playerData.selectedHalls() == null || playerData.selectedHalls().isBlank()) {
             return Map.of();
         }
 
-        String playerName = playerService.getById(playerId).getName();
-        List<String> halls = Arrays.asList(hallsStr.split(",\\s*"));
-        List<Lineup> filtered = lineupService.getLineupsForHalls(date, halls);
+
+        List<String> halls = Arrays.asList(playerData.selectedHalls().split(",\\s*"));
+        List<Lineup> filtered = getLineupsForHalls(date, halls);
 
         List<LineupDto> dtos = filtered.stream()
                 .map(this::toDto)
-                .map(dto -> markPlayer(dto, playerName))
+                .map(dto -> markPlayer(dto, playerData.playerName()))
                 .toList();
 
         return groupByHall(dtos);
     }
 
+    private List<Lineup> getLineupsForHalls(LocalDate date, List<String> halls) {
+        if (halls == null || halls.isEmpty()) return List.of();
+        return lineupRepository.findByDateAndHallIn(date, halls);
+    }
+
     private LineupDto markPlayer(LineupDto dto, String playerName) {
+        String searchName = NameNormalizer.normalizeForSearch(playerName);
         boolean isPlayer = dto.getPlayers() != null &&
                 Arrays.stream(dto.getPlayers().split(","))
                         .map(String::trim)
-                        .anyMatch(p -> p.equalsIgnoreCase(playerName));
+                        .map(NameNormalizer::normalizeForSearch)
+                        .anyMatch(p -> p.contains(searchName) || searchName.contains(p));
         dto.setPlayer(isPlayer);
         return dto;
     }

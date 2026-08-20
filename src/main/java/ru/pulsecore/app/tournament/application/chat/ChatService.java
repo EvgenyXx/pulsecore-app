@@ -9,7 +9,7 @@ import ru.pulsecore.app.shared.exception.ForbiddenException;
 import ru.pulsecore.app.tournament.infrastructure.exception.MessageNotFoundException;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
 import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.ChatMessageMapper;
-import ru.pulsecore.app.tournament.infrastructure.persistence.entity.ChatMessage;
+import ru.pulsecore.app.tournament.domain.entity.ChatMessage;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.ChatMessageRepository;
 
 import java.time.LocalDateTime;

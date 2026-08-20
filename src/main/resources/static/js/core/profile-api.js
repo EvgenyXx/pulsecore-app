@@ -10,7 +10,7 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const ProfileAPI = {
-    getMe: () => apiRequest('/auth/me'),
+    getMe: () => apiRequest('/player/me'),
     getNotificationStatus: () => apiRequest('/player/notifications/status'),
     setNotification: (enabled) => apiRequest(`/player/notifications?enabled=${enabled}`, {
         method: 'PUT'
@@ -18,7 +18,7 @@ export const ProfileAPI = {
     getPushStatus: () => apiRequest('/push/push-status'),
     togglePush: () => apiRequest('/push/toggle', { method: 'POST' }),
     getSubscription: () => apiRequest('/player/subscription'),
-    verifyPassword: (password) => apiRequest('/auth/verify-password', {
+    verifyPassword: (password) => apiRequest('/player/verify-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
@@ -28,10 +28,10 @@ export const ProfileAPI = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oldPassword, newPassword })
     }),
-    saveEmail: (email) => apiRequest('/player/profile', {
+    saveEmail: (email) => apiRequest('/player/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
     }),
-    logout: () => fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'same-origin' })
+    logout: () => fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })
 };

@@ -3,11 +3,13 @@ package ru.pulsecore.app.tournament.infrastructure.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.exception.SiteUnavailableException;
+import ru.pulsecore.app.tournament.infrastructure.gate.MastersApiGate;
 import ru.pulsecore.app.tournament.infrastructure.properties.MastersApiProperties;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 import ru.pulsecore.app.tournament.infrastructure.circuit.MastersApiCircuitBreaker;
@@ -16,20 +18,27 @@ import ru.pulsecore.app.tournament.infrastructure.circuit.MastersApiCircuitBreak
 import java.time.Duration;
 import java.util.List;
 
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MastersApiClient {
 
     private final MastersApiProperties properties;
     private final ObjectMapper mapper;
-    private final NameNormalizer nameNormalizer;
     private final MastersApiCircuitBreaker breaker;
+    private final MastersApiGate apiGate;
+
 
     public List<TournamentDto> loadTournaments(String date) {
         if (breaker.isBlocked()) {
-            throw new SiteUnavailableException();
+            return List.of();
         }
 
+        return apiGate.execute(() -> doLoadTournaments(date));
+    }
+
+    private List<TournamentDto> doLoadTournaments(String date) {
         for (int i = 1; i <= 2; i++) {
             try {
                 Connection connection = Jsoup.connect(properties.getUrl())
@@ -57,7 +66,7 @@ public class MastersApiClient {
                 if (tournaments != null) {
                     for (TournamentDto t : tournaments) {
                         if (t.getPlayers() != null) {
-                            t.setPlayers(nameNormalizer.normalizePlayers(t.getPlayers()));
+                            t.setPlayers(NameNormalizer.normalizePlayers(t.getPlayers()));
                         }
                     }
                 }
@@ -65,6 +74,7 @@ public class MastersApiClient {
                 return tournaments;
 
             } catch (Exception e) {
+                log.error("Ошибка при запросе к Masters API: {}", e.getMessage(), e);
                 breaker.recordFailure();
                 if (i == 2) return List.of();
                 sleep(breaker.backoff());
@@ -80,4 +90,6 @@ public class MastersApiClient {
             Thread.currentThread().interrupt();
         }
     }
+
+
 }

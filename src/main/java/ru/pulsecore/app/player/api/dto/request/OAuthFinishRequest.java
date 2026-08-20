@@ -1,12 +1,11 @@
-// ==================== OAuthFinishRequest.java ====================
+
 package ru.pulsecore.app.player.api.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
-@Getter
-@Setter
-public class OAuthFinishRequest {
-    private String lastName;
-    private String firstName;
-}
+
+
+public record OAuthFinishRequest(
+        @NotBlank(message = "Заполните фамилию") String lastName,
+        @NotBlank(message = "Заполните имя") String firstName
+) {}

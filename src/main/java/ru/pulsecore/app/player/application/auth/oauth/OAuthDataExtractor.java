@@ -5,7 +5,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Objects;
-
+/**
+ * Извлекает данные пользователя из OAuth2 ответа.
+ * Поддерживает Яндекс и VK.
+ */
 @Component
 public class OAuthDataExtractor {
 

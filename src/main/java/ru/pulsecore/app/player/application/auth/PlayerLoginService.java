@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
-import ru.pulsecore.app.player.entity.Player;
+import ru.pulsecore.app.player.domain.Player;
 
 import java.io.IOException;
 

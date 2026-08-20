@@ -20,6 +20,12 @@ spring:
       password: ${REDIS_PASSWORD:}
   session:
     timeout: 5m
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
 
 logging:
   level:
