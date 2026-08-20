@@ -24,7 +24,7 @@ public class MastersApiCircuitBreaker {
     private static final String BLOCKED_KEY = "masters-api:blocked";
     private static final String NOTIFIED_KEY = "masters-api:notified";
 
-    private static final int THRESHOLD = 1;
+    private static final int THRESHOLD = 3;
     private static final Duration BLOCK_TTL = Duration.ofMinutes(10);
     private static final Duration FAILURES_TTL = Duration.ofMinutes(15);
     private static final Duration BACKOFF = Duration.ofSeconds(30);

@@ -1,10 +1,12 @@
 package ru.pulsecore.app.tournament.application.lineup;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
+import ru.pulsecore.app.tournament.infrastructure.cache.LineupHashCache;
 import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.LineupMapper;
@@ -29,8 +31,10 @@ public class LineupUpsertService {
     private final LineupMapper mapper;
     private final TournamentValidator validator;
     private final HallStreamRepository hallStreamRepository;
+    private final LineupHashCache lineupHashCache;
+    private final ObjectMapper objectMapper;
 
-//todo добавиит кеширование если количество составов не обновилось не перепроверять
+
     @Transactional
     public void loadDay(LocalDate date) {
         List<TournamentDto> all = apiClient.loadTournaments(date.toString());
@@ -39,12 +43,29 @@ public class LineupUpsertService {
         List<TournamentDto> valid = filterValid(all, date);
         if (valid.isEmpty()) return;
 
+        String hash = calculateHash(valid);
+        log.debug("📊 Хэш составов за {}: {}", date, hash);
+
+
+        if (lineupHashCache.hasSameHash(date,hash)){
+            return;
+        }
         clearFutureLineups(date);
         List<Lineup> lineups = mapToLineups(valid, date);
         enrichStreamUrls(lineups);
         saveLineups(lineups);
+        lineupHashCache.update(date,hash);
 
         log.info("{} составов сохранено за дату {}", lineups.size(), date);
+    }
+
+    private String calculateHash(List<TournamentDto> tournaments) {
+        try {
+            String json = objectMapper.writeValueAsString(tournaments);
+            return Integer.toHexString(json.hashCode());
+        } catch (Exception e) {
+            return "error";
+        }
     }
 
     private List<TournamentDto> filterValid(List<TournamentDto> all, LocalDate date) {

@@ -62,6 +62,7 @@ public class SumService {
                 .build();
     }
 
+    //todo возможно удалить проверку заполняемости дат сделать в контроллере или че то такок
     private SumResponse emptyResponse(String playerName) {
         return SumResponse.builder()
                 .playerName(StringUtils.capitalize(playerName))

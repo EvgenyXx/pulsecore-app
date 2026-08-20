@@ -49,8 +49,6 @@ public class PrimaryLeagueService {
         if (!save.isEmpty()) {
             playerRepository.saveAll(save);
             log.debug("Обновлена основная лига для {} игроков", save.size());
-        } else {
-            log.debug("Все основные лиги актуальны");
         }
     }
 }

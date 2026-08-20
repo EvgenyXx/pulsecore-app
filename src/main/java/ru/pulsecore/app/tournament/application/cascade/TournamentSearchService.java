@@ -37,7 +37,6 @@ public class TournamentSearchService {
             sleepBetweenRequests();
         }
 
-        log.info("Tournaments found for period {}-{}: {}", startDate, endDate, allTournaments.size());
         return allTournaments;
     }
 

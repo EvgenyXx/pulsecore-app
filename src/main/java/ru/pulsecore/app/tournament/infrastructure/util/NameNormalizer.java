@@ -14,6 +14,7 @@ public class NameNormalizer {
         if (name == null || name.isBlank()) return "";
         return MULTIPLE_SPACES.matcher(
                 BRACKETS.matcher(name.replace("\u00A0", " ")).replaceAll("")
+                        .replace("."," ")
         ).replaceAll(" ").trim();
     }
     public static List<String> normalizePlayers(List<String> players) {

@@ -44,23 +44,27 @@ public class PlayerSummaryService {
 
 
 
+    //todo доставать через проекцию
     private LastResultDto getLastResult(UUID playerId) {
         return tournamentResultRepository.findTopByPlayerIdOrderByDateDesc(playerId)
-                .map(r -> LastResultDto.builder()
-                        .date(r.getDate().toString())
-                        .amount(r.getAmount())
-                        .tournamentLink(r.getTournament().getLink())
+                .map(tournamentResultEntity -> LastResultDto.builder()
+                        .date(tournamentResultEntity.getDate().toString())
+                        .amount(tournamentResultEntity.getAmount())
+                        .tournamentLink(tournamentResultEntity.getTournament().getLink())
                         .build())
                 .orElse(null);
     }
 
+    //todo этот пиздец тоже упростить . нахрена искать по имени если есть айди?
     private List<UpcomingLineupDto> getUpcomingLineups(String playerName) {
         String playerNameLower = playerName.toLowerCase();
         LocalDate today = LocalDate.now();
-        List<Lineup> lineups = lineupRepository.findByDateBetweenOrderByDateAscTimeAsc(today, today.plusDays(2));
+        List<Lineup> lineups = lineupRepository
+                .findByDateBetweenOrderByDateAscTimeAsc(today, today.plusDays(2));
 
         Map<LocalDate, List<Lineup>> byDate = lineups.stream()
                 .collect(Collectors.groupingBy(Lineup::getDate, LinkedHashMap::new, Collectors.toList()));
+
         LocalDate soonestDate = byDate.keySet().stream().min(LocalDate::compareTo).orElse(null);
 
         List<UpcomingLineupDto> result = new ArrayList<>();

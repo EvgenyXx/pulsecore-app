@@ -10,6 +10,9 @@ import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriCon
 import ru.pulsecore.app.notification.application.mail.context.MailContext;
 import ru.pulsecore.app.notification.application.mail.template.MailFormat;
 import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
+import ru.pulsecore.app.notification.client.PlayerClient;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -18,6 +21,7 @@ public class BrokenUriStrategy implements MailStrategy {
 
     private final UniversalMailSender mailSender;
     private final MailTemplateService templates;
+    private final PlayerClient  playerClient;
 
     @Override
     public String getType() {
@@ -27,11 +31,22 @@ public class BrokenUriStrategy implements MailStrategy {
     @Override
     public void send(MailContext context) {
         BrokenUriContext brokenUriContext =  (BrokenUriContext) context;
+        String playerData = playerClient.getPlayers(brokenUriContext.playerIds())
+                .stream()
+                .map(PlayerData::playerName)
+                .collect(Collectors.joining(","));
+
         String tex = templates.format(
-                MailTemplate.BROKEN_URI,brokenUriContext.brokenUri());
+                MailTemplate.BROKEN_URI,brokenUriContext.brokenUri(),
+                brokenUriContext.brokenUri(),
+                brokenUriContext.date(),
+                brokenUriContext.time(),
+                playerData
+
+                );
         mailSender.adminSendEmail(
                 MailFormat.TEXT,
-                "Битый ссылка на турнир",
+                "⚠️ Турнир удалён с сайта",
                 tex,
                 null,
                 null

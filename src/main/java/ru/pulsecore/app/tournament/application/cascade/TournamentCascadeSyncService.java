@@ -13,14 +13,15 @@ import java.time.YearMonth;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TournamentCascadeSyncService {
-
+    //todo добавить даты с какого и по какой или сделать вообще отдельные методы
     private static final LocalDate STOP_AT = LocalDate.of(2025, 1, 1);
-    private static final long MONTH_DELAY_MS = 60_000;
+
 
     private final TournamentAutoAddService tournamentAutoAddService;
     private final Set<UUID> syncingPlayers = ConcurrentHashMap.newKeySet();
@@ -49,14 +50,22 @@ public class TournamentCascadeSyncService {
         }
     }
 
+
     private void syncMonth(UUID playerId, String playerName, YearMonth month) {
         try {
             LocalDate start = month.atDay(1);
-            LocalDate end = month.atEndOfMonth();
+            LocalDate end;
 
-            log.warn("{} — синхронизация {}", playerName, MonthUtils.toRussianMonthYear(start));
+            if (month.equals(YearMonth.now())) {
+                // Текущий месяц: с 1 числа по вчера
+                end = LocalDate.now().minusDays(1);
+            } else {
+                // Прошлые месяцы: до конца месяца
+                end = month.atEndOfMonth();
+            }
+
+            log.debug("{} — синхронизация {}", playerName, MonthUtils.toRussianMonthYear(start));
             tournamentAutoAddService.addTournamentsForPeriod(playerId, playerName, start, end);
-
         } catch (Exception e) {
             log.warn("{} — ошибка для {}: {}", playerName, month, e.getMessage());
         }
@@ -64,7 +73,7 @@ public class TournamentCascadeSyncService {
 
     private void sleepBetweenMonths() {
         try {
-            Thread.sleep(MONTH_DELAY_MS);
+            TimeUnit.SECONDS.sleep(30);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

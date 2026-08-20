@@ -48,6 +48,7 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
 
 
 
+    // TournamentResultRepository
     @Modifying
     @Query("DELETE FROM TournamentResultEntity t WHERE t.playerId = :playerId")
     int deleteByPlayerId(@Param("playerId") UUID playerId);

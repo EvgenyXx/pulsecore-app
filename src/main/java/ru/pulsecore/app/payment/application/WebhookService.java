@@ -30,12 +30,13 @@ public class WebhookService {
         var playerId = UUID.fromString(metadata.playerId());
         var months = Integer.parseInt(metadata.months());
 
-        publisher.publishEvent(new PaymentSuccessEvent(playerId, months * 30));
+        publisher.publishEvent(new PaymentSuccessEvent(playerId, months * 30,
+                amount.value(),amount.currency()));
         log.info("Subscription activated: playerId={}, months={}", playerId, months);
 
-        publisher.publishEvent(new MailNotificationEvent(
-                MailTypes.ADMIN_PAYMENT_RECEIVED,
-                new AdminPaymentContext(playerId.toString(), months, amount.value(), amount.currency())));
+//        publisher.publishEvent(new MailNotificationEvent(
+//                MailTypes.ADMIN_PAYMENT_RECEIVED,
+//                new AdminPaymentContext(playerId.toString(), months, amount.value(), amount.currency())));
     }
 
 

@@ -71,15 +71,23 @@ function showAction(action) {
         title.innerHTML = '💰 Сумма за период' + burgerBtn;
         subtitle.textContent = 'Подсчёт заработка и список турниров';
         state.currentSumPage = 0;
-        content.innerHTML = `
-            <div id="sumButtons" class="space-y-3">
-                <button onclick="showSumCalculator()" class="btn-gold w-full py-4 text-base font-semibold">Посмотреть в приложении</button>
-                <button onclick="showReportForm()" class="btn-gold w-full py-4 text-base font-semibold">Заказать отчёт на почту</button>
-            </div>
-            <div id="sumCalculator" class="hidden mt-4"></div>
-            <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
-            <div id="actionResult" class="mt-4"></div>
-        `;
+
+        fetch('/api/player/halls', { credentials: 'same-origin' })
+            .then(r => {
+                if (r.status === 402) {
+                    content.innerHTML = subBlockHtml();
+                    return;
+                }
+                content.innerHTML = `
+                <div id="sumButtons" class="space-y-3">
+                    <button onclick="showSumCalculator()" class="btn-gold w-full py-4 text-base font-semibold">Посмотреть в приложении</button>
+                    <button onclick="showReportForm()" class="btn-gold w-full py-4 text-base font-semibold">Заказать отчёт на почту</button>
+                </div>
+                <div id="sumCalculator" class="hidden mt-4"></div>
+                <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
+                <div id="actionResult" class="mt-4"></div>
+            `;
+            });
     }
 }
 

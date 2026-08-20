@@ -14,7 +14,12 @@ public enum MailTemplate {
     BROADCAST("broadcast"),
     SCHEDULED_REPORT("scheduled_report"),
     BROKEN_URI("broken_uri"),
-    CANCELED_TOURNAMENT("canceled_tournament");
+    PLAYER_REPLACED("player_replaced"),
+    CANCELED_TOURNAMENT("canceled_tournament"),
+    TOURNAMENT_SCHEDULE_CHANGED("tournament_schedule_changed"),
+    PAYMENT_SUCCESS_USER("payment_success_user"),
+    PLAYER_TRANSFERRED("player_transferred");
+
 
     private final String fileName;
 

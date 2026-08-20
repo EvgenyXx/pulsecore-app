@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.application.cascade.TournamentCascadeSyncService;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
 import java.util.UUID;
 
@@ -24,10 +26,15 @@ public class AdminTournamentManagementService {
     private final TournamentResultRepository tournamentResultRepository;
     private final PlayerClient playerClient;
     private final TournamentCascadeSyncService cascadeSyncService;
+    private final TournamentRepository tournamentRepository;
+    private final PlayerNotificationRepository  playerNotificationRepository;
 
     @Transactional
     public int deleteAllTournaments(UUID playerId) {
-        return tournamentResultRepository.deleteByPlayerId(playerId);
+        int deletedResults = tournamentResultRepository.deleteByPlayerId(playerId);
+        int deletedNotifications = playerNotificationRepository.deleteByPlayerId(playerId);
+        int deletedTournaments = tournamentRepository.deleteOrphans();
+        return deletedResults + deletedNotifications + deletedTournaments;
     }
 
     @Transactional

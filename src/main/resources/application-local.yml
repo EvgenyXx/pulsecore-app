@@ -31,7 +31,7 @@ spring doc:
 logging:
   level:
     root: warn
-    ru.pulsecore.app: info
+    ru.pulsecore.app: debug
     org.springframework: WARN
     org.hibernate: WARN
     ru.pulsecore.app.tournament.application.discovery.DiscoveryNotificationService: info

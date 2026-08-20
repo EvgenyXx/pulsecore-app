@@ -1,5 +1,6 @@
 package ru.pulsecore.app.admin.client;
 
+import org.springframework.data.domain.Page;
 import ru.pulsecore.app.shared.dto.response.PageViewStats;
 import ru.pulsecore.app.shared.dto.response.PlayerPageViewStats;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
@@ -14,7 +15,7 @@ public interface PlayerClient {
     //player
     MessageResponse deletePlayer(UUID playerId);
     List<PlayerData> getPlayers();
-    List<PlayerData> searchByName(String name);
+    Page<PlayerData> searchByNamePage(String name, int page, int size);
 
     //analytic
     List<PlayerPageViewStats> getPlayerStats(int days);

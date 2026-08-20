@@ -16,10 +16,9 @@ import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +50,7 @@ public class ResultService {
         normalizeNames(results);
         applyBonusPoints(ctx, results);
         results.sort((a, b) -> Integer.compare(b.getTotal(), a.getTotal()));
-        logResults(ctx, results,doc.baseUri());
+        logResults(ctx,doc.baseUri());
 
         return new ParsedResult(
                 ctx.getTournamentId(),
@@ -61,7 +60,8 @@ public class ResultService {
                 hasRemoved(ctx),
                 isFinalRemoved(ctx),
                 ctx.getLeague().name(),
-                ctx.getTime()
+                ctx.getTime(),
+                ctx.getDate()
         );
     }
 
@@ -89,20 +89,13 @@ public class ResultService {
         }
     }
 
-    private void logResults(TournamentContext ctx, List<ResultDto> results,String url) {
+    private void logResults(TournamentContext ctx,String url) {
         if (ctx.getTournamentStatus() != TournamentStatus.FINISHED) {
-            String players = results.stream()
-                    .map(ResultDto::getPlayer)
-                    .collect(Collectors.joining(", "));
-            log.info("Турнир: дата={}, время={}, лига={}, статус={},участники:{}, ссылка={}",
+            log.info("{} {} {} {}",
+                    ctx.getTournamentStatus(),
                     ctx.getDate(),
                     ctx.getTime() != null ? ctx.getTime() : "?",
-                    ctx.getLeague(),
-                    ctx.getTournamentStatus(),
-                    players,
-                    url
-
-            );
+                    url);
         }
 
     }

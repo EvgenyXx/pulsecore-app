@@ -1,5 +1,7 @@
 package ru.pulsecore.app.player.infrastructure.persistence.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
@@ -25,19 +27,26 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     @Query("SELECT p FROM Player p WHERE LOWER(p.email) = LOWER(:email)")
     Optional<Player> findByEmail(@Param("email") String email);
 
-    List<Player> findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(String name, String email);
-
     List<Player> findByVerifiedFalseAndCreatedAtBefore(LocalDateTime cutoff);
 
     Optional<Player> findByOauthProviderAndOauthId(String provider, String oauthId);
 
 
-    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague" +
-            " as primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as " +
-            "notificationsEnabled, p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
-            "CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
-            "FROM Player p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
+            "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
+            "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
+            "CASE WHEN s.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "FROM Player p LEFT JOIN p.subscription s " +
+            "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<PlayerDataProjection> searchByName(@Param("query") String query);
+
+    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
+            "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
+            "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
+            "CASE WHEN s.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "FROM Player p LEFT JOIN p.subscription s " +
+            "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+    Page<PlayerDataProjection> searchByName(@Param("query") String query, Pageable pageable);
 
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as " +
             "primaryLeague, p.pushEnabled as pushEnabled, p.notificationsEnabled as " +

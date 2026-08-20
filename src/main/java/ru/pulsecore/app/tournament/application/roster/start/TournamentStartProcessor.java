@@ -1,6 +1,5 @@
 package ru.pulsecore.app.tournament.application.roster.start;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -13,11 +12,12 @@ import ru.pulsecore.app.shared.exception.SiteUnavailableException;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.parser.TournamentStatusParser;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -31,20 +31,20 @@ public class TournamentStartProcessor {
     private final PlayerNotificationRepository notificationRepository;
     private final TournamentStatusParser tournamentStatusParser;
 
-   
     @Transactional
     public void checkStart() {
-        List<PlayerNotification> notifications = notificationRepository.findPendingWithTournament();
-        if (notifications.isEmpty()) return;
+        String moscowTime = LocalTime.now(ZoneId.of("Europe/Moscow")).format(DateTimeFormatter.ofPattern("HH:mm"));
 
-        Map<String, List<PlayerNotification>> grouped = notifications.stream()
-                .filter(p -> p.getTournament() != null)
-                .collect(Collectors.groupingBy(p -> p.getTournament().getLink()));
+        List<String> tournamentLinks = notificationRepository.findStartingSoonLinks(moscowTime);
 
-        List<String> links = List.copyOf(grouped.keySet());
-        for (int i = 0; i < links.size(); i++) {
-            process(links.get(i), grouped.get(links.get(i)));
-            if (i < links.size() - 1) {
+        if (tournamentLinks.isEmpty()) return;
+
+        log.info("Проверка старта: найдено {} турниров", tournamentLinks.size());
+
+
+        for (int i = 0; i < tournamentLinks.size(); i++) {
+            processLink(tournamentLinks.get(i));
+            if (i < tournamentLinks.size() - 1) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(REQUEST_DELAY_MS);
                 } catch (InterruptedException e) {
@@ -54,10 +54,17 @@ public class TournamentStartProcessor {
         }
     }
 
-    private void process(String link, List<PlayerNotification> notifications) {
-        TournamentEntity t = getTournament(notifications);
+    private void processLink(String link) {
+        List<PlayerNotification> notifications = notificationRepository.findByTournamentLink(link);
+        if (notifications.isEmpty()) return;
+
+        TournamentEntity t = notifications.get(0).getTournament();
         if (t == null) return;
 
+        process(link, notifications, t);
+    }
+
+    private void process(String link, List<PlayerNotification> notifications, TournamentEntity t) {
         try {
             Document doc = documentLoader.load(link);
             processByStatus(t, notifications, doc);
@@ -66,11 +73,6 @@ public class TournamentStartProcessor {
         } catch (Exception e) {
             log.error("Ошибка обработки турнира: link={}", link, e);
         }
-    }
-
-    private TournamentEntity getTournament(List<PlayerNotification> notifications) {
-        PlayerNotification first = notifications.get(0);
-        return first != null ? first.getTournament() : null;
     }
 
     private void processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
@@ -96,8 +98,6 @@ public class TournamentStartProcessor {
     private void startTournament(TournamentEntity t, List<PlayerNotification> notifications) {
         t.setStarted(true);
         notificationRepository.saveAll(notifications);
-        log.info("Турнир начался. Дата:{} Время:{} URL:{} ",t.getDate(),t.getTime(),t.getLink());
+        log.info("Турнир начался. Дата:{} Время:{} URL:{} ", t.getDate(), t.getTime(), t.getLink());
     }
-
-
 }

@@ -34,9 +34,8 @@ public class TournamentCanceledNotificationService {
 
     private final ApplicationEventPublisher eventPublisher;
     private final PlayerClient playerClient;
-    // todo: вынести handleCancelled в отдельный TournamentCancelProcessor
-// todo: убрать проверку CANCELLED из TournamentFinishProcessor.processByStatus
-// todo: создать findCancelled() запрос в репозитории для TournamentCancelProcessor
+
+
     public void sendCancelled(List<PlayerNotification> notifications) {
         Set<UUID> playerIds = notifications.stream()
                 .map(PlayerNotification::getPlayerId)

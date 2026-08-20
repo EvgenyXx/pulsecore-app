@@ -3,6 +3,7 @@ package ru.pulsecore.app.admin.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
@@ -28,7 +29,11 @@ public class AdminPlayerController {
 
     @Operation(summary = "Поиск игроков по имени")
     @GetMapping(AdminApi.SEARCH_BY_NAME)
-    public ResponseEntity<List<PlayerData>> getPlayersByName(@RequestParam("q") String q) {
-        return ResponseEntity.ok(playerClient.searchByName(q));
+    public ResponseEntity<Page<PlayerData>> getPlayersByName(
+            @RequestParam("q") String q,
+            @RequestParam(defaultValue = "0")int page ,
+            @RequestParam(defaultValue = "5") int size
+            ) {
+        return ResponseEntity.ok(playerClient.searchByNamePage(q,page,size));
     }
 }

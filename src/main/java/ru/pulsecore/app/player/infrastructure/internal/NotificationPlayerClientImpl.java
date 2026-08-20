@@ -9,7 +9,12 @@ import ru.pulsecore.app.notification.client.PlayerClient;
 import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
+import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
+import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -19,6 +24,7 @@ public class NotificationPlayerClientImpl implements PlayerClient {
 
     private final PlayerCommandService  commandService;
     private final PlayerSearchService  searchService;
+    private final PlayerRepository  repository;
 
     @Transactional
     @Override
@@ -33,5 +39,20 @@ public class NotificationPlayerClientImpl implements PlayerClient {
     @Override
     public boolean isPushEnabled(UUID playerId) {
         return searchService.getById(playerId).isPushEnabled();
+    }
+
+    @Override
+    public PlayerData getPlayer(UUID playerId) {
+        return repository.findProjectionById(playerId)
+                .map(PlayerDataProjection::toPlayerData)
+                .orElse(null);
+    }
+
+    @Override
+    public List<PlayerData> getPlayers(Set<UUID> playerIds) {
+        return repository.findProjectionsByIds(playerIds)
+                .stream()
+                .map(PlayerDataProjection::toPlayerData)
+                .toList();
     }
 }

@@ -1,6 +1,9 @@
 package ru.pulsecore.app.player.infrastructure.internal;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
@@ -35,10 +38,10 @@ public class AdminPlayerClientImpl implements PlayerClient {
     private final SubscriptionQueryService  subscriptionQueryService;
 
     @Override
-    public List<PlayerData> searchByName(String name) {
-        return playerRepository.searchByName(name)
-                .stream().map(PlayerDataProjection::toPlayerData)
-                .toList();
+    public Page<PlayerData> searchByNamePage(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return playerRepository.searchByName(name, pageable)
+                .map(PlayerDataProjection::toPlayerData);
     }
 
     @Override

@@ -10,7 +10,8 @@ public record ParsedResult(Long tournamentId, List<ResultDto> results, Tournamen
                            boolean hasRemoved,
                            boolean isFinalRemoved,
                            String league,
-                           String time) {
+                           String time,
+                           String date) {
 
     public boolean isFinished() {
         return status != null && status.isFinished();

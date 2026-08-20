@@ -1,48 +1,77 @@
 package ru.pulsecore.app.tournament.application.cascade;
 
+import io.github.bucket4j.Bucket;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.tournament.application.resolution.ResultService;
 import ru.pulsecore.app.tournament.application.roster.finish.TournamentResultProcessor;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
-import ru.pulsecore.app.tournament.infrastructure.exception.TournamentParseException;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
+import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
+import ru.pulsecore.app.tournament.infrastructure.exception.TournamentParseException;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 
 /**
  * Обрабатывает список URL турниров для одного игрока.
- * Парсит каждый URL, находит/создает турнир, собирает результаты
- * и сохраняет их одним батчем в рамках одной транзакции.
- * Вызывается из TournamentAutoAddService при синхронизации истории.
+ *
+ * <p>Для каждого URL:</p>
+ * <ol>
+ *     <li>Парсит страницу турнира</li>
+ *     <li>Находит существующий турнир или создаёт новый</li>
+ *     <li>Если турнир отменён — помечает его в базе</li>
+ *     <li>Создаёт связь игрока с турниром, если её нет</li>
+ *     <li>Собирает результаты игроков</li>
+ * </ol>
+ *
+ * <p>Все результаты сохраняются одним батчем в конце обработки.</p>
+ *
+ * <p>Вызывается из {@code TournamentAutoAddService} при синхронизации истории.</p>
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class TournamentUrlProcessor {
-
-
 
     private final TournamentResultProcessor resultProcessor;
     private final ResultService resultService;
     private final TournamentRepository tournamentRepository;
+    private final TournamentNotificationService notificationService;
+    private final TournamentStatusService statusService;
+    private final Bucket tournamentRateLimiter;
 
-
-
+    public TournamentUrlProcessor(TournamentResultProcessor resultProcessor,
+                                  ResultService resultService,
+                                  TournamentRepository tournamentRepository,
+                                  TournamentNotificationService notificationService,
+                                  TournamentStatusService statusService,
+                                  @Qualifier(RateLimiterConfig.HISTORY_SYNC_RATE_LIMITER) Bucket tournamentRateLimiter) {
+        this.resultProcessor = resultProcessor;
+        this.resultService = resultService;
+        this.tournamentRepository = tournamentRepository;
+        this.notificationService = notificationService;
+        this.statusService = statusService;
+        this.tournamentRateLimiter = tournamentRateLimiter;
+    }
 
     @Transactional
     public void processUrlsForPlayer(List<String> urls, UUID playerId, String playerName) {
         List<TournamentResultEntity> allEntities = new ArrayList<>();
+
         for (String url : urls) {
             try {
+                tournamentRateLimiter.asBlocking().consume(1);
                 ParsedResult parsed = parseUrl(url);
                 TournamentEntity tournament = findOrCreateTournament(parsed, url);
-                updateTournamentDates(tournament, parsed);
+                statusService.markAsCancelled(tournament, parsed, url);
+                notificationService.createIfAbsent(playerId, tournament);
 
                 allEntities.addAll(resultProcessor.processResults(
                         parsed.results(), playerId, playerName, tournament,
@@ -58,43 +87,25 @@ public class TournamentUrlProcessor {
         resultProcessor.saveAll(allEntities);
     }
 
-
     private ParsedResult parseUrl(String url) {
         try {
             return resultService.calculateAll(url);
         } catch (Exception e) {
-            throw new TournamentParseException(url, e);
+            throw new TournamentParseException(e);
         }
     }
 
     private TournamentEntity findOrCreateTournament(ParsedResult parsed, String url) {
-        return tournamentRepository.findByExternalId(parsed.tournamentId())
+        return tournamentRepository.findByLink(url)
                 .orElseGet(() -> tournamentRepository.save(TournamentEntity.builder()
                         .externalId(parsed.tournamentId())
+                        .time(parsed.time())
+                        .cancelled(false)
+                        .finished(true)
+                        .processed(true)
+                        .started(true)
+                        .date(parsed.date() != null ? LocalDate.parse(parsed.date()) : null)
                         .link(url)
                         .build()));
     }
-
-    private void updateTournamentDates(TournamentEntity tournament, ParsedResult parsed) {
-        if (tournament.getDate() == null) {
-            tournament.setDate(extractDate(parsed));
-        }
-        if (tournament.getTime() == null && parsed.time() != null && !parsed.time().isEmpty()) {
-            tournament.setTime(parsed.time());
-        }
-        tournamentRepository.save(tournament);
-    }
-
-    //todo вынести в утил ???
-    private LocalDate extractDate(ParsedResult parsed) {
-        if (parsed.results().isEmpty()) return null;
-        String dateStr = parsed.results().get(0).getDate();
-        if (dateStr == null || dateStr.isEmpty()) return null;
-        try {
-            return LocalDate.parse(dateStr);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
 }

@@ -11,9 +11,13 @@ async function apiRequest(endpoint, options = {}) {
 
 export const AdminAPI = {
     getMe: () => apiRequest('/player/me'),
-    searchPlayers: (q) => apiRequest(`/admin/search?q=${encodeURIComponent(q)}`).then(players =>
-        players.map(p => ({ id: p.playerId, name: p.playerName, email: p.email }))
-    ),
+    searchPlayers: (q, page = 0, size = 5) =>
+        apiRequest(`/admin/search?q=${encodeURIComponent(q)}&page=${page}&size=${size}`)
+            .then(data => data.content.map(p => ({
+                id: p.playerId,
+                name: p.playerName,
+                email: p.email
+            }))),
     getPlayerSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/subscription`),
     getPlayerRoles: (playerId) => apiRequest(`/admin/players/${playerId}/roles`),
     deletePlayerTournaments: (playerId) => apiRequest(`/admin/players/${playerId}/tournaments`, { method: 'DELETE' }),

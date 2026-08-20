@@ -7,6 +7,8 @@ import ru.pulsecore.app.tournament.api.dto.response.LineupDto;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
+import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,10 +54,12 @@ public class LineupFacade {
     }
 
     private LineupDto markPlayer(LineupDto dto, String playerName) {
+        String searchName = NameNormalizer.normalizeForSearch(playerName);
         boolean isPlayer = dto.getPlayers() != null &&
                 Arrays.stream(dto.getPlayers().split(","))
                         .map(String::trim)
-                        .anyMatch(p -> p.equalsIgnoreCase(playerName));
+                        .map(NameNormalizer::normalizeForSearch)
+                        .anyMatch(p -> p.contains(searchName) || searchName.contains(p));
         dto.setPlayer(isPlayer);
         return dto;
     }

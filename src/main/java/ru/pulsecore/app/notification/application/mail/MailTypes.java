@@ -16,6 +16,10 @@ public final class MailTypes {
     public static final String BROKEN_URI = "broken_uri" ;
     public static final String CANCELED_TOURNAMENT = "cancelled_tournament";
     public static final String ADMIN_MASTERS_UNAVAILABLE = "admin_masters_unavailable";
+    public static final String PLAYER_REPLACED = "player_replaced";
+    public static final String PLAYER_TRANSFERRED = "player_transferred";
+    public static final String TOURNAMENT_SCHEDULE_CHANGED = "tournament_schedule_changed";
+
 
     private MailTypes() {}
 }
