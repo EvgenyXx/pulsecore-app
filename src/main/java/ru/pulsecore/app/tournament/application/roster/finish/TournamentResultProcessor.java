@@ -3,16 +3,10 @@ package ru.pulsecore.app.tournament.application.roster.finish;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import ru.pulsecore.app.shared.dto.response.ResultDto;
-
-
 import ru.pulsecore.app.tournament.infrastructure.util.PlayerNameMatcher;
-
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
-
-
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,23 +19,26 @@ import java.util.UUID;
 @Slf4j
 public class TournamentResultProcessor {
 
-
     private final TournamentResultPersistence persistence;
 
     public List<TournamentResultEntity> processResults(List<ResultDto> results,
-                               UUID playerId,
-                               String playerName,
-                               TournamentEntity tournament,
-                               double bonus, boolean isFinished,
-                               boolean hasRemoved, String league) {
-        if (!isFinished) return List.of();
+                                                       UUID playerId,
+                                                       String playerName,
+                                                       TournamentEntity tournament,
+                                                       double bonus, boolean isFinished,
+                                                       boolean hasRemoved, String league) {
+        if (!isFinished) {
+            log.debug("Результаты: турнир не завершён, пропуск");
+            return List.of();
+        }
+
         List<TournamentResultEntity> entities = new ArrayList<>();
         for (ResultDto r : results) {
             if (PlayerNameMatcher.isSamePlayer(playerName, r.getPlayer())) {
                 entities.add(buildEntity(playerId, tournament, r, bonus, hasRemoved, league));
             }
         }
-        return  entities;
+        return entities;
     }
 
     public void saveAll(List<TournamentResultEntity> entities) {
@@ -50,7 +47,6 @@ public class TournamentResultProcessor {
         }
     }
 
-
     public void processResultsRoster(List<ResultDto> results,
                                      Map<UUID, String> roster,
                                      TournamentEntity tournament,
@@ -58,7 +54,11 @@ public class TournamentResultProcessor {
                                      boolean isFinished,
                                      boolean hasRemoved,
                                      String league) {
-        if (!isFinished) return;
+        if (!isFinished) {
+            log.debug("Результаты: турнир не завершён, пропуск roster");
+            return;
+        }
+
         List<TournamentResultEntity> entities = new ArrayList<>();
         for (ResultDto r : results) {
             roster.forEach((playerId, playerName) -> {
@@ -67,7 +67,9 @@ public class TournamentResultProcessor {
                 }
             });
         }
+
         if (!entities.isEmpty()) {
+            log.debug("Результаты: найдено {} записей для сохранения", entities.size());
             persistence.saveRoster(entities);
         }
     }

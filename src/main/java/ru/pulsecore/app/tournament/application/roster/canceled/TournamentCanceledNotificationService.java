@@ -20,13 +20,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
-/**
- * Отправляет уведомления об отмене турнира.
- * Email — через MailNotificationEvent, Push — через PushNotificationEvent.
- * Проверяет настройки игрока перед отправкой.
- * Вызывается из TournamentFinishProcessor при обнаружении статуса CANCELLED.
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,8 +28,9 @@ public class TournamentCanceledNotificationService {
     private final ApplicationEventPublisher eventPublisher;
     private final PlayerClient playerClient;
 
-
     public void sendCancelled(List<PlayerNotification> notifications) {
+        log.debug("Отмена: начало отправки уведомлений для {} игроков", notifications.size());
+
         Set<UUID> playerIds = notifications.stream()
                 .map(PlayerNotification::getPlayerId)
                 .collect(Collectors.toSet());
@@ -58,8 +52,8 @@ public class TournamentCanceledNotificationService {
         log.info("Отмена турнира: уведомления отправлены {} игрокам", notifications.size());
     }
 
-    private void canSendPush(PlayerData playerData,String time,String date) {
-        if (playerData.pushEnabled()){
+    private void canSendPush(PlayerData playerData, String time, String date) {
+        if (playerData.pushEnabled()) {
             eventPublisher.publishEvent(
                     new PushNotificationEvent(
                             playerData.playerId(),
@@ -68,23 +62,22 @@ public class TournamentCanceledNotificationService {
                             "/dashboard"
                     )
             );
+            log.debug("Отмена: пуш отправлен игроку={}", playerData.playerName());
         }
     }
 
-
-    private void emailSend(PlayerData playerData,String time,String date,String link) {
-           if (playerData.notificationsEnabled()){
-               eventPublisher.publishEvent(
-                       new MailNotificationEvent(
-                               MailTypes.CANCELED_TOURNAMENT,
-                               new CanceledTournamentContext(
-                                       playerData.email(),
-                                       time,date,link
-
-                               )
-                       )
-               );
-           }
-       }
-
+    private void emailSend(PlayerData playerData, String time, String date, String link) {
+        if (playerData.notificationsEnabled()) {
+            eventPublisher.publishEvent(
+                    new MailNotificationEvent(
+                            MailTypes.CANCELED_TOURNAMENT,
+                            new CanceledTournamentContext(
+                                    playerData.email(),
+                                    time, date, link
+                            )
+                    )
+            );
+            log.debug("Отмена: письмо отправлено игроку={}", playerData.playerName());
+        }
+    }
 }

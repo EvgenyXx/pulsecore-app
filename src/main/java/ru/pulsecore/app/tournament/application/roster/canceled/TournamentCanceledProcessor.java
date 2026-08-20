@@ -23,10 +23,14 @@ public class TournamentCanceledProcessor {
     private final PlayerNotificationRepository notificationRepository;
     private final TournamentCanceledService tournamentCanceledService;
 
-
     public void processCanceled() {
         List<String> links = notificationRepository.findNotStartedForCancelLinks();
-        if (links.isEmpty()) return;
+        if (links.isEmpty()) {
+            log.debug("Отмены: нет турниров для проверки");
+            return;
+        }
+
+        log.debug("Отмены: начало проверки {} турниров", links.size());
 
         tournamentCanceledService.clearStats();
         List<CompletableFuture<Void>> futures = links.stream()
@@ -37,6 +41,4 @@ public class TournamentCanceledProcessor {
 
         tournamentCanceledService.logSummary();
     }
-
-
 }

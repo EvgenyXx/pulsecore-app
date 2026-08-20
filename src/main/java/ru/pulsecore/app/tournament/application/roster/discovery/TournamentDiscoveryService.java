@@ -7,10 +7,10 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.TournamentDataProvider;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +23,14 @@ public class TournamentDiscoveryService {
     private final TournamentSaver saver;
     private final NewTournamentEventPublisher publisher;
 
-
     public void checkNewTournaments() {
         List<PlayerData> activePlayers = playerClient.getAll();
-        if (activePlayers.isEmpty()) return;
+        if (activePlayers.isEmpty()) {
+            log.debug("Новые турниры: нет активных игроков");
+            return;
+        }
+
+        log.debug("Новые турниры: проверка для {} игроков", activePlayers.size());
 
         Map<PlayerData, List<TournamentDto>> newTournaments = findNewTournaments(activePlayers);
 
@@ -48,6 +52,7 @@ public class TournamentDiscoveryService {
             List<TournamentDto> playerTournaments = allFound.getOrDefault(player.playerName(), List.of());
             List<TournamentDto> newOnes = filter.findNew(player.playerId(), playerTournaments);
             if (!newOnes.isEmpty()) {
+                log.debug("Новые турниры: игрок={}, новых={}", player.playerName(), newOnes.size());
                 result.put(player, newOnes);
             }
         }

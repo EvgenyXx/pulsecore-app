@@ -1,4 +1,4 @@
-package ru.pulsecore.app.tournament.application.roster.change;
+package ru.pulsecore.app.tournament.application.roster.change.info;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import ru.pulsecore.app.shared.dto.response.DateDto;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.TournamentProjection;
@@ -21,10 +22,6 @@ import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Сервис обработки изменений расписания турнира (зал, время, дата, лига),
- * когда состав игроков не менялся.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,19 +31,13 @@ public class TournamentScheduleChangeService {
     private final TournamentRepository tournamentRepository;
     private final PlayerNotificationRepository playerNotificationRepository;
 
-    /**
-     * Проверяет измениться ли расписание турнира (без учёта состава).
-     * Если да — отправляет уведомление всем игрокам.
-     *
-     * @param oldPlayers игроки, привязанные к турниру
-     * @param link старый турнир (из базы)
-     * @param newTournament новый турнир (из API)
-     */
     @Transactional
     public void processScheduleChange(
             List<PlayerData> oldPlayers,
             String link,
             TournamentDto newTournament) {
+
+        log.debug("Расписание: проверка изменений для link={}", link);
 
         TournamentProjection p = tournamentRepository.findDtoByLink(link).stream().findFirst().orElseThrow();
         TournamentDto old = buildOldTournament(p, newTournament);
@@ -54,8 +45,12 @@ public class TournamentScheduleChangeService {
         TransferInfo info = TransferInfo.of(old, newTournament);
 
         if (!info.timeChanged() && !info.dateChanged() && !info.hallChanged()) {
+            log.debug("Расписание: изменений нет для link={}", link);
             return;
         }
+
+        log.debug("Расписание: обнаружены изменения time={}, date={}, hall={}",
+                info.timeChanged(), info.dateChanged(), info.hallChanged());
 
         updateSchedule(p.getId(), info, newTournament);
         notifyPlayers(oldPlayers, info, newTournament);
@@ -80,16 +75,19 @@ public class TournamentScheduleChangeService {
         if (info.timeChanged()) {
             String newTime = DateTimeUtils.parseTime(newTournament.getDate().getDate());
             tournamentRepository.updateTimeById(tournamentId, newTime);
+            log.debug("Расписание: обновлено время={} для tournamentId={}", newTime, tournamentId);
         }
 
         if (info.dateChanged()) {
             LocalDate newDate = DateTimeUtils.parseDate(newTournament.getDate().getDate());
             tournamentRepository.updateDateById(tournamentId, newDate);
+            log.debug("Расписание: обновлена дата={} для tournamentId={}", newDate, tournamentId);
         }
 
         if (info.hallChanged()) {
             Integer newHall = NumberUtils.extractInt(newTournament.getHall());
             playerNotificationRepository.updateHallByTournamentId(tournamentId, newHall);
+            log.debug("Расписание: обновлён зал={} для tournamentId={}", newHall, tournamentId);
         }
     }
 
@@ -111,5 +109,6 @@ public class TournamentScheduleChangeService {
                         )
                 )
         );
+        log.debug("Расписание: уведомление отправлено игроку={}", player.playerName());
     }
 }

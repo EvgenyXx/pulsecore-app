@@ -35,12 +35,16 @@ public class TournamentStartProcessor {
     public void checkStart() {
         String moscowTime = LocalTime.now(ZoneId.of("Europe/Moscow")).format(DateTimeFormatter.ofPattern("HH:mm"));
 
+        log.debug("Старт: проверка в {}", moscowTime);
+
         List<String> tournamentLinks = notificationRepository.findStartingSoonLinks(moscowTime);
 
-        if (tournamentLinks.isEmpty()) return;
+        if (tournamentLinks.isEmpty()) {
+            log.debug("Старт: нет турниров для проверки");
+            return;
+        }
 
         log.info("Проверка старта: найдено {} турниров", tournamentLinks.size());
-
 
         for (int i = 0; i < tournamentLinks.size(); i++) {
             processLink(tournamentLinks.get(i));
@@ -56,10 +60,16 @@ public class TournamentStartProcessor {
 
     private void processLink(String link) {
         List<PlayerNotification> notifications = notificationRepository.findByTournamentLink(link);
-        if (notifications.isEmpty()) return;
+        if (notifications.isEmpty()) {
+            log.debug("Старт: нет уведомлений для link={}", link);
+            return;
+        }
 
         TournamentEntity t = notifications.get(0).getTournament();
-        if (t == null) return;
+        if (t == null) {
+            log.debug("Старт: турнир не найден для link={}", link);
+            return;
+        }
 
         process(link, notifications, t);
     }
@@ -77,6 +87,7 @@ public class TournamentStartProcessor {
 
     private void processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
         TournamentStatus status = tournamentStatusParser.parseStatus(doc);
+        log.debug("Старт: турнир={}, статус={}", t.getExternalId(), status);
 
         if (isAlreadyStartedOrNotToday(t)) return;
 
