@@ -26,7 +26,6 @@ public class TournamentCanceledProcessor {
 
     public void processCanceled() {
         List<String> links = notificationRepository.findNotStartedForCancelLinks();
-        log.info("Проверка отмены: найдено {} турниров", links.size());
         if (links.isEmpty()) return;
 
         tournamentCanceledService.clearStats();
