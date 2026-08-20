@@ -1,0 +1,25 @@
+package ru.pulsecore.app.notification.application.mail;
+
+public final class MailTypes {
+
+    public static final String VERIFICATION = "verification";
+    public static final String PASSWORD_RESET = "password_reset";
+    public static final String TOURNAMENT_RESULT = "tournament_result";
+    public static final String NEW_TOURNAMENT = "new_tournament";
+    public static final String ADMIN_NEW_USER = "admin_new_user";
+    public static final String ADMIN_PAYMENT_RECEIVED = "admin_payment_received";
+    public static final String WELCOME = "welcome";
+
+    public static final String BROADCAST = "broadcast";
+
+    public static final String SCHEDULED_REPORT = "scheduled_report";
+    public static final String BROKEN_URI = "broken_uri" ;
+    public static final String CANCELED_TOURNAMENT = "cancelled_tournament";
+    public static final String ADMIN_MASTERS_UNAVAILABLE = "admin_masters_unavailable";
+    public static final String PLAYER_REPLACED = "player_replaced";
+    public static final String PLAYER_TRANSFERRED = "player_transferred";
+    public static final String TOURNAMENT_SCHEDULE_CHANGED = "tournament_schedule_changed";
+
+
+    private MailTypes() {}
+}

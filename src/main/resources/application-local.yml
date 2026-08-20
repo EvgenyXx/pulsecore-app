@@ -1,3 +1,4 @@
+
 spring:
   security:
     oauth2:
@@ -12,129 +13,47 @@ spring:
               - login:email
               - login:info
               - login:default_phone
-        provider:
-          yandex:
-            authorization-uri: https://oauth.yandex.ru/authorize
-            token-uri: https://oauth.yandex.ru/token
-            user-info-uri: https://login.yandex.ru/info
-            user-name-attribute: id
-#  cache:
-#    type: redis
-#    redis:
-#      time-to-live: 2h
-
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    baseline-version: 0
-  mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USER}
-    password: ${MAIL_PASS}
-    protocol: smtps
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
   data:
     redis:
       host: ${SPRING_REDIS_HOST:localhost}
       port: 6379
       password: ${REDIS_PASSWORD:}
   session:
-    store-type: redis
     timeout: 5m
-    redis:
-      repository-type: indexed
 
-
+spring doc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
 
 logging:
   level:
-#    org.hibernate.SQL: warn
-#    org.flywaydb: debug
-#    ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
-#    org.springframework.cache: TRACE
-#    org.springframework.data.redis: WARN
-#    io.lettuce.core: WARN
-#    org.springframework.session: TRACE
-#    org.springframework.security.web: DEBUG
-#    ru.pulsecore.app.modules.shared.config.SessionRestoreFilter: DEBUG
+    root: warn
+    ru.pulsecore.app: debug
+    org.springframework: WARN
+    org.hibernate: WARN
+    ru.pulsecore.app.tournament.application.discovery.DiscoveryNotificationService: info
+    ru.pulsecore.app.tournament.application.discovery.TournamentDiscoveryService: info
+    ru.pulsecore.app.player.application.analytic.PrimaryLeagueUpdater: INFO
+    ru.pulsecore.app.tournament.application.tournament.finish.TournamentFinishService: INFO
+    ru.pulsecore.app.tournament.application.finish.TournamentFinishService: info
+    ru.pulsecore.app.tournament.application.ResultService: info
+    ru.pulsecore.app.tournament.application.discovery.TournamentSaver: info
+    ru.pulsecore.app.tournament.application.cascade.TournamentAutoAddService: info
+
+
+
+
 
 app:
-  security:
-    public-urls:
-      - /
-      - /index.html
-      - /register.html
-      - /api/players
-      - /subscribe.html
-      - /profile.html
-      - /dashboard.html
-      - /img.png
-      - /favicon.ico
-      - /robots.txt
-      - /error
-      - /api/auth/**
-      - /api/payment/webhook
-      - /oauth-finish.html
-      - /manifest.json
-    authenticated-urls:
-      - /api/player/**
-    admin-urls:
-      - /admin.html
-      - /api/admin/**
-    oauth:
-      unknown-email-domain: "@unknown.pulsecore"
-
-  remember-me:
-    cookie-name: REMEMBER_ME
-    max-age-seconds: 2592000
-    same-site: Lax
-
-  base-url: http://192.168.0.110:8080
-  qr-color: "#14b8a6"  # цвет QR-кода
-  vapid:
-    public-key: ${VAPID_PUBLIC_KEY}
-    private-key: ${VAPID_PRIVATE_KEY}
-  smart:
-    key: ${SMART_API_KEY}
-    url: ${SMART_API_URL}
-  admin:
-    email: ${ADMIN_EMAIL}
-  yookassa:
-    shop-id: ${YOOKASSA_SHOP_ID}
-    secret-key: ${YOOKASSA_SECRET_KEY}
-  masters-api:
-    url: ${MASTERS_API_URL}
-    method: POST
-    user-agent: Mozilla/5.0
-    action: tourslist
-    country: RUS
-    timeout: 45000
-  mail:
-    from: ${MAIL_FROM}
+  base-url: http://localhost:8080
+  qr-color: "#14b8a6"
 
 server:
-  address: 0.0.0.0
+  port: 8080
   servlet:
     session:
-##      persistent: true
-##      timeout: 20d
       cookie:
-        name: PULSECORE_SESSION
         secure: false
-        http-only: true
-        same-site: Lax

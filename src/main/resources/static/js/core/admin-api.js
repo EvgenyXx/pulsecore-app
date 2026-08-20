@@ -10,8 +10,14 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const AdminAPI = {
-    getMe: () => apiRequest('/auth/me'),
-    searchPlayers: (q) => apiRequest(`/player/search?q=${encodeURIComponent(q)}`),
+    getMe: () => apiRequest('/player/me'),
+    searchPlayers: (q, page = 0, size = 5) =>
+        apiRequest(`/admin/search?q=${encodeURIComponent(q)}&page=${page}&size=${size}`)
+            .then(data => data.content.map(p => ({
+                id: p.playerId,
+                name: p.playerName,
+                email: p.email
+            }))),
     getPlayerSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/subscription`),
     getPlayerRoles: (playerId) => apiRequest(`/admin/players/${playerId}/roles`),
     deletePlayerTournaments: (playerId) => apiRequest(`/admin/players/${playerId}/tournaments`, { method: 'DELETE' }),
@@ -20,8 +26,8 @@ export const AdminAPI = {
     togglePlayerRole: (playerId, role, isGrant) => apiRequest(`/admin/players/${playerId}/roles/${isGrant ? 'grant' : 'revoke'}?role=${role}`, { method: isGrant ? 'POST' : 'DELETE' }),
     giveSubscription: (playerId, days) => apiRequest(`/admin/players/${playerId}/subscribe?days=${days}`, { method: 'POST' }),
     removeSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/unsubscribe`, { method: 'DELETE' }),
-    getPrices: () => apiRequest('/prices'),
-    updatePrices: (prices) => apiRequest('/admin/prices', {
+    getPrices: () => apiRequest('/admin/prices'),
+    updatePrices: (prices) => apiRequest('/admin/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(prices)
@@ -38,5 +44,5 @@ export const AdminAPI = {
     }),
     getPageStats: (days) => apiRequest(`/admin/stats/page-views?days=${days}`),
     getPlayerStats: (days) => apiRequest(`/admin/stats/page-views/players?days=${days}`),
-    logout: () => fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'same-origin' })
+    logout: () => fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })
 };

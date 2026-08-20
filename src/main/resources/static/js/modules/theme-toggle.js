@@ -3,7 +3,7 @@ window.toggleTheme = function() {
     const current = html.getAttribute('data-theme') || 'dark';
     const next = current === 'dark' ? 'ocean' : 'dark';
     html.setAttribute('data-theme', next);
-    fetch('/api/auth/me/theme', {
+    fetch('/api/player/me/theme', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
@@ -12,7 +12,7 @@ window.toggleTheme = function() {
 };
 
 (function() {
-    fetch('/api/auth/me', { credentials: 'same-origin' })
+    fetch('/api/player/me', { credentials: 'same-origin' })
         .then(r => r.json())
         .then(data => {
             if (data.theme) {

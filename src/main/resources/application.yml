@@ -1,36 +1,21 @@
+
 spring:
+
+      profiles:
+            active: local
       security:
             oauth2:
                   client:
-                        registration:
-                              yandex:
-                                    client-id: ${YANDEX_CLIENT_ID}
-                                    client-secret: ${YANDEX_CLIENT_SECRET}
-                                    authorization-grant-type: authorization_code
-                                    redirect-uri: "https://pulsecore-app.ru/login/oauth2/code/yandex"
-                                    scope:
-                                          - login:email
-                                          - login:info
-                                          - login:default_phone
-
                         provider:
                               yandex:
                                     authorization-uri: https://oauth.yandex.ru/authorize
                                     token-uri: https://oauth.yandex.ru/token
                                     user-info-uri: https://login.yandex.ru/info
                                     user-name-attribute: id
-
-      cache:
-            type: redis
-            redis:
-                  time-to-live: 30d
       datasource:
             url: ${SPRING_DATASOURCE_URL}
             username: ${SPRING_DATASOURCE_USERNAME}
             password: ${SPRING_DATASOURCE_PASSWORD}
-            hikari:
-                  maximum-pool-size: 15
-                  minimum-idle: 5
       jpa:
             hibernate:
                   ddl-auto: none
@@ -52,27 +37,20 @@ spring:
                               auth: true
                               starttls:
                                     enable: true
-      data:
-            redis:
-                  host: redis
-                  port: 6379
-                  password: ${SPRING_REDIS_PASSWORD}
       session:
             store-type: redis
-            timeout: 15m
             redis:
                   repository-type: indexed
 
-logging:
-      level:
-            org.hibernate.SQL: warn
-            org.flywaydb: debug
-            ru.pulsecore.app.modules.lineup.client.MastersApiClient: WARN
-            ru.pulsecore.app.modules.shared.config.RequestLoggingFilter: WARN
-            ru.pulsecore.app.modules.player.service.subscription.SubscriptionService: WARN
+server:
+      servlet:
+            session:
+                  cookie:
+                        name: PULSECORE_SESSION
+                        http-only: true
+                        same-site: Lax
 
 app:
-
       security:
             public-urls:
                   - /
@@ -86,28 +64,28 @@ app:
                   - /favicon.ico
                   - /robots.txt
                   - /error
-                  - /api/auth/**
+                  - /api/player/**
                   - /api/payment/webhook
                   - /oauth-finish.html
                   - /manifest.json
+                  - /swagger-ui/**
+                  - /v3/api-docs/**
+                  - /swagger-resources/**
+                  - /swagger-ui.html
             authenticated-urls:
                   - /api/player/**
             admin-urls:
                   - /admin.html
                   - /api/admin/**
-
+            oauth:
+                  unknown-email-domain: "@unknown.pulsecore"
       remember-me:
             cookie-name: REMEMBER_ME
             max-age-seconds: 2592000
             same-site: Lax
-
-      base-url: ${APP_BASE_URL}
-      qr-color: ${QR_COLOR:#6366f1}
-
       vapid:
             public-key: ${VAPID_PUBLIC_KEY}
             private-key: ${VAPID_PRIVATE_KEY}
-
       admin:
             email: ${ADMIN_EMAIL}
       yookassa:
@@ -125,19 +103,3 @@ app:
             timeout: 45000
       mail:
             from: ${MAIL_FROM}
-
-
-server:
-      tomcat:
-            connection-timeout: 300000
-            threads:
-                  max: 100
-                  min-spare: 10
-      servlet:
-            session: # ← ВОТ ЭТО ПРОПУЩЕНО
-                  cookie:
-                        name: PULSECORE_SESSION
-                        secure: true
-                        http-only: true
-                        sameSite: Lax
-

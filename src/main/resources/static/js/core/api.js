@@ -5,9 +5,9 @@ export async function apiRequest(endpoint, options = {}) {
 }
 
 export const API = {
-    getMe: () => apiRequest('/api/auth/me'),
-    logout: () => fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }),
-    getDashboard: (playerId) => apiRequest(`/api/player/${playerId}/dashboard`),
+    getMe: () => apiRequest('/api/player/me'),
+    logout: () => fetch('/api/player/logout', { method: 'POST', credentials: 'same-origin' }),
+    getDashboard: (playerId) => apiRequest(`/api/tournament/${playerId}/dashboard`),
     getHalls: () => apiRequest('/api/player/halls'),
     saveHalls: (hallsStr) => fetch('/api/player/halls', {
         method: 'PUT',
@@ -15,15 +15,15 @@ export const API = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ halls: hallsStr })
     }),
-    getMyLineups: (date) => apiRequest(`/api/lineups/my?date=${date}`),
-    getAllLineups: (date) => apiRequest(`/api/lineups/all?date=${date}`),
+    getMyLineups: (date) => apiRequest(`/api/tournament/my?date=${date}`),
+    getAllLineups: (date) => apiRequest(`/api/tournament/all?date=${date}`),
     getTop: (period, league) => {
-        const url = league ? `/api/player/top/${period}/${league}` : `/api/player/top/${period}`;
+        const url = league ? `/api/tournament/top/${period}/${league}` : `/api/tournament/top/${period}`;
         return apiRequest(url);
     },
     getSum: (params) => {
         const query = new URLSearchParams(params).toString();
-        return apiRequest(`/api/player/sum?${query}`);
+        return apiRequest(`/api/tournament/sum?${query}`);
     },
     updateResult: (resultId, amount, bonus) => fetch(`/api/tournament/result/${resultId}`, {
         method: 'PUT',
