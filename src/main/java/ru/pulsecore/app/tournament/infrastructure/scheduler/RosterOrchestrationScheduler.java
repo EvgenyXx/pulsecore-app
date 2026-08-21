@@ -65,7 +65,7 @@ public class RosterOrchestrationScheduler {
 
     // 4. Средний — изменения (1 запрос API, сверка хэшей)
     @Scheduled(
-            initialDelay = 8,
+            initialDelay = 0,
             fixedDelay = 15,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)

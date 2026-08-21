@@ -8,6 +8,8 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.change.remove.PlayerReplacementService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.tournament.infrastructure.exception.TournamentNotFoundException;
+
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
 
@@ -32,12 +34,7 @@ public class TournamentChangeAnalyzer {
 
         TournamentEntity oldTournament = tournamentRepository
                 .findByLink(newTournament.getLink())
-                .orElse(null);
-
-        if (oldTournament == null) {
-            log.debug("Анализ: старый турнир не найден, link={}", newTournament.getLink());
-            return;
-        }
+                .orElseThrow(()-> new TournamentNotFoundException(newTournament.getLink()));
 
         Set<UUID> oldPlayerIds = notificationRepository
                 .findPlayerIdsByTournamentId(oldTournament.getId());
