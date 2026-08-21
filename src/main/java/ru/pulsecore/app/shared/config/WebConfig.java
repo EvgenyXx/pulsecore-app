@@ -46,6 +46,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/live").setViewName("forward:/live.html");
         registry.addViewController("/oauth-finish").setViewName("forward:/oauth-finish.html");
         registry.addViewController("/live/**").setViewName("forward:/live-tournament.html");
+        registry.addViewController("/compare").setViewName("forward:/compare.html");
     }
 
     @Override

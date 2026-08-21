@@ -1,0 +1,332 @@
+/* ===== Файл: compare-styles.css ===== */
+/* Стили для страницы сравнения игроков */
+
+/* ===== Файл: compare-styles.css ===== */
+/* Стили для страницы сравнения игроков */
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    padding-top: env(safe-area-inset-top, 0px);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg, #0c0c18);
+    overscroll-behavior: none;
+}
+
+.compare-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
+.compare-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.compare-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.period-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: #a5b4fc;
+}
+
+.burger-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    color: #a1a1aa;
+}
+
+.period-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.period-sheet-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.period-sheet {
+    background: #18181b;
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px 16px 32px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-bottom: none;
+}
+
+.period-sheet-overlay.open .period-sheet {
+    transform: translateY(0);
+}
+
+.period-sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    margin: 0 auto 18px;
+}
+
+.period-sheet-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    color: #d4d4d8;
+    background: rgba(255,255,255,0.03);
+    margin-bottom: 4px;
+}
+
+.period-sheet-btn.active {
+    background: rgba(99,102,241,0.12);
+    color: #c7d2fe;
+    font-weight: 600;
+}
+
+.date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 0 4px;
+}
+
+.date-input {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: #e5e5e5;
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    outline: none;
+    font-family: 'Inter';
+    min-width: 0;
+}
+
+/* ===== 3D ИЗОГНУТАЯ КАРУСЕЛЬ ===== */
+.wheels-row {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 12px;
+    position: relative;
+    perspective: 1200px;
+}
+
+.wheel-container {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border-radius: 20px;
+    perspective: 1200px;
+}
+
+.wheel-picker {
+    height: 280px;
+    position: relative;
+    transform-style: preserve-3d;
+    background: transparent;
+    overflow: visible;
+}
+
+.wheel-option {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 200px;
+    height: 60px;
+    margin-left: -100px;
+    margin-top: -30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 400;
+    color: rgba(113, 113, 122, 0.25);
+    user-select: none;
+    -webkit-user-select: none;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 10px;
+    backface-visibility: hidden;
+    transition: color 0.3s ease, font-size 0.3s ease;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.wheel-option.selected {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 22px;
+    text-shadow:
+            0 0 10px rgba(255, 255, 255, 0.6),
+            0 0 20px rgba(255, 255, 255, 0.3);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.wheel-option:not(.selected):hover {
+    color: rgba(255, 255, 255, 0.5);
+    background: transparent;
+}
+
+.vs-badge {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.75rem;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(99,102,241,0.5);
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.cards-row {
+    display: flex;
+    gap: 12px;
+}
+
+.result-card {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: left;
+}
+
+.result-card .player-name {
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    margin-bottom: 2px;
+}
+
+.result-card .player-league {
+    color: #a5b4fc;
+    font-size: 0.6rem;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    margin-bottom: 3px;
+}
+
+.stat-label {
+    color: #a1a1aa;
+    font-size: 0.6rem;
+}
+
+.stat-value {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.65rem;
+}
+
+.card-spacer {
+    width: 40px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+    main {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+        padding: 8px 10px;
+    }
+
+    .wheel-picker {
+        height: 240px;
+    }
+
+    .wheel-option {
+        width: 150px;
+        height: 56px;
+        margin-left: -75px;
+        margin-top: -28px;
+        font-size: 15px;
+    }
+
+    .wheel-option.selected {
+        font-size: 20px;
+    }
+
+    .vs-badge {
+        width: 34px;
+        height: 34px;
+        font-size: 0.65rem;
+    }
+
+    .compare-title {
+        font-size: 1rem;
+    }
+}
