@@ -38,7 +38,7 @@ public class WebPushService {
         for (PushSubscription sub : subscriptions) {
             try {
                 sendPush(sub, title, body, url);
-                log.info("Push отправлен playerId={}", playerId);
+                log.debug("Push отправлен playerId={}", playerId);
             } catch (Exception e) {
                 log.error("Ошибка отправки пуша для playerId={}: {}", playerId, e.getMessage());
                 if (e.getMessage() != null && e.getMessage().contains("410")) {

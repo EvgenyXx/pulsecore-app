@@ -20,6 +20,8 @@ public class PlayerNotificationCreator {
     private final PlayerNotificationRepository notificationRepository;
 
     public void createNotificationForTransfer(PlayerData player, TournamentDto to) {
+        log.debug("Создание связи: player={}, link={}", player.playerName(), to.getLink());
+
         TournamentEntity newTournamentEntity = tournamentRepository
                 .findByLink(to.getLink())
                 .orElse(null);
@@ -36,7 +38,7 @@ public class PlayerNotificationCreator {
                 .build();
 
         notificationRepository.save(pn);
-        log.debug("Создана новая связь: player={}, tournament={}",
-                player.playerName(), newTournamentEntity.getExternalId());
+        log.info("Создана новая связь: player={}, tournament={}, hall={}",
+                player.playerName(), newTournamentEntity.getExternalId(), pn.getHall());
     }
 }

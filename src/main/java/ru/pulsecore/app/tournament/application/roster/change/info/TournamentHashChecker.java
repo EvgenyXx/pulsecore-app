@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.application.roster.change.TournamentChangeAnalyzer;
 import ru.pulsecore.app.tournament.infrastructure.cache.DiscoveryHashCache;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.DiscoveryHashUtil;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +25,8 @@ public class TournamentHashChecker {
             Map<String, List<TournamentDto>> playerTournaments,
             Map<String, List<TournamentDto>> allTournaments) {
 
+        log.debug("Хэши: начало проверки, игроков={}", playerTournaments.size());
+
         Set<Long> processed = new HashSet<>();
         int updated = 0;
         int unchanged = 0;
@@ -39,11 +41,13 @@ public class TournamentHashChecker {
 
                 if (!isFuture(tournament)) {
                     hashCache.delete(date, tournament.getId());
+                    log.debug("Хэши: удалён устаревший турнир={}", tournament.getId());
                     deleted++;
                     continue;
                 }
 
                 if (hasHashChanged(date, tournament, hash)) {
+                    log.debug("Хэши: изменения в турнире={}, link={}", tournament.getId(), tournament.getLink());
                     analyzeAndUpdate(date, tournament, hash, allTournaments);
                     updated++;
                 } else {
@@ -55,7 +59,6 @@ public class TournamentHashChecker {
         log.info("Хэши турниров: обновлено={}, без изменений={}, удалено={}",
                 updated, unchanged, deleted);
     }
-
 
     private String extractDate(TournamentDto tournament) {
         return tournament.getDate().getDate().split(" ")[0];
@@ -71,6 +74,7 @@ public class TournamentHashChecker {
             String hash,
             Map<String, List<TournamentDto>> allTournaments) {
 
+        log.debug("Хэши: анализ турнира={}", tournament.getId());
         analyzer.analyze(tournament, allTournaments);
         hashCache.update(date, tournament.getId(), hash);
     }

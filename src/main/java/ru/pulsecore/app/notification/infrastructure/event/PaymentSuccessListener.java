@@ -1,6 +1,5 @@
 package ru.pulsecore.app.notification.infrastructure.event;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -14,7 +13,6 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.PaymentSuccessEvent;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -30,6 +28,8 @@ public class PaymentSuccessListener {
     @EventListener
     public void onPaymentSuccess(PaymentSuccessEvent event) {
         PlayerData player = playerClient.getPlayer(event.playerId());
+
+        log.debug("Оплата: начало отправки писем для playerId={}", event.playerId());
 
         sendUserPaymentEmail(player, event);
         sendAdminPaymentEmail(player, event);
@@ -48,25 +48,22 @@ public class PaymentSuccessListener {
                 "Успешная оплата",
                 text, null, null
         );
+        log.debug("Оплата: письмо пользователю отправлено на {}", player.email());
     }
 
     private void sendAdminPaymentEmail(PlayerData player, PaymentSuccessEvent event) {
-       String text = templates.format(
-               MailTemplate.ADMIN_PAYMENT,
-               player.playerName(),player.email(),
-               event.days() / 30,
-               event.amount(),event.currency(),
-               LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
-
-       );
-       mailSender.adminSendEmail(
-               MailFormat.TEXT,
-               "Продление подписки",
-               text, null, null
-       );
+        String text = templates.format(
+                MailTemplate.ADMIN_PAYMENT,
+                player.playerName(), player.email(),
+                event.days() / 30,
+                event.amount(), event.currency(),
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+        );
+        mailSender.adminSendEmail(
+                MailFormat.TEXT,
+                "Продление подписки",
+                text, null, null
+        );
+        log.debug("Оплата: письмо админу отправлено");
     }
-
-
-
-
 }

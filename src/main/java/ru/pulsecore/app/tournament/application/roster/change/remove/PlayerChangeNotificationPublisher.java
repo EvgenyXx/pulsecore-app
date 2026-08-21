@@ -1,6 +1,7 @@
 package ru.pulsecore.app.tournament.application.roster.change.remove;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
@@ -13,7 +14,7 @@ import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PlayerChangeNotificationPublisher {
@@ -21,6 +22,9 @@ public class PlayerChangeNotificationPublisher {
     private final ApplicationEventPublisher eventPublisher;
 
     public void sendReplacementNotification(PlayerData player, TournamentDto tournament) {
+        log.debug("Публикация события замены: player={}, tournament={}",
+                player.playerName(), tournament.getLink());
+
         eventPublisher.publishEvent(
                 new MailNotificationEvent(
                         MailTypes.PLAYER_REPLACED,
@@ -35,9 +39,16 @@ public class PlayerChangeNotificationPublisher {
                         )
                 )
         );
+
+        log.info("Событие замены опубликовано: player={}", player.playerName());
     }
 
     public void sendTransferNotification(PlayerData player, TransferInfo transferInfo) {
+        log.debug("Публикация события переноса: player={}, from={}, to={}",
+                player.playerName(),
+                transferInfo.from().getLink(),
+                transferInfo.to().getLink());
+
         eventPublisher.publishEvent(
                 new MailNotificationEvent(
                         MailTypes.PLAYER_TRANSFERRED,
@@ -48,5 +59,7 @@ public class PlayerChangeNotificationPublisher {
                         )
                 )
         );
+
+        log.info("Событие переноса опубликовано: player={}", player.playerName());
     }
 }

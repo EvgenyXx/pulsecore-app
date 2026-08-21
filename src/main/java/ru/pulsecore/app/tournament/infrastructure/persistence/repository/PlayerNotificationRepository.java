@@ -59,7 +59,7 @@ public interface PlayerNotificationRepository
                  and  t.processed=false
                  and t.finished = false
                  and t.cancelled= false
-                 and t.date =current_date
+                 and t.date <= current_date
             """, nativeQuery = true)
     List<String> findStartedNotFinishedLinks();
 
@@ -74,8 +74,6 @@ public interface PlayerNotificationRepository
     List<String> findNotStartedForCancelLinks();
 
 
-
-
     Optional<PlayerNotification> findByPlayerIdAndTournamentId(UUID playerId, Long tournamentId);
 
     @Query("SELECT pn.playerId FROM PlayerNotification pn WHERE pn.tournament.id = :tournamentId")
@@ -86,13 +84,13 @@ public interface PlayerNotificationRepository
     List<Integer> findHallsByTournamentId(@Param("tournamentId") Long tournamentId);
 
     @Query("""
-    SELECT pn
-    FROM PlayerNotification pn
-    JOIN pn.tournament t
-    WHERE pn.hall IN :halls
-      AND t.finished = false
-      AND t.cancelled = false
-      AND (pn.pushReminderSent = false OR pn.pushEveningSent = false)
-""")
+                SELECT pn
+                FROM PlayerNotification pn
+                JOIN pn.tournament t
+                WHERE pn.hall IN :halls
+                  AND t.finished = false
+                  AND t.cancelled = false
+                  AND (pn.pushReminderSent = false OR pn.pushEveningSent = false)
+            """)
     List<PlayerNotification> findPendingByHalls(@Param("halls") List<Integer> halls);
 }

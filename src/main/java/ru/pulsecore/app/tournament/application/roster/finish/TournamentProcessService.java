@@ -26,13 +26,22 @@ public class TournamentProcessService {
     private final TournamentRepository tournamentRepository;
     private final PlayerClient playerClient;
 
-
     public void processTournament(
             List<PlayerNotification> notifications,
             ParsedResult parsed) {
-        if (notifications == null || notifications.isEmpty()) return;
+        if (notifications == null || notifications.isEmpty()) {
+            log.debug("Финиш: нет уведомлений для обработки");
+            return;
+        }
+
         TournamentEntity tournament = notifications.get(0).getTournament();
-        if (tournament == null) return;
+        if (tournament == null) {
+            log.debug("Финиш: турнир не найден");
+            return;
+        }
+
+        log.debug("Финиш: обработка турнира={}, уведомлений={}",
+                tournament.getExternalId(), notifications.size());
 
         updateTournamentDates(tournament, parsed);
 
@@ -42,23 +51,29 @@ public class TournamentProcessService {
 
         List<PlayerData> roster = playerClient.getPlayerDataByIds(playerIds);
 
-
         Map<UUID, String> rosterData = roster.stream()
                 .collect(Collectors.toMap(
                         PlayerData::playerId,
                         PlayerData::playerName
                 ));
+
+        log.debug("Финиш: состав игроков={}", rosterData.values());
+
         processPlayerResults(rosterData, parsed, tournament);
 
         tournament.setFinished(true);
+        log.info("Финиш: турнир={} обработан, игроков={}",
+                tournament.getExternalId(), rosterData.size());
     }
 
     private void updateTournamentDates(TournamentEntity tournament, ParsedResult parsed) {
         if (tournament.getDate() == null) {
             tournament.setDate(extractDate(parsed));
+            log.debug("Финиш: установлена дата={}", tournament.getDate());
         }
         if (tournament.getTime() == null && parsed.time() != null && !parsed.time().isEmpty()) {
             tournament.setTime(parsed.time());
+            log.debug("Финиш: установлено время={}", parsed.time());
         }
         tournamentRepository.save(tournament);
     }
@@ -70,6 +85,7 @@ public class TournamentProcessService {
         try {
             return LocalDate.parse(dateStr);
         } catch (Exception e) {
+            log.warn("Финиш: не удалось распарсить дату={}", dateStr);
             return null;
         }
     }

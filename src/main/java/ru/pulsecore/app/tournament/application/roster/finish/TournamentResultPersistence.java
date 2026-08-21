@@ -29,15 +29,24 @@ public class TournamentResultPersistence {
     }
 
     public void saveRoster(List<TournamentResultEntity> entities) {
+        log.debug("Результаты: сохранение {} записей", entities.size());
+
         List<TournamentResultEntity> toSave = new ArrayList<>();
         for (TournamentResultEntity entity : entities) {
             if (!existsByPlayerAndTournament(entity)) {
                 toSave.add(entity);
+                log.debug("Результаты: новая запись player={}, tournament={}",
+                        entity.getPlayerId(), entity.getTournament().getExternalId());
+            } else {
+                log.debug("Результаты: запись уже существует player={}, tournament={}",
+                        entity.getPlayerId(), entity.getTournament().getExternalId());
             }
         }
+
         if (!toSave.isEmpty()) {
             tournamentResultRepository.saveAll(toSave);
             evictCaches();
+            log.info("Результаты: сохранено={}", toSave.size());
         }
     }
 
@@ -48,12 +57,11 @@ public class TournamentResultPersistence {
     public void evictCaches() {
         cacheEvictionService.evictHallOfFame();
         cacheEvictionService.evictAnalytics();
+        log.debug("Результаты: кэши очищены");
     }
 
     private boolean existsByPlayerAndTournament(TournamentResultEntity entity) {
         return tournamentResultRepository.existsByPlayerIdAndTournament_ExternalId(
                 entity.getPlayerId(), entity.getTournament().getExternalId());
     }
-
-
 }

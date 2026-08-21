@@ -19,7 +19,6 @@ public class PushNotificationListener {
 
    @EventListener
     public void sendPush(PushNotificationEvent event) {
-       log.info("Началась отправка пуш увд для {}",event.playerId());
            try {
                webPushService.sendToPlayer(
                        event.playerId(),

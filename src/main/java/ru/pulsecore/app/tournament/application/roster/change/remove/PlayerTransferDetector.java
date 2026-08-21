@@ -24,6 +24,9 @@ public class PlayerTransferDetector {
             TournamentDto oldTournament,
             Map<String, List<TournamentDto>> allTournaments) {
 
+        log.debug("Перенос: поиск для игрока={}, из турнира={}",
+                removedPlayer.playerName(), oldTournament.getLink());
+
         TournamentDto newTournament = findNewTournament(removedPlayer, oldTournament, allTournaments);
 
         if (newTournament == null) {
@@ -62,6 +65,7 @@ public class PlayerTransferDetector {
                         .anyMatch(pn -> pn.getPlayerId().equals(removedPlayer.playerId()));
 
                 if (!alreadyLinked) {
+                    log.debug("Перенос: найден новый турнир={}", tournament.getLink());
                     return tournament;
                 }
             }

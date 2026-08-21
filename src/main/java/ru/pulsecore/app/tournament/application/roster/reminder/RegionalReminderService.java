@@ -8,7 +8,6 @@ import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -115,26 +114,12 @@ public abstract class RegionalReminderService {
         if (tournament == null || tournament.getDate() == null) return;
 
         if (tournament.getDate().equals(today)) {
-            reminderNotificationSender.sendHourReminder(playerData, now, hourPushed,pn);
+            reminderNotificationSender.sendHourReminder(playerData, tournament.getTime(), hourPushed, pn);
         }
         if (tournament.getDate().equals(tomorrow)) {
             reminderNotificationSender.sendEveningReminder(playerData, pn, now, eveningPushed);
-
         }
     }
-
-//    private void sendHourReminder(PlayerData playerData,
-//                                  PlayerNotification pn,
-//                                  LocalTime now,
-//                                  List<PlayerData> hourPushed) {
-//        String time = pn.getTournament().getTime();
-//        if (time == null || time.isEmpty()) return;
-//
-//        Long minutes = DateTimeUtils.parseMinutesUntil(time, now);
-//        if (minutes == null || minutes <= 0 || minutes > 60) return;
-//
-//        reminderNotificationSender.sendHourReminder(playerData, time, minutes, hourPushed, pn);
-//    }
 
 
 }
