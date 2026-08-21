@@ -11,6 +11,7 @@ import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerN
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Component
@@ -22,13 +23,15 @@ public class ReminderNotificationSender {
 
     public void sendHourReminder(
             PlayerData player,
-            LocalTime now,
+            String tournamentTime,
             List<PlayerData> hourPushed,
             PlayerNotification pn) {
-        String time = pn.getTournament().getTime();
-        if (time == null || time.isEmpty()) return;
 
-        Long minutes = DateTimeUtils.parseMinutesUntil(time, now);
+        if (tournamentTime == null || tournamentTime.isEmpty()) return;
+
+        LocalTime nowMsk = LocalTime.now(ZoneId.of("Europe/Moscow"));
+        Long minutes = DateTimeUtils.parseMinutesUntil(tournamentTime, nowMsk);
+
         if (minutes == null || minutes <= 0 || minutes > 60) return;
 
         if (player.pushEnabled()) {
@@ -37,7 +40,7 @@ public class ReminderNotificationSender {
                     new PushNotificationEvent(
                             player.playerId(),
                             "🏆 Турнир начинается!",
-                            PushMessageBuilder.buildHourReminderBody(time, minutes),
+                            PushMessageBuilder.buildHourReminderBody(tournamentTime, minutes),
                             "/dashboard"
                     )
             );

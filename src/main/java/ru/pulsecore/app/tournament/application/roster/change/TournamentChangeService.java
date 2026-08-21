@@ -1,6 +1,5 @@
 package ru.pulsecore.app.tournament.application.roster.change;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,24 +24,30 @@ public class TournamentChangeService {
 
     private final TournamentDataProvider tournamentDataProvider;
     private final TournamentHashChecker tournamentHashChecker;
-    private final PlayerClient  playerClient;
+    private final PlayerClient playerClient;
 
     @Transactional
-    public void checkChangedTournaments(){
+    public void checkChangedTournaments() {
         List<PlayerData> activePlayers = playerClient.getAll();
 
-        if (activePlayers.isEmpty()) return;
+        if (activePlayers.isEmpty()) {
+            log.debug("Изменения: нет активных игроков");
+            return;
+        }
+
+        log.debug("Изменения: проверка для {} игроков", activePlayers.size());
 
         List<String> playerName = activePlayers.stream().map(PlayerData::playerName).toList();
 
         playerTournaments(playerName);
     }
 
-
-
-    private   void playerTournaments(List<String>names){
+    private void playerTournaments(List<String> names) {
+        log.debug("Изменения: загрузка турниров за 3 дня");
         Map<String, List<TournamentDto>> all = tournamentDataProvider.getAllTournamentsFor3Days();
-
+        log.debug("Изменения: загружено дней={}, всего турниров={}",
+                all.size(),
+                all.values().stream().mapToInt(List::size).sum());
 
         Map<String, String> normalizedNames = names.stream()
                 .collect(Collectors.toMap(NameNormalizer::normalizeForSearch, name -> name));
@@ -61,13 +66,15 @@ public class TournamentChangeService {
                     if (originalName != null) {
                         t.setHallNumber(NumberUtils.extractInt(t.getHall()));
                         result.get(originalName).add(t);
-
+                        log.debug("Изменения: игрок={}, турнир={}, зал={}",
+                                originalName, t.getLink(), t.getHallNumber());
                     }
                 }
             }
-
         }
-        tournamentHashChecker.checkAndUpdateHashes(result,all);
 
+        log.debug("Изменения: проверка хэшей для {} игроков", result.size());
+        tournamentHashChecker.checkAndUpdateHashes(result, all);
+        log.debug("Изменения: проверка завершена");
     }
 }

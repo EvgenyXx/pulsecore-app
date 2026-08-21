@@ -33,10 +33,7 @@ logging:
     ru.pulsecore.app: info
     org.springframework: WARN
     org.hibernate: WARN
-    ru.pulsecore.app.modules.notification_modules.infrastructure.event.PlayerCreatedListener: INFO
-    ru.pulsecore.app.modules.player_modeles.application.subscription.SubscriptionService: INFO
-    ru.pulsecore.app.modules.tournament_module.service.tornament.TournamentFinishService: INFO
-    ru.pulsecore.app.modules.tournament_module.service.tornament.TournamentCascadeSyncService: INFO
+
 
 
 app:

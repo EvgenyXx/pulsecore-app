@@ -42,6 +42,19 @@ spring:
             redis:
                   repository-type: indexed
 
+
+management:
+      endpoints:
+            web:
+                  exposure:
+                        include: loggers,health,info
+      endpoint:
+            loggers:
+                  enabled: true
+
+
+
+
 server:
       servlet:
             session:
@@ -49,6 +62,8 @@ server:
                         name: PULSECORE_SESSION
                         http-only: true
                         same-site: Lax
+
+
 
 app:
       security:
@@ -72,6 +87,7 @@ app:
                   - /v3/api-docs/**
                   - /swagger-resources/**
                   - /swagger-ui.html
+                  - /actuator/**
             authenticated-urls:
                   - /api/player/**
             admin-urls:

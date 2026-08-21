@@ -15,14 +15,14 @@ public class EmailNotificationListener {
 
     private final MailStrategyRegistry mailStrategyRegistry;
 
-
     @EventListener
-    public void handle(MailNotificationEvent events) {
+    public void handle(MailNotificationEvent event) {
         try {
-            mailStrategyRegistry.send(events.getEmailType(), events.getContextMessage());
+            mailStrategyRegistry.send(event.getEmailType(), event.getContextMessage());
+            log.info("Письмо отправлено: type={}", event.getEmailType());
         } catch (Exception e) {
-            log.error("Ошибка при отправке {}", e.getMessage());
+            log.error("Ошибка при отправке письма: type={}, error={}",
+                    event.getEmailType(), e.getMessage());
         }
     }
-
 }
