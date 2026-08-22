@@ -12,7 +12,7 @@ function formatMoney(value) {
 function renderPicker(containerId, players, selectedId) {
     const container = document.getElementById(containerId);
     container.innerHTML = players.map(p => `
-        <div class="player-item ${p.playerId === selectedId ? 'selected' : ''}" data-player-id="${p.playerId}">
+        <div class="wheel-option ${p.playerId === selectedId ? 'selected' : ''}" data-player-id="${p.playerId}">
             ${p.playerName}
         </div>
     `).join('');
@@ -21,15 +21,24 @@ function renderPicker(containerId, players, selectedId) {
 function updateCard(cardId, player) {
     const card = document.getElementById(cardId);
     if (!player) {
-        card.innerHTML = '<p class="text-zinc-500 text-sm">Выберите игрока</p>';
+        card.innerHTML = '<p class="text-zinc-500 text-sm text-center">Выберите игрока</p>';
         return;
     }
     card.innerHTML = `
-        <p class="text-white font-semibold text-sm">${player.playerName}</p>
-        <p class="text-zinc-500 text-xs mt-1">Лига: ${player.primaryLeague || '—'}</p>
-        <div class="stat-row mt-2"><span class="stat-label">Турниров:</span><span class="stat-value">${player.tournaments || 0}</span></div>
-        <div class="stat-row"><span class="stat-label">Заработано:</span><span class="stat-value">${formatMoney(player.totalAmount)}</span></div>
-        <div class="stat-row"><span class="stat-label">Средний:</span><span class="stat-value">${formatMoney(player.averageAmount)}</span></div>
+        <p class="player-name">${player.playerName}</p>
+        <p class="player-league">${player.primaryLeague || '—'}</p>
+        <div class="stat-row">
+            <span class="stat-label">Турниров:</span>
+            <span class="stat-value" style="font-size: 12px;">${player.tournaments || 0}</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Заработано:</span>
+            <span class="stat-value" style="font-size: 12px;">${formatMoney(player.totalAmount)}</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Средний:</span>
+            <span class="stat-value" style="font-size: 12px;">${formatMoney(player.averageAmount)}</span>
+        </div>
     `;
 }
 
@@ -45,7 +54,7 @@ function attachPickerEvents(pickerId, cardId, side) {
     const picker = document.getElementById(pickerId);
 
     picker.addEventListener('scroll', () => {
-        const items = picker.querySelectorAll('.player-item');
+        const items = picker.querySelectorAll('.wheel-option');
         const pickerCenter = picker.scrollTop + picker.clientHeight / 2;
 
         let closestItem = null;
@@ -77,7 +86,7 @@ function attachPickerEvents(pickerId, cardId, side) {
     });
 
     picker.addEventListener('click', (e) => {
-        const item = e.target.closest('.player-item');
+        const item = e.target.closest('.wheel-option');
         if (item) {
             item.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -102,20 +111,16 @@ async function loadPlayers(start, end) {
 
         allPlayers = await response.json();
 
-        // Выбираем двух случайных игроков
         const random = getRandomPlayers(allPlayers, 2);
         selectedLeft = random[0] || null;
         selectedRight = random[1] || null;
 
-        // Рендерим пикеры
         renderPicker('pickerLeft', allPlayers, selectedLeft?.playerId);
         renderPicker('pickerRight', allPlayers, selectedRight?.playerId);
 
-        // Обновляем карточки
         updateCard('leftCard', selectedLeft);
         updateCard('rightCard', selectedRight);
 
-        // Скроллим к выбранным
         setTimeout(() => {
             if (selectedLeft) scrollToPlayer('pickerLeft', selectedLeft.playerId);
             if (selectedRight) scrollToPlayer('pickerRight', selectedRight.playerId);
@@ -160,16 +165,12 @@ window.setPeriod = function(period) {
             break;
     }
 
-    // Обновляем активную кнопку в шторке
     document.querySelectorAll('.period-sheet-btn').forEach(b => b.classList.remove('active'));
     if (event && event.target) {
         event.target.classList.add('active');
     }
 
-    // Закрываем шторку
     togglePeriodSheet();
-
-    // Загружаем
     loadPlayers(start, end);
 };
 
@@ -184,7 +185,6 @@ window.loadCustom = function() {
     }
 };
 
-// Инициализация
 document.addEventListener('DOMContentLoaded', () => {
     attachPickerEvents('pickerLeft', 'leftCard', 'left');
     attachPickerEvents('pickerRight', 'rightCard', 'right');
