@@ -38,9 +38,9 @@ public class BrokenUriStrategy implements MailStrategy {
 
         String tex = templates.format(
                 MailTemplate.BROKEN_URI,brokenUriContext.brokenUri(),
-                brokenUriContext.brokenUri(),
                 brokenUriContext.date(),
                 brokenUriContext.time(),
+                "LEGUA",
                 playerData
 
                 );
