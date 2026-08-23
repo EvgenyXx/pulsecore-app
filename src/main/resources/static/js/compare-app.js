@@ -26,21 +26,24 @@ function updateCard(cardId, player) {
     }
     card.innerHTML = `
         <p class="player-name">${player.playerName}</p>
-        <p class="player-league">${player.primaryLeague || '—'}</p>
+        <div class="player-league-row">
+            <span class="player-league" style="font-size: 14px;">${player.primaryLeague || '—'}</span>
+        </div>
         <div class="stat-row">
-            <span class="stat-label">Турниров:</span>
+            <span class="stat-label" style="font-size: 13px;">Турниров:</span>
             <span class="stat-value" style="font-size: 12px;">${player.tournaments || 0}</span>
         </div>
         <div class="stat-row">
-            <span class="stat-label">Заработано:</span>
+            <span class="stat-label" style="font-size: 13px;">Заработано:</span>
             <span class="stat-value" style="font-size: 12px;">${formatMoney(player.totalAmount)}</span>
         </div>
         <div class="stat-row">
-            <span class="stat-label">Средний:</span>
+            <span class="stat-label" style="font-size: 13px;">Средний:</span>
             <span class="stat-value" style="font-size: 12px;">${formatMoney(player.averageAmount)}</span>
         </div>
     `;
 }
+
 
 function scrollToPlayer(pickerId, playerId) {
     const picker = document.getElementById(pickerId);

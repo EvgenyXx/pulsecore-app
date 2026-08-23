@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.pulsecore.app.tournament.api.dto.response.PlayerCompareDto;
 import ru.pulsecore.app.tournament.application.compare.CompareService;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PlayerCompareResponse;
 
@@ -22,7 +23,7 @@ public class CompareController {
 
     @Operation(summary = "Список игроков для сравнения")
     @GetMapping("/players")
-    public ResponseEntity<List<PlayerCompareResponse>> getPlayersForCompare(
+    public ResponseEntity<List<PlayerCompareDto>> getPlayersForCompare(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam(required = false)

@@ -115,7 +115,7 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
     LEFT JOIN TournamentResultEntity tr ON tr.playerId = p.id
       AND tr.date BETWEEN :start AND :end
     GROUP BY p.id, p.name, p.primaryLeague
-    ORDER BY p.name
+    ORDER BY LOWER(p.name) ASC
 """)
     List<PlayerCompareResponse> findPlayersForCompare(
             @Param("start") LocalDate start,
