@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.tournament.domain.entity.TournamentMatchEntity;
+import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentMatchRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PeriodStatsProjection;
 import ru.pulsecore.app.tournament.infrastructure.cache.CacheEvictionService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
@@ -22,6 +24,8 @@ public class TournamentResultPersistence {
 
     private final TournamentResultRepository tournamentResultRepository;
     private final CacheEvictionService cacheEvictionService;
+    private final TournamentMatchRepository tournamentMatchRepository;
+
 
     public Page<TournamentResultEntity> getResultsByPeriod(
             UUID playerId, LocalDate start, LocalDate end, Pageable pageable) {
@@ -49,6 +53,9 @@ public class TournamentResultPersistence {
             log.info("Результаты: сохранено={}", toSave.size());
         }
     }
+
+
+
 
     public PeriodStatsProjection getStatsByPeriod(UUID player, LocalDate start, LocalDate end) {
         return tournamentResultRepository.getStats(player, start, end);

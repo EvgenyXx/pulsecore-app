@@ -2,8 +2,10 @@ import { API } from './core/api.js';
 import { state } from './core/state.js';
 
 let allPlayers = [];
+let allStatsPlayers = [];  // Переместил вверх
 let selectedLeft = null;
 let selectedRight = null;
+let currentMode = 'money'; // 'money' или 'stats'
 
 function formatMoney(value) {
     return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(value || 0);
@@ -24,26 +26,84 @@ function updateCard(cardId, player) {
         card.innerHTML = '<p class="text-zinc-500 text-sm text-center">Выберите игрока</p>';
         return;
     }
-    card.innerHTML = `
-        <p class="player-name">${player.playerName}</p>
-        <div class="player-league-row">
-            <span class="player-league" style="font-size: 14px;">${player.primaryLeague || '—'}</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label" style="font-size: 13px;">Турниров:</span>
-            <span class="stat-value" style="font-size: 12px;">${player.tournaments || 0}</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label" style="font-size: 13px;">Заработано:</span>
-            <span class="stat-value" style="font-size: 12px;">${formatMoney(player.totalAmount)}</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label" style="font-size: 13px;">Средний:</span>
-            <span class="stat-value" style="font-size: 12px;">${formatMoney(player.averageAmount)}</span>
-        </div>
-    `;
+
+    if (currentMode === 'money') {
+        // Режим заработка
+        card.innerHTML = `
+            <p class="player-name">${player.playerName}</p>
+            <div class="player-league-row">
+                <span class="player-league" style="font-size: 14px;">${player.primaryLeague || '—'}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label" style="font-size: 13px;">Турниров:</span>
+                <span class="stat-value" style="font-size: 12px;">${player.tournaments || 0}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label" style="font-size: 13px;">Заработано:</span>
+                <span class="stat-value" style="font-size: 12px;">${formatMoney(player.totalAmount)}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label" style="font-size: 13px;">Средний:</span>
+                <span class="stat-value" style="font-size: 12px;">${formatMoney(player.averageAmount)}</span>
+            </div>
+        `;
+    } else {
+        // Режим статистики
+        const statsPlayer = allStatsPlayers.find(p =>
+            p.playerName.toLowerCase() === player.playerName.toLowerCase()
+        );
+
+        const groupWin = statsPlayer?.groupWinPercent ?? 0;
+        const semiWin = statsPlayer?.semifinalWinPercent ?? 0;
+        const thirdWin = statsPlayer?.thirdPlaceWinPercent ?? 0;
+        const finalWin = statsPlayer?.finalWinPercent ?? 0;
+
+        card.innerHTML = `
+            <p class="player-name">${player.playerName}</p>
+<!--            <div class="player-league-row">-->
+<!--                <span class="player-league" style="font-size: 11px;">Победы по стадиям</span>-->
+<!--            </div>-->
+            <div class="stat-bar-row">
+                <span class="stat-label">Группа</span>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: ${groupWin}%"></div>
+                </div>
+                <span class="stat-value">${groupWin}%</span>
+            </div>
+            <div class="stat-bar-row">
+                <span class="stat-label">Полуфинал</span>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: ${semiWin}%"></div>
+                </div>
+                <span class="stat-value">${semiWin}%</span>
+            </div>
+            <div class="stat-bar-row">
+                <span class="stat-label">3-е место</span>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: ${thirdWin}%"></div>
+                </div>
+                <span class="stat-value">${thirdWin}%</span>
+            </div>
+            <div class="stat-bar-row">
+                <span class="stat-label">Финал</span>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: ${finalWin}%"></div>
+                </div>
+                <span class="stat-value">${finalWin}%</span>
+            </div>
+        `;
+    }
 }
 
+// Переключение режима карточек
+window.toggleCardMode = function() {
+    currentMode = currentMode === 'money' ? 'stats' : 'money';
+    document.getElementById('cardModeLabel').textContent = currentMode === 'money' ? '💰 Заработок' : '📊 Статистика';
+
+    // Обновляем карточки
+    updateCard('leftCard', selectedLeft);
+    updateCard('rightCard', selectedRight);
+};
 
 function scrollToPlayer(pickerId, playerId) {
     const picker = document.getElementById(pickerId);
@@ -101,6 +161,25 @@ function getRandomPlayers(players, count) {
     return shuffled.slice(0, Math.min(count, shuffled.length));
 }
 
+async function loadStatsPlayers(start, end) {
+    try {
+        let url = '/api/tournament/compare/match-stats';
+        const params = new URLSearchParams();
+        if (start) params.append('start', start);
+        if (end) params.append('end', end);
+        if (params.toString()) url += '?' + params.toString();
+
+        const response = await fetch(url, { credentials: 'same-origin' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+
+        allStatsPlayers = await response.json();
+        console.log('Статистика загружена:', allStatsPlayers); // Для отладки
+    } catch (e) {
+        console.error('Ошибка загрузки статистики:', e);
+        allStatsPlayers = [];
+    }
+}
+
 async function loadPlayers(start, end) {
     try {
         let url = '/api/tournament/compare/players';
@@ -113,6 +192,9 @@ async function loadPlayers(start, end) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
 
         allPlayers = await response.json();
+
+        // Загружаем статистику
+        await loadStatsPlayers(start, end);
 
         const random = getRandomPlayers(allPlayers, 2);
         selectedLeft = random[0] || null;

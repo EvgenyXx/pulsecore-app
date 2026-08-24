@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.tournament.application.event.TournamentMatchService;
 import ru.pulsecore.app.tournament.application.resolution.ResultService;
 import ru.pulsecore.app.tournament.application.roster.finish.TournamentResultProcessor;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
@@ -15,9 +16,7 @@ import ru.pulsecore.app.tournament.infrastructure.exception.TournamentParseExcep
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 /**
@@ -46,19 +45,24 @@ public class TournamentUrlProcessor {
     private final TournamentNotificationService notificationService;
     private final TournamentStatusService statusService;
     private final Bucket tournamentRateLimiter;
+    private final TournamentMatchService matchService;
+
 
     public TournamentUrlProcessor(TournamentResultProcessor resultProcessor,
                                   ResultService resultService,
                                   TournamentRepository tournamentRepository,
                                   TournamentNotificationService notificationService,
                                   TournamentStatusService statusService,
-                                  @Qualifier(RateLimiterConfig.HISTORY_SYNC_RATE_LIMITER) Bucket tournamentRateLimiter) {
+                                  @Qualifier(RateLimiterConfig.HISTORY_SYNC_RATE_LIMITER) Bucket tournamentRateLimiter,
+                                  TournamentMatchService matchService) {
         this.resultProcessor = resultProcessor;
         this.resultService = resultService;
         this.tournamentRepository = tournamentRepository;
         this.notificationService = notificationService;
         this.statusService = statusService;
         this.tournamentRateLimiter = tournamentRateLimiter;
+        this.matchService = matchService;
+
     }
 
     @Transactional
@@ -79,6 +83,8 @@ public class TournamentUrlProcessor {
                         parsed.isFinished() || parsed.isFinalRemoved(),
                         parsed.hasRemoved(),
                         parsed.league()));
+
+                matchService.createMatches(parsed,tournament);
             } catch (Exception e) {
                 log.warn("{} — {}", url, e.getMessage());
             }
@@ -86,6 +92,7 @@ public class TournamentUrlProcessor {
 
         resultProcessor.saveAll(allEntities);
     }
+
 
     private ParsedResult parseUrl(String url) {
         try {

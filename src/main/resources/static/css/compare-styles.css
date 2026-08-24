@@ -309,6 +309,7 @@ body {
 }
 
 /* ===== МОБИЛЬНАЯ ВЕРСИЯ (PWA) — ИСПРАВЛЕННАЯ ===== */
+/* ===== МОБИЛЬНАЯ ВЕРСИЯ (PWA) — ИСПРАВЛЕННАЯ ===== */
 @media (max-width: 640px) {
     main {
         display: flex;
@@ -321,7 +322,6 @@ body {
         width: 100%;
         max-width: 100vw;
     }
-
 
     .max-w-5xl {
         display: flex;
@@ -343,13 +343,13 @@ body {
     .wheels-row {
         margin: 0;
         flex-shrink: 0;
-        margin-top: 20px;
+        margin-top: 10px;
         gap: 6px;
         align-items: center;
         width: 100%;
         max-width: 100%;
-        justify-content: center;   /* Центрирует колеса */
-        touch-action: none;        /* Запрещает горизонтальное движение */
+        justify-content: center;
+        touch-action: none;
         user-select: none;
         -webkit-user-select: none;
         pointer-events: auto;
@@ -360,16 +360,16 @@ body {
         max-width: 45%;
         min-width: 0;
         overflow: hidden;
-        touch-action: pan-y;       /* Разрешает только вертикальный скролл */
+        touch-action: pan-y;
         user-select: none;
         -webkit-user-select: none;
     }
 
     .wheel-picker {
-        height: 260px;        /* Увеличено с 200px — помещается больше фамилий */
-        min-height: 260px;
-        max-height: 260px;
-        padding: 110px 0;     /* (260 / 2) - 20 = 110 */
+        height: 220px;
+        min-height: 220px;
+        max-height: 220px;
+        padding: 90px 0;
         perspective: 800px;
         scroll-behavior: smooth;
         width: 100%;
@@ -397,19 +397,19 @@ body {
         padding: 0 4px;
         user-select: none;
         -webkit-user-select: none;
-        pointer-events: none;      /* Отключает перетаскивание опций */
+        pointer-events: none;
     }
 
     .wheel-option.selected {
         font-size: 17px;
-        white-space: normal;        /* Разрешить перенос */
-        word-break: break-word;     /* Перенос длинных слов */
-        line-height: 1.2;           /* Компактнее */
+        white-space: normal;
+        word-break: break-word;
+        line-height: 1.2;
         text-align: center;
         padding: 0 6px;
-        height: auto;               /* Высота автоматическая */
+        height: auto;
         min-height: 40px;
-        max-height: 52px;           /* Максимум 2 строки */
+        max-height: 52px;
     }
 
     .vs-badge {
@@ -418,10 +418,10 @@ body {
         background: none;
         border: none;
         box-shadow: none;
-        font-size: 2.5rem;  /* Очень крупный */
+        font-size: 2.5rem;
         font-weight: 900;
         font-style: italic;
-        color: #c7d2fe;          /* Светло-фиолетовый — как в теме */
+        color: #c7d2fe;
         text-shadow:
                 0 0 5px rgba(99, 102, 241, 0.8),
                 0 0 10px rgba(129, 140, 248, 0.6),
@@ -431,12 +431,13 @@ body {
         transform: skewX(-5deg);
     }
 
+    /* ===== КАРТОЧКИ ===== */
     .cards-row {
         margin: 0 auto;
         flex-shrink: 0;
-        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);  /* Поднято выше от края */
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 30px);
         gap: 8px;
-        width: 95%;              /* Шире — фамилии помещаются */
+        width: 95%;
         max-width: 100%;
         justify-content: center;
         align-items: center;
@@ -446,17 +447,17 @@ body {
         flex: 0 0 42%;
         max-width: 55%;
         min-width: 0;
-        padding: 12px 6px;      /* Увеличен отступ сверху и снизу: было 8px, стало 12px */
+        padding: 12px 6px;
         border-radius: 8px;
         border: 1px solid rgba(255, 255, 255, 0.08);
         background: rgba(255, 255, 255, 0.02);
         overflow: hidden;
-        height: 195px;
-        min-height: 195px;
-        max-height: 195px;
+        height: 240px;
+        min-height: 240px;
+        max-height: 240px;
         display: flex;
         flex-direction: column;
-        justify-content: space-around;  /* Равномерные отступы между элементами */
+        justify-content: space-around;
     }
 
     .result-card .player-name {
@@ -483,6 +484,7 @@ body {
         text-overflow: ellipsis;
         text-align: center;
     }
+
     .player-league-row {
         display: flex;
         align-items: center;
@@ -499,23 +501,66 @@ body {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 0.55rem;    /* Одинаковый для label и value */
-        margin-bottom: 2px;
+        font-size: 0.55rem;
+        margin-bottom: 4px;
         gap: 4px;
     }
 
     .stat-label {
-        font-size: 0.55rem;    /* "Турниров:", "Заработано:", "Средний:" */
+        font-size: 0.55rem;
         color: #a1a1aa;
         white-space: nowrap;
     }
 
     .stat-value {
-        font-size: 0.50rem;    /* Цифры: "1", "3 200 ₽" — уменьшено */
+        font-size: 0.55rem;
         font-weight: 600;
         color: #fff;
         white-space: nowrap;
         text-align: right;
-
     }
+
+    /* ===== ПРОГРЕСС-БАРЫ (только для статистики) ===== */
+    /* ===== ПРОГРЕСС-БАРЫ (только для статистики) ===== */
+    .stat-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 4px;
+        width: 100%;
+    }
+
+    .stat-bar-row .stat-label {
+        flex: 0 0 auto;
+        font-size: 0.55rem;
+        color: #a1a1aa;
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    .stat-bar {
+        flex: 1;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .stat-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #6366f1, #4f46e5);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+
+    .stat-bar-row .stat-value {
+        flex: 0 0 auto;
+        font-size: 0.55rem;
+        font-weight: 600;
+        color: #fff;
+        white-space: nowrap;
+        text-align: right;
+    }
+
 }

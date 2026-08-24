@@ -50,7 +50,7 @@ public class PlayerSummaryService {
                 .map(tournamentResultEntity -> LastResultDto.builder()
                         .date(tournamentResultEntity.getDate().toString())
                         .amount(tournamentResultEntity.getAmount())
-                        .tournamentLink(tournamentResultEntity.getTournament().getLink())
+                        .resultId(tournamentResultEntity.getId())
                         .build())
                 .orElse(null);
     }

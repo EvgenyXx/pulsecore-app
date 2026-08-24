@@ -536,3 +536,115 @@ body {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
 }
+#starsContainer {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+#starsContainer > div {
+    position: absolute;
+    background: #fff !important;
+}
+
+/* Матчи турнира */
+.matches-container {
+    margin-top: 10px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid rgba(255,255,255,0.04);
+}
+
+.matches-header {
+    display: grid;
+    grid-template-columns: 80px 1fr 50px 100px;
+    gap: 8px;
+    padding: 6px 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #52525b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 4px;
+}
+
+.match-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 50px 100px;
+    gap: 8px;
+    padding: 6px 8px;
+    font-size: 0.75rem;
+    color: #d4d4d8;
+    align-items: center;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+.match-row:hover {
+    background: rgba(255,255,255,0.03);
+}
+
+.match-stage {
+    color: #818cf8;
+    font-weight: 600;
+    font-size: 0.7rem;
+}
+
+.match-players {
+    color: #e5e5e5;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.match-score {
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    font-size: 0.75rem;
+}
+
+.match-winner {
+    color: #34d399;
+    font-size: 0.7rem;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+    .matches-header,
+    .match-row {
+        grid-template-columns: 60px 1fr 40px 80px;
+        gap: 4px;
+        padding: 4px 5px;
+    }
+
+    .matches-header {
+        font-size: 0.55rem;
+    }
+
+    .match-row {
+        font-size: 0.65rem;
+    }
+
+    .match-stage {
+        font-size: 0.6rem;
+    }
+
+    .match-score {
+        font-size: 0.65rem;
+    }
+
+    .match-winner {
+        font-size: 0.6rem;
+    }
+}

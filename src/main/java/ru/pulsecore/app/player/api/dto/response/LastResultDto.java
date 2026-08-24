@@ -14,5 +14,5 @@ import java.io.Serializable;
 public class LastResultDto implements Serializable {
     private String date;
     private Double amount;
-    private String tournamentLink;
+    private Long resultId;
 }

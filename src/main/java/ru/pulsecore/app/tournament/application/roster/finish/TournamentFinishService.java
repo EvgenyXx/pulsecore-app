@@ -27,6 +27,7 @@ public class TournamentFinishService {
     private final PlayerNotificationRepository repo;
     private final TournamentRepository tournamentRepository;
 
+
     @Transactional
     public void handleFinished(TournamentEntity t,
                                List<PlayerNotification> notifications,
@@ -43,6 +44,8 @@ public class TournamentFinishService {
         }
         if (parsed.status() != TournamentStatus.FINISHED) return;
         processService.processTournament(notifications, parsed);
+
+
         t.setFinished(true);
         t.setProcessed(true);
         tournamentRepository.save(t);

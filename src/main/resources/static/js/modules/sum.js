@@ -29,6 +29,60 @@ export function changePage(page) {
     executeSum();
 }
 
+// Раскрытие матчей турнира
+window.toggleTournamentMatches = async function(resultId, el) {
+    const container = el.querySelector('.matches-container');
+    if (!container) return;
+
+    if (!container.classList.contains('hidden')) {
+        container.classList.add('hidden');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/tournament/matches/by-result/${resultId}`, {
+            credentials: 'same-origin'
+        });
+
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+
+        const matches = await response.json();
+
+        container.innerHTML = `
+            <div class="matches-header">
+                <span>Стадия</span>
+                <span>Игроки</span>
+                <span>Счёт</span>
+                <span>Победитель</span>
+            </div>
+            ${matches.map(m => `
+                <div class="match-row">
+                    <span class="match-stage">${getStageLabel(m.stage)}</span>
+                    <span class="match-players">${m.player1Name || m.player1ShortName} vs ${m.player2Name || m.player2ShortName}</span>
+                    <span class="match-score">${m.score || '—'}</span>
+                    <span class="match-winner">🏆 ${m.winnerName || m.winnerShortName || '—'}</span>
+                </div>
+            `).join('')}
+        `;
+
+        container.classList.remove('hidden');
+    } catch (e) {
+        console.error('Ошибка загрузки матчей:', e);
+        container.innerHTML = '<p class="text-zinc-500 text-sm">Не удалось загрузить матчи</p>';
+        container.classList.remove('hidden');
+    }
+};
+
+function getStageLabel(stage) {
+    switch (stage) {
+        case 'GROUP': return 'Группа';
+        case 'SEMIFINAL': return 'Полуфинал';
+        case 'THIRD_PLACE': return 'За 3-е место';
+        case 'FINAL': return 'Финал';
+        default: return stage;
+    }
+}
+
 export async function executeSum() {
     const start = document.getElementById('dateStart').value;
     const end = document.getElementById('dateEnd').value;
@@ -62,7 +116,6 @@ export async function executeSum() {
             </div>`;
         }
 
-        // Статистика
         let html = `<div class="widget-card rounded-2xl p-4 mb-4">
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div>
@@ -80,19 +133,21 @@ export async function executeSum() {
             </div>
         </div>`;
 
-        // Список турниров
         html += '<div class="space-y-1.5">';
         data.tournaments.forEach((t, i) => {
             html += `
-                <div class="widget-card rounded-xl p-3 flex items-center justify-between text-sm flex-row">
-                    <div class="flex items-center gap-3">
-                        <span class="text-gray-400 text-xs w-6">${state.currentSumPage * 20 + i + 1}.</span>
-                        <span class="text-white">${t.date || '—'}</span>
+                <div class="widget-card rounded-xl p-3 text-sm" onclick="toggleTournamentMatches(${t.resultId || 0}, this)">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-400 text-xs w-6">${state.currentSumPage * 20 + i + 1}.</span>
+                            <span class="text-white">${t.date || '—'}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="amount-gold font-medium">${formatMoney(t.amount)}</span>
+                            <button onclick="event.stopPropagation(); openEditTournamentModal(${t.resultId || 0},'${t.date || ''}',${t.amount})" class="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded-lg">✏️</button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span class="amount-gold font-medium">${formatMoney(t.amount)}</span>
-                        <button onclick="openEditTournamentModal(${t.resultId || 0},'${t.date || ''}',${t.amount})" class="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1.5 rounded-lg">✏️</button>
-                    </div>
+                    <div class="matches-container hidden"></div>
                 </div>`;
         });
         html += '</div>';

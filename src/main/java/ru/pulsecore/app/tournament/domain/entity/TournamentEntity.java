@@ -39,4 +39,7 @@ public class TournamentEntity {
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlayerNotification> notifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TournamentMatchEntity> matches = new ArrayList<>();
 }

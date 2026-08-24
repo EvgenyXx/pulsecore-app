@@ -256,6 +256,7 @@ async function init() {
     }
 }
 
+
 const ptr = document.getElementById('ptrIndicator');
 let ptrStart = 0, ptrTriggered = false;
 document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientX; ptrTriggered = false; } }, { passive: true });
@@ -275,3 +276,4 @@ window.mobileNav = function(action, el) {
 };
 
 document.addEventListener('DOMContentLoaded', init);
+
