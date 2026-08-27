@@ -1,16 +1,18 @@
-import { API } from '../core/api.js';
-import { state } from '../core/state.js';
-import { capitalizeName } from '../core/utils.js';
+import {API} from '../core/api.js';
+import {state} from '../core/state.js';
+import {capitalizeName} from '../core/utils.js';
 
 function isPro() {
-    return !document.getElementById('proBadge').classList.contains('hidden');
+    const badge = document.getElementById('proBadge');
+    return badge && !badge.classList.contains('hidden');
 }
 
 export async function loadTopWeek(league) {
     const panel = document.getElementById('topWeekPanel');
+    if (!panel) return;
+
     const period = state.currentPeriod.toUpperCase();
     const periodLabel = period === 'WEEK' ? '7 дней' : period === 'MONTH' ? '30 дней' : '365 дней';
-    const topTitle = period === 'WEEK' ? 'недели' : period === 'MONTH' ? 'за месяц' : 'за год';
 
     if (!isPro()) {
         panel.innerHTML = `
@@ -26,12 +28,22 @@ export async function loadTopWeek(league) {
     }
 
     const leagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
-    const labels = { 'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер' };
+    const labels = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
 
     const activeLeagueIndex = league === null ? 0 : leagues.indexOf(league) + 1;
     const existingList = document.getElementById('topWeekList');
 
     let html = `
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center flex-shrink-0">
+                <span class="text-lg">🏆</span>
+            </div>
+            <div>
+                <h3 class="text-[17px] font-semibold text-white tracking-tight">Зал славы</h3>
+                <p class="text-[12px] text-zinc-500">Топ игроков</p>
+            </div>
+        </div>
+
         <div class="period-switcher mb-4">
             <div class="period-slider ${state.currentPeriod === 'week' ? 'pos-0' : state.currentPeriod === 'month' ? 'pos-1' : 'pos-2'}"></div>
             <span class="period-pill ${state.currentPeriod === 'week' ? 'active' : ''}" onclick="switchPeriod('week')">Неделя</span>
@@ -69,7 +81,7 @@ export async function loadTopWeek(league) {
                         <div class="rank-number">${i + 1}</div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="text-[15px] font-medium text-white truncate">${name}${isMe ? ' <span class="text-indigo-400">· Вы</span>' : ''}</span>
+<span class="text-[15px] font-medium text-white truncate">${name}</span>
                                 <span class="text-[13px] font-semibold text-zinc-400">${p.tournaments}</span>
                             </div>
                         </div>
@@ -118,39 +130,6 @@ export async function loadTopWeek(league) {
     }
 }
 
-export async function loadTopWeekPreview() {
-    if (!isPro()) return;
-    try {
-        const banner = document.getElementById('topWeekBanner');
-        banner.classList.remove('hidden');
-    } catch (e) {}
-}
-
-export function toggleTopWeek() {
-    const panel = document.getElementById('topWeekPanel');
-    const arrow = document.getElementById('topWeekArrow');
-    const banner = document.getElementById('topWeekBanner');
-
-    if (panel.classList.contains('hidden')) {
-        // Открываем — скрываем баннер, показываем шторку
-        banner.classList.add('hidden');
-        panel.classList.remove('hidden');
-        panel.style.animation = 'none';
-        void panel.offsetHeight;
-        panel.style.animation = 'appleSheetIn 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards';
-        loadTopWeek(null);
-    } else {
-        // Закрываем — показываем баннер, скрываем шторку
-        panel.style.animation = 'appleSheetOut 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards';
-
-        setTimeout(() => {
-            panel.classList.add('hidden');
-            panel.style.animation = '';
-            banner.classList.remove('hidden');
-        }, 350);
-    }
-}
-
 export function switchLeague(league) {
     const leagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
     const activeIndex = league === null ? 0 : leagues.indexOf(league) + 1;
@@ -187,3 +166,7 @@ export function switchPeriod(period) {
     const lg = al && al.textContent !== 'Все' ? al.textContent : null;
     loadTopWeek(lg);
 }
+
+window.loadTopWeek = loadTopWeek;
+window.switchLeague = switchLeague;
+window.switchPeriod = switchPeriod;

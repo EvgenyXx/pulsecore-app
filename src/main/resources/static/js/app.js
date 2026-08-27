@@ -2,13 +2,12 @@ import { API } from './core/api.js';
 import { state } from './core/state.js';
 import { capitalizeName } from './core/utils.js';
 import { loadDashboardWidgets, goHome, highlightNav } from './dashboard/dashboard.js';
-import { loadTopWeekPreview, toggleTopWeek, switchLeague, switchPeriod, loadTopWeek } from './modules/top.js';
+import { loadTopWeek, switchLeague, switchPeriod } from './modules/top.js';
 import { loadSelectedHalls, loadHallsContent, switchHallsDate, toggleAllHalls, toggleHallsCheckboxes, saveSelectedHalls } from './modules/lineup.js';
 import { executeSum, openEditTournamentModal, closeEditTournamentModal, saveTournamentEdit, changePage } from './modules/sum.js';
 
 window.goHome = goHome;
 window.showAction = showAction;
-window.toggleTopWeek = toggleTopWeek;
 window.switchLeague = switchLeague;
 window.switchPeriod = switchPeriod;
 window.executeSum = executeSum;
@@ -153,7 +152,6 @@ function toggleTheme() {
 
 async function checkPushStatus() {
     const container = document.getElementById('pushToggleContainer');
-    // Сразу прячем, чтобы не мелькал
     if (container) container.style.display = 'none';
 
     try {
@@ -242,11 +240,11 @@ async function init() {
             if (p === 'sum') showAction('sum');
             else showAction('halls');
             loadDashboardWidgets();
-            loadTopWeekPreview();
+            loadTopWeek(null);
             loadSelectedHalls();
         } else {
             await loadDashboardWidgets();
-            loadTopWeekPreview();
+            loadTopWeek(null);
             loadSelectedHalls();
         }
 
@@ -256,12 +254,11 @@ async function init() {
     }
 }
 
-
 const ptr = document.getElementById('ptrIndicator');
 let ptrStart = 0, ptrTriggered = false;
 document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientX; ptrTriggered = false; } }, { passive: true });
 document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientX - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, { passive: true });
-document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeekPreview(); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => ptr.classList.remove('active', 'done'), 1200); }, 500); } ptrStart = 0; });
+document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeek(null); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => ptr.classList.remove('active', 'done'), 1200); }, 500); } ptrStart = 0; });
 
 window.toggleMobileMenu = function() {
     const menu = document.getElementById('mobileMenu'), overlay = document.getElementById('mobileMenuOverlay');
@@ -276,4 +273,3 @@ window.mobileNav = function(action, el) {
 };
 
 document.addEventListener('DOMContentLoaded', init);
-
