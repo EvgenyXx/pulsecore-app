@@ -15,6 +15,10 @@
     <meta name="apple-mobile-web-app-title" content="PulseCore">
     <link rel="icon" type="image/png" href="/img.png">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/dashboard/top.css">
+    <link rel="stylesheet" href="/css/dashboard/top-period.css">
+    <link rel="stylesheet" href="/css/dashboard/top-league.css">
+    <link rel="stylesheet" href="/css/dashboard/top-mobile.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px','2xl':'1536px'}}}}</script>
@@ -24,163 +28,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <style>
         body { padding-top: env(safe-area-inset-top, 0px); }
-
-        /* Шторка заказных отчётов сверху по центру */
-        .report-dropdown {
-            position: fixed;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-120%);
-            z-index: 100;
-            background: rgba(24, 24, 27, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 20px;
-            width: 90%;
-            max-width: 380px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-        .report-dropdown.open {
-            transform: translateX(-50%) translateY(0);
-        }
-        .report-dropdown-handle {
-            width: 32px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin: 0 auto 16px;
-        }
-        .report-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: 99;
-            background: rgba(0,0,0,0.3);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .report-backdrop.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        /* Бейдж отчёта */
-        .report-badge {
-            background: rgba(99,102,241,0.12) !important;
-            border-color: rgba(99,102,241,0.25) !important;
-            gap: 7px;
-            padding: 5px 12px !important;
-            transition: all 0.3s ease;
-        }
-        .report-badge:hover {
-            background: rgba(99,102,241,0.22) !important;
-            border-color: rgba(99,102,241,0.4) !important;
-            transform: scale(1.05);
-        }
-        .report-badge-icon {
-            animation: mailPulse 2s ease-in-out infinite;
-            color: #818cf8;
-        }
-        .report-badge-count {
-            background: #818cf8;
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 5px;
-        }
-        @keyframes mailPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.15); opacity: 0.8; }
-        }
-
-        /* Стили карточек отчётов */
-        .report-sheet-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #e5e5e5;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        .report-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .report-item-period {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #a78bfa;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .report-item-schedule {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #a1a1aa;
-            font-size: 0.8rem;
-            margin-bottom: 12px;
-        }
-        .report-progress {
-            margin-bottom: 12px;
-        }
-        .report-progress-bar {
-            height: 4px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 2px;
-            margin-bottom: 6px;
-            overflow: hidden;
-        }
-        .report-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #818cf8, #a78bfa);
-            border-radius: 2px;
-            transition: width 1s ease;
-        }
-        .report-progress-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: #71717a;
-        }
-        .report-progress-pct {
-            color: #a78bfa;
-            font-weight: 600;
-        }
-        .report-progress-time {
-            color: #71717a;
-        }
-        .report-cancel-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            width: 100%;
-            padding: 8px;
-            background: rgba(239,68,68,0.08);
-            border: 1px solid rgba(239,68,68,0.15);
-            border-radius: 10px;
-            color: #f87171;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .report-cancel-btn:hover {
-            background: rgba(239,68,68,0.15);
-            border-color: rgba(239,68,68,0.3);
-        }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -287,15 +134,20 @@
                 </div>
             </div>
 
-            <div id="topWeekBanner" class="hidden mb-4 px-4 py-2.5 bg-[rgba(255,255,255,0.025)] border border-white/5 rounded-xl flex items-center gap-3 cursor-pointer transition-all duration-300 hover:bg-[rgba(255,255,255,0.06)]" onclick="toggleTopWeek()">
-                <span class="text-xl">🏆</span>
-                <div class="flex-1">
-                    <p class="text-sm font-semibold text-white">Зал славы</p>
-                    <p class="text-xs text-zinc-400" id="topWeekPreview">Нажмите чтобы посмотреть</p>
+            <div id="topWeekBanner" class="hidden mb-4 px-5 py-4 bg-[rgba(255,255,255,0.03)] border border-white/8 rounded-2xl flex items-center gap-4 cursor-pointer transition-all duration-300 hover:bg-[rgba(255,255,255,0.06)] hover:scale-[1.01] active:scale-[0.99]" onclick="toggleTopWeek()">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-xl">🏆</span>
                 </div>
-                <span class="text-zinc-400 text-sm transition-transform duration-300" id="topWeekArrow">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[15px] font-semibold text-white tracking-tight">Зал славы</p>
+                    <p class="text-[12px] text-zinc-500">Топ игроков</p>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <span class="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-full tracking-wide">TOP</span>
+                    <span class="text-zinc-400 transition-transform duration-300" id="topWeekArrow">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </span>
+                </div>
             </div>
             <div id="topWeekPanel" class="hidden widget-card rounded-2xl p-5 sm:p-6 mb-6 content-panel max-h-[500px] overflow-y-auto"></div>
 
@@ -320,6 +172,8 @@
 </div>
 
 <script type="module" src="/js/app.js"></script>
+<script type="module" src="/js/dashboard/top.js"></script>
+<script type="module" src="/js/dashboard/top-switchers.js"></script>
 <script type="module">
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';

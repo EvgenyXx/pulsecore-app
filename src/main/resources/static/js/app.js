@@ -1,7 +1,7 @@
 import { API } from './core/api.js';
 import { state } from './core/state.js';
 import { capitalizeName } from './core/utils.js';
-import { loadDashboardWidgets, goHome, highlightNav } from './modules/dashboard.js';
+import { loadDashboardWidgets, goHome, highlightNav } from './dashboard/dashboard.js';
 import { loadTopWeekPreview, toggleTopWeek, switchLeague, switchPeriod, loadTopWeek } from './modules/top.js';
 import { loadSelectedHalls, loadHallsContent, switchHallsDate, toggleAllHalls, toggleHallsCheckboxes, saveSelectedHalls } from './modules/lineup.js';
 import { executeSum, openEditTournamentModal, closeEditTournamentModal, saveTournamentEdit, changePage } from './modules/sum.js';

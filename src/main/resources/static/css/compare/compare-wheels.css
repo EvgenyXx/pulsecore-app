@@ -82,17 +82,20 @@
 }
 
 .vs-badge {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: auto;
+    height: auto;
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-size: 2.5rem;
     font-weight: 900;
-    font-size: 0.75rem;
-    color: #fff;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+    font-style: italic;
+    color: #c7d2fe;
+    text-shadow:
+            0 0 5px rgba(99, 102, 241, 0.8),
+            0 0 10px rgba(129, 140, 248, 0.6),
+            0 0 15px rgba(99, 102, 241, 0.4);
     flex-shrink: 0;
-    align-self: center;
+    letter-spacing: -1px;
+    transform: skewX(-5deg);
 }

@@ -1,4 +1,4 @@
-package ru.pulsecore.app.tournament.application;
+package ru.pulsecore.app.tournament.application.compare;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

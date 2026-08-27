@@ -1,0 +1,113 @@
+/* Карточка ранга */
+.rank-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    animation: rankSlideIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.rank-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateX(3px);
+}
+
+.rank-card.first {
+    background: rgba(245, 158, 11, 0.04);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+.rank-card.mine {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.rank-number {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #71717a;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.35s ease;
+}
+
+.rank-card.first .rank-number {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.rank-card.mine .rank-number {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+}
+
+/* Прогресс-бар */
+.rank-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.rank-bar-fill {
+    height: 100%;
+    background: #6366f1;
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.rank-bar-fill.gold {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+/* Анимации */
+@keyframes rankSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes appleSheetIn {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes appleSheetOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+}
+
+/* Ручка шторки */
+.sheet-handle {
+    width: 36px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    margin: 0 auto 16px;
+}

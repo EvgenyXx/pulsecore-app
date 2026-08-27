@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.tournament.api.TournamentApi;
 import ru.pulsecore.app.tournament.api.dto.response.TournamentMatchDto;
-import ru.pulsecore.app.tournament.application.TournamentMatchPersistence;
+import ru.pulsecore.app.tournament.application.compare.TournamentMatchPersistence;
 import java.util.List;
 
 @RestController
