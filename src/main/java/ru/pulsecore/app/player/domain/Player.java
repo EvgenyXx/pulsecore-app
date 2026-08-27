@@ -97,6 +97,9 @@ public class Player {
     @Builder.Default
     private String liveSelectedHalls = "";
 
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
     public boolean hasActiveSubscription() {
         return subscription != null && subscription.isActiveNow();
     }

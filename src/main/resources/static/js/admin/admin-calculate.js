@@ -1,4 +1,4 @@
-import { AdminAPI } from '../core/admin-api.js';
+import { AdminAPI } from './admin-api.js';
 import { formatMoney } from '../core/utils.js';
 
 export async function adminCalculate() {

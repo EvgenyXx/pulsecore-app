@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
+import ru.pulsecore.app.player.application.admin.PlayerUpdateAdminService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
@@ -36,6 +38,12 @@ public class AdminPlayerClientImpl implements PlayerClient {
     private final PageViewStatsService pageViewStatsService;
     private final PlayerRepository  playerRepository;
     private final SubscriptionQueryService  subscriptionQueryService;
+    private final PlayerUpdateAdminService updateAdminService;
+
+    @Override
+    public PlayerData updatePlayer(UUID playerId, UpdatePlayerRequest request) {
+        return updateAdminService.updatePlayer(playerId, request);
+    }
 
     @Override
     public Page<PlayerData> searchByNamePage(String name, int page, int size) {

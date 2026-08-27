@@ -15,7 +15,11 @@
     <meta name="apple-mobile-web-app-title" content="PulseCore">
     <link rel="icon" type="image/png" href="/img.png">
     <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet" href="/css/compare-styles.css">
+    <link rel="stylesheet" href="/css/compare/compare-base.css">
+    <link rel="stylesheet" href="/css/compare/compare-sheet.css">
+    <link rel="stylesheet" href="/css/compare/compare-wheels.css">
+    <link rel="stylesheet" href="/css/compare/compare-cards.css">
+    <link rel="stylesheet" href="/css/compare/compare-mobile.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = {
@@ -121,10 +125,8 @@
     <div class="max-w-5xl mx-auto">
         <div class="compare-header"><h1 class="compare-title">H2H</h1>
             <div class="compare-actions">
-                <button class="period-toggle" onclick="toggleCardMode()">
-                    <span id="cardModeLabel">💰 Заработок</span>
-                </button>
-                <button class="period-toggle" onclick="togglePeriodSheet()"><span id="periodLabel">Всё время</span>
+                <button class="period-toggle" onclick="toggleSettingsSheet()">
+                    <span id="settingsLabel">Настройки</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"/>
                     </svg>
@@ -138,7 +140,7 @@
                 </button>
             </div>
         </div>
-        <div class="wheels-row">
+        <div class="wheels-row" id="wheelsRow">
             <div class="wheel-container">
                 <div id="pickerLeft" class="wheel-picker"></div>
             </div>
@@ -147,7 +149,7 @@
                 <div id="pickerRight" class="wheel-picker"></div>
             </div>
         </div>
-        <div class="cards-row">
+        <div class="cards-row" id="cardsRow">
             <div id="leftCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p>
             </div>
             <div class="card-spacer"></div>
@@ -156,23 +158,49 @@
         </div>
     </div>
 </main>
-<div class="period-sheet-overlay" id="periodSheetOverlay" onclick="togglePeriodSheet()">
+<div class="period-sheet-overlay" id="settingsSheetOverlay" onclick="toggleSettingsSheet()">
     <div class="period-sheet" onclick="event.stopPropagation()">
         <div class="period-sheet-handle"></div>
-        <button class="period-sheet-btn" onclick="setPeriod('week')">Неделя</button>
-        <button class="period-sheet-btn" onclick="setPeriod('month')">Месяц</button>
-        <button class="period-sheet-btn" onclick="setPeriod('year')">Год</button>
-        <button class="period-sheet-btn active" onclick="setPeriod('all')">Всё время</button>
-        <div class="date-row"><input type="date" id="customStart" class="date-input" placeholder="дд.мм.гггг"> <span
-                class="text-zinc-500 text-xs">—</span> <input type="date" id="customEnd" class="date-input"
-                                                              placeholder="дд.мм.гггг"></div>
-        <button class="period-sheet-btn" onclick="loadCustom()"
+
+        <p class="sheet-section-title">Режим</p>
+        <div class="sheet-segment-row">
+            <button class="sheet-segment-btn active" id="modeVersus" onclick="setMode('versus')">Версус</button>
+            <button class="sheet-segment-btn" id="modeSingle" onclick="setMode('single')">Одиночный</button>
+        </div>
+
+        <div class="sheet-accordion" id="metricAccordion">
+            <div class="sheet-accordion-header" onclick="toggleMetricAccordion()">
+                <span class="sheet-section-title" style="margin: 0;">Метрика</span>
+                <svg class="sheet-accordion-arrow" id="metricArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </div>
+            <div class="sheet-accordion-body" id="metricAccordionBody" style="display: none;">
+                <!-- Кнопки метрик генерируются JS -->
+            </div>
+        </div>
+
+        <p class="sheet-section-title">Период</p>
+        <div class="sheet-segment-row">
+            <button class="sheet-segment-btn" onclick="setPeriod('week')">Неделя</button>
+            <button class="sheet-segment-btn" onclick="setPeriod('month')">Месяц</button>
+            <button class="sheet-segment-btn" onclick="setPeriod('year')">Год</button>
+            <button class="sheet-segment-btn active" id="periodAll" onclick="setPeriod('all')">Всё</button>
+        </div>
+
+        <div class="date-row">
+            <input type="date" id="customStart" class="date-input" placeholder="дд.мм.гггг">
+            <span class="text-zinc-500 text-xs">—</span>
+            <input type="date" id="customEnd" class="date-input" placeholder="дд.мм.гггг">
+        </div>
+
+        <button class="period-sheet-btn" onclick="applySettings()"
                 style="justify-content: center; background: rgba(99,102,241,0.1); color: #c7d2fe; margin-top: 8px;">
             Применить
         </button>
     </div>
 </div>
-<script type="module" src="/js/compare-app.js"></script>
+<script type="module" src="/js/compare/compare-app.js"></script>
 <script type="module"> import {initBurgerMenu} from '/js/modules/burger-menu.js';
 import {initRoleCheck} from '/js/modules/role-check.js';
 

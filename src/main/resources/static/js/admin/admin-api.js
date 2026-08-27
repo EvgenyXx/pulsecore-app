@@ -16,7 +16,14 @@ export const AdminAPI = {
             .then(data => data.content.map(p => ({
                 id: p.playerId,
                 name: p.playerName,
-                email: p.email
+                email: p.email,
+                primaryLeague: p.primaryLeague,
+                pushEnabled: p.pushEnabled,
+                notificationsEnabled: p.notificationsEnabled,
+                hasActiveSubscription: p.hasActiveSubscription,
+                selectedHalls: p.selectedHalls,
+                liveSelectedHalls: p.liveSelectedHalls,
+                lastLoginAt: p.lastLoginAt
             }))),
     getPlayerSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/subscription`),
     getPlayerRoles: (playerId) => apiRequest(`/admin/players/${playerId}/roles`),
@@ -26,6 +33,14 @@ export const AdminAPI = {
     togglePlayerRole: (playerId, role, isGrant) => apiRequest(`/admin/players/${playerId}/roles/${isGrant ? 'grant' : 'revoke'}?role=${role}`, { method: isGrant ? 'POST' : 'DELETE' }),
     giveSubscription: (playerId, days) => apiRequest(`/admin/players/${playerId}/subscribe?days=${days}`, { method: 'POST' }),
     removeSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/unsubscribe`, { method: 'DELETE' }),
+
+    // ===== ОБНОВЛЕНИЕ ИГРОКА =====
+    updatePlayer: (playerId, data) => apiRequest(`/admin/players/${playerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }),
+
     getPrices: () => apiRequest('/admin/prices'),
     updatePrices: (prices) => apiRequest('/admin/update', {
         method: 'PUT',
@@ -44,5 +59,20 @@ export const AdminAPI = {
     }),
     getPageStats: (days) => apiRequest(`/admin/stats/page-views?days=${days}`),
     getPlayerStats: (days) => apiRequest(`/admin/stats/page-views/players?days=${days}`),
+
+    // ===== ТУРНИРЫ =====
+    getTournamentsByDate: (date) => apiRequest(`/admin/tournaments?date=${date}`),
+    getTournamentById: (id) => apiRequest(`/admin/tournaments/${id}`),
+    updateTournament: (id, data) => apiRequest(`/admin/tournaments/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }),
+
+    // ===== ПЛАНИРОВЩИК =====
+    getSchedulerStatus: () => apiRequest('/admin/scheduler/status'),
+    pauseScheduler: () => apiRequest('/admin/scheduler/pause', { method: 'POST' }),
+    resumeScheduler: () => apiRequest('/admin/scheduler/resume', { method: 'POST' }),
+
     logout: () => fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })
 };

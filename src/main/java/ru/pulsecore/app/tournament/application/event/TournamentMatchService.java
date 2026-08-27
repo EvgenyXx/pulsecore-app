@@ -32,7 +32,7 @@ public class TournamentMatchService {
         }
 
         // Если турнир уже есть — пропускаем
-        if (matchRepository.existsByTournamentId(parsed.tournamentId())) {
+        if (matchRepository.existsByTournamentId(tournament.getId())) {
             log.debug("Матчи: турнир {} уже существует, пропуск", parsed.tournamentId());
             return;
         }

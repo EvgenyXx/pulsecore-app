@@ -1,4 +1,4 @@
-import { AdminAPI } from '../core/admin-api.js';
+import { AdminAPI } from './admin-api.js';
 
 let selectedPlayerId = null;
 

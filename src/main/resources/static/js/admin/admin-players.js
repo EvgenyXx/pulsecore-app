@@ -1,8 +1,9 @@
-import { AdminAPI } from '../core/admin-api.js';
+import { AdminAPI } from './admin-api.js';
 import { formatMoney, capitalizeName } from '../core/utils.js';
 
 let selectedPlayerId = null;
 let playersCache = {};
+let selectedPlayerData = null;
 
 export async function searchPlayers(section) {
     const inputId = section === 'sub' ? 'subSearchInput' : 'playerSearchInput';
@@ -36,6 +37,7 @@ export async function searchPlayers(section) {
 
 export async function selectPlayer(id, name, email, section) {
     selectedPlayerId = id;
+    selectedPlayerData = { id, name, email };
 
     if (section === 'sub') {
         document.getElementById('subSelName').textContent = name;
@@ -63,9 +65,12 @@ async function refreshPlayerUI(section) {
         const sub = await AdminAPI.getPlayerSubscription(selectedPlayerId);
         playersCache[selectedPlayerId] = sub;
         if (sub && sub.active) {
-            badges += `<span class="badge-active">Подписка до ${new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`;
+            const expiresDate = new Date(sub.expiresAt);
+            const daysLeft = Math.ceil((expiresDate - new Date()) / (1000 * 60 * 60 * 24));
+            badges += `<span class="badge badge-active">Подписка до ${expiresDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`;
+            badges += `<span class="badge badge-admin">${daysLeft} дн.</span>`;
         } else {
-            badges += '<span class="badge-inactive">Нет подписки</span>';
+            badges += '<span class="badge badge-inactive">Нет подписки</span>';
         }
     } catch (e) {}
 
@@ -77,12 +82,102 @@ async function refreshPlayerUI(section) {
         try {
             const roles = await AdminAPI.getPlayerRoles(selectedPlayerId);
             if (roles.includes('ROLE_ADMIN')) {
-                badges += ' <span class="badge-admin">Админ</span>';
+                badges += ' <span class="badge badge-admin">Админ</span>';
             }
             document.getElementById('playerSelBadges').innerHTML = badges;
             document.getElementById('grantAdminBtn').classList.toggle('hidden', roles.includes('ROLE_ADMIN'));
             document.getElementById('revokeAdminBtn').classList.toggle('hidden', !roles.includes('ROLE_ADMIN'));
         } catch (e) {}
+
+        try {
+            const players = await AdminAPI.searchPlayers(selectedPlayerData?.name || '');
+            const playerData = players.find(p => p.id === selectedPlayerId);
+            if (playerData) {
+                selectedPlayerData = playerData;
+                document.getElementById('playerName').value = playerData.name || '';
+                document.getElementById('playerEmail').value = playerData.email || '';
+                document.getElementById('playerLeague').value = playerData.primaryLeague || '';
+                document.getElementById('playerHalls').value = playerData.selectedHalls || '';
+                document.getElementById('playerLiveHalls').value = playerData.liveSelectedHalls || '';
+                setStatusCheckbox('playerPush', playerData.pushEnabled);
+                setStatusCheckbox('playerNotifications', playerData.notificationsEnabled);
+                document.getElementById('playerLastLogin').textContent = formatLastLogin(playerData.lastLoginAt);
+            }
+        } catch (e) {}
+    }
+}
+
+function formatLastLogin(dateStr) {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) + ' ' +
+        d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+function setStatusCheckbox(prefix, value) {
+    const checkbox = document.getElementById(prefix + 'Checkbox');
+    const label = document.getElementById(prefix + 'Label');
+    if (checkbox) {
+        checkbox.classList.toggle('checked', value);
+        checkbox.textContent = value ? '✓' : '';
+    }
+    if (label) {
+        label.textContent = value ? 'Вкл' : 'Выкл';
+        label.classList.toggle('active', value);
+    }
+}
+
+export function togglePlayerStatus(prefix) {
+    const checkbox = document.getElementById(prefix + 'Checkbox');
+    const label = document.getElementById(prefix + 'Label');
+    if (!checkbox) return;
+
+    const isChecked = checkbox.classList.contains('checked');
+    if (isChecked) {
+        checkbox.classList.remove('checked');
+        checkbox.textContent = '';
+        label.textContent = 'Выкл';
+        label.classList.remove('active');
+    } else {
+        checkbox.classList.add('checked');
+        checkbox.textContent = '✓';
+        label.textContent = 'Вкл';
+        label.classList.add('active');
+    }
+}
+
+function isStatusChecked(prefix) {
+    const checkbox = document.getElementById(prefix + 'Checkbox');
+    return checkbox ? checkbox.classList.contains('checked') : false;
+}
+
+export async function updatePlayer() {
+    if (!selectedPlayerId) return;
+
+    const msg = document.getElementById('playerMsg');
+    msg.textContent = 'Сохранение...';
+    msg.className = 'text-xs text-center text-zinc-400';
+    msg.classList.remove('hidden');
+
+    try {
+        await AdminAPI.updatePlayer(selectedPlayerId, {
+            name: document.getElementById('playerName').value || null,
+            email: document.getElementById('playerEmail').value || null,
+            primaryLeague: document.getElementById('playerLeague').value || null,
+            selectedHalls: document.getElementById('playerHalls').value || null,
+            liveSelectedHalls: document.getElementById('playerLiveHalls').value || null,
+            pushEnabled: isStatusChecked('playerPush'),
+            notificationsEnabled: isStatusChecked('playerNotifications')
+        });
+        msg.textContent = 'Сохранено';
+        msg.className = 'text-xs text-center text-emerald-400';
+
+        // Обновляем отображаемые данные
+        document.getElementById('playerSelName').textContent = capitalizeName(document.getElementById('playerName').value);
+        document.getElementById('playerSelEmail').textContent = document.getElementById('playerEmail').value;
+    } catch (e) {
+        msg.textContent = 'Ошибка сохранения';
+        msg.className = 'text-xs text-center text-red-400';
     }
 }
 

@@ -1,0 +1,35 @@
+/* ===== ПОДМЕНЮ В САЙДБАРЕ ===== */
+
+.submenu {
+    padding: 6px 0 6px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.submenu-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    color: #d4d4d8;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-weight: 600;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.submenu-btn:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #fff;
+}
+
+.submenu-btn.active {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: rgba(99, 102, 241, 0.6);
+    color: #fff;
+}

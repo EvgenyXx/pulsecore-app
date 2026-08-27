@@ -1,0 +1,33 @@
+/* ===== АККОРДЕОН ===== */
+
+.sheet-accordion {
+    margin-bottom: 8px;
+}
+
+.sheet-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e5e5e5;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.sheet-accordion-header:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.sheet-accordion-arrow {
+    transition: transform 0.25s ease;
+}
+
+.sheet-accordion-body {
+    padding: 8px 0 0;
+}

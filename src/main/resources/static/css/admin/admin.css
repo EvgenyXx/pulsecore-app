@@ -1,0 +1,261 @@
+/* ===== ОБЩИЕ СТИЛИ ===== */
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    padding-top: env(safe-area-inset-top, 0px);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg, #0c0c18);
+    overscroll-behavior: none;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ===== КНОПКИ ===== */
+
+.btn {
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-indigo {
+    background: #6366f1;
+    color: #fff;
+}
+
+.btn-indigo:hover {
+    background: #4f46e5;
+}
+
+.btn-emerald {
+    background: #10b981;
+    color: #fff;
+}
+
+.btn-emerald:hover {
+    background: #059669;
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.20);
+}
+
+.btn-danger:hover {
+    background: rgba(239, 68, 68, 0.22);
+}
+
+.btn-amber {
+    background: #f59e0b;
+    color: #000;
+}
+
+.btn-amber:hover {
+    background: #d97706;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: #a1a1aa;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #e5e5e5;
+}
+
+/* ===== ИНПУТЫ ===== */
+
+.input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    color: #e5e5e5;
+    padding: 10px 13px;
+    font-size: 0.88rem;
+    width: 100%;
+    outline: none;
+    font-family: 'Inter';
+}
+
+.input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+}
+
+/* ===== ПОДМЕНЮ В САЙДБАРЕ ===== */
+
+.submenu {
+    padding: 6px 0 6px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.submenu-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    color: #d4d4d8;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-weight: 600;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.submenu-btn:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #fff;
+}
+
+.submenu-btn.active {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: rgba(99, 102, 241, 0.6);
+    color: #fff;
+}
+
+/* ===== АККОРДЕОН ===== */
+
+.sheet-accordion {
+    margin-bottom: 8px;
+}
+
+.sheet-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e5e5e5;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.sheet-accordion-header:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.sheet-accordion-arrow {
+    transition: transform 0.25s ease;
+}
+
+.sheet-accordion-body {
+    padding: 8px 0 0;
+}
+
+/* ===== КАРТОЧКИ ===== */
+
+.widget-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.player-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.avatar-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a5b4fc;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.section-header {
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* ===== БЕЙДЖИ ===== */
+
+.badge {
+    font-size: 0.68rem;
+    padding: 2px 7px;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+.badge-active {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+}
+
+.badge-inactive {
+    background: rgba(239, 68, 68, 0.10);
+    color: #f87171;
+}
+
+.badge-admin {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+}
+
+/* ===== СПИННЕР ===== */
+
+.spinner-sm {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== ДЕСКТОП ===== */
+
+@media (min-width: 768px) {
+    .btn {
+        width: auto;
+    }
+}

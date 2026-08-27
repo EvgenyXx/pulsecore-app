@@ -1,0 +1,225 @@
+/* ===== ШТОРКА ===== */
+
+.period-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.period-sheet-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.period-sheet {
+    background: #18181b;
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px 16px 32px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: none;
+}
+
+.period-sheet-overlay.open .period-sheet {
+    transform: translateY(0);
+}
+
+.period-sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    margin: 0 auto 18px;
+}
+
+.period-sheet-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    color: #d4d4d8;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 4px;
+}
+
+.period-sheet-btn.active {
+    background: rgba(99, 102, 241, 0.12);
+    color: #c7d2fe;
+    font-weight: 600;
+}
+
+.date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 0 4px;
+}
+
+.date-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: #e5e5e5;
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    outline: none;
+    font-family: 'Inter';
+    min-width: 0;
+}
+
+/* ===== СЕКЦИИ В ШТОРКЕ ===== */
+
+.sheet-section-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 16px 4px 8px;
+}
+
+.sheet-section-title:first-of-type {
+    margin-top: 0;
+}
+
+.sheet-segment-row {
+    display: flex;
+    gap: 6px;
+    padding: 0 4px;
+    margin-bottom: 8px;
+}
+
+.sheet-segment-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: #d4d4d8;
+    text-align: center;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.sheet-segment-btn.active {
+    background: rgba(99, 102, 241, 0.12);
+    color: #c7d2fe;
+    font-weight: 600;
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* ===== АККОРДЕОН МЕТРИКИ ===== */
+
+.sheet-accordion {
+    margin-bottom: 8px;
+}
+
+.sheet-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 8px;
+    cursor: pointer;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sheet-accordion-value {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #c7d2fe;
+    margin-left: 12px;
+    text-align: right;
+}
+
+.sheet-accordion-arrow {
+    color: #a1a1aa;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+.sheet-accordion-body {
+    padding: 8px 4px 0;
+}
+
+.sheet-check {
+    color: #6366f1;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* ===== ТУЛТИП ===== */
+
+.tooltip-box {
+    position: fixed;
+    z-index: 200;
+    background: #27272a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.75rem;
+    color: #e5e5e5;
+    line-height: 1.5;
+    max-width: 260px;
+    pointer-events: auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    animation: tooltipFadeIn 0.15s ease;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #a1a1aa;
+    font-size: 0.8rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.tooltip-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
