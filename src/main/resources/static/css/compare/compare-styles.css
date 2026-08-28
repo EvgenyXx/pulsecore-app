@@ -308,10 +308,9 @@ body {
     flex-shrink: 0;
 }
 
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ (PWA) — ИСПРАВЛЕННАЯ ===== */
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ (PWA) — ИСПРАВЛЕННАЯ ===== */
+/* ===== МОБИЛЬНАЯ ВЕРСИЯ (PWA) ===== */
 @media (max-width: 640px) {
-    main {
+    #comparePage {
         display: flex;
         flex-direction: column;
         flex: 1;
@@ -323,27 +322,25 @@ body {
         max-width: 100vw;
     }
 
-    .max-w-5xl {
+    #comparePage > div {
         display: flex;
         flex-direction: column;
         height: 100%;
-        justify-content: space-between;
+        justify-content: flex-end;
         width: 100%;
         max-width: 100%;
         margin: 0;
     }
 
-    .compare-header {
+    #comparePage .compare-header {
         flex-shrink: 0;
-        margin-bottom: 0;
+        margin-bottom: auto;
         width: 100%;
     }
 
-    /* ===== КОЛЕСА — ФИКСИРОВАННЫЕ, НЕ ДВИГАЮТСЯ ===== */
-    .wheels-row {
-        margin: 0;
+    #comparePage .wheels-row {
+        margin: 0 0 20px;
         flex-shrink: 0;
-        margin-top: 10px;
         gap: 6px;
         align-items: center;
         width: 100%;
@@ -355,7 +352,7 @@ body {
         pointer-events: auto;
     }
 
-    .wheel-container {
+    #comparePage .wheel-container {
         flex: 0 0 45%;
         max-width: 45%;
         min-width: 0;
@@ -365,7 +362,7 @@ body {
         -webkit-user-select: none;
     }
 
-    .wheel-picker {
+    #comparePage .wheel-picker {
         height: 220px;
         min-height: 220px;
         max-height: 220px;
@@ -383,7 +380,7 @@ body {
         touch-action: pan-y;
     }
 
-    .wheel-option {
+    #comparePage .wheel-option {
         height: 40px;
         min-height: 40px;
         max-height: 40px;
@@ -400,7 +397,7 @@ body {
         pointer-events: none;
     }
 
-    .wheel-option.selected {
+    #comparePage .wheel-option.selected {
         font-size: 17px;
         white-space: normal;
         word-break: break-word;
@@ -412,7 +409,7 @@ body {
         max-height: 52px;
     }
 
-    .vs-badge {
+    #comparePage .vs-badge {
         width: auto;
         height: auto;
         background: none;
@@ -431,11 +428,10 @@ body {
         transform: skewX(-5deg);
     }
 
-    /* ===== КАРТОЧКИ ===== */
-    .cards-row {
-        margin: 0 auto;
+    #comparePage .cards-row {
+        margin: 0 0 20px;
         flex-shrink: 0;
-        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 30px);
+        padding-bottom: 0;
         gap: 8px;
         width: 95%;
         max-width: 100%;
@@ -443,7 +439,7 @@ body {
         align-items: center;
     }
 
-    .result-card {
+    #comparePage .result-card {
         flex: 0 0 42%;
         max-width: 55%;
         min-width: 0;
@@ -460,7 +456,7 @@ body {
         justify-content: space-around;
     }
 
-    .result-card .player-name {
+    #comparePage .result-card .player-name {
         font-size: 0.8rem;
         margin-bottom: 2px;
         white-space: normal;
@@ -476,7 +472,7 @@ body {
         justify-content: center;
     }
 
-    .result-card .player-league {
+    #comparePage .result-card .player-league {
         font-size: 0.55rem;
         margin-bottom: 4px;
         white-space: nowrap;
@@ -485,7 +481,7 @@ body {
         text-align: center;
     }
 
-    .player-league-row {
+    #comparePage .player-league-row {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -493,11 +489,11 @@ body {
         margin-bottom: 4px;
     }
 
-    .player-league-icon {
+    #comparePage .player-league-icon {
         font-size: 0.6rem;
     }
 
-    .stat-row {
+    #comparePage .stat-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -506,13 +502,13 @@ body {
         gap: 4px;
     }
 
-    .stat-label {
+    #comparePage .stat-label {
         font-size: 0.55rem;
         color: #a1a1aa;
         white-space: nowrap;
     }
 
-    .stat-value {
+    #comparePage .stat-value {
         font-size: 0.55rem;
         font-weight: 600;
         color: #fff;
@@ -520,9 +516,7 @@ body {
         text-align: right;
     }
 
-    /* ===== ПРОГРЕСС-БАРЫ (только для статистики) ===== */
-    /* ===== ПРОГРЕСС-БАРЫ (только для статистики) ===== */
-    .stat-bar-row {
+    #comparePage .stat-bar-row {
         display: flex;
         align-items: center;
         gap: 4px;
@@ -530,7 +524,7 @@ body {
         width: 100%;
     }
 
-    .stat-bar-row .stat-label {
+    #comparePage .stat-bar-row .stat-label {
         flex: 0 0 auto;
         font-size: 0.55rem;
         color: #a1a1aa;
@@ -538,7 +532,7 @@ body {
         text-align: left;
     }
 
-    .stat-bar {
+    #comparePage .stat-bar {
         flex: 1;
         height: 5px;
         background: rgba(255, 255, 255, 0.1);
@@ -547,14 +541,14 @@ body {
         min-width: 0;
     }
 
-    .stat-bar-fill {
+    #comparePage .stat-bar-fill {
         height: 100%;
         background: linear-gradient(90deg, #6366f1, #4f46e5);
         border-radius: 3px;
         transition: width 0.3s ease;
     }
 
-    .stat-bar-row .stat-value {
+    #comparePage .stat-bar-row .stat-value {
         flex: 0 0 auto;
         font-size: 0.55rem;
         font-weight: 600;
@@ -562,5 +556,4 @@ body {
         white-space: nowrap;
         text-align: right;
     }
-
 }

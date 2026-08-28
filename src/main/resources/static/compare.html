@@ -1,217 +1,217 @@
-<!DOCTYPE html>
-<html lang="ru" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, height=device-height">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>PulseCore — H2H</title>
-    <script type="module"> import {initThemeSync} from '/js/modules/theme-sync.js';
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru" data-theme="dark">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport"-->
+<!--          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, height=device-height">-->
+<!--    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">-->
+<!--    <title>PulseCore — H2H</title>-->
+<!--    <script type="module"> import {initThemeSync} from '/js/modules/theme-sync.js';-->
 
-    initThemeSync(); </script>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="PulseCore">
-    <link rel="icon" type="image/png" href="/img.png">
-    <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet" href="/css/compare/compare-base.css">
-    <link rel="stylesheet" href="/css/compare/compare-sheet.css">
-    <link rel="stylesheet" href="/css/compare/compare-wheels.css">
-    <link rel="stylesheet" href="/css/compare/compare-cards.css">
-    <link rel="stylesheet" href="/css/compare/compare-mobile.css">
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = {
-        theme: {
-            extend: {
-                screens: {
-                    'xs': '475px',
-                    'sm': '640px',
-                    'md': '768px',
-                    'lg': '1024px',
-                    'xl': '1280px',
-                    '2xl': '1536px'
-                }
-            }
-        }
-    }</script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-          rel="stylesheet">
-</head>
-<body class="flex flex-col md:flex-row min-h-screen">
-<div class="bg-mesh"></div>
-<div class="bg-grid"></div>
-<div class="bg-orb bg-orb-1"></div>
-<div class="bg-orb bg-orb-2"></div>
-<div class="nebula"></div>
-<div class="stars" id="starsContainer"></div>
-<div id="burgerMenuContainer"></div>
-<aside class="hidden md:flex glass-sidebar w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
-    <div class="flex items-center gap-3 mb-10 px-1"><img src="/img.png" alt="PulseCore"
-                                                         class="w-11 h-11 rounded-xl shadow-lg object-cover">
-        <div><h1
-                class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent tracking-tight">
-            PulseCore</h1>
-            <p id="sidebarPlayerName" class="text-xs text-zinc-400"></p></div>
-    </div>
-    <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item" onclick="window.location.href='/dashboard'"><span class="nav-icon"><svg width="18"
-                                                                                                      height="18"
-                                                                                                      viewBox="0 0 24 24"
-                                                                                                      fill="none"
-                                                                                                      stroke="currentColor"
-                                                                                                      stroke-width="2"><path
-                d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline
-                points="9 22 9 12 15 12 15 22"/></svg></span>
-            <div>
-                <div class="font-medium text-sm">Главная</div>
-            </div>
-        </div>
-        <div class="nav-item active" id="nav-compare"><span class="nav-icon"><svg width="18" height="18"
-                                                                                  viewBox="0 0 24 24" fill="none"
-                                                                                  stroke="currentColor"
-                                                                                  stroke-width="2"><path d="M16 3h5v5"/><path
-                d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path
-                d="M21 21l-7-7"/><path d="M3 21l7 7"/></svg></span>
-            <div>
-                <div class="font-medium text-sm">H2H</div>
-            </div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/live'"><span class="nav-icon"><svg width="18" height="18"
-                                                                                                 viewBox="0 0 24 24"
-                                                                                                 fill="none"
-                                                                                                 stroke="currentColor"
-                                                                                                 stroke-width="2"><polygon
-                points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>
-            <div>
-                <div class="font-medium text-sm">Live</div>
-            </div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/analytics'"><span class="nav-icon"><svg width="18"
-                                                                                                      height="18"
-                                                                                                      viewBox="0 0 24 24"
-                                                                                                      fill="none"
-                                                                                                      stroke="currentColor"
-                                                                                                      stroke-width="2"><line
-                x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6"
-                                                                                             y2="14"/></svg></span>
-            <div>
-                <div class="font-medium text-sm">Аналитика</div>
-            </div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/profile'"><span class="nav-icon"><svg width="18"
-                                                                                                    height="18"
-                                                                                                    viewBox="0 0 24 24"
-                                                                                                    fill="none"
-                                                                                                    stroke="currentColor"
-                                                                                                    stroke-width="2"><path
-                d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-            <div>
-                <div class="font-medium text-sm">Настройки</div>
-            </div>
-        </div>
-    </nav>
-    <button onclick="logout()"
-            class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        <span>Выйти</span></button>
-</aside>
-<main class="flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
-    <div class="max-w-5xl mx-auto">
-        <div class="compare-header"><h1 class="compare-title">H2H</h1>
-            <div class="compare-actions">
-                <button class="period-toggle" onclick="toggleSettingsSheet()">
-                    <span id="settingsLabel">Настройки</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="6 9 12 15 18 9"/>
-                    </svg>
-                </button>
-                <button class="burger-btn md:hidden" onclick="window.toggleMobileMenu()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="3" y1="6" x2="21" y2="6"/>
-                        <line x1="3" y1="12" x2="21" y2="12"/>
-                        <line x1="3" y1="18" x2="21" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <div class="wheels-row" id="wheelsRow">
-            <div class="wheel-container">
-                <div id="pickerLeft" class="wheel-picker"></div>
-            </div>
-            <div class="vs-badge">VS</div>
-            <div class="wheel-container">
-                <div id="pickerRight" class="wheel-picker"></div>
-            </div>
-        </div>
-        <div class="cards-row" id="cardsRow">
-            <div id="leftCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p>
-            </div>
-            <div class="card-spacer"></div>
-            <div id="rightCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p>
-            </div>
-        </div>
-    </div>
-</main>
-<div class="period-sheet-overlay" id="settingsSheetOverlay" onclick="toggleSettingsSheet()">
-    <div class="period-sheet" onclick="event.stopPropagation()">
-        <div class="period-sheet-handle"></div>
+<!--    initThemeSync(); </script>-->
+<!--    <link rel="manifest" href="/manifest.json">-->
+<!--    <meta name="apple-mobile-web-app-capable" content="yes">-->
+<!--    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">-->
+<!--    <meta name="apple-mobile-web-app-title" content="PulseCore">-->
+<!--    <link rel="icon" type="image/png" href="/img.png">-->
+<!--    <link rel="stylesheet" href="/css/app.css">-->
+<!--    <link rel="stylesheet" href="/css/compare/compare-base.css">-->
+<!--    <link rel="stylesheet" href="/css/compare/compare-sheet.css">-->
+<!--    <link rel="stylesheet" href="/css/compare/compare-wheels.css">-->
+<!--    <link rel="stylesheet" href="/css/compare/compare-cards.css">-->
+<!--    <link rel="stylesheet" href="/css/compare/compare-mobile.css">-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--    <script>tailwind.config = {-->
+<!--        theme: {-->
+<!--            extend: {-->
+<!--                screens: {-->
+<!--                    'xs': '475px',-->
+<!--                    'sm': '640px',-->
+<!--                    'md': '768px',-->
+<!--                    'lg': '1024px',-->
+<!--                    'xl': '1280px',-->
+<!--                    '2xl': '1536px'-->
+<!--                }-->
+<!--            }-->
+<!--        }-->
+<!--    }</script>-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"-->
+<!--          rel="stylesheet">-->
+<!--</head>-->
+<!--<body class="flex flex-col md:flex-row min-h-screen">-->
+<!--<div class="bg-mesh"></div>-->
+<!--<div class="bg-grid"></div>-->
+<!--<div class="bg-orb bg-orb-1"></div>-->
+<!--<div class="bg-orb bg-orb-2"></div>-->
+<!--<div class="nebula"></div>-->
+<!--<div class="stars" id="starsContainer"></div>-->
+<!--<div id="burgerMenuContainer"></div>-->
+<!--<aside class="hidden md:flex glass-sidebar w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">-->
+<!--    <div class="flex items-center gap-3 mb-10 px-1"><img src="/img.png" alt="PulseCore"-->
+<!--                                                         class="w-11 h-11 rounded-xl shadow-lg object-cover">-->
+<!--        <div><h1-->
+<!--                class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent tracking-tight">-->
+<!--            PulseCore</h1>-->
+<!--            <p id="sidebarPlayerName" class="text-xs text-zinc-400"></p></div>-->
+<!--    </div>-->
+<!--    <nav class="flex flex-col gap-1 flex-1">-->
+<!--        <div class="nav-item" onclick="window.location.href='/dashboard'"><span class="nav-icon"><svg width="18"-->
+<!--                                                                                                      height="18"-->
+<!--                                                                                                      viewBox="0 0 24 24"-->
+<!--                                                                                                      fill="none"-->
+<!--                                                                                                      stroke="currentColor"-->
+<!--                                                                                                      stroke-width="2"><path-->
+<!--                d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline-->
+<!--                points="9 22 9 12 15 12 15 22"/></svg></span>-->
+<!--            <div>-->
+<!--                <div class="font-medium text-sm">Главная</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="nav-item active" id="nav-compare"><span class="nav-icon"><svg width="18" height="18"-->
+<!--                                                                                  viewBox="0 0 24 24" fill="none"-->
+<!--                                                                                  stroke="currentColor"-->
+<!--                                                                                  stroke-width="2"><path d="M16 3h5v5"/><path-->
+<!--                d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path-->
+<!--                d="M21 21l-7-7"/><path d="M3 21l7 7"/></svg></span>-->
+<!--            <div>-->
+<!--                <div class="font-medium text-sm">H2H</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="nav-item" onclick="window.location.href='/live'"><span class="nav-icon"><svg width="18" height="18"-->
+<!--                                                                                                 viewBox="0 0 24 24"-->
+<!--                                                                                                 fill="none"-->
+<!--                                                                                                 stroke="currentColor"-->
+<!--                                                                                                 stroke-width="2"><polygon-->
+<!--                points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>-->
+<!--            <div>-->
+<!--                <div class="font-medium text-sm">Live</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="nav-item" onclick="window.location.href='/analytics'"><span class="nav-icon"><svg width="18"-->
+<!--                                                                                                      height="18"-->
+<!--                                                                                                      viewBox="0 0 24 24"-->
+<!--                                                                                                      fill="none"-->
+<!--                                                                                                      stroke="currentColor"-->
+<!--                                                                                                      stroke-width="2"><line-->
+<!--                x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6"-->
+<!--                                                                                             y2="14"/></svg></span>-->
+<!--            <div>-->
+<!--                <div class="font-medium text-sm">Аналитика</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="nav-item" onclick="window.location.href='/profile'"><span class="nav-icon"><svg width="18"-->
+<!--                                                                                                    height="18"-->
+<!--                                                                                                    viewBox="0 0 24 24"-->
+<!--                                                                                                    fill="none"-->
+<!--                                                                                                    stroke="currentColor"-->
+<!--                                                                                                    stroke-width="2"><path-->
+<!--                d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>-->
+<!--            <div>-->
+<!--                <div class="font-medium text-sm">Настройки</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </nav>-->
+<!--    <button onclick="logout()"-->
+<!--            class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">-->
+<!--        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+<!--            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>-->
+<!--            <polyline points="16 17 21 12 16 7"/>-->
+<!--            <line x1="21" y1="12" x2="9" y2="12"/>-->
+<!--        </svg>-->
+<!--        <span>Выйти</span></button>-->
+<!--</aside>-->
+<!--<main class="flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">-->
+<!--    <div class="max-w-5xl mx-auto">-->
+<!--        <div class="compare-header"><h1 class="compare-title">H2H</h1>-->
+<!--            <div class="compare-actions">-->
+<!--                <button class="period-toggle" onclick="toggleSettingsSheet()">-->
+<!--                    <span id="settingsLabel">Настройки</span>-->
+<!--                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+<!--                        <polyline points="6 9 12 15 18 9"/>-->
+<!--                    </svg>-->
+<!--                </button>-->
+<!--                <button class="burger-btn md:hidden" onclick="window.toggleMobileMenu()">-->
+<!--                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+<!--                        <line x1="3" y1="6" x2="21" y2="6"/>-->
+<!--                        <line x1="3" y1="12" x2="21" y2="12"/>-->
+<!--                        <line x1="3" y1="18" x2="21" y2="18"/>-->
+<!--                    </svg>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="wheels-row" id="wheelsRow">-->
+<!--            <div class="wheel-container">-->
+<!--                <div id="pickerLeft" class="wheel-picker"></div>-->
+<!--            </div>-->
+<!--            <div class="vs-badge">VS</div>-->
+<!--            <div class="wheel-container">-->
+<!--                <div id="pickerRight" class="wheel-picker"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="cards-row" id="cardsRow">-->
+<!--            <div id="leftCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p>-->
+<!--            </div>-->
+<!--            <div class="card-spacer"></div>-->
+<!--            <div id="rightCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</main>-->
+<!--<div class="period-sheet-overlay" id="settingsSheetOverlay" onclick="toggleSettingsSheet()">-->
+<!--    <div class="period-sheet" onclick="event.stopPropagation()">-->
+<!--        <div class="period-sheet-handle"></div>-->
 
-        <p class="sheet-section-title">Режим</p>
-        <div class="sheet-segment-row" id="modeSegmentRow">
-            <button class="sheet-segment-btn active" id="modeVersus" onclick="setMode('versus')">Версус</button>
-            <button class="sheet-segment-btn" id="modeSingle" onclick="setMode('single')">Одиночный</button>
-        </div>
+<!--        <p class="sheet-section-title">Режим</p>-->
+<!--        <div class="sheet-segment-row" id="modeSegmentRow">-->
+<!--            <button class="sheet-segment-btn active" id="modeVersus" onclick="setMode('versus')">Версус</button>-->
+<!--            <button class="sheet-segment-btn" id="modeSingle" onclick="setMode('single')">Одиночный</button>-->
+<!--        </div>-->
 
-        <div class="sheet-accordion" id="metricAccordion">
-            <div class="sheet-accordion-header" onclick="toggleMetricAccordion()">
-                <span class="sheet-section-title" style="margin: 0;">Метрика</span>
-                <svg class="sheet-accordion-arrow" id="metricArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9"/>
-                </svg>
-            </div>
-            <div class="sheet-accordion-body" id="metricAccordionBody" style="display: none;">
-            </div>
-        </div>
+<!--        <div class="sheet-accordion" id="metricAccordion">-->
+<!--            <div class="sheet-accordion-header" onclick="toggleMetricAccordion()">-->
+<!--                <span class="sheet-section-title" style="margin: 0;">Метрика</span>-->
+<!--                <svg class="sheet-accordion-arrow" id="metricArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
+<!--                    <polyline points="6 9 12 15 18 9"/>-->
+<!--                </svg>-->
+<!--            </div>-->
+<!--            <div class="sheet-accordion-body" id="metricAccordionBody" style="display: none;">-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <p class="sheet-section-title">Период</p>
-        <div class="sheet-segment-row" id="periodSegmentRow">
-            <button class="sheet-segment-btn" id="periodWeek" onclick="setPeriod('week')">Неделя</button>
-            <button class="sheet-segment-btn" id="periodMonth" onclick="setPeriod('month')">Месяц</button>
-            <button class="sheet-segment-btn" id="periodYear" onclick="setPeriod('year')">Год</button>
-            <button class="sheet-segment-btn active" id="periodAll" onclick="setPeriod('all')">Всё</button>
-        </div>
+<!--        <p class="sheet-section-title">Период</p>-->
+<!--        <div class="sheet-segment-row" id="periodSegmentRow">-->
+<!--            <button class="sheet-segment-btn" id="periodWeek" onclick="setPeriod('week')">Неделя</button>-->
+<!--            <button class="sheet-segment-btn" id="periodMonth" onclick="setPeriod('month')">Месяц</button>-->
+<!--            <button class="sheet-segment-btn" id="periodYear" onclick="setPeriod('year')">Год</button>-->
+<!--            <button class="sheet-segment-btn active" id="periodAll" onclick="setPeriod('all')">Всё</button>-->
+<!--        </div>-->
 
-        <div class="date-row">
-            <input type="date" id="customStart" class="date-input" placeholder="дд.мм.гггг">
-            <span class="text-zinc-500 text-xs">—</span>
-            <input type="date" id="customEnd" class="date-input" placeholder="дд.мм.гггг">
-        </div>
+<!--        <div class="date-row">-->
+<!--            <input type="date" id="customStart" class="date-input" placeholder="дд.мм.гггг">-->
+<!--            <span class="text-zinc-500 text-xs">—</span>-->
+<!--            <input type="date" id="customEnd" class="date-input" placeholder="дд.мм.гггг">-->
+<!--        </div>-->
 
-        <button class="period-sheet-btn" onclick="applySettings()"
-                style="justify-content: center; background: rgba(99,102,241,0.1); color: #c7d2fe; margin-top: 8px;">
-            Применить
-        </button>
-    </div>
-</div>
-<script type="module" src="/js/compare/compare-app.js"></script>
-<script type="module"> import {initBurgerMenu} from '/js/modules/burger-menu.js';
-import {initRoleCheck} from '/js/modules/role-check.js';
+<!--        <button class="period-sheet-btn" onclick="applySettings()"-->
+<!--                style="justify-content: center; background: rgba(99,102,241,0.1); color: #c7d2fe; margin-top: 8px;">-->
+<!--            Применить-->
+<!--        </button>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<script type="module" src="/js/compare/compare-app.js"></script>-->
+<!--<script type="module"> import {initBurgerMenu} from '/js/modules/burger-menu.js';-->
+<!--import {initRoleCheck} from '/js/modules/role-check.js';-->
 
-initBurgerMenu();
-initRoleCheck(); </script>
-<script type="module"> import {initStars} from '/js/modules/stars.js';
+<!--initBurgerMenu();-->
+<!--initRoleCheck(); </script>-->
+<!--<script type="module"> import {initStars} from '/js/modules/stars.js';-->
 
-initStars(); </script>
-<script type="module"> import {initThemePicker, toggleThemeSheet, setTheme} from '/js/modules/theme-picker.js';
+<!--initStars(); </script>-->
+<!--<script type="module"> import {initThemePicker, toggleThemeSheet, setTheme} from '/js/modules/theme-picker.js';-->
 
-initThemePicker();
-window.toggleThemeSheet = toggleThemeSheet;
-window.setTheme = setTheme; </script>
-</body>
-</html>
+<!--initThemePicker();-->
+<!--window.toggleThemeSheet = toggleThemeSheet;-->
+<!--window.setTheme = setTheme; </script>-->
+<!--</body>-->
+<!--</html>-->

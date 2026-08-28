@@ -170,7 +170,7 @@ async function loadData() {
         document.getElementById('content').classList.remove('hidden');
         document.getElementById('leagueTitle').textContent = lineup.league || 'Турнир';
         document.getElementById('tournamentInfo').textContent = `${lineup.hall || ''} • ${lineup.time || ''}`;
-        document.getElementById('playersList').innerHTML = (lineup.players || []).map(p => `<span class="player-tag">${escapeHtml(p)}</span>`).join('');
+        document.getElementById('playersList').innerHTML = '';
 
         const streamUrl = lineup.streamUrl || lineup.stream_url;
         if (streamUrl) {

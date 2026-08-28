@@ -26,6 +26,21 @@ function updateTabSlider(tab) {
     }
 }
 
+function initTabListeners() {
+    const tabFilter = document.getElementById('tabFilter');
+    if (!tabFilter) return;
+
+    tabFilter.querySelectorAll('.tab-filter-tag').forEach(tag => {
+        tag.addEventListener('click', function() {
+            document.querySelectorAll('.tab-filter-tag').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            selectedTab = this.dataset.tab;
+            updateTabSlider(selectedTab);
+            applyFilter();
+        });
+    });
+}
+
 function startOnlinePolling() {
     setInterval(async () => {
         try {
@@ -77,6 +92,12 @@ async function loadLive() {
 
         initTabSlider();
         updateTabSlider('live');
+        initTabListeners();
+
+        // Назначаем глобальные функции ДО рендера
+        window.toggleLiveHallsCheckboxes = toggleLiveHallsCheckboxes;
+        window.toggleAllLiveHalls = toggleAllLiveHalls;
+        window.saveSelectedLiveHalls = saveSelectedLiveHalls;
 
         if (allHalls.length > 0) renderHallFilter();
         applyFilter();
@@ -96,11 +117,11 @@ function renderHallFilter() {
 
     container.innerHTML = `
         <div class="apple-card mb-4 w-full">
-            <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleHallsCheckboxes()">
+            <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="window.toggleLiveHallsCheckboxes()">
                 <h3 class="text-[15px] font-semibold text-white tracking-tight">Выберите залы</h3>
                 <div class="flex items-center gap-2">
                     <label class="hall-select-all" onclick="event.stopPropagation()">
-                        <input type="checkbox" id="allLiveHallsCheckbox" ${allSelected ? 'checked' : ''} onchange="toggleAllLiveHalls()" class="accent-indigo-500 w-4 h-4">
+                        <input type="checkbox" id="allLiveHallsCheckbox" ${allSelected ? 'checked' : ''} onchange="window.toggleAllLiveHalls()" class="accent-indigo-500 w-4 h-4">
                         <span class="text-xs text-zinc-300 select-none">Все</span>
                     </label>
                     <span class="toggle-arrow text-zinc-400 text-xs transition-transform duration-300 ${hallsCollapsed ? 'rotate-180' : ''}" id="liveHallsToggleArrow">▼</span>
@@ -113,13 +134,13 @@ function renderHallFilter() {
         return `<label class="hall-checkbox-card ${checked ? 'selected' : ''}"><input type="checkbox" value="${hall}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)"><span class="text-xs text-white">${hall}</span></label>`;
     }).join('')}
                 </div>
-                <button onclick="saveSelectedLiveHalls()" class="apple-save-btn">Сохранить</button>
+                <button onclick="window.saveSelectedLiveHalls()" class="apple-save-btn">Сохранить</button>
             </div>
         </div>
     `;
 }
 
-function toggleHallsCheckboxes() {
+function toggleLiveHallsCheckboxes() {
     const wrapper = document.getElementById('liveHallsCheckboxesWrapper');
     const arrow = document.getElementById('liveHallsToggleArrow');
     if (!wrapper || !arrow) return;
@@ -229,18 +250,8 @@ function renderTournaments(tournaments) {
     `).join('');
 }
 
-window.toggleHallsCheckboxes = toggleHallsCheckboxes;
+// Назначаем глобальные функции
+window.toggleLiveHallsCheckboxes = toggleLiveHallsCheckboxes;
 window.toggleAllLiveHalls = toggleAllLiveHalls;
 window.saveSelectedLiveHalls = saveSelectedLiveHalls;
-
-document.getElementById('tabFilter').querySelectorAll('.tab-filter-tag').forEach(tag => {
-    tag.addEventListener('click', function() {
-        document.querySelectorAll('.tab-filter-tag').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        selectedTab = this.dataset.tab;
-        updateTabSlider(selectedTab);
-        applyFilter();
-    });
-});
-
-loadLive();
+window.loadLive = loadLive;

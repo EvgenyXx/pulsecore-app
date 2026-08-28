@@ -38,27 +38,15 @@ function showAction(action) {
     const actionPage = document.getElementById('actionPage');
     const content = document.getElementById('actionContent');
     const title = document.getElementById('actionTitle');
-    const subtitle = document.getElementById('actionSubtitle');
     const burgerBtn = `<button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white ml-auto">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>`;
 
     highlightNav('nav-' + action);
 
-    if (homePage.style.display !== 'none') {
-        homePage.style.transition = 'opacity 0.12s ease';
-        homePage.style.opacity = '0';
-        setTimeout(() => {
-            homePage.style.display = 'none';
-            actionPage.classList.remove('hidden');
-            actionPage.style.opacity = '0';
-            actionPage.style.transition = 'opacity 0.12s ease';
-            requestAnimationFrame(() => { actionPage.style.opacity = '1'; });
-        }, 120);
-    } else {
-        actionPage.classList.remove('hidden');
-        actionPage.style.opacity = '1';
-    }
+    homePage.style.display = 'none';
+    actionPage.classList.remove('hidden');
+    actionPage.style.opacity = '1';
 
     if (action === 'halls') {
         title.innerHTML = 'Расписание турниров' + burgerBtn;
@@ -233,40 +221,35 @@ function urlB64ToUint8Array(base64String) {
 
 async function init() {
     try {
-        const data = await API.getMe();
+        const res = await fetch('/api/player/me', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Not authenticated');
+        const data = await res.json();
+
         state.playerId = data.id;
         state.isAdmin = data.admin || false;
+
         if (data.admin) {
             document.getElementById('nav-admin')?.classList.remove('hidden');
             document.getElementById('mobile-nav-admin')?.classList.remove('hidden');
         }
         document.getElementById('playerName').textContent = capitalizeName(data.name);
-        document.getElementById('sidebarPlayerName').textContent = capitalizeName(data.name);
-        const mobileName = document.getElementById('mobilePlayerName');
-        if (mobileName) mobileName.textContent = capitalizeName(data.name);
 
         if (data.theme) {
             document.documentElement.setAttribute('data-theme', data.theme);
         }
 
-        const p = new URLSearchParams(window.location.search).get('page');
-        if (p === 'sum' || p === 'halls') {
-            document.getElementById('homePage').style.display = 'none';
-            document.getElementById('actionPage').classList.remove('hidden');
-            document.getElementById('actionPage').style.opacity = '1';
-            if (p === 'sum') showAction('sum');
-            else showAction('halls');
-            loadDashboardWidgets();
-            loadTopWeek(null);
-            loadSelectedHalls();
-        } else {
-            await loadDashboardWidgets();
-            loadTopWeek(null);
-            loadSelectedHalls();
-        }
+        await loadDashboardWidgets();
+        loadTopWeek(null);
+        loadSelectedHalls();
+
+        // Подключаем роутер
+        const { initDashboardRouter } = await import('./modules/dashboard-router.js');
+        initDashboardRouter();
 
         checkPushStatus();
-    } catch (e) { window.location.href = '/'; } finally {
+    } catch (e) {
+        console.error('Init error:', e);
+    } finally {
         document.getElementById('appLoader')?.remove();
     }
 }
@@ -286,7 +269,9 @@ window.mobileNav = function(action, el) {
     toggleMobileMenu();
     document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('bg-indigo-500/10','border-indigo-500/20'));
     el.classList.add('bg-indigo-500/10','border-indigo-500/20');
-    if (action === 'home') goHome(); else showAction(action);
+    if (action === 'home') window.location.hash = '#/';
+    else if (action === 'halls') window.location.hash = '#/halls';
+    else if (action === 'sum') window.location.hash = '#/sum';
 };
 
 document.addEventListener('DOMContentLoaded', init);

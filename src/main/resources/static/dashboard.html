@@ -21,6 +21,14 @@
     <link rel="stylesheet" href="/css/dashboard/top-mobile.css">
     <link rel="stylesheet" href="/css/dashboard/lineup.css">
     <link rel="stylesheet" href="/css/dashboard/sum.css">
+    <link rel="stylesheet" href="/css/live.css">
+    <link rel="stylesheet" href="/css/live-tournament.css">
+    <link rel="stylesheet" href="/css/live-tournament-mobile.css">
+    <link rel="stylesheet" href="/css/compare/compare-base.css">
+    <link rel="stylesheet" href="/css/compare/compare-sheet.css">
+    <link rel="stylesheet" href="/css/compare/compare-wheels.css">
+    <link rel="stylesheet" href="/css/compare/compare-cards.css">
+    <link rel="stylesheet" href="/css/compare/compare-mobile.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px','2xl':'1536px'}}}}</script>
@@ -28,6 +36,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <style>
         body { padding-top: env(safe-area-inset-top, 0px); }
     </style>
@@ -59,54 +69,7 @@
 </div>
 
 <div id="burgerMenuContainer"></div>
-
-<aside class="hidden md:flex glass-sidebar w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
-    <div class="flex items-center gap-3 mb-10 px-1">
-        <img src="/img.png" alt="PulseCore" class="w-11 h-11 rounded-xl shadow-lg object-cover">
-        <div>
-            <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent tracking-tight">PulseCore</h1>
-            <p id="sidebarPlayerName" class="text-xs text-zinc-400"></p>
-        </div>
-    </div>
-    <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item active" onclick="goHome()" id="nav-home">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
-            <div><div class="font-medium text-sm">Главная</div><div class="text-xs text-zinc-500">Обзор</div></div>
-        </div>
-        <div class="nav-item" onclick="showAction('halls')" id="nav-halls">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-            <div><div class="font-medium text-sm">Расписание</div><div class="text-xs text-zinc-500">Турниры и составы</div></div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/compare'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path d="M21 21l-7-7"/><path d="M3 21l7-7"/></svg></span>
-            <div><div class="font-medium text-sm">Сравнение</div><div class="text-xs text-zinc-500">Игроки</div></div>
-        </div>
-        <div class="nav-item" onclick="showAction('sum')" id="nav-sum">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-            <div><div class="font-medium text-sm">Сумма за период</div><div class="text-xs text-zinc-500">Подсчёт и список</div></div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/live'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>
-            <div><div class="font-medium text-sm">Live</div><div class="text-xs text-zinc-500">Трансляции</div></div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/analytics'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-            <div><div class="font-medium text-sm">Аналитика</div><div class="text-xs text-zinc-500">Статистика по лигам</div></div>
-        </div>
-        <div class="nav-item admin-item hidden" id="nav-admin" onclick="window.location.href='/admin'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-            <div><div class="font-medium text-sm text-emerald-400">Админка</div></div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/profile'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-            <div><div class="font-medium text-sm">Настройки</div><div class="text-xs text-zinc-500">Аккаунт и подписка</div></div>
-        </div>
-    </nav>
-    <button onclick="logout()" class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>Выйти</span>
-    </button>
-</aside>
+<div id="sidebarContainer"></div>
 
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10">
     <div id="contentArea" class="max-w-5xl mx-auto w-full">
@@ -148,8 +111,176 @@
             </div>
             <div id="actionContent"></div>
         </div>
+
+        <!-- Live Page -->
+        <div id="livePage" class="hidden">
+            <div class="flex items-center justify-between mb-4">
+                <div></div>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="text-center pt-4 pb-6">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-500/10">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                </div>
+                <h1 class="text-[22px] font-bold text-white tracking-tight">Live-трансляции</h1>
+                <p class="text-zinc-500 text-xs mt-1" id="subtitle">Загрузка...</p>
+            </div>
+
+            <div id="tabFilter" class="hidden">
+                <span class="hall-filter-tag tab-filter-tag active" data-tab="live">LIVE</span>
+                <span class="hall-filter-tag tab-filter-tag" data-tab="upcoming">Скоро</span>
+                <span class="hall-filter-tag tab-filter-tag" data-tab="finished">Завершён</span>
+            </div>
+
+            <div id="hallFilter" class="hidden"></div>
+
+            <div id="loading" class="text-center py-20">
+                <div class="spinner mb-4"></div>
+                <p class="text-zinc-500 text-sm">Загрузка...</p>
+            </div>
+
+            <div id="noSubBlock" class="hidden max-w-md mx-auto mt-10">
+                <div class="apple-card p-8 text-center">
+                    <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Требуется подписка</h3>
+                    <p class="text-zinc-400 text-sm mb-5">Оформите подписку PRO для доступа к трансляциям</p>
+                    <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>
+                    <br><a href="#" onclick="navigate('home')" class="text-xs text-zinc-500 mt-4 inline-block hover:text-zinc-300">На главную</a>
+                </div>
+            </div>
+
+            <div id="liveList" class="space-y-4 hidden"></div>
+
+            <div id="empty" class="text-center py-20 hidden">
+                <p class="text-zinc-400 font-medium">Нет активных трансляций</p>
+                <p class="text-zinc-600 text-sm mt-1">Турниры начнутся — появятся здесь</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- H2H Page — копия compare.html -->
+    <div id="comparePage" class="hidden flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="compare-header">
+                <h1 class="compare-title">H2H</h1>
+                <div class="compare-actions">
+                    <button class="period-toggle" onclick="toggleSettingsSheet()">
+                        <span id="settingsLabel">Настройки</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <button class="burger-btn md:hidden" onclick="window.toggleMobileMenu()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="wheels-row" id="wheelsRow">
+                <div class="wheel-container"><div id="pickerLeft" class="wheel-picker"></div></div>
+                <div class="vs-badge">VS</div>
+                <div class="wheel-container"><div id="pickerRight" class="wheel-picker"></div></div>
+            </div>
+            <div class="cards-row" id="cardsRow">
+                <div id="leftCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p></div>
+                <div class="card-spacer"></div>
+                <div id="rightCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Tournament Page -->
+    <div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen">
+        <div class="max-w-4xl mx-auto">
+            <div class="live-header">
+                <button class="back-btn" onclick="navigate('live')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+                <span class="league-title" id="leagueTitle">Загрузка...</span>
+                <span class="online-count" id="onlineCount"></span>
+                <span class="tournament-info" id="tournamentInfo"></span>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white ml-auto">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="players-row" id="playersList"></div>
+
+            <div id="tournamentLoading" class="loading-block">
+                <div class="spinner mb-4"></div>
+                <p class="text-zinc-500 text-sm">Загрузка...</p>
+            </div>
+
+            <div id="content" class="hidden">
+                <div class="video-card" id="videoWrapper">
+                    <button onclick="toggleFullscreen()" class="fullscreen-btn" title="На весь экран">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                    </button>
+                    <div id="videoPlaceholder" class="video-placeholder">Загрузка трансляции...</div>
+                    <iframe id="streamFrame" style="border: 0; display: none; background: #000; width: 100%; aspect-ratio: 16/9; border-radius: 16px;" allow="fullscreen" src="" scrolling="no"></iframe>
+                </div>
+
+                <h3 class="chat-title">Чат</h3>
+                <div class="chat-container">
+                    <div id="chatMessages" class="chat-messages">
+                        <div class="text-center text-zinc-600 text-xs py-4">Сообщений пока нет</div>
+                    </div>
+                    <div id="replyBar" class="reply-bar hidden">
+                        <div class="reply-bar-info">
+                            <div class="reply-bar-sender" id="replyBarSender"></div>
+                            <div class="reply-bar-text" id="replyBarText"></div>
+                        </div>
+                        <span class="reply-bar-close" onclick="cancelReply()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </span>
+                    </div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение..." maxlength="300">
+                        <button onclick="sendMessage()" id="sendBtn" class="send-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
+
+<!-- H2H Settings Sheet -->
+<div class="period-sheet-overlay" id="settingsSheetOverlay" onclick="toggleSettingsSheet()">
+    <div class="period-sheet" onclick="event.stopPropagation()">
+        <div class="period-sheet-handle"></div>
+        <p class="sheet-section-title">Режим</p>
+        <div class="sheet-segment-row" id="modeSegmentRow">
+            <button class="sheet-segment-btn active" id="modeVersus" onclick="setMode('versus')">Версус</button>
+            <button class="sheet-segment-btn" id="modeSingle" onclick="setMode('single')">Одиночный</button>
+        </div>
+        <div class="sheet-accordion" id="metricAccordion">
+            <div class="sheet-accordion-header" onclick="toggleMetricAccordion()">
+                <span class="sheet-section-title" style="margin: 0;">Метрика</span>
+                <svg class="sheet-accordion-arrow" id="metricArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sheet-accordion-body" id="metricAccordionBody" style="display: none;"></div>
+        </div>
+        <p class="sheet-section-title">Период</p>
+        <div class="sheet-segment-row" id="periodSegmentRow">
+            <button class="sheet-segment-btn" id="periodWeek" onclick="setPeriod('week')">Неделя</button>
+            <button class="sheet-segment-btn" id="periodMonth" onclick="setPeriod('month')">Месяц</button>
+            <button class="sheet-segment-btn" id="periodYear" onclick="setPeriod('year')">Год</button>
+            <button class="sheet-segment-btn active" id="periodAll" onclick="setPeriod('all')">Всё</button>
+        </div>
+        <div class="date-row">
+            <input type="date" id="customStart" class="date-input" placeholder="дд.мм.гггг">
+            <span class="text-zinc-500 text-xs">—</span>
+            <input type="date" id="customEnd" class="date-input" placeholder="дд.мм.гггг">
+        </div>
+        <button class="period-sheet-btn" onclick="applySettings()" style="justify-content: center; background: rgba(99,102,241,0.1); color: #c7d2fe; margin-top: 8px;">Применить</button>
+    </div>
+</div>
 
 <!-- Шторка заказных отчётов -->
 <div class="report-backdrop" id="reportBackdrop" onclick="closeScheduledReports()"></div>
@@ -161,11 +292,16 @@
 <script type="module" src="/js/app.js"></script>
 <script type="module" src="/js/modules/top.js"></script>
 <script type="module" src="/js/dashboard/top-switchers.js"></script>
+<script src="/js/modules/live.js"></script>
+<script type="module" src="/js/modules/live-tournament.js"></script>
+<script type="module" src="/js/compare/compare-app.js"></script>
 <script type="module">
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
+    import { initSidebar } from '/js/sidebar.js';
     initBurgerMenu();
     initRoleCheck();
+    initSidebar('home');
 </script>
 <script type="module">
     import { initStars } from '/js/modules/stars.js';

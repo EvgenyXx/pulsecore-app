@@ -1,169 +1,169 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>PulseCore — Live</title>
-    <script type="module">
-        import { initThemeSync } from '/js/modules/theme-sync.js';
-        initThemeSync();
-    </script>
-    <link rel="icon" type="image/png" href="/img.png">
-    <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet" href="/css/live.css">
-    <link rel="stylesheet" href="/css/live-tournament.css">
-    <link rel="stylesheet" href="/css/live-tournament-mobile.css">
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
-    <style>
-        body { padding-top: env(safe-area-inset-top, 0px); }
-    </style>
-</head>
-<body class="flex flex-col md:flex-row min-h-screen">
-<div class="bg-mesh"></div><div class="bg-grid"></div>
-<div class="nebula"></div><div class="stars" id="starsContainer"></div>
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">-->
+<!--    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">-->
+<!--    <title>PulseCore — Live</title>-->
+<!--    <script type="module">-->
+<!--        import { initThemeSync } from '/js/modules/theme-sync.js';-->
+<!--        initThemeSync();-->
+<!--    </script>-->
+<!--    <link rel="icon" type="image/png" href="/img.png">-->
+<!--    <link rel="stylesheet" href="/css/app.css">-->
+<!--    <link rel="stylesheet" href="/css/live.css">-->
+<!--    <link rel="stylesheet" href="/css/live-tournament.css">-->
+<!--    <link rel="stylesheet" href="/css/live-tournament-mobile.css">-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>-->
+<!--    <style>-->
+<!--        body { padding-top: env(safe-area-inset-top, 0px); }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body class="flex flex-col md:flex-row min-h-screen">-->
+<!--<div class="bg-mesh"></div><div class="bg-grid"></div>-->
+<!--<div class="nebula"></div><div class="stars" id="starsContainer"></div>-->
 
-<div id="burgerMenuContainer"></div>
-<div id="sidebarContainer"></div>
+<!--<div id="burgerMenuContainer"></div>-->
+<!--<div id="sidebarContainer"></div>-->
 
-<div id="liveListScreen" class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10 min-h-screen">
-    <div class="max-w-3xl mx-auto">
+<!--<div id="liveListScreen" class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10 min-h-screen">-->
+<!--    <div class="max-w-3xl mx-auto">-->
 
-        <div class="flex items-center justify-between mb-4">
-            <div></div>
-            <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
-        </div>
+<!--        <div class="flex items-center justify-between mb-4">-->
+<!--            <div></div>-->
+<!--            <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">-->
+<!--                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>-->
+<!--            </button>-->
+<!--        </div>-->
 
-        <div class="text-center pt-4 pb-6">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-500/10">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-            </div>
-            <h1 class="text-[22px] font-bold text-white tracking-tight">Live-трансляции</h1>
-            <p class="text-zinc-500 text-xs mt-1" id="subtitle">Загрузка...</p>
-        </div>
+<!--        <div class="text-center pt-4 pb-6">-->
+<!--            <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-500/10">-->
+<!--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>-->
+<!--            </div>-->
+<!--            <h1 class="text-[22px] font-bold text-white tracking-tight">Live-трансляции</h1>-->
+<!--            <p class="text-zinc-500 text-xs mt-1" id="subtitle">Загрузка...</p>-->
+<!--        </div>-->
 
-        <div id="tabFilter" class="hidden flex flex-wrap gap-2 mb-4 justify-center">
-            <span class="hall-filter-tag tab-filter-tag active" data-tab="live">LIVE</span>
-            <span class="hall-filter-tag tab-filter-tag" data-tab="upcoming">Скоро</span>
-            <span class="hall-filter-tag tab-filter-tag" data-tab="finished">Завершён</span>
-        </div>
+<!--        <div id="tabFilter" class="hidden flex flex-wrap gap-2 mb-4 justify-center">-->
+<!--            <span class="hall-filter-tag tab-filter-tag active" data-tab="live">LIVE</span>-->
+<!--            <span class="hall-filter-tag tab-filter-tag" data-tab="upcoming">Скоро</span>-->
+<!--            <span class="hall-filter-tag tab-filter-tag" data-tab="finished">Завершён</span>-->
+<!--        </div>-->
 
-        <div id="hallFilter" class="hidden flex flex-wrap gap-2 mb-5 justify-center"></div>
+<!--        <div id="hallFilter" class="hidden flex flex-wrap gap-2 mb-5 justify-center"></div>-->
 
-        <div id="loading" class="text-center py-20">
-            <div class="spinner mb-4"></div>
-            <p class="text-zinc-500 text-sm">Загрузка...</p>
-        </div>
+<!--        <div id="loading" class="text-center py-20">-->
+<!--            <div class="spinner mb-4"></div>-->
+<!--            <p class="text-zinc-500 text-sm">Загрузка...</p>-->
+<!--        </div>-->
 
-        <div id="noSubBlock" class="hidden max-w-md mx-auto mt-10">
-            <div class="apple-card p-8 text-center">
-                <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Требуется подписка</h3>
-                <p class="text-zinc-400 text-sm mb-5">Оформите подписку PRO для доступа к трансляциям</p>
-                <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>
-                <br><a href="/dashboard" class="text-xs text-zinc-500 mt-4 inline-block hover:text-zinc-300">На главную</a>
-            </div>
-        </div>
+<!--        <div id="noSubBlock" class="hidden max-w-md mx-auto mt-10">-->
+<!--            <div class="apple-card p-8 text-center">-->
+<!--                <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">-->
+<!--                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>-->
+<!--                </div>-->
+<!--                <h3 class="text-xl font-bold text-white mb-2">Требуется подписка</h3>-->
+<!--                <p class="text-zinc-400 text-sm mb-5">Оформите подписку PRO для доступа к трансляциям</p>-->
+<!--                <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>-->
+<!--                <br><a href="/dashboard" class="text-xs text-zinc-500 mt-4 inline-block hover:text-zinc-300">На главную</a>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div id="liveList" class="space-y-4 hidden"></div>
+<!--        <div id="liveList" class="space-y-4 hidden"></div>-->
 
-        <div id="empty" class="text-center py-20 hidden">
-            <p class="text-zinc-400 font-medium">Нет активных трансляций</p>
-            <p class="text-zinc-600 text-sm mt-1">Турниры начнутся — появятся здесь</p>
-        </div>
+<!--        <div id="empty" class="text-center py-20 hidden">-->
+<!--            <p class="text-zinc-400 font-medium">Нет активных трансляций</p>-->
+<!--            <p class="text-zinc-600 text-sm mt-1">Турниры начнутся — появятся здесь</p>-->
+<!--        </div>-->
 
-    </div>
-</div>
+<!--    </div>-->
+<!--</div>-->
 
-<div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen">
-    <div class="max-w-4xl mx-auto">
+<!--<div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen">-->
+<!--    <div class="max-w-4xl mx-auto">-->
 
-        <div class="live-header">
-            <button class="back-btn" onclick="showLiveList()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <span class="live-badge"><span class="live-dot"></span> LIVE</span>
-            <span class="league-title" id="leagueTitle">Загрузка...</span>
-            <span class="online-count" id="onlineCount"></span>
-            <span class="tournament-info" id="tournamentInfo"></span>
-        </div>
+<!--        <div class="live-header">-->
+<!--            <button class="back-btn" onclick="showLiveList()">-->
+<!--                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>-->
+<!--            </button>-->
+<!--            <span class="live-badge"><span class="live-dot"></span> LIVE</span>-->
+<!--            <span class="league-title" id="leagueTitle">Загрузка...</span>-->
+<!--            <span class="online-count" id="onlineCount"></span>-->
+<!--            <span class="tournament-info" id="tournamentInfo"></span>-->
+<!--        </div>-->
 
-        <div class="players-row" id="playersList"></div>
+<!--        <div class="players-row" id="playersList"></div>-->
 
-        <div id="tournamentLoading" class="loading-block">
-            <div class="spinner mb-4"></div>
-            <p class="text-zinc-500 text-sm">Загрузка...</p>
-        </div>
+<!--        <div id="tournamentLoading" class="loading-block">-->
+<!--            <div class="spinner mb-4"></div>-->
+<!--            <p class="text-zinc-500 text-sm">Загрузка...</p>-->
+<!--        </div>-->
 
-        <div id="content" class="hidden">
-            <div class="video-card" id="videoWrapper">
-                <button onclick="toggleFullscreen()" class="fullscreen-btn" title="На весь экран">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                </button>
-                <div id="videoPlaceholder" class="video-placeholder">Загрузка трансляции...</div>
-                <iframe id="streamFrame" style="border: 0; display: none; background: #000; width: 100%; aspect-ratio: 16/9; border-radius: 16px;" allow="fullscreen" src="" scrolling="no"></iframe>
-            </div>
+<!--        <div id="content" class="hidden">-->
+<!--            <div class="video-card" id="videoWrapper">-->
+<!--                <button onclick="toggleFullscreen()" class="fullscreen-btn" title="На весь экран">-->
+<!--                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>-->
+<!--                </button>-->
+<!--                <div id="videoPlaceholder" class="video-placeholder">Загрузка трансляции...</div>-->
+<!--                <iframe id="streamFrame" style="border: 0; display: none; background: #000; width: 100%; aspect-ratio: 16/9; border-radius: 16px;" allow="fullscreen" src="" scrolling="no"></iframe>-->
+<!--            </div>-->
 
-            <h3 class="chat-title">Чат</h3>
-            <div class="chat-container">
-                <div id="chatMessages" class="chat-messages">
-                    <div class="text-center text-zinc-600 text-xs py-4">Сообщений пока нет</div>
-                </div>
-                <div id="replyBar" class="reply-bar hidden">
-                    <div class="reply-bar-info">
-                        <div class="reply-bar-sender" id="replyBarSender"></div>
-                        <div class="reply-bar-text" id="replyBarText"></div>
-                    </div>
-                    <span class="reply-bar-close" onclick="cancelReply()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </span>
-                </div>
-                <div class="chat-input-row">
-                    <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение..." maxlength="300">
-                    <button onclick="sendMessage()" id="sendBtn" class="send-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                            <path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<!--            <h3 class="chat-title">Чат</h3>-->
+<!--            <div class="chat-container">-->
+<!--                <div id="chatMessages" class="chat-messages">-->
+<!--                    <div class="text-center text-zinc-600 text-xs py-4">Сообщений пока нет</div>-->
+<!--                </div>-->
+<!--                <div id="replyBar" class="reply-bar hidden">-->
+<!--                    <div class="reply-bar-info">-->
+<!--                        <div class="reply-bar-sender" id="replyBarSender"></div>-->
+<!--                        <div class="reply-bar-text" id="replyBarText"></div>-->
+<!--                    </div>-->
+<!--                    <span class="reply-bar-close" onclick="cancelReply()">-->
+<!--                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div class="chat-input-row">-->
+<!--                    <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение..." maxlength="300">-->
+<!--                    <button onclick="sendMessage()" id="sendBtn" class="send-btn">-->
+<!--                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">-->
+<!--                            <path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor"/>-->
+<!--                        </svg>-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
-<script type="module">
-    import { initSidebar } from '/js/sidebar.js';
-    initSidebar('live');
-</script>
-<script type="module">
-    import { initBurgerMenu } from '/js/modules/burger-menu.js';
-    import { initRoleCheck } from '/js/modules/role-check.js';
-    initBurgerMenu();
-    initRoleCheck();
-</script>
-<script type="module">
-    import { initStars } from '/js/modules/stars.js';
-    initStars();
-</script>
-<script type="module">
-    import { initLiveRouter } from '/js/modules/live-router.js';
-    initLiveRouter();
-</script>
-<script src="/js/modules/live.js"></script>
-<script type="module" src="/js/modules/live-tournament.js"></script>
-<script type="module">
-    import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
-    initThemePicker();
-    window.toggleThemeSheet = toggleThemeSheet;
-    window.setTheme = setTheme;
-</script>
-</body>
-</html>
+<!--<script type="module">-->
+<!--    import { initSidebar } from '/js/sidebar.js';-->
+<!--    initSidebar('live');-->
+<!--</script>-->
+<!--<script type="module">-->
+<!--    import { initBurgerMenu } from '/js/modules/burger-menu.js';-->
+<!--    import { initRoleCheck } from '/js/modules/role-check.js';-->
+<!--    initBurgerMenu();-->
+<!--    initRoleCheck();-->
+<!--</script>-->
+<!--<script type="module">-->
+<!--    import { initStars } from '/js/modules/stars.js';-->
+<!--    initStars();-->
+<!--</script>-->
+<!--<script type="module">-->
+<!--    import { initLiveRouter } from '/js/modules/live-router.js';-->
+<!--    initLiveRouter();-->
+<!--</script>-->
+<!--<script src="/js/modules/live.js"></script>-->
+<!--<script type="module" src="/js/modules/live-tournament.js"></script>-->
+<!--<script type="module">-->
+<!--    import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';-->
+<!--    initThemePicker();-->
+<!--    window.toggleThemeSheet = toggleThemeSheet;-->
+<!--    window.setTheme = setTheme;-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->

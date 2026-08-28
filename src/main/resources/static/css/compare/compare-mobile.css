@@ -1,6 +1,6 @@
 /* ===== МОБИЛЬНАЯ ВЕРСИЯ (PWA) ===== */
 @media (max-width: 640px) {
-    main {
+    #comparePage {
         display: flex;
         flex-direction: column;
         flex: 1;
@@ -12,7 +12,7 @@
         max-width: 100vw;
     }
 
-    .max-w-5xl {
+    #comparePage .max-w-5xl {
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -22,14 +22,14 @@
         margin: 0;
     }
 
-    .compare-header {
+    #comparePage .compare-header {
         flex-shrink: 0;
         margin-bottom: 0;
         width: 100%;
     }
 
     /* ===== КОЛЕСА ===== */
-    .wheels-row {
+    #comparePage .wheels-row {
         margin: 0;
         flex-shrink: 0;
         margin-top: 10px;
@@ -44,7 +44,7 @@
         pointer-events: auto;
     }
 
-    .wheel-container {
+    #comparePage .wheel-container {
         flex: 0 0 45%;
         max-width: 45%;
         min-width: 0;
@@ -54,7 +54,7 @@
         -webkit-user-select: none;
     }
 
-    .wheel-picker {
+    #comparePage .wheel-picker {
         height: 220px;
         min-height: 220px;
         max-height: 220px;
@@ -72,7 +72,7 @@
         touch-action: pan-y;
     }
 
-    .wheel-option {
+    #comparePage .wheel-option {
         height: 40px;
         min-height: 40px;
         max-height: 40px;
@@ -89,8 +89,10 @@
         pointer-events: none;
     }
 
-    .wheel-option.selected {
-        font-size: 17px;
+    #comparePage .wheel-option.selected {
+        font-size: 22px;
+        font-weight: 500;
+        color: #ffffff;
         white-space: normal;
         word-break: break-word;
         line-height: 1.2;
@@ -98,10 +100,13 @@
         padding: 0 6px;
         height: auto;
         min-height: 40px;
-        max-height: 52px;
+        max-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .vs-badge {
+    #comparePage .vs-badge {
         width: auto;
         height: auto;
         background: none;
@@ -121,7 +126,7 @@
     }
 
     /* ===== КАРТОЧКИ ===== */
-    .cards-row {
+    #comparePage .cards-row {
         margin: 0 auto;
         flex-shrink: 0;
         padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 30px);
@@ -132,7 +137,7 @@
         align-items: center;
     }
 
-    .result-card {
+    #comparePage .result-card {
         flex: 0 0 42%;
         max-width: 55%;
         min-width: 0;
@@ -149,7 +154,7 @@
         justify-content: space-around;
     }
 
-    .result-card .player-name {
+    #comparePage .result-card .player-name {
         font-size: 0.8rem;
         margin-bottom: 2px;
         white-space: normal;
@@ -165,7 +170,7 @@
         justify-content: center;
     }
 
-    .result-card .player-league {
+    #comparePage .result-card .player-league {
         font-size: 0.55rem;
         margin-bottom: 4px;
         white-space: nowrap;
@@ -174,7 +179,7 @@
         text-align: center;
     }
 
-    .player-league-row {
+    #comparePage .player-league-row {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -182,11 +187,11 @@
         margin-bottom: 4px;
     }
 
-    .player-league-icon {
+    #comparePage .player-league-icon {
         font-size: 0.6rem;
     }
 
-    .stat-row {
+    #comparePage .stat-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -195,13 +200,13 @@
         gap: 4px;
     }
 
-    .stat-label {
+    #comparePage .stat-label {
         font-size: 0.55rem;
         color: #a1a1aa;
         white-space: nowrap;
     }
 
-    .stat-value {
+    #comparePage .stat-value {
         font-size: 0.55rem;
         font-weight: 600;
         color: #fff;
@@ -209,8 +214,8 @@
         text-align: right;
     }
 
-    /* ===== ПРОГРЕСС-БАРЫ (только для статистики) ===== */
-    .stat-bar-row {
+    /* ===== ПРОГРЕСС-БАРЫ ===== */
+    #comparePage .stat-bar-row {
         display: flex;
         align-items: center;
         gap: 4px;
@@ -218,7 +223,7 @@
         width: 100%;
     }
 
-    .stat-bar-row .stat-label {
+    #comparePage .stat-bar-row .stat-label {
         flex: 0 0 auto;
         font-size: 0.55rem;
         color: #a1a1aa;
@@ -226,7 +231,7 @@
         text-align: left;
     }
 
-    .stat-bar {
+    #comparePage .stat-bar {
         flex: 1;
         height: 5px;
         background: rgba(255, 255, 255, 0.1);
@@ -235,14 +240,14 @@
         min-width: 0;
     }
 
-    .stat-bar-fill {
+    #comparePage .stat-bar-fill {
         height: 100%;
         background: linear-gradient(90deg, #6366f1, #4f46e5);
         border-radius: 3px;
         transition: width 0.3s ease;
     }
 
-    .stat-bar-row .stat-value {
+    #comparePage .stat-bar-row .stat-value {
         flex: 0 0 auto;
         font-size: 0.55rem;
         font-weight: 600;
