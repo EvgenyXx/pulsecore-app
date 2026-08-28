@@ -4,13 +4,22 @@ import { formatMoney, formatDateShort, capitalizeName } from '../core/utils.js';
 
 let dashboardLoaded = false;
 
-// Раскрытие матчей турнира
+// Раскрытие матчей турнира в стиле Apple
 window.toggleTournamentMatches = async function(resultId, el) {
     const container = el.querySelector('.matches-container');
     if (!container) return;
 
     if (!container.classList.contains('hidden')) {
-        container.classList.add('hidden');
+        container.style.transition = 'opacity 0.2s ease, transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)';
+        container.style.opacity = '0';
+        container.style.transform = 'translateY(-8px)';
+
+        setTimeout(() => {
+            container.classList.add('hidden');
+            container.style.opacity = '';
+            container.style.transform = '';
+            container.style.transition = '';
+        }, 250);
         return;
     }
 
@@ -24,26 +33,39 @@ window.toggleTournamentMatches = async function(resultId, el) {
         const matches = await response.json();
 
         container.innerHTML = `
-            <div class="matches-header">
-                <span>Стадия</span>
-                <span>Игроки</span>
-                <span>Счёт</span>
-                <span>Победитель</span>
-            </div>
-            ${matches.map(m => `
-                <div class="match-row">
-                    <span class="match-stage">${getStageLabel(m.stage)}</span>
-                    <span class="match-players">${m.player1Name} vs ${m.player2Name}</span>
-                    <span class="match-score">${m.score || '—'}</span>
-                    <span class="match-winner">🏆 ${m.winnerName || '—'}</span>
+            <div class="matches-divider"></div>
+            ${matches.map((m, i) => `
+                <div class="match-card" style="animation-delay: ${i * 60}ms">
+                    <div class="flex items-center justify-between gap-3 mb-2">
+                        <span class="match-stage-badge">${getStageLabel(m.stage)}</span>
+                        <span class="match-score-badge">${m.score || '—'}</span>
+                    </div>
+                    <div class="match-players-row">
+                        <div class="match-player">
+                            <span class="match-player-name">${m.player1Name}</span>
+                            ${m.winnerName === m.player1Name ? '<span class="match-winner-dot"></span>' : ''}
+                        </div>
+                        <div class="match-player">
+                            <span class="match-player-name">${m.player2Name}</span>
+                            ${m.winnerName === m.player2Name ? '<span class="match-winner-dot"></span>' : ''}
+                        </div>
+                    </div>
                 </div>
             `).join('')}
         `;
 
         container.classList.remove('hidden');
+        container.style.opacity = '0';
+        container.style.transform = 'translateY(-8px)';
+        container.style.transition = 'opacity 0.25s ease, transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)';
+
+        requestAnimationFrame(() => {
+            container.style.opacity = '1';
+            container.style.transform = 'translateY(0)';
+        });
     } catch (e) {
         console.error('Ошибка загрузки матчей:', e);
-        container.innerHTML = '<p class="text-zinc-500 text-sm">Не удалось загрузить матчи</p>';
+        container.innerHTML = '<p class="text-zinc-500 text-sm py-3">Не удалось загрузить матчи</p>';
         container.classList.remove('hidden');
     }
 };
@@ -96,41 +118,28 @@ export async function loadDashboardWidgets() {
         loadReportBadge();
 
         const lastHtml = data.lastResult
-            ? `<div class="widget-card" onclick="toggleTournamentMatches(${data.lastResult.resultId || 0}, this)">
-                    <div class="flex items-center gap-2 mb-1">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-                        <h3 class="font-bold text-sm text-indigo-300">Последний результат</h3>
+            ? `<div class="widget-card apple-card" onclick="toggleTournamentMatches(${data.lastResult.resultId || 0}, this)">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-[15px] font-semibold text-white tracking-tight">Последний результат</h3>
+                            <p class="text-[11px] text-zinc-500">${data.lastResult.date}</p>
+                        </div>
+                        <svg class="ml-auto text-zinc-500 transition-transform duration-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                     </div>
-                    <p class="text-2xl font-extrabold amount-gold mt-1">${formatMoney(data.lastResult.amount)}</p>
-                    <p class="text-xs text-zinc-500 mt-auto pt-1">📅 ${data.lastResult.date}</p>
-                    <div class="matches-container hidden"></div>
+                    <p class="text-[28px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">${formatMoney(data.lastResult.amount)}</p>
+                    <div class="matches-container hidden mt-3"></div>
                 </div>`
-            : `<div class="widget-card items-center justify-center"><div class="text-center"><span class="text-3xl">📭</span><p class="text-zinc-400 text-sm mt-2">Нет результатов</p></div></div>`;
+            : `<div class="widget-card apple-card items-center justify-center">
+                    <div class="text-center">
+                        <span class="text-3xl">📭</span>
+                        <p class="text-zinc-400 text-sm mt-2">Нет результатов</p>
+                    </div>
+                </div>`;
 
-        let lineupHtml = '<div class="widget-card"><div class="flex items-center gap-2 mb-3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><h3 class="font-bold text-sm text-white">Ближайшие турниры</h3></div><div class="flex-1 space-y-2">';
-
-        if (data.upcomingLineups?.length > 0) {
-            const dates = [...new Set(data.upcomingLineups.map(l => l.date))];
-            dates.slice(0, 2).forEach((date, idx) => {
-                const label = idx === 0 ? 'Сегодня' : 'Завтра';
-                const color = idx === 0 ? 'indigo' : 'blue';
-                const items = data.upcomingLineups.filter(l => l.date === date);
-                lineupHtml += `<div class="text-xs font-bold text-${color}-400 uppercase tracking-wider mb-2">📌 ${label}, ${formatDateShort(date)}</div>`;
-                if (items.some(l => l.inLineup)) {
-                    items.filter(l => l.inLineup).forEach(l => {
-                        const players = l.players ? l.players.split(', ').map(p => capitalizeName(p)).join(' • ') : '';
-                        lineupHtml += `<div class="bg-${color}-500/5 rounded-lg p-2 border border-${color}-500/10 mb-2"><div class="flex items-center justify-between"><span class="text-white text-xs font-medium">⏰ ${l.time || '??:??'}</span><span class="text-[9px] font-bold bg-${color}-500/20 text-${color}-400 px-2 py-0.5 rounded-full">🏆 ${l.league || '?'}</span></div><p class="text-[11px] text-zinc-400 mt-1">👥 ${players || '—'}</p><p class="text-[10px] text-indigo-400 mt-1">✅ Вы в составе</p></div>`;
-                    });
-                } else {
-                    lineupHtml += `<div class="flex flex-col items-center py-3 text-zinc-500"><span class="text-xl mb-1">😴</span><p class="text-xs">Пока не играете</p></div>`;
-                }
-            });
-        } else {
-            lineupHtml += `<div class="text-center py-4 text-zinc-500"><span class="text-2xl">📭</span><p class="text-xs">Составы не загружены</p></div>`;
-        }
-        lineupHtml += `</div></div>`;
-
-        container.innerHTML = lastHtml + lineupHtml;
+        container.innerHTML = lastHtml;
         dashboardLoaded = true;
     } catch (e) {
         container.innerHTML = `

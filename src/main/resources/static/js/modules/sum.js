@@ -1,6 +1,6 @@
-import { API } from '../core/api.js';
-import { state } from '../core/state.js';
-import { formatMoney } from '../core/utils.js';
+import {API} from '../core/api.js';
+import {state} from '../core/state.js';
+import {formatMoney} from '../core/utils.js';
 
 export function openEditTournamentModal(id, date, amount) {
     state.editingTournamentResultId = id;
@@ -21,7 +21,8 @@ export async function saveTournamentEdit() {
         await API.updateResult(state.editingTournamentResultId, amount, 0);
         closeEditTournamentModal();
         executeSum();
-    } catch(e) {}
+    } catch (e) {
+    }
 }
 
 export function changePage(page) {
@@ -29,8 +30,8 @@ export function changePage(page) {
     executeSum();
 }
 
-// Раскрытие матчей турнира
-window.toggleTournamentMatches = async function(resultId, el) {
+// Раскрытие матчей — фамилии рядом со счётом, всё по центру
+window.toggleTournamentMatches = async function (resultId, el) {
     const container = el.querySelector('.matches-container');
     if (!container) return;
 
@@ -49,20 +50,25 @@ window.toggleTournamentMatches = async function(resultId, el) {
         const matches = await response.json();
 
         container.innerHTML = `
-            <div class="matches-header">
-                <span>Стадия</span>
-                <span>Игроки</span>
-                <span>Счёт</span>
-                <span>Победитель</span>
-            </div>
-            ${matches.map(m => `
-                <div class="match-row">
-                    <span class="match-stage">${getStageLabel(m.stage)}</span>
-                    <span class="match-players">${m.player1Name || m.player1ShortName} vs ${m.player2Name || m.player2ShortName}</span>
-                    <span class="match-score">${m.score || '—'}</span>
-                    <span class="match-winner">🏆 ${m.winnerName || m.winnerShortName || '—'}</span>
+            <div class="matches-divider"></div>
+            ${matches.map((m, i) => {
+            const winnerName = m.winnerName || m.winnerShortName;
+            const p1Name = m.player1Name || m.player1ShortName;
+            const p2Name = m.player2Name || m.player2ShortName;
+            const isPlayer1Winner = winnerName === p1Name;
+            const isPlayer2Winner = winnerName === p2Name;
+
+            return `
+                <div class="match-card" style="animation-delay: ${i * 50}ms">
+                    <div class="match-stage-badge">${getStageLabel(m.stage)}</div>
+                    <div class="match-score-row-centered">
+                        <span class="match-player-name ${isPlayer1Winner ? 'winner' : ''}">${p1Name}</span>
+                        <span class="match-score-badge">${m.score || '—'}</span>
+                        <span class="match-player-name ${isPlayer2Winner ? 'winner' : ''}">${p2Name}</span>
+                    </div>
                 </div>
-            `).join('')}
+                `;
+        }).join('')}
         `;
 
         container.classList.remove('hidden');
@@ -75,11 +81,16 @@ window.toggleTournamentMatches = async function(resultId, el) {
 
 function getStageLabel(stage) {
     switch (stage) {
-        case 'GROUP': return 'Группа';
-        case 'SEMIFINAL': return 'Полуфинал';
-        case 'THIRD_PLACE': return 'За 3-е место';
-        case 'FINAL': return 'Финал';
-        default: return stage;
+        case 'GROUP':
+            return 'Группа';
+        case 'SEMIFINAL':
+            return 'Полуфинал';
+        case 'THIRD_PLACE':
+            return 'За 3-е место';
+        case 'FINAL':
+            return 'Финал';
+        default:
+            return stage;
     }
 }
 
@@ -96,7 +107,7 @@ export async function executeSum() {
         return;
     }
 
-    const params = { page: state.currentSumPage, size: 20 };
+    const params = {page: state.currentSumPage, size: 20};
     if (start) params.start = start;
     if (end) params.end = end;
 
@@ -153,7 +164,7 @@ export async function executeSum() {
         html += '</div>';
 
         res.innerHTML = html + paginationHtml;
-    } catch(e) {
+    } catch (e) {
         res.innerHTML = '<p class="text-red-400 text-center py-6">❌ Ошибка соединения</p>';
     }
 }

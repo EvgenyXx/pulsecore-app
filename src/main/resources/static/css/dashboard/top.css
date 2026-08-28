@@ -5,24 +5,27 @@
     gap: 14px;
     padding: 12px 16px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
     animation: rankSlideIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .rank-card:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.05);
     transform: translateX(3px);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .rank-card.first {
-    background: rgba(245, 158, 11, 0.04);
-    border: 1px solid rgba(245, 158, 11, 0.15);
+    background: rgba(245, 158, 11, 0.06);
+    border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 .rank-card.mine {
-    background: rgba(99, 102, 241, 0.08);
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
 }
 
 .rank-number {
@@ -36,37 +39,93 @@
     color: #71717a;
     flex-shrink: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.05);
     transition: all 0.35s ease;
 }
 
 .rank-card.first .rank-number {
-    background: rgba(245, 158, 11, 0.15);
+    background: rgba(245, 158, 11, 0.2);
     color: #fbbf24;
 }
 
 .rank-card.mine .rank-number {
-    background: rgba(99, 102, 241, 0.2);
-    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.3);
+    color: #c7d2fe;
 }
 
-/* Прогресс-бар */
-.rank-bar {
-    height: 3px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 2px;
-    overflow: hidden;
+/* Apple карточки */
+.apple-card {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-.rank-bar-fill {
-    height: 100%;
-    background: #6366f1;
-    border-radius: 2px;
-    transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+.apple-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
-.rank-bar-fill.gold {
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+/* Матчи в стиле Apple */
+.matches-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 12px 0;
+}
+
+.match-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    animation: matchSlideIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    opacity: 0;
+}
+
+.match-stage-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.18);
+    padding: 3px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    margin-bottom: 8px;
+}
+
+.match-score-row-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.match-score-row-centered .match-player-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #ffffff;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.match-score-row-centered .match-player-name.winner {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+.match-score-badge {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 3px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 /* Анимации */
@@ -81,33 +140,13 @@
     }
 }
 
-@keyframes appleSheetIn {
+@keyframes matchSlideIn {
     from {
         opacity: 0;
-        transform: translateY(100%);
+        transform: translateY(-6px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-@keyframes appleSheetOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(100%);
-    }
-}
-
-/* Ручка шторки */
-.sheet-handle {
-    width: 36px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-    margin: 0 auto 16px;
 }
