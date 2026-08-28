@@ -131,10 +131,48 @@ body {
 
 #mobileHeader { padding-top: 0; padding-bottom: 0; }
 
-.hall-checkbox-card { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); }
-.hall-checkbox-card:hover { background: rgba(99,102,241,0.06); border-color: rgba(99,102,241,0.20); }
-.hall-checkbox-card.selected { background: rgba(99,102,241,0.10); border-color: rgba(99,102,241,0.30); }
-.hall-checkbox-card input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; }
+.hall-checkbox-card {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    padding: 5px 8px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.015) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.hall-checkbox-card:hover {
+    background: rgba(99, 102, 241, 0.06) !important;
+    border-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+.hall-checkbox-card.selected {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+.hall-checkbox-card input[type="checkbox"] {
+    accent-color: #6366f1 !important;
+    width: 13px !important;
+    height: 13px !important;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.hall-checkbox-card span {
+    flex: 0 0 auto !important;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px !important;
+    color: #ffffff !important;
+    text-align: left !important;
+}
 
 .lineup-row { display: flex; align-items: flex-start; padding: 9px 10px; border-radius: 8px; margin-bottom: 4px; background: rgba(255,255,255,0.012); border: 1px solid rgba(255,255,255,0.03); gap: 8px; }
 .player-row { background: rgba(99,102,241,0.06) !important; border-color: rgba(99,102,241,0.12) !important; }
@@ -655,4 +693,11 @@ body {
     width: 93% !important;
     max-width: 93% !important;
     box-sizing: border-box !important;
+}
+
+/* Сайдбар для десктопа */
+@media (min-width: 768px) {
+    .glass-sidebar.hidden {
+        display: flex !important;
+    }
 }
