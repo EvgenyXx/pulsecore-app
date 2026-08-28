@@ -1,5 +1,3 @@
-// modules/scheduled-report.js
-
 export function setCachedReports(reports) {
     // Оставляем для дашборда (бейдж)
 }
@@ -24,7 +22,6 @@ function renderScheduledReportsSheet(reports) {
 
     if (pending.length === 0) {
         return `<div class="text-center py-8">
-            <span class="text-4xl">📭</span>
             <p class="text-zinc-400 text-sm mt-3">Нет запланированных отчётов</p>
         </div>`;
     }
@@ -46,22 +43,22 @@ function renderScheduledReportsSheet(reports) {
         </div>
     `).join('');
 
-    return `<h3 class="report-sheet-title">📬 Запланировано · ${pending.length}</h3>${items}`;
+    return `<h3 class="report-sheet-title">Запланировано · ${pending.length}</h3>${items}`;
 }
 
 export function renderReportForm() {
     return `
-        <div class="widget-card rounded-2xl p-4 mb-4">
-            <h3 class="text-sm font-semibold text-indigo-300 mb-3">📅 Заказать отчёт на почту</h3>
+        <div class="apple-card mb-4">
+            <h3 class="text-[15px] font-semibold text-white tracking-tight mb-4">Заказать отчёт на почту</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                <div><label class="text-xs text-zinc-400 mb-1 block">📅 Дата с</label><input id="reportDateStart" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
-                <div><label class="text-xs text-zinc-400 mb-1 block">📅 Дата по</label><input id="reportDateEnd" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
+                <div><label class="text-xs text-zinc-400 mb-1 block">Дата с</label><input id="reportDateStart" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
+                <div><label class="text-xs text-zinc-400 mb-1 block">Дата по</label><input id="reportDateEnd" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                <div><label class="text-xs text-zinc-400 mb-1 block">📅 Дата отправки</label><input id="reportScheduledDate" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
-                <div><label class="text-xs text-zinc-400 mb-1 block">⏰ Время отправки</label><input id="reportScheduledTime" type="time" class="input"></div>
+                <div><label class="text-xs text-zinc-400 mb-1 block">Дата отправки</label><input id="reportScheduledDate" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
+                <div><label class="text-xs text-zinc-400 mb-1 block">Время отправки</label><input id="reportScheduledTime" type="time" class="input"></div>
             </div>
-            <button onclick="submitReport()" id="submitReportBtn" class="btn-gold w-full">📬 Оформить отчёт</button>
+            <button onclick="submitReport()" id="submitReportBtn" class="apple-save-btn">Оформить отчёт</button>
             <p id="reportFormMsg" class="text-xs text-center mt-2 hidden"></p>
         </div>
     `;
@@ -120,7 +117,7 @@ window.submitReport = async function() {
     const btn = document.getElementById('submitReportBtn');
 
     if (!dateStart || !dateEnd || !scheduledDate || !scheduledTime) {
-        msg.textContent = '❌ Заполните все поля';
+        msg.textContent = 'Заполните все поля';
         msg.className = 'text-xs text-center mt-2 text-red-400';
         msg.classList.remove('hidden');
         return;
@@ -129,7 +126,7 @@ window.submitReport = async function() {
     const scheduledAt = `${scheduledDate}T${scheduledTime}:00`;
 
     btn.disabled = true;
-    btn.innerHTML = '⏳ Отправка...';
+    btn.innerHTML = 'Отправка...';
 
     try {
         const res = await fetch('/api/tournament/reports', {
@@ -140,18 +137,18 @@ window.submitReport = async function() {
         });
 
         if (res.ok) {
-            msg.textContent = '✅ Отчёт запланирован!';
+            msg.textContent = 'Отчёт запланирован';
             msg.className = 'text-xs text-center mt-2 text-emerald-400';
             msg.classList.remove('hidden');
-            btn.innerHTML = '✅ Готово';
+            btn.innerHTML = 'Готово';
         } else {
             throw new Error();
         }
     } catch(e) {
-        msg.textContent = '❌ Ошибка';
+        msg.textContent = 'Ошибка';
         msg.className = 'text-xs text-center mt-2 text-red-400';
         msg.classList.remove('hidden');
         btn.disabled = false;
-        btn.innerHTML = '📬 Оформить отчёт';
+        btn.innerHTML = 'Оформить отчёт';
     }
 };

@@ -22,16 +22,15 @@ window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 window.toggleTheme = toggleTheme;
 
-// Сплэш-лоадер для плавного старта
 document.body.insertAdjacentHTML('afterbegin', '<div id="appLoader" style="position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;"><div class="spinner"></div></div>');
 
-const subBlockHtml = () => `<div class="widget-card rounded-2xl p-8 text-center" style="animation: fadeIn 0.2s ease">
+const subBlockHtml = () => `<div class="apple-card p-8 text-center" style="animation: fadeIn 0.2s ease">
     <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     </div>
     <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
     <p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы открыть все функции</p>
-    <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a>
+    <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>
 </div>`;
 
 function showAction(action) {
@@ -67,8 +66,8 @@ function showAction(action) {
         fetch('/api/player/halls', { credentials: 'same-origin' })
             .then(r => { if (r.status === 402) { content.innerHTML = subBlockHtml(); return; } loadHallsContent(); });
     } else if (action === 'sum') {
-        title.innerHTML = '💰 Сумма за период' + burgerBtn;
-        subtitle.textContent = 'Подсчёт заработка и список турниров';
+        title.innerHTML = 'Сумма за период' + burgerBtn;
+
         state.currentSumPage = 0;
 
         fetch('/api/player/halls', { credentials: 'same-origin' })
@@ -78,9 +77,28 @@ function showAction(action) {
                     return;
                 }
                 content.innerHTML = `
-                <div id="sumButtons" class="space-y-3">
-                    <button onclick="showSumCalculator()" class="btn-gold w-full py-4 text-base font-semibold">Посмотреть в приложении</button>
-                    <button onclick="showReportForm()" class="btn-gold w-full py-4 text-base font-semibold">Заказать отчёт на почту</button>
+                <div class="sum-menu space-y-2">
+                    <div class="apple-card menu-card" onclick="showSumCalculator()">
+                        <div class="menu-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="menu-title">Подсчёт суммы</h3>
+                            <p class="menu-subtitle">Заработок за период</p>
+                        </div>
+                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    
+                    <div class="apple-card menu-card" onclick="showReportForm()">
+                        <div class="menu-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="menu-title">Отчёт на почту</h3>
+                            <p class="menu-subtitle">Запланировать отправку</p>
+                        </div>
+                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
                 </div>
                 <div id="sumCalculator" class="hidden mt-4"></div>
                 <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
@@ -91,7 +109,7 @@ function showAction(action) {
 }
 
 window.showSumCalculator = function() {
-    document.getElementById('sumButtons').classList.add('hidden');
+    document.querySelector('.sum-menu')?.classList.add('hidden');
     document.getElementById('actionResult').innerHTML = '';
     const calc = document.getElementById('sumCalculator');
     calc.classList.remove('hidden');
@@ -99,21 +117,20 @@ window.showSumCalculator = function() {
         <button onclick="backToSumButtons()" class="flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-4 transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Назад
         </button>
-        <div class="widget-card rounded-2xl p-4 mb-4">
+        <div class="apple-card mb-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 <div><label class="text-xs text-zinc-400 mb-1 block">Дата с</label><input id="dateStart" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
                 <div><label class="text-xs text-zinc-400 mb-1 block">Дата по</label><input id="dateEnd" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
             </div>
-            <button onclick="executeSum()" class="btn-gold w-full">Рассчитать</button>
+            <button onclick="executeSum()" class="apple-save-btn">Рассчитать</button>
         </div>
     `;
     flatpickr('#dateStart', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
     flatpickr('#dateEnd', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
 };
 
-// Форма заказного отчёта
 window.showReportForm = function() {
-    document.getElementById('sumButtons').classList.add('hidden');
+    document.querySelector('.sum-menu')?.classList.add('hidden');
     document.getElementById('actionResult').innerHTML = '';
     import('/js/modules/scheduled-report.js').then(m => {
         const calc = document.getElementById('sumCalculator');
@@ -130,7 +147,7 @@ window.showReportForm = function() {
 };
 
 window.backToSumButtons = function() {
-    document.getElementById('sumButtons').classList.remove('hidden');
+    document.querySelector('.sum-menu')?.classList.remove('hidden');
     document.getElementById('sumCalculator').classList.add('hidden');
     document.getElementById('actionResult').innerHTML = '';
 };

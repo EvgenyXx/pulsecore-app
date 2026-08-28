@@ -648,4 +648,11 @@ body {
         font-size: 0.6rem;
     }
 }
-
+/* ===== PWA Fix — input короче ===== */
+.apple-card input,
+.apple-card .flatpickr-input,
+.flatpickr-input {
+    width: 93% !important;
+    max-width: 93% !important;
+    box-sizing: border-box !important;
+}
