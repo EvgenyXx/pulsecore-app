@@ -63,7 +63,7 @@ function showAction(action) {
 
     if (action === 'halls') {
         title.innerHTML = 'Расписание турниров' + burgerBtn;
-        subtitle.textContent = 'Составы по выбранным залам';
+
         fetch('/api/player/halls', { credentials: 'same-origin' })
             .then(r => { if (r.status === 402) { content.innerHTML = subBlockHtml(); return; } loadHallsContent(); });
     } else if (action === 'sum') {
