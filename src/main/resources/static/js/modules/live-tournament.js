@@ -159,13 +159,18 @@ async function loadData() {
         playerName = me.name || 'Аноним';
         playerId = me.id || '00000000-0000-0000-0000-000000000000';
 
-        const lineup = await (await fetch(`/api/tournament/${lineupId}`, { credentials: 'same-origin' })).json();
+        // Ищем турнир в уже загруженном списке
+        const lineup = allTournaments.find(t => t.externalId == lineupId);
+
+        if (!lineup) {
+            throw new Error('Турнир не найден');
+        }
 
         document.getElementById('tournamentLoading').classList.add('hidden');
         document.getElementById('content').classList.remove('hidden');
         document.getElementById('leagueTitle').textContent = lineup.league || 'Турнир';
         document.getElementById('tournamentInfo').textContent = `${lineup.hall || ''} • ${lineup.time || ''}`;
-        document.getElementById('playersList').innerHTML = (lineup.players ? lineup.players.split(', ') : []).map(p => `<span class="player-tag">${escapeHtml(p)}</span>`).join('');
+        document.getElementById('playersList').innerHTML = (lineup.players || []).map(p => `<span class="player-tag">${escapeHtml(p)}</span>`).join('');
 
         const streamUrl = lineup.streamUrl || lineup.stream_url;
         if (streamUrl) {
@@ -174,6 +179,7 @@ async function loadData() {
             frame.src = streamUrl;
             frame.style.display = 'block';
         } else {
+            document.getElementById('videoPlaceholder').style.display = 'block';
             document.getElementById('videoPlaceholder').innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;color:#a1a1aa;font-size:0.95rem;padding:20px;">Трансляция недоступна</div>`;
         }
 

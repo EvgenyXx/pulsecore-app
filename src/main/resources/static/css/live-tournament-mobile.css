@@ -64,7 +64,7 @@
     .video-card {
         margin: 0 4px 2px;
         border-radius: 8px;
-        max-height: 130px;
+        max-height: 220px;
         flex-shrink: 0;
     }
 
