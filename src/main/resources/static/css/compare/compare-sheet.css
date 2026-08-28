@@ -102,33 +102,69 @@
     margin-top: 0;
 }
 
+/* Переключатели с ползунком */
 .sheet-segment-row {
+    position: relative;
     display: flex;
-    gap: 6px;
-    padding: 0 4px;
+    gap: 0;
+    padding: 0;
     margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 2px;
+    overflow: hidden;
 }
 
+.segment-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: calc(100% - 4px);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    transition: transform 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
+    z-index: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.segment-slider.pos-0 { transform: translateX(0); }
+.segment-slider.pos-1 { transform: translateX(100%); }
+.segment-slider.pos-2 { transform: translateX(200%); }
+.segment-slider.pos-3 { transform: translateX(300%); }
+
+.segment-slider.mode-2 { width: calc(50% - 2px); }
+.segment-slider.mode-3 { width: calc(33.333% - 2px); }
+.segment-slider.mode-4 { width: calc(25% - 2px); }
+
 .sheet-segment-btn {
-    flex: 1;
-    padding: 10px 8px;
+    position: relative;
+    z-index: 1;
+    flex: 1 0 0;
+    min-width: 0;
+    padding: 10px 6px;
     border-radius: 10px;
     font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.03);
-    color: #d4d4d8;
+    border: none;
+    background: transparent;
+    color: #a1a1aa;
     text-align: center;
     white-space: nowrap;
-    transition: all 0.2s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.35s ease;
+    box-sizing: border-box;
 }
 
 .sheet-segment-btn.active {
-    background: rgba(99, 102, 241, 0.12);
-    color: #c7d2fe;
+    color: #ffffff;
     font-weight: 600;
-    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.sheet-segment-btn:hover {
+    color: #e5e5e5;
 }
 
 /* ===== АККОРДЕОН МЕТРИКИ ===== */

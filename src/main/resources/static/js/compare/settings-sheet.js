@@ -11,11 +11,48 @@ let metricAccordionOpen = false;
 
 export function initSettingsSheet() {
     renderMetricAccordion();
+    initSegments();
+}
+
+function initSegments() {
+    const modeRow = document.querySelector('.sheet-segment-row:has(#modeVersus)');
+    const periodRow = document.querySelector('.sheet-segment-row:has(#periodAll)');
+
+    if (modeRow && !modeRow.querySelector('.segment-slider')) {
+        const slider = document.createElement('div');
+        slider.className = 'segment-slider mode-2 pos-0';
+        modeRow.insertBefore(slider, modeRow.firstChild);
+    }
+
+    if (periodRow && !periodRow.querySelector('.segment-slider')) {
+        const slider = document.createElement('div');
+        slider.className = 'segment-slider mode-4 pos-3';
+        periodRow.insertBefore(slider, periodRow.firstChild);
+    }
+
+    updateModeSlider();
+    updatePeriodSlider();
+}
+
+function updateModeSlider() {
+    const row = document.querySelector('.sheet-segment-row:has(#modeVersus)');
+    const slider = row?.querySelector('.segment-slider');
+    if (slider) {
+        slider.className = `segment-slider mode-2 ${currentMode === 'versus' ? 'pos-0' : 'pos-1'}`;
+    }
+}
+
+function updatePeriodSlider() {
+    const row = document.querySelector('.sheet-segment-row:has(#periodAll)');
+    const slider = row?.querySelector('.segment-slider');
+    if (slider) {
+        const positions = { 'week': 0, 'month': 1, 'year': 2, 'all': 3 };
+        slider.className = `segment-slider mode-4 pos-${positions[currentPeriod] ?? 3}`;
+    }
 }
 
 function renderMetricAccordion() {
     const body = document.getElementById('metricAccordionBody');
-
     if (!body) return;
 
     body.innerHTML = compareMetrics.map(metric => `
@@ -38,10 +75,8 @@ function renderMetricAccordion() {
 
 export function toggleMetricAccordion() {
     metricAccordionOpen = !metricAccordionOpen;
-
     const body = document.getElementById('metricAccordionBody');
     const arrow = document.getElementById('metricArrow');
-
     if (metricAccordionOpen) {
         body.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
@@ -52,11 +87,7 @@ export function toggleMetricAccordion() {
 }
 
 export function getSettings() {
-    return {
-        mode: currentMode,
-        metricId: currentMetricId,
-        period: currentPeriod
-    };
+    return { mode: currentMode, metricId: currentMetricId, period: currentPeriod };
 }
 
 export function getCurrentMetric() {
@@ -79,6 +110,8 @@ export function setMode(mode) {
     } else {
         document.getElementById('modeSingle')?.classList.add('active');
     }
+
+    updateModeSlider();
 }
 
 export function setMetric(metricId) {
@@ -86,23 +119,27 @@ export function setMetric(metricId) {
     renderMetricAccordion();
 }
 
-export function setPeriodFromSheet(period) {
+// Единая функция для установки периода
+export function setPeriod(period) {
     currentPeriod = period;
 
-    document.querySelector('[onclick="setPeriod(\'week\')"]')?.classList.remove('active');
-    document.querySelector('[onclick="setPeriod(\'month\')"]')?.classList.remove('active');
-    document.querySelector('[onclick="setPeriod(\'year\')"]')?.classList.remove('active');
-    document.getElementById('periodAll')?.classList.remove('active');
+    // Снимаем active со всех кнопок периодов
+    document.querySelectorAll('[onclick*="setPeriod"]').forEach(btn => {
+        btn.classList.remove('active');
+    });
 
-    const periodButtons = {
-        'week': document.querySelector('[onclick="setPeriod(\'week\')"]'),
-        'month': document.querySelector('[onclick="setPeriod(\'month\')"]'),
-        'year': document.querySelector('[onclick="setPeriod(\'year\')"]'),
-        'all': document.getElementById('periodAll')
-    };
+    // Активируем нужную кнопку
+    const activeBtn = document.querySelector(`[onclick="setPeriod('${period}')"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
 
-    const btn = periodButtons[period];
-    if (btn) btn.classList.add('active');
+    updatePeriodSlider();
+}
+
+// Для обратной совместимости
+export function setPeriodFromSheet(period) {
+    setPeriod(period);
 }
 
 export function applySettings() {
@@ -113,24 +150,14 @@ export function applySettings() {
     if (customStart && customEnd) {
         toggleSettingsSheet();
         window.dispatchEvent(new CustomEvent('settings-applied', {
-            detail: {
-                mode: currentMode,
-                metricId: currentMetricId,
-                start: customStart,
-                end: customEnd
-            }
+            detail: { mode: currentMode, metricId: currentMetricId, start: customStart, end: customEnd }
         }));
         return;
     }
 
     toggleSettingsSheet();
     window.dispatchEvent(new CustomEvent('settings-applied', {
-        detail: {
-            mode: currentMode,
-            metricId: currentMetricId,
-            start,
-            end
-        }
+        detail: { mode: currentMode, metricId: currentMetricId, start, end }
     }));
 }
 
@@ -139,5 +166,6 @@ window.toggleSettingsSheet = toggleSettingsSheet;
 window.toggleMetricAccordion = toggleMetricAccordion;
 window.setMode = setMode;
 window.setMetric = setMetric;
+window.setPeriod = setPeriod;
 window.setPeriodFromSheet = setPeriodFromSheet;
 window.applySettings = applySettings;

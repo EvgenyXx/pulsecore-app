@@ -13,7 +13,7 @@ import {
     toggleSettingsSheet,
     setMode,
     setMetric,
-    setPeriodFromSheet,
+    setPeriod,
     applySettings
 } from './settings-sheet.js';
 
@@ -110,10 +110,13 @@ async function loadAllPlayers(start, end) {
     }
 }
 
+// Экспортируем функции в window
 window.toggleSettingsSheet = toggleSettingsSheet;
+window.toggleMetricAccordion = toggleMetricAccordion;
 window.setMode = setMode;
 window.setMetric = setMetric;
-window.setPeriod = setPeriodFromSheet;
+window.setPeriod = setPeriod;
+window.setPeriodFromSheet = setPeriod;
 window.applySettings = applySettings;
 
 window.addEventListener('settings-applied', (e) => {

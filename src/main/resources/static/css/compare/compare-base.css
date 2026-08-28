@@ -19,14 +19,16 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     padding: 0 4px;
 }
 
 .compare-title {
-    font-size: 1.25rem;
+    font-size: 28px;
     font-weight: 800;
-    color: #fff;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .compare-actions {
@@ -38,26 +40,46 @@ body {
 .period-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.7rem;
+    gap: 6px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.03);
-    color: #a5b4fc;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.period-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.period-toggle:active {
+    transform: scale(0.97);
 }
 
 .burger-btn {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
-    color: #a1a1aa;
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.burger-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.burger-btn:active {
+    transform: scale(0.95);
 }

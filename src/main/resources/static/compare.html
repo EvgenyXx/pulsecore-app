@@ -163,7 +163,7 @@
         <div class="period-sheet-handle"></div>
 
         <p class="sheet-section-title">Режим</p>
-        <div class="sheet-segment-row">
+        <div class="sheet-segment-row" id="modeSegmentRow">
             <button class="sheet-segment-btn active" id="modeVersus" onclick="setMode('versus')">Версус</button>
             <button class="sheet-segment-btn" id="modeSingle" onclick="setMode('single')">Одиночный</button>
         </div>
@@ -176,15 +176,14 @@
                 </svg>
             </div>
             <div class="sheet-accordion-body" id="metricAccordionBody" style="display: none;">
-                <!-- Кнопки метрик генерируются JS -->
             </div>
         </div>
 
         <p class="sheet-section-title">Период</p>
-        <div class="sheet-segment-row">
-            <button class="sheet-segment-btn" onclick="setPeriod('week')">Неделя</button>
-            <button class="sheet-segment-btn" onclick="setPeriod('month')">Месяц</button>
-            <button class="sheet-segment-btn" onclick="setPeriod('year')">Год</button>
+        <div class="sheet-segment-row" id="periodSegmentRow">
+            <button class="sheet-segment-btn" id="periodWeek" onclick="setPeriod('week')">Неделя</button>
+            <button class="sheet-segment-btn" id="periodMonth" onclick="setPeriod('month')">Месяц</button>
+            <button class="sheet-segment-btn" id="periodYear" onclick="setPeriod('year')">Год</button>
             <button class="sheet-segment-btn active" id="periodAll" onclick="setPeriod('all')">Всё</button>
         </div>
 
