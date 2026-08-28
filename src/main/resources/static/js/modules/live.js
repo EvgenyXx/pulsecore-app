@@ -179,10 +179,10 @@ function getStatusBadge(status) {
 
 function getButton(status, externalId) {
     switch(status) {
-        case 'LIVE': return `<button class="apple-btn-live">Смотреть трансляцию</button>`;
+        case 'LIVE': return `<button class="apple-btn-live" onclick="event.stopPropagation(); openTournament('${externalId}')">Смотреть трансляцию</button>`;
         case 'UPCOMING': return `<button class="apple-btn-upcoming" disabled>Ожидание</button>`;
-        case 'FINISHED': return `<button class="apple-btn-finished">Чат</button>`;
-        default: return `<button class="apple-btn-live">Смотреть</button>`;
+        case 'FINISHED': return `<button class="apple-btn-finished" onclick="event.stopPropagation(); openTournament('${externalId}')">Чат</button>`;
+        default: return `<button class="apple-btn-live" onclick="event.stopPropagation(); openTournament('${externalId}')">Смотреть</button>`;
     }
 }
 
@@ -204,7 +204,7 @@ function renderTournaments(tournaments) {
     document.getElementById('subtitle').textContent = tournaments.length + ' турниров • ' + liveCount + ' в эфире';
 
     list.innerHTML = tournaments.map((t, i) => `
-        <div class="apple-card live-tournament-card" onclick="window.location.href='/live/${t.externalId}'" style="animation-delay: ${i * 50}ms; ${t.status === 'FINISHED' ? 'opacity:0.7;' : ''}${t.status === 'UPCOMING' ? 'border-color:rgba(245,158,11,0.25);' : ''}">
+        <div class="apple-card live-tournament-card" onclick="openTournament('${t.externalId}')" style="animation-delay: ${i * 50}ms; ${t.status === 'FINISHED' ? 'opacity:0.7;' : ''}${t.status === 'UPCOMING' ? 'border-color:rgba(245,158,11,0.25);' : ''}">
             <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-3">
                     ${getStatusBadge(t.status)}

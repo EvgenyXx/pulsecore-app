@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>PulseCore — Live</title>
     <script type="module">
@@ -12,9 +12,13 @@
     <link rel="icon" type="image/png" href="/img.png">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/live.css">
+    <link rel="stylesheet" href="/css/live-tournament.css">
+    <link rel="stylesheet" href="/css/live-tournament-mobile.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <style>
         body { padding-top: env(safe-area-inset-top, 0px); }
     </style>
@@ -26,7 +30,7 @@
 <div id="burgerMenuContainer"></div>
 <div id="sidebarContainer"></div>
 
-<main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10 min-h-screen">
+<div id="liveListScreen" class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10 min-h-screen">
     <div class="max-w-3xl mx-auto">
 
         <div class="flex items-center justify-between mb-4">
@@ -71,18 +75,69 @@
 
         <div id="liveList" class="space-y-4 hidden"></div>
 
-        <div id="lineupsSection" class="hidden mt-8">
-            <h2 class="text-lg font-bold text-white mb-3">Составы на сегодня</h2>
-            <div id="lineupsContainer" class="space-y-2"></div>
-        </div>
-
         <div id="empty" class="text-center py-20 hidden">
             <p class="text-zinc-400 font-medium">Нет активных трансляций</p>
             <p class="text-zinc-600 text-sm mt-1">Турниры начнутся — появятся здесь</p>
         </div>
 
     </div>
-</main>
+</div>
+
+<div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen">
+    <div class="max-w-4xl mx-auto">
+
+        <div class="live-header">
+            <button class="back-btn" onclick="showLiveList()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+            <span class="league-title" id="leagueTitle">Загрузка...</span>
+            <span class="online-count" id="onlineCount"></span>
+            <span class="tournament-info" id="tournamentInfo"></span>
+        </div>
+
+        <div class="players-row" id="playersList"></div>
+
+        <div id="tournamentLoading" class="loading-block">
+            <div class="spinner mb-4"></div>
+            <p class="text-zinc-500 text-sm">Загрузка...</p>
+        </div>
+
+        <div id="content" class="hidden">
+            <div class="video-card" id="videoWrapper">
+                <button onclick="toggleFullscreen()" class="fullscreen-btn" title="На весь экран">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                </button>
+                <div id="videoPlaceholder" class="video-placeholder">Загрузка трансляции...</div>
+                <iframe id="streamFrame" style="border: 0; display: none; background: #000; width: 100%; aspect-ratio: 16/9; border-radius: 16px;" allow="fullscreen" src="" scrolling="no"></iframe>
+            </div>
+
+            <h3 class="chat-title">Чат</h3>
+            <div class="chat-container">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="text-center text-zinc-600 text-xs py-4">Сообщений пока нет</div>
+                </div>
+                <div id="replyBar" class="reply-bar hidden">
+                    <div class="reply-bar-info">
+                        <div class="reply-bar-sender" id="replyBarSender"></div>
+                        <div class="reply-bar-text" id="replyBarText"></div>
+                    </div>
+                    <span class="reply-bar-close" onclick="cancelReply()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </span>
+                </div>
+                <div class="chat-input-row">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение..." maxlength="300">
+                    <button onclick="sendMessage()" id="sendBtn" class="send-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="module">
     import { initSidebar } from '/js/sidebar.js';
@@ -98,7 +153,12 @@
     import { initStars } from '/js/modules/stars.js';
     initStars();
 </script>
+<script type="module">
+    import { initLiveRouter } from '/js/modules/live-router.js';
+    initLiveRouter();
+</script>
 <script src="/js/modules/live.js"></script>
+<script type="module" src="/js/modules/live-tournament.js"></script>
 <script type="module">
     import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
     initThemePicker();
