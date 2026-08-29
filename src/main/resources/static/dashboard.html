@@ -31,6 +31,10 @@
     <link rel="stylesheet" href="/css/compare/compare-mobile.css">
     <link rel="stylesheet" href="/css/profile.css">
     <link rel="stylesheet" href="/css/profile-mobile.css">
+    <link rel="stylesheet" href="/css/analytics/analytics-base.css">
+    <link rel="stylesheet" href="/css/analytics/analytics-mobile.css">
+    <link rel="stylesheet" href="/css/analytics/analytics-desktop.css">
+    <link rel="stylesheet" href="/css/analytics/analytics-sheet.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px','2xl':'1536px'}}}}</script>
@@ -40,6 +44,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
         body { padding-top: env(safe-area-inset-top, 0px); }
     </style>
@@ -251,6 +257,100 @@
         </div>
     </div>
 
+    <!-- Analytics Page -->
+    <div id="analyticsPage" class="hidden">
+        <div class="analytics-tabs hidden md:flex mb-4">
+            <div class="analytics-slider pos-0"></div>
+            <button class="analytics-tab active" id="nav-league" onclick="switchTab('league')">Средняя по лигам</button>
+            <button class="analytics-tab" id="nav-monthly" onclick="switchTab('monthly')">Доход по месяцам</button>
+            <button class="analytics-tab" id="nav-daily" onclick="switchTab('daily')">Доход по дням</button>
+            <button class="analytics-tab" id="nav-best-time" onclick="switchTab('best-time')">Лучшее время</button>
+        </div>
+
+        <div class="flex items-center justify-between mb-4 md:hidden">
+            <h2 class="text-xl font-extrabold text-white">Аналитика</h2>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleAnalyticsSheet()" class="tabs-btn">Меню ▴</button>
+                <button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="analyticsLoading"></div>
+        <div id="analyticsNoSub" class="hidden max-w-md mx-auto mt-10">
+            <div class="apple-card p-8 text-center">
+                <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Требуется подписка</h3>
+                <p class="text-zinc-400 text-sm mb-5">Оформите подписку PRO</p>
+                <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a>
+                <br><a href="#" onclick="navigate('home')" class="text-xs text-zinc-500 mt-4 inline-block hover:text-zinc-300">На главную</a>
+            </div>
+        </div>
+
+        <div id="tab-league" class="hidden content-panel max-w-2xl mx-auto">
+            <h2 class="text-xl font-extrabold text-white mb-4">Средняя по лигам</h2>
+            <p class="text-zinc-400 text-sm mb-5">Средний заработок за турнир по всем игрокам</p>
+            <div class="chart-card"><div class="chart-wrap"><canvas id="leagueChart"></canvas></div>
+                <div class="flex flex-col items-center gap-1 mt-4"><span class="avg-badge"><span class="text-zinc-400">Ваша средняя:</span><span class="text-white font-bold" id="playerAvgPill">-</span></span><p class="text-xs text-zinc-500" id="closestInfo"></p></div></div>
+        </div>
+
+        <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
+            <h2 class="text-xl font-extrabold text-white mb-4">Доход по месяцам</h2>
+            <div class="flex items-center gap-2 mb-5"><span class="text-zinc-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-zinc-400 text-sm">год</span></div>
+            <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+            <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill"><span class="text-zinc-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
+            <p class="swipe-hint">← листай влево/вправо →</p>
+        </div>
+
+        <div id="tab-daily" class="hidden content-panel max-w-2xl mx-auto">
+            <h2 class="text-xl font-extrabold text-white mb-4">Доход по дням</h2>
+            <div class="daily-header">
+                <button onclick="prevDailyMonth()" class="nav-arrows-desktop" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;">◂</button>
+                <span class="daily-month-title" id="dailyMonthLabel">Июнь 2026</span>
+                <button onclick="nextDailyMonth()" class="nav-arrows-desktop" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;">▸</button>
+            </div>
+            <div class="chart-card"><div class="chart-wrap"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+            <div class="daily-stats-row">
+                <div class="daily-stat"><div class="daily-stat-value" id="dailyTotal">0 ₽</div><div class="daily-stat-label">За месяц</div></div>
+                <div class="daily-stat"><div class="daily-stat-value" id="dailyAvg">0 ₽</div><div class="daily-stat-label">В день</div></div>
+                <div class="daily-stat"><div class="daily-stat-value" id="dailyBest">0 ₽</div><div class="daily-stat-label">Лучший день</div></div>
+            </div>
+            <p class="swipe-hint">← листай влево/вправо →</p>
+        </div>
+
+        <div id="tab-best-time" class="hidden content-panel max-w-2xl mx-auto">
+            <h2 class="text-xl font-extrabold text-white mb-4">Лучшее время</h2>
+            <p class="text-zinc-400 text-sm mb-5">В какое время суток вы зарабатываете больше всего</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button onclick="setBestTimePeriod('all')" id="bt-all" class="period-btn active">Всё время</button>
+                <button onclick="setBestTimePeriod('month')" id="bt-month" class="period-btn">Месяц</button>
+                <button onclick="setBestTimePeriod('week')" id="bt-week" class="period-btn">Неделя</button>
+                <span class="text-zinc-500 text-xs mx-1">или</span>
+                <input type="text" id="bestTimeStart" class="flatpickr-input" placeholder="Дата с">
+                <span class="text-zinc-500 text-xs">—</span>
+                <input type="text" id="bestTimeEnd" class="flatpickr-input" placeholder="Дата по">
+                <button onclick="setBestTimePeriod('custom')" class="period-btn">Применить</button>
+            </div>
+            <div class="chart-card"><div class="chart-wrap"><canvas id="bestTimeChart"></canvas></div>
+                <table class="best-time-table"><thead><tr><th>Время</th><th>Игр</th><th>Средний</th><th>Всего</th></tr></thead><tbody id="bestTimeTableBody"></tbody></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Sheet -->
+    <div class="tab-sheet-overlay" id="analyticsSheetOverlay" onclick="toggleAnalyticsSheet()">
+        <div class="tab-sheet" onclick="event.stopPropagation()">
+            <div class="tab-sheet-handle"></div>
+            <button class="tab-sheet-btn active" id="sheet-league" onclick="switchTab('league');toggleAnalyticsSheet()">Средняя по лигам</button>
+            <button class="tab-sheet-btn" id="sheet-monthly" onclick="switchTab('monthly');toggleAnalyticsSheet()">Доход по месяцам</button>
+            <button class="tab-sheet-btn" id="sheet-daily" onclick="switchTab('daily');toggleAnalyticsSheet()">Доход по дням</button>
+            <button class="tab-sheet-btn" id="sheet-best-time" onclick="switchTab('best-time');toggleAnalyticsSheet()">Лучшее время</button>
+        </div>
+    </div>
+
     <!-- Profile Page -->
     <div id="profilePage" class="hidden">
         <div id="settings-main">
@@ -459,13 +559,6 @@
     <div id="reportSheetContent"></div>
 </div>
 
-<script type="module" src="/js/app.js"></script>
-<script type="module" src="/js/modules/top.js"></script>
-<script type="module" src="/js/dashboard/top-switchers.js"></script>
-<script src="/js/modules/live.js"></script>
-<script type="module" src="/js/modules/live-tournament.js"></script>
-<script type="module" src="/js/compare/compare-app.js"></script>
-<script type="module" src="/js/profile-app.js"></script>
 <script type="module">
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
@@ -474,6 +567,15 @@
     initRoleCheck();
     initSidebar('home');
 </script>
+
+<script type="module" src="/js/app.js"></script>
+<script type="module" src="/js/modules/top.js"></script>
+<script type="module" src="/js/dashboard/top-switchers.js"></script>
+<script src="/js/modules/live.js"></script>
+<script type="module" src="/js/modules/live-tournament.js"></script>
+<script type="module" src="/js/compare/compare-app.js"></script>
+<script type="module" src="/js/profile-app.js"></script>
+<script type="module" src="/js/analytics-app.js"></script>
 <script type="module">
     import { initStars } from '/js/modules/stars.js';
     initStars();

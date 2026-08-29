@@ -1,0 +1,19 @@
+/* ===== ANALYTICS — DESKTOP ===== */
+@media (min-width: 480px) {
+    .chart-wrap { height: 340px; }
+    .chart-card { padding: 24px 20px; }
+}
+
+@media (min-width: 768px) {
+    .chart-wrap { height: 420px; }
+    .swipe-hint { display: none; }
+    .nav-arrows-desktop {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .chart-wrap { height: 460px; }
+}

@@ -12,20 +12,57 @@ window.prevMonthlyYear = prevMonthlyYear;
 window.nextMonthlyYear = nextMonthlyYear;
 window.onYearChange = onYearChange;
 window.setBestTimePeriod = setBestTimePeriod;
+window.toggleAnalyticsSheet = toggleAnalyticsSheet;
+
+function updateAnalyticsSlider(tab) {
+    const slider = document.querySelector('.analytics-slider');
+    if (!slider) return;
+    const positions = { 'league': 0, 'monthly': 1, 'daily': 2, 'best-time': 3 };
+    slider.className = `analytics-slider pos-${positions[tab] ?? 0}`;
+}
+
+function updateAnalyticsTabs(tab) {
+    document.querySelectorAll('.analytics-tab').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`.analytics-tab[onclick*="${tab}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+}
 
 function switchTab(tab) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+    // Убираем active ТОЛЬКО у вкладок аналитики, не трогаем сайдбар
+    document.querySelectorAll('.analytics-tab').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-sheet-btn').forEach(btn => btn.classList.remove('active'));
+
     document.getElementById('nav-' + tab)?.classList.add('active');
-    document.getElementById('mob-nav-' + tab)?.classList.add('active');
+    document.getElementById('sheet-' + tab)?.classList.add('active');
+
     document.getElementById('tab-league').classList.toggle('hidden', tab !== 'league');
     document.getElementById('tab-monthly').classList.toggle('hidden', tab !== 'monthly');
     document.getElementById('tab-daily').classList.toggle('hidden', tab !== 'daily');
     document.getElementById('tab-best-time').classList.toggle('hidden', tab !== 'best-time');
+
+    updateAnalyticsSlider(tab);
+    updateAnalyticsTabs(tab);
+
     if (tab === 'league') loadLeagueAvg();
     if (tab === 'monthly') { initMonthlyYear(); loadMonthly(); }
     if (tab === 'daily') { initDailyMonth(); loadDaily(); }
     if (tab === 'best-time') loadBestTime();
+    updateAnalyticsSheet();
+}
+
+function toggleAnalyticsSheet() {
+    const overlay = document.getElementById('analyticsSheetOverlay');
+    if (overlay) overlay.classList.toggle('open');
+}
+
+function updateAnalyticsSheet() {
+    const activeTab = ['league', 'monthly', 'daily', 'best-time'].find(t => !document.getElementById('tab-' + t).classList.contains('hidden'));
+    document.querySelectorAll('.analytics-sheet-btn, .tab-sheet-btn').forEach(b => b.classList.remove('active'));
+    if (activeTab) {
+        document.getElementById('sheet-' + activeTab)?.classList.add('active');
+    }
 }
 
 function initSwipes() {
@@ -75,12 +112,12 @@ async function init() {
 
         const hasSub = await checkSubscription();
         if (!hasSub) {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('noSubBlock').classList.remove('hidden');
+            document.getElementById('analyticsLoading').classList.add('hidden');
+            document.getElementById('analyticsNoSub').classList.remove('hidden');
             return;
         }
 
-        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('analyticsLoading').classList.add('hidden');
 
         flatpickr('#bestTimeStart', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
         flatpickr('#bestTimeEnd', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
@@ -91,13 +128,14 @@ async function init() {
         populateYears();
         switchTab('league');
     } catch (e) {
-        document.getElementById('loading').innerHTML = '<p class="text-red-400">❌ Ошибка</p>';
+        document.getElementById('analyticsLoading').innerHTML = '<p class="text-red-400">❌ Ошибка</p>';
     }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// Экспортируем для роутера
+window.initAnalyticsApp = init;
 
-const tabParam = new URLSearchParams(window.location.search).get('tab');
-if (tabParam && ['league', 'monthly', 'daily', 'best-time'].includes(tabParam)) {
-    setTimeout(() => switchTab(tabParam), 200);
+// Для отдельной страницы analytics.html
+if (document.getElementById('analyticsPage')) {
+    document.addEventListener('DOMContentLoaded', init);
 }

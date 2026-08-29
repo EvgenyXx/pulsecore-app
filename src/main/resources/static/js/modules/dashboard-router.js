@@ -6,6 +6,7 @@ export function initDashboardRouter() {
         const liveTournamentScreen = document.getElementById('liveTournamentScreen');
         const comparePage = document.getElementById('comparePage');
         const profilePage = document.getElementById('profilePage');
+        const analyticsPage = document.getElementById('analyticsPage');
 
         homePage.style.display = '';
         homePage.style.opacity = '1';
@@ -16,6 +17,8 @@ export function initDashboardRouter() {
         comparePage.style.display = 'none';
         profilePage.classList.add('hidden');
         profilePage.style.display = 'none';
+        analyticsPage.classList.add('hidden');
+        analyticsPage.style.display = 'none';
 
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById('nav-home')?.classList.add('active');
@@ -28,6 +31,7 @@ export function initDashboardRouter() {
         const liveTournamentScreen = document.getElementById('liveTournamentScreen');
         const comparePage = document.getElementById('comparePage');
         const profilePage = document.getElementById('profilePage');
+        const analyticsPage = document.getElementById('analyticsPage');
 
         homePage.style.display = 'none';
         livePage.classList.add('hidden');
@@ -36,6 +40,8 @@ export function initDashboardRouter() {
         comparePage.style.display = 'none';
         profilePage.classList.add('hidden');
         profilePage.style.display = 'none';
+        analyticsPage.classList.add('hidden');
+        analyticsPage.style.display = 'none';
         actionPage.classList.remove('hidden');
         actionPage.style.opacity = '1';
 
@@ -54,6 +60,7 @@ export function initDashboardRouter() {
         const liveTournamentScreen = document.getElementById('liveTournamentScreen');
         const comparePage = document.getElementById('comparePage');
         const profilePage = document.getElementById('profilePage');
+        const analyticsPage = document.getElementById('analyticsPage');
 
         homePage.style.display = 'none';
         livePage.classList.add('hidden');
@@ -62,6 +69,8 @@ export function initDashboardRouter() {
         comparePage.style.display = 'none';
         profilePage.classList.add('hidden');
         profilePage.style.display = 'none';
+        analyticsPage.classList.add('hidden');
+        analyticsPage.style.display = 'none';
         actionPage.classList.remove('hidden');
         actionPage.style.opacity = '1';
 
@@ -80,6 +89,7 @@ export function initDashboardRouter() {
         const liveTournamentScreen = document.getElementById('liveTournamentScreen');
         const comparePage = document.getElementById('comparePage');
         const profilePage = document.getElementById('profilePage');
+        const analyticsPage = document.getElementById('analyticsPage');
 
         homePage.style.display = 'none';
         actionPage.classList.add('hidden');
@@ -88,6 +98,8 @@ export function initDashboardRouter() {
         comparePage.style.display = 'none';
         profilePage.classList.add('hidden');
         profilePage.style.display = 'none';
+        analyticsPage.classList.add('hidden');
+        analyticsPage.style.display = 'none';
         livePage.classList.remove('hidden');
         livePage.style.opacity = '1';
 
@@ -106,6 +118,7 @@ export function initDashboardRouter() {
         const liveTournamentScreen = document.getElementById('liveTournamentScreen');
         const comparePage = document.getElementById('comparePage');
         const profilePage = document.getElementById('profilePage');
+        const analyticsPage = document.getElementById('analyticsPage');
 
         homePage.style.display = 'none';
         actionPage.classList.add('hidden');
@@ -114,6 +127,8 @@ export function initDashboardRouter() {
         comparePage.style.display = 'none';
         profilePage.classList.add('hidden');
         profilePage.style.display = 'none';
+        analyticsPage.classList.add('hidden');
+        analyticsPage.style.display = 'none';
         liveTournamentScreen.classList.remove('hidden');
         liveTournamentScreen.style.opacity = '1';
 
@@ -132,6 +147,7 @@ export function initDashboardRouter() {
         const liveTournamentScreen = document.getElementById('liveTournamentScreen');
         const comparePage = document.getElementById('comparePage');
         const profilePage = document.getElementById('profilePage');
+        const analyticsPage = document.getElementById('analyticsPage');
 
         homePage.style.display = 'none';
         actionPage.classList.add('hidden');
@@ -139,6 +155,8 @@ export function initDashboardRouter() {
         liveTournamentScreen.classList.add('hidden');
         profilePage.classList.add('hidden');
         profilePage.style.display = 'none';
+        analyticsPage.classList.add('hidden');
+        analyticsPage.style.display = 'none';
         comparePage.classList.remove('hidden');
         comparePage.style.display = 'flex';
         comparePage.style.opacity = '1';
@@ -158,6 +176,7 @@ export function initDashboardRouter() {
         const liveTournamentScreen = document.getElementById('liveTournamentScreen');
         const comparePage = document.getElementById('comparePage');
         const profilePage = document.getElementById('profilePage');
+        const analyticsPage = document.getElementById('analyticsPage');
 
         homePage.style.display = 'none';
         actionPage.classList.add('hidden');
@@ -165,6 +184,8 @@ export function initDashboardRouter() {
         liveTournamentScreen.classList.add('hidden');
         comparePage.classList.add('hidden');
         comparePage.style.display = 'none';
+        analyticsPage.classList.add('hidden');
+        analyticsPage.style.display = 'none';
         profilePage.classList.remove('hidden');
         profilePage.style.display = 'block';
         profilePage.style.opacity = '1';
@@ -174,6 +195,35 @@ export function initDashboardRouter() {
 
         if (window.initProfileApp) {
             window.initProfileApp();
+        }
+    }
+
+    function showAnalytics() {
+        const homePage = document.getElementById('homePage');
+        const actionPage = document.getElementById('actionPage');
+        const livePage = document.getElementById('livePage');
+        const liveTournamentScreen = document.getElementById('liveTournamentScreen');
+        const comparePage = document.getElementById('comparePage');
+        const profilePage = document.getElementById('profilePage');
+        const analyticsPage = document.getElementById('analyticsPage');
+
+        homePage.style.display = 'none';
+        actionPage.classList.add('hidden');
+        livePage.classList.add('hidden');
+        liveTournamentScreen.classList.add('hidden');
+        comparePage.classList.add('hidden');
+        comparePage.style.display = 'none';
+        profilePage.classList.add('hidden');
+        profilePage.style.display = 'none';
+        analyticsPage.classList.remove('hidden');
+        analyticsPage.style.display = 'block';
+        analyticsPage.style.opacity = '1';
+
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById('nav-analytics')?.classList.add('active');
+
+        if (window.initAnalyticsApp) {
+            window.initAnalyticsApp();
         }
     }
 
@@ -202,6 +252,9 @@ export function initDashboardRouter() {
             case '#/profile':
                 showProfile();
                 break;
+            case '#/analytics':
+                showAnalytics();
+                break;
             default:
                 showHome();
                 break;
@@ -218,6 +271,7 @@ export function initDashboardRouter() {
         else if (page === 'live') window.location.hash = '#/live';
         else if (page === 'compare') window.location.hash = '#/compare';
         else if (page === 'profile') window.location.hash = '#/profile';
+        else if (page === 'analytics') window.location.hash = '#/analytics';
         else if (page === 'home') window.location.hash = '#/';
         else if (typeof page === 'number' || /^\d+$/.test(page)) window.location.hash = '#/live/' + page;
     };
