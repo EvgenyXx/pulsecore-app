@@ -44,3 +44,12 @@
 
 .period-pill:hover { color: #e5e5e5; }
 .period-pill.active { color: #ffffff; font-weight: 600; }
+.period-switcher {
+    min-height: 38px;
+}
+
+.period-slider {
+    height: auto;
+    top: 2px;
+    bottom: 2px;
+}

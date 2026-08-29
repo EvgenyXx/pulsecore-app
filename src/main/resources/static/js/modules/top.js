@@ -36,7 +36,7 @@ export async function loadTopWeek(league) {
     let html = `
         <div class="flex items-center gap-3 mb-5">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center flex-shrink-0">
-                <span class="text-lg">🏆</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </div>
             <div>
                 <h3 class="text-[17px] font-semibold text-white tracking-tight">Зал славы</h3>
@@ -66,22 +66,24 @@ export async function loadTopWeek(league) {
 
     try {
         const data = await API.getTop(period, league);
+        const currentPlayerName = document.getElementById('playerName')?.textContent?.trim();
+
         if (!data.top5 || data.top5.length === 0) {
             html += `<div class="text-center py-10">
-                <span class="text-4xl">📭</span>
                 <p class="text-[13px] text-zinc-500 mt-3">Нет данных за ${periodLabel}</p>
             </div>`;
         } else {
             data.top5.forEach((p, i) => {
-                const isMe = (i + 1) === data.playerPosition;
                 const name = capitalizeName(p.name || '');
+                const isMe = currentPlayerName && name.toLowerCase() === currentPlayerName.toLowerCase();
+                const position = i + 1;
 
                 html += `
                     <div class="rank-card ${isMe ? 'mine' : ''}">
-                        <div class="rank-number">${i + 1}</div>
+                        <div class="rank-number">${position}</div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
-<span class="text-[15px] font-medium text-white truncate">${name}</span>
+                                <span class="text-[15px] font-medium text-white truncate">${name}</span>
                                 <span class="text-[13px] font-semibold text-zinc-400">${p.tournaments}</span>
                             </div>
                         </div>
@@ -95,7 +97,7 @@ export async function loadTopWeek(league) {
                         <div class="rank-number">${data.playerPosition}</div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="text-[15px] font-medium text-white">Вы</span>
+                                <span class="text-[15px] font-medium text-white truncate">${currentPlayerName || 'Игрок'}</span>
                                 <span class="text-[13px] font-semibold text-zinc-400">${data.playerTournaments}</span>
                             </div>
                         </div>

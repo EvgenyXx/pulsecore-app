@@ -22,6 +22,11 @@ export function initDashboardRouter() {
 
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById('nav-home')?.classList.add('active');
+
+        // Обновление данных при возврате на главную
+        if (window.loadDashboardWidgets) window.loadDashboardWidgets();
+        if (window.loadTopWeek) window.loadTopWeek(null);
+        if (window.loadSelectedHalls) window.loadSelectedHalls();
     }
 
     function showHalls() {
@@ -222,8 +227,8 @@ export function initDashboardRouter() {
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById('nav-analytics')?.classList.add('active');
 
-        if (window.initAnalyticsApp) {
-            window.initAnalyticsApp();
+        if (window.switchTab) {
+            window.switchTab('league');
         }
     }
 
@@ -264,7 +269,6 @@ export function initDashboardRouter() {
     window.addEventListener('hashchange', handleRoute);
     handleRoute();
 
-    // Экспортируем для глобального доступа
     window.navigate = function(page) {
         if (page === 'halls') window.location.hash = '#/halls';
         else if (page === 'sum') window.location.hash = '#/sum';
@@ -276,7 +280,6 @@ export function initDashboardRouter() {
         else if (typeof page === 'number' || /^\d+$/.test(page)) window.location.hash = '#/live/' + page;
     };
 
-    // Экспортируем openTournament
     window.openTournament = function(externalId) {
         window.location.hash = '#/live/' + externalId;
     };
