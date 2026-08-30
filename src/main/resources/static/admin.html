@@ -179,6 +179,75 @@
                     </div>
                 </div>
             </div>
+
+            <div class="sheet-accordion" id="acc-calculate-wrapper" style="display:none;">
+                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-calculate')">
+                    <span class="sheet-section-title" style="margin:0;">Расчёт</span>
+                    <svg class="sheet-accordion-arrow" id="arrow-acc-calculate" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="sheet-accordion-body" id="acc-calculate" style="display:none;">
+                    <div class="widget-card">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="text-xs text-zinc-400 mb-1 block">Имя игрока</label>
+                                <input id="calcName" type="text" class="input" placeholder="Иван Петров">
+                            </div>
+                            <div>
+                                <label class="text-xs text-zinc-400 mb-1 block">Дата с</label>
+                                <input id="calcStartDate" type="date" class="input">
+                            </div>
+                            <div>
+                                <label class="text-xs text-zinc-400 mb-1 block">Дата по</label>
+                                <input id="calcEndDate" type="date" class="input">
+                            </div>
+                        </div>
+                        <button onclick="adminCalculate()" id="calcBtn" class="btn btn-indigo">Посчитать</button>
+                        <p id="calcError" class="text-xs text-red-400 text-center mt-2 hidden"></p>
+                        <div id="calcLoading" class="text-center py-4 hidden">
+                            <div class="spinner"></div>
+                        </div>
+                        <div id="calcResult" class="hidden mt-4">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="flex-1 text-center">
+                                    <p class="text-xs text-zinc-400">Всего</p>
+                                    <p class="text-xl font-bold text-white" id="calcTotal">0 ₽</p>
+                                </div>
+                                <div class="flex-1 text-center">
+                                    <p class="text-xs text-zinc-400">Турниров</p>
+                                    <p class="text-xl font-bold text-white" id="calcCount">0</p>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs">
+                                    <thead>
+                                    <tr class="text-zinc-500">
+                                        <th class="text-left py-1">#</th>
+                                        <th class="text-left py-1">Дата</th>
+                                        <th class="text-left py-1">Турнир</th>
+                                        <th class="text-right py-1">Сумма</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="calcTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sheet-accordion" id="acc-broadcast-wrapper" style="display:none;">
+                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-broadcast')">
+                    <span class="sheet-section-title" style="margin:0;">Рассылка</span>
+                    <svg class="sheet-accordion-arrow" id="arrow-acc-broadcast" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="sheet-accordion-body" id="acc-broadcast" style="display:none;">
+                    <div class="widget-card">
+                        <textarea id="broadcastMessage" class="input" rows="4" placeholder="Текст рассылки..."></textarea>
+                        <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-indigo mt-3">Отправить</button>
+                        <p id="broadcastMsg" class="text-xs text-center mt-2 hidden"></p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="section-subscriptions" class="hidden">

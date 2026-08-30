@@ -1,5 +1,5 @@
 import { AdminAPI } from './admin-api.js';
-import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer } from './admin-players.js';
+import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus } from './admin-players.js';
 import { giveSub, removeSub, setSelectedPlayer } from './admin-subscriptions.js';
 import { loadCurrentPrices, updatePrices } from './admin-prices.js';
 import { adminCalculate } from './admin-calculate.js';
@@ -18,6 +18,7 @@ window.deletePlayerTournaments = deletePlayerTournaments;
 window.resyncPlayerTournaments = resyncPlayerTournaments;
 window.deletePlayerAccount = deletePlayerAccount;
 window.updatePlayer = updatePlayer;
+window.togglePlayerStatus = togglePlayerStatus;
 window.giveSub = giveSub;
 window.removeSub = removeSub;
 window.loadCurrentPrices = loadCurrentPrices;

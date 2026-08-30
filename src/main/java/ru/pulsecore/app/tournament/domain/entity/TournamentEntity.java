@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tournament")
+@Table(name = "tournament",
+        uniqueConstraints = @UniqueConstraint(columnNames = "link"))
 @Getter
 @Setter
 @NoArgsConstructor

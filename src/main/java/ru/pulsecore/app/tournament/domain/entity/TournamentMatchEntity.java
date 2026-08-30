@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tournament_match")
+@Table(name = "tournament_match",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"tournament_id", "player1_name", "player2_name", "stage"}
+        ))
 @Getter
 @Setter
 @NoArgsConstructor

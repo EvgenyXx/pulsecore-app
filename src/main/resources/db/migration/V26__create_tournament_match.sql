@@ -7,7 +7,8 @@ CREATE TABLE tournament_match (
                                   stage VARCHAR(50) NOT NULL,
                                   score VARCHAR(50),
                                   played_at TIMESTAMP NOT NULL DEFAULT NOW(),
-                                  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+                                  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                                  CONSTRAINT uq_tournament_match_unique UNIQUE (tournament_id, player1_name, player2_name, stage)
 );
 
 CREATE INDEX idx_tournament_match_tournament_id ON tournament_match(tournament_id);

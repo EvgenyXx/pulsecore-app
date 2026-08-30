@@ -30,7 +30,7 @@ export async function initSidebar(activePage = null) {
                 <img src="/img.png" alt="PulseCore" class="w-11 h-11 rounded-xl shadow-lg object-cover">
                 <div>
                     <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent tracking-tight">PulseCore</h1>
-                    <p class="text-xs text-zinc-400">${playerName}</p>
+                   
                 </div>
             </div>
             <nav class="flex flex-col gap-1 flex-1">

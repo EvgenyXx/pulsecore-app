@@ -14,7 +14,7 @@ export async function adminCalculate() {
     resultEl.classList.add('hidden');
 
     if (!name || !startDate) {
-        errorEl.textContent = '❌ Заполните имя и дату начала';
+        errorEl.textContent = 'Заполните имя и дату начала';
         errorEl.classList.remove('hidden');
         return;
     }
@@ -27,7 +27,7 @@ export async function adminCalculate() {
         const data = await AdminAPI.calculatePlayer({ name, startDate, endDate: endDate || startDate });
 
         if (!data.tournaments || data.tournaments.length === 0) {
-            errorEl.textContent = 'ℹ️ Турниры не найдены';
+            errorEl.textContent = 'Турниры не найдены';
             errorEl.classList.remove('hidden');
             return;
         }
@@ -53,11 +53,11 @@ export async function adminCalculate() {
 
         resultEl.classList.remove('hidden');
     } catch (e) {
-        errorEl.textContent = '❌ Ошибка';
+        errorEl.textContent = 'Ошибка';
         errorEl.classList.remove('hidden');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '🧮 Посчитать';
+        btn.innerHTML = 'Посчитать';
         loadingEl.classList.add('hidden');
     }
 }

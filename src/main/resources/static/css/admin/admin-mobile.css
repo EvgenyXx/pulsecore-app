@@ -1,4 +1,4 @@
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ (PWA) ===== */
+/* ===== ADMIN MOBILE — APPLE STYLE PWA ===== */
 @media (max-width: 640px) {
     main {
         display: flex;
@@ -19,23 +19,42 @@
     }
 
     .widget-card {
-        padding: 14px 10px;
-        border-radius: 12px;
+        padding: 16px 14px;
+        border-radius: 14px;
     }
 
     .sheet-accordion-header {
-        padding: 12px 14px;
+        padding: 13px 14px;
         font-size: 0.85rem;
     }
 
     .submenu-btn {
-        padding: 10px 12px;
-        font-size: 0.78rem;
+        padding: 11px 12px;
+        font-size: 0.8rem;
     }
 
     .avatar-circle {
-        width: 40px;
-        height: 40px;
-        font-size: 0.9rem;
+        width: 42px;
+        height: 42px;
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+
+    .input {
+        padding: 12px 14px;
+        font-size: 0.88rem;
+    }
+
+    .period-sheet {
+        padding: 16px 12px 28px;
+    }
+
+    .period-sheet-btn {
+        padding: 14px;
+        font-size: 0.85rem;
     }
 }

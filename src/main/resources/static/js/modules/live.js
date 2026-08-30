@@ -41,19 +41,6 @@ function initTabListeners() {
     });
 }
 
-function startOnlinePolling() {
-    setInterval(async () => {
-        try {
-            const res = await fetch('/api/tournament/online/all');
-            const data = await res.json();
-            for (const [id, count] of Object.entries(data)) {
-                const el = document.querySelector('.online-count-' + id);
-                if (el) el.textContent = count;
-            }
-        } catch(e) {}
-    }, 5000);
-}
-
 async function loadLive() {
     try {
         const sub = await fetch('/api/player/subscription', { credentials: 'same-origin' }).then(r => r.json()).catch(() => null);
@@ -94,14 +81,12 @@ async function loadLive() {
         updateTabSlider('live');
         initTabListeners();
 
-        // Назначаем глобальные функции ДО рендера
         window.toggleLiveHallsCheckboxes = toggleLiveHallsCheckboxes;
         window.toggleAllLiveHalls = toggleAllLiveHalls;
         window.saveSelectedLiveHalls = saveSelectedLiveHalls;
 
         if (allHalls.length > 0) renderHallFilter();
         applyFilter();
-        startOnlinePolling();
     } catch (e) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('empty').classList.remove('hidden');
@@ -232,7 +217,6 @@ function renderTournaments(tournaments) {
                     <h3 class="text-[17px] font-bold text-white tracking-tight">${escapeHtml(t.league || 'Турнир')}</h3>
                 </div>
                 <div class="flex items-center gap-3">
-                    <span class="text-xs text-zinc-400">👁 <b class="online-count-${t.externalId}" style="color:#818cf8;">0</b></span>
                     <span class="text-zinc-400 text-sm">${escapeHtml(t.time || '')}</span>
                 </div>
             </div>
@@ -250,7 +234,6 @@ function renderTournaments(tournaments) {
     `).join('');
 }
 
-// Назначаем глобальные функции
 window.toggleLiveHallsCheckboxes = toggleLiveHallsCheckboxes;
 window.toggleAllLiveHalls = toggleAllLiveHalls;
 window.saveSelectedLiveHalls = saveSelectedLiveHalls;

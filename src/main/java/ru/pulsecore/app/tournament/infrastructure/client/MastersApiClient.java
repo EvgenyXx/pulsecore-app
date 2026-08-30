@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
@@ -73,8 +74,13 @@ public class MastersApiClient {
 
                 return tournaments;
 
+            } catch (HttpStatusException e) {
+                log.warn("Masters API вернул {} для даты {}", e.getStatusCode(), date);
+                breaker.recordFailure();
+                if (i == 2) return List.of();
+                sleep(breaker.backoff());
             } catch (Exception e) {
-                log.error("Ошибка при запросе к Masters API: {}", e.getMessage(), e);
+                log.warn("Masters API: {} для даты {}", e.getMessage(), date);
                 breaker.recordFailure();
                 if (i == 2) return List.of();
                 sleep(breaker.backoff());

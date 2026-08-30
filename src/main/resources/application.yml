@@ -70,6 +70,8 @@ app:
             public-urls:
                   - /
                   - /index.html
+                  - /js/**
+                  - /css/**
                   - /register.html
                   - /api/players
                   - /subscribe.html
@@ -118,6 +120,6 @@ app:
             user-agent: Mozilla/5.0
             action: tourslist
             country: RUS
-            timeout: 45000
+            timeout: 90000
       mail:
             from: ${MAIL_FROM}

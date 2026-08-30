@@ -1,33 +1,54 @@
-/* ===== АККОРДЕОН ===== */
+/* ===== ADMIN ACCORDION — APPLE STYLE ===== */
 
 .sheet-accordion {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .sheet-accordion-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px;
+    padding: 18px 20px;
     cursor: pointer;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #e5e5e5;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sheet-accordion-header:hover {
-    background: rgba(99, 102, 241, 0.08);
-    border-color: rgba(99, 102, 241, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(10, 132, 255, 0.35);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sheet-accordion-header:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .sheet-accordion-arrow {
     transition: transform 0.25s ease;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: #98989d;
 }
 
 .sheet-accordion-body {
-    padding: 8px 0 0;
+    padding: 10px 0 0;
+}
+
+.sheet-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.3px;
 }

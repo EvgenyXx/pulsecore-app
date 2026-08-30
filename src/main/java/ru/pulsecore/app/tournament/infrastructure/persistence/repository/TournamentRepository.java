@@ -18,42 +18,42 @@ import java.util.Optional;
 public interface TournamentRepository extends JpaRepository<TournamentEntity, Long> {
 
     @Query(value = """
-    SELECT 
-        t.id AS id,
-        t.link AS link,
-        t.date AS date,
-        t.time AS time,
-        t.started AS started,
-        t.finished AS finished,
-        t.cancelled AS cancelled,
-        t.processed AS processed,
-        CAST(array_agg(DISTINCT p.name) AS text) AS players
-    FROM tournament t
-    LEFT JOIN player_notification pn ON t.id = pn.tournament_id
-    LEFT JOIN players p ON p.id = pn.player_id
-    WHERE t.date = CAST(:date AS DATE)
-    GROUP BY t.id, t.link, t.date, t.time, t.started, t.finished, t.cancelled, t.processed
-    ORDER BY t.time
-""", nativeQuery = true)
+                SELECT 
+                    t.id AS id,
+                    t.link AS link,
+                    t.date AS date,
+                    t.time AS time,
+                    t.started AS started,
+                    t.finished AS finished,
+                    t.cancelled AS cancelled,
+                    t.processed AS processed,
+                    CAST(array_agg(DISTINCT p.name) AS text) AS players
+                FROM tournament t
+                LEFT JOIN player_notification pn ON t.id = pn.tournament_id
+                LEFT JOIN players p ON p.id = pn.player_id
+                WHERE t.date = CAST(:date AS DATE)
+                GROUP BY t.id, t.link, t.date, t.time, t.started, t.finished, t.cancelled, t.processed
+                ORDER BY t.time
+            """, nativeQuery = true)
     List<TournamentAdminProjection> findTournamentsWithPlayersByDate(@Param("date") LocalDate date);
 
     @Query(value = """
-    SELECT 
-        t.id AS id,
-        t.link AS link,
-        t.date AS date,
-        t.time AS time,
-        t.started AS started,
-        t.finished AS finished,
-        t.cancelled AS cancelled,
-        t.processed AS processed,
-        CAST(array_agg(DISTINCT p.name) AS text) AS players
-    FROM tournament t
-    LEFT JOIN player_notification pn ON t.id = pn.tournament_id
-    LEFT JOIN players p ON p.id = pn.player_id
-    WHERE t.id = :id
-    GROUP BY t.id, t.link, t.date, t.time, t.started, t.finished, t.cancelled, t.processed
-""", nativeQuery = true)
+                SELECT 
+                    t.id AS id,
+                    t.link AS link,
+                    t.date AS date,
+                    t.time AS time,
+                    t.started AS started,
+                    t.finished AS finished,
+                    t.cancelled AS cancelled,
+                    t.processed AS processed,
+                    CAST(array_agg(DISTINCT p.name) AS text) AS players
+                FROM tournament t
+                LEFT JOIN player_notification pn ON t.id = pn.tournament_id
+                LEFT JOIN players p ON p.id = pn.player_id
+                WHERE t.id = :id
+                GROUP BY t.id, t.link, t.date, t.time, t.started, t.finished, t.cancelled, t.processed
+            """, nativeQuery = true)
     TournamentAdminProjection findTournamentWithPlayersById(@Param("id") Long id);
 
     Optional<TournamentEntity> findByLink(String link);
@@ -92,6 +92,7 @@ public interface TournamentRepository extends JpaRepository<TournamentEntity, Lo
                 DELETE FROM tournament
                 WHERE id NOT IN (SELECT tournament_id FROM player_notification)
                   AND id NOT IN (SELECT tournament_id FROM tournament_results)
+                  AND id NOT IN (SELECT tournament_id FROM tournament_match)
             """, nativeQuery = true)
     int deleteOrphans();
 

@@ -9,6 +9,7 @@ import ru.pulsecore.app.tournament.application.event.TournamentMatchService;
 import ru.pulsecore.app.tournament.application.resolution.ResultService;
 import ru.pulsecore.app.tournament.application.roster.finish.TournamentResultProcessor;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
+import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
@@ -74,7 +75,7 @@ public class TournamentUrlProcessor {
                 tournamentRateLimiter.asBlocking().consume(1);
                 ParsedResult parsed = parseUrl(url);
                 TournamentEntity tournament = findOrCreateTournament(parsed, url);
-                statusService.markAsCancelled(tournament, parsed, url);
+                updateTournamentStatus(tournament,parsed,url);
                 notificationService.createIfAbsent(playerId, tournament);
 
                 allEntities.addAll(resultProcessor.processResults(
@@ -93,6 +94,12 @@ public class TournamentUrlProcessor {
         resultProcessor.saveAll(allEntities);
     }
 
+
+    private void updateTournamentStatus(TournamentEntity tournament, ParsedResult parsed, String url) {
+        if (parsed.status() == TournamentStatus.CANCELLED) {
+            statusService.markAsCancelled(tournament, parsed, url);
+        }
+    }
 
     private ParsedResult parseUrl(String url) {
         try {

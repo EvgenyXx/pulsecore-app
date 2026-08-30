@@ -6,7 +6,7 @@ export async function sendBroadcast() {
     const btn = document.getElementById('broadcastBtn');
 
     if (!message) {
-        msg.textContent = '❌ Введите текст сообщения';
+        msg.textContent = 'Введите текст сообщения';
         msg.className = 'text-xs text-center mt-3 text-red-400';
         msg.classList.remove('hidden');
         return;
@@ -20,15 +20,15 @@ export async function sendBroadcast() {
 
     try {
         const data = await AdminAPI.broadcast(message);
-        msg.textContent = data.message || '✅ Отправлено';
+        msg.textContent = data.message || 'Отправлено';
         msg.className = 'text-xs text-center mt-3 text-emerald-400';
         document.getElementById('broadcastMessage').value = '';
     } catch (e) {
-        msg.textContent = '❌ Ошибка соединения';
+        msg.textContent = 'Ошибка соединения';
         msg.className = 'text-xs text-center mt-3 text-red-400';
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '🚀 Отправить всем';
+        btn.innerHTML = 'Отправить всем';
         msg.classList.remove('hidden');
     }
 }

@@ -29,6 +29,7 @@ public class AdminTournamentManagementService {
     private final TournamentRepository tournamentRepository;
     private final PlayerNotificationRepository  playerNotificationRepository;
 
+
     @Transactional
     public int deleteAllTournaments(UUID playerId) {
         int deletedResults = tournamentResultRepository.deleteByPlayerId(playerId);

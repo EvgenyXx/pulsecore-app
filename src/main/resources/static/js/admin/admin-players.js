@@ -172,7 +172,6 @@ export async function updatePlayer() {
         msg.textContent = 'Сохранено';
         msg.className = 'text-xs text-center text-emerald-400';
 
-        // Обновляем отображаемые данные
         document.getElementById('playerSelName').textContent = capitalizeName(document.getElementById('playerName').value);
         document.getElementById('playerSelEmail').textContent = document.getElementById('playerEmail').value;
     } catch (e) {
@@ -192,7 +191,7 @@ export async function togglePlayerRole(roleName) {
 
     try {
         await AdminAPI.togglePlayerRole(selectedPlayerId, roleName, isGrant);
-        msg.textContent = isGrant ? `Роль ${roleName} выдана` : `Роль ${roleName} отозвана`;
+        msg.textContent = isGrant ? 'Роль выдана' : 'Роль отозвана';
         msg.className = 'text-xs text-center text-emerald-400';
         await refreshPlayerUI('players');
     } catch (e) {
@@ -221,7 +220,7 @@ export async function deletePlayerTournaments() {
 export async function resyncPlayerTournaments() {
     if (!selectedPlayerId) return;
     const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Запуск фоновой загрузки...';
+    msg.textContent = 'Синхронизация...';
     msg.className = 'text-xs text-center text-zinc-400';
     msg.classList.remove('hidden');
 
@@ -240,7 +239,7 @@ export async function deletePlayerAccount() {
     if (!confirm('Удалить аккаунт навсегда?')) return;
 
     const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Удаление аккаунта...';
+    msg.textContent = 'Удаление...';
     msg.className = 'text-xs text-center text-zinc-400';
     msg.classList.remove('hidden');
 
@@ -250,7 +249,7 @@ export async function deletePlayerAccount() {
         msg.className = 'text-xs text-center text-emerald-400';
         document.getElementById('playerSelected').classList.add('hidden');
     } catch (e) {
-        msg.textContent = 'Ошибка при удалении';
+        msg.textContent = 'Ошибка удаления';
         msg.className = 'text-xs text-center text-red-400';
     }
 }

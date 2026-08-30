@@ -37,28 +37,22 @@ export async function loadTournaments(date) {
 }
 
 function startAutoRefresh() {
-    // Очищаем предыдущий интервал
     if (autoRefreshInterval) {
         clearInterval(autoRefreshInterval);
     }
 
-    // Запускаем обновление каждые 30 секунд
     autoRefreshInterval = setInterval(async () => {
-        // ПРОВЕРКА: если вкладка неактивна - пропускаем
         if (document.hidden) return;
 
-        // ПРОВЕРКА: если раздел турниров не открыт - пропускаем
         const section = document.getElementById('section-tournaments');
         if (!section || section.classList.contains('hidden')) return;
 
         try {
             const freshData = await AdminAPI.getTournamentsByDate(currentDate);
 
-            // Проверяем, есть ли реальные изменения
             if (JSON.stringify(freshData) !== JSON.stringify(tournamentsCache)) {
                 tournamentsCache = freshData;
 
-                // Если карточка развернута, обновляем только её содержимое
                 if (expandedTournamentId) {
                     updateExpandedCard();
                 } else {
@@ -68,22 +62,18 @@ function startAutoRefresh() {
         } catch (e) {
             console.error('Ошибка автообновления:', e);
         }
-    }, 30000); // 30 секунд
+    }, 30000);
 }
 
-// ДОПОЛНИТЕЛЬНО: обновление при возвращении на вкладку
 document.addEventListener('visibilitychange', () => {
-    // Если вкладка стала активной
     if (!document.hidden) {
         const section = document.getElementById('section-tournaments');
-        // Проверяем, открыт ли раздел турниров
         if (section && !section.classList.contains('hidden') && currentDate) {
             loadTournaments(currentDate);
         }
     }
 });
 
-// ДОПОЛНИТЕЛЬНО: обновление при фокусе на окне
 window.addEventListener('focus', () => {
     const section = document.getElementById('section-tournaments');
     if (section && !section.classList.contains('hidden') && currentDate) {
@@ -100,10 +90,8 @@ function updateExpandedCard() {
     const card = document.getElementById(`tournament-card-${expandedTournamentId}`);
     if (!card) return;
 
-    // Обновляем только содержимое развернутой карточки
     const players = parsePlayers(t.players);
 
-    // Обновляем статусы
     const statuses = ['started', 'finished', 'cancelled', 'processed'];
     statuses.forEach(key => {
         const statusEl = document.getElementById(`status-${key}-${expandedTournamentId}`);
@@ -117,20 +105,17 @@ function updateExpandedCard() {
             }
         }
 
-        // Обновляем метки статусов
         const labelEl = document.querySelector(`#tournament-card-${expandedTournamentId} .status-label`);
         if (labelEl) {
             labelEl.classList.toggle('active', t[key]);
         }
     });
 
-    // Обновляем количество игроков
     const playersCount = document.querySelector(`#tournament-card-${expandedTournamentId} .tournament-card-meta`);
     if (playersCount) {
         playersCount.textContent = `Игроков: ${players.length} • ${t.link || ''}`;
     }
 
-    // Обновляем список игроков
     const playersList = document.querySelector(`#tournament-card-${expandedTournamentId} .tournament-players-list`);
     if (playersList) {
         playersList.innerHTML = players.length
@@ -138,7 +123,6 @@ function updateExpandedCard() {
             : '<span class="text-xs text-zinc-500">Нет данных</span>';
     }
 
-    // Обновляем бейдж статуса
     const badge = document.querySelector(`#tournament-card-${expandedTournamentId} .badge`);
     if (badge) {
         badge.className = `badge ${getStatusBadge(t)}`;
@@ -264,11 +248,9 @@ export async function saveTournament(id) {
     try {
         await AdminAPI.updateTournament(numericId, payload);
 
-        // Обновляем данные в кэше БЕЗ перерисовки
         if (date) t.date = date;
         if (time) t.time = time;
 
-        // Просто обновляем текст в шапке карточки
         const timeEl = document.querySelector(`#tournament-card-${numericId} .tournament-card-time`);
         const dateEl = document.querySelector(`#tournament-card-${numericId} .tournament-card-date`);
         if (timeEl) timeEl.textContent = time || t.time;

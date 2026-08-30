@@ -35,10 +35,8 @@ function updateSchedulerUI(isPaused) {
     if (btn) {
         btn.textContent = isPaused ? 'Возобновить' : 'Приостановить';
 
-        // Сначала убираем все цветные классы
         btn.classList.remove('btn-amber', 'btn-emerald', 'btn-danger', 'btn-indigo');
 
-        // Потом добавляем нужный
         btn.classList.add(isPaused ? 'btn-emerald' : 'btn-amber');
     }
 }

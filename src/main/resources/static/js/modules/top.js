@@ -40,7 +40,7 @@ export async function loadTopWeek(league) {
             </div>
             <div>
                 <h3 class="text-[17px] font-semibold text-white tracking-tight">Зал славы</h3>
-                <p class="text-[12px] text-zinc-500">Топ игроков</p>
+<!--                <p class="text-[12px] text-zinc-500">Топ игроков</p>-->
             </div>
         </div>
 
