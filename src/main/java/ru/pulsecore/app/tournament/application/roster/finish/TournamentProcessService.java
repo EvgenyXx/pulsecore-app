@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
+import ru.pulsecore.app.tournament.application.event.TournamentMatchService;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
@@ -25,6 +26,7 @@ public class TournamentProcessService {
     private final TournamentResultProcessor resultProcessor;
     private final TournamentRepository tournamentRepository;
     private final PlayerClient playerClient;
+    private final TournamentMatchService matchService;
 
     public void processTournament(
             List<PlayerNotification> notifications,
@@ -60,6 +62,8 @@ public class TournamentProcessService {
         log.debug("Финиш: состав игроков={}", rosterData.values());
 
         processPlayerResults(rosterData, parsed, tournament);
+        matchService.createMatches(parsed,tournament);
+
 
         tournament.setFinished(true);
         log.info("Финиш: турнир={} обработан, игроков={}",

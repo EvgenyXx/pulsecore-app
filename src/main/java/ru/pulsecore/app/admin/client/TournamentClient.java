@@ -1,8 +1,12 @@
 package ru.pulsecore.app.admin.client;
 
+import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
+import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public interface TournamentClient {
@@ -31,4 +35,10 @@ public interface TournamentClient {
      * @return сообщение о запуске перезагрузки
      */
     MessageResponse resyncAll(UUID playerId);
+
+    List<AdminTournamentResponse> getTournamentsByDate(LocalDate date);
+
+    AdminTournamentResponse getTournamentById(Long id);
+
+    AdminTournamentResponse updateTournament(Long id, UpdateTournamentRequest request);
 }

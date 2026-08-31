@@ -1,0 +1,214 @@
+/* Табы-фильтры с ползунком */
+#tabFilter {
+    position: relative;
+    display: flex;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 2px;
+    overflow: hidden;
+}
+
+.tab-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(33.333% - 2px);
+    height: calc(100% - 4px);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tab-slider.pos-0 { transform: translateX(0); }
+.tab-slider.pos-1 { transform: translateX(100%); }
+.tab-slider.pos-2 { transform: translateX(200%); }
+
+.hall-filter-tag {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    padding: 8px 4px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a1a1aa;
+    cursor: pointer;
+    white-space: nowrap;
+    text-align: center;
+    border: none;
+    background: transparent;
+    transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hall-filter-tag:hover {
+    color: #e5e5e5;
+}
+
+.hall-filter-tag.active {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* Остальные стили */
+.status-badge-upcoming {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.status-badge-finished {
+    background: rgba(255, 255, 255, 0.08);
+    color: #d4d4d8;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.live-tournament-card {
+    animation: lineupSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.apple-card {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    overflow: hidden;
+}
+
+.hall-select-all {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+}
+
+/* Компактные клеточки залов — контент прижат влево */
+.hall-checkbox-card {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-sizing: border-box;
+    min-width: 0;
+    transition: all 0.2s ease;
+}
+
+.hall-checkbox-card:hover {
+    background: rgba(99, 102, 241, 0.06);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.hall-checkbox-card.selected {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.hall-checkbox-card input[type="checkbox"] {
+    accent-color: #6366f1;
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.hall-checkbox-card span {
+    flex: 0 0 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    color: #ffffff;
+    text-align: left;
+}
+
+.apple-save-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 0;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.apple-save-btn:hover {
+    background: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.5);
+}
+
+.apple-btn-live {
+    background: rgba(99, 102, 241, 0.2);
+    color: #ffffff;
+    font-weight: 600;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    padding: 12px 0;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.apple-btn-live:hover {
+    background: rgba(99, 102, 241, 0.3);
+}
+
+.apple-btn-upcoming {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    font-weight: 600;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 12px;
+    padding: 12px 0;
+    cursor: not-allowed;
+    font-size: 14px;
+    width: 100%;
+}
+
+.apple-btn-finished {
+    background: rgba(255, 255, 255, 0.04);
+    color: #d4d4d8;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 0;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+}
+
+@keyframes lineupSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

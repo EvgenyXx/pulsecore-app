@@ -64,4 +64,7 @@ async function init() {
     }
 }
 
+// ВАЖНО: экспортируем для роутера
+window.initProfileApp = init;
+
 document.addEventListener('DOMContentLoaded', init);

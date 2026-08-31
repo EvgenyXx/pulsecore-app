@@ -46,8 +46,6 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
     List<PrimaryLeagueProjection> findPrimaryLeagues(@Param("playerIds") Set<UUID> playerIds);
 
 
-
-
     // TournamentResultRepository
     @Modifying
     @Query("DELETE FROM TournamentResultEntity t WHERE t.playerId = :playerId")
@@ -106,11 +104,23 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
 
     Optional<TournamentResultEntity> findTopByPlayerIdOrderByDateDesc(UUID playerId);
 
-    Optional<TournamentResultEntity> findByPlayerIdAndTournament_ExternalId(UUID playerId, Long externalId);
-
-    @Query("SELECT tr.league FROM TournamentResultEntity tr " +
-            "WHERE tr.playerId = :playerId ORDER BY tr.date DESC LIMIT 7")
-    List<String> findLastLeagues(@Param("playerId") UUID playerId);
+    @Query("""
+    SELECT p.id AS playerId,
+           p.name AS playerName,
+           p.primaryLeague AS primaryLeague,
+           COUNT(tr.id) AS tournaments,
+           COALESCE(SUM(tr.amount), 0) AS totalAmount,
+           COALESCE(AVG(tr.amount), 0) AS averageAmount
+    FROM Player p
+    LEFT JOIN TournamentResultEntity tr ON tr.playerId = p.id
+      AND tr.date BETWEEN :start AND :end
+    GROUP BY p.id, p.name, p.primaryLeague
+    ORDER BY LOWER(p.name) ASC
+""")
+    List<PlayerCompareResponse> findPlayersForCompare(
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
 
 
 }

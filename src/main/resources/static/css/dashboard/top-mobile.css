@@ -1,0 +1,33 @@
+@media (max-width: 640px) {
+    .period-switcher {
+        border-radius: 10px;
+    }
+
+    .period-pill {
+        font-size: 12px;
+        padding: 7px 0;
+    }
+
+    .league-pill {
+        min-width: 44px;
+        font-size: 11px;
+        padding: 7px 0;
+    }
+
+    .rank-card {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .rank-number {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .sheet-handle {
+        width: 32px;
+        height: 4px;
+        margin-bottom: 12px;
+    }
+}

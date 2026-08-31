@@ -1,0 +1,79 @@
+/* Переключатель лиг - iOS стиль */
+.league-switcher {
+    position: relative;
+    display: flex;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 2px;
+    gap: 0;
+    overflow: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.league-switcher::-webkit-scrollbar { display: none; }
+
+.league-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(100% / 6 - 2px);
+    height: calc(100% - 4px);
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    transition: transform 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
+    z-index: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.league-slider.pos-0 { transform: translateX(0); }
+.league-slider.pos-1 { transform: translateX(calc(100% + 2px)); }
+.league-slider.pos-2 { transform: translateX(calc(200% + 4px)); }
+.league-slider.pos-3 { transform: translateX(calc(300% + 6px)); }
+.league-slider.pos-4 { transform: translateX(calc(400% + 8px)); }
+.league-slider.pos-5 { transform: translateX(calc(500% + 10px)); }
+
+.league-pill {
+    position: relative;
+    z-index: 1;
+    flex: 1 0 0;
+    min-width: 0;
+    text-align: center;
+    padding: 8px 2px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #71717a;
+    cursor: pointer;
+    transition: color 0.35s ease, background 0.35s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+}
+
+.league-pill:hover { color: #e5e5e5; }
+.league-pill.active { color: #ffffff; font-weight: 600; }
+
+.league-pill.my {
+    color: #ffffff;
+    background: rgba(99, 102, 241, 0.35);
+    border: 1px solid rgba(129, 140, 248, 0.6);
+    box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+    font-weight: 700;
+}
+
+.league-pill.my.active { color: #ffffff; }
+.league-switcher {
+    min-height: 38px;
+}
+
+.league-slider {
+    height: auto;
+    top: 2px;
+    bottom: 2px;
+}

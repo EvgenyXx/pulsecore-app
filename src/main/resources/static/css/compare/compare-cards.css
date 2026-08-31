@@ -1,0 +1,57 @@
+/* ===== КАРТОЧКИ (DESKTOP) ===== */
+
+.cards-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.result-card {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: left;
+}
+
+.result-card .player-name {
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    margin-bottom: 2px;
+}
+
+.result-card .player-league {
+    color: #a5b4fc;
+    font-size: 0.6rem;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    margin-bottom: 3px;
+}
+
+.stat-label {
+    color: #a1a1aa;
+    font-size: 0.6rem;
+}
+
+.stat-value {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.65rem;
+}
+
+.card-spacer {
+    width: 52px;
+    flex-shrink: 0;
+}

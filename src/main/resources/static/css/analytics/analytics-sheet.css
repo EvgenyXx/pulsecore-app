@@ -1,0 +1,74 @@
+/* ===== ANALYTICS — SHEET (Шторка табов) ===== */
+
+.tab-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.tab-sheet-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tab-sheet {
+    background: #18181b;
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px 16px 32px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: none;
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.tab-sheet-overlay.open .tab-sheet {
+    transform: translateY(0);
+}
+
+.tab-sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    margin: 0 auto 18px;
+}
+
+.tab-sheet-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    color: #d4d4d8;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+}
+
+.tab-sheet-btn:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.tab-sheet-btn.active {
+    background: rgba(99, 102, 241, 0.12);
+    color: #c7d2fe;
+    font-weight: 600;
+}

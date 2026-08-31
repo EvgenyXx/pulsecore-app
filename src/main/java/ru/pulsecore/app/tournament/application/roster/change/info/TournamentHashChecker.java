@@ -56,7 +56,7 @@ public class TournamentHashChecker {
             }
         }
 
-        log.info("Хэши турниров: обновлено={}, без изменений={}, удалено={}",
+        log.debug("Хэши турниров: обновлено={}, без изменений={}, удалено={}",
                 updated, unchanged, deleted);
     }
 

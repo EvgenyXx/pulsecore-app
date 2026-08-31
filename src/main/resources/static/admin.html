@@ -1,276 +1,314 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, height=device-height">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>PulseCore — Админ-панель</title>
     <script type="module">
         import { initThemeSync } from '/js/modules/theme-sync.js';
         initThemeSync();
     </script>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PulseCore">
     <link rel="icon" type="image/png" href="/img.png">
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/admin/admin-base.css">
+    <link rel="stylesheet" href="/css/admin/admin-sidebar.css">
+    <link rel="stylesheet" href="/css/admin/admin-accordion.css">
+    <link rel="stylesheet" href="/css/admin/admin-cards.css">
+    <link rel="stylesheet" href="/css/admin/admin-mobile.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px'}}}}</script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/app.css">
-    <style>
-        body { font-family: 'Inter', sans-serif; min-height: 100dvh; background: #0c0c18; -webkit-font-smoothing: antialiased; padding-top: env(safe-area-inset-top, 0px); }
-        .btn { font-weight: 600; border: none; border-radius: 10px; padding: 10px 16px; cursor: pointer; font-size: 0.85rem; width: 100%; text-align: center; }
-        .btn-indigo { background: #6366f1; color: #fff; }
-        .btn-indigo:hover { background: #4f46e5; }
-        .btn-emerald { background: #10b981; color: #fff; }
-        .btn-emerald:hover { background: #059669; }
-        .btn-danger { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.20); }
-        .btn-danger:hover { background: rgba(239,68,68,0.22); }
-        .btn-amber { background: #f59e0b; color: #000; }
-        .btn-amber:hover { background: #d97706; }
-        .btn-ghost { background: transparent; color: #a1a1aa; border: 1px solid rgba(255,255,255,0.06); padding: 8px 14px; font-size: 0.82rem; font-weight: 500; }
-        .btn-ghost:hover { background: rgba(255,255,255,0.04); color: #e5e5e5; }
-        .input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; color: #e5e5e5; padding: 10px 13px; font-size: 0.88rem; width: 100%; outline: none; font-family: 'Inter'; }
-        .input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.08); }
-        .player-row { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 12px 14px; cursor: pointer; border: 1px solid rgba(255,255,255,0.04); }
-        .player-row:hover { background: rgba(99,102,241,0.06); border-color: rgba(99,102,241,0.20); }
-        .badge { font-size: 0.68rem; padding: 2px 7px; border-radius: 5px; white-space: nowrap; }
-        .badge-green { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.20); }
-        .badge-red { background: rgba(239,68,68,0.10); color: #f87171; border: 1px solid rgba(239,68,68,0.15); }
-        .badge-amber { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.20); }
-        @media (min-width: 768px) { .btn { width: auto; } }
-        .spinner-sm { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.12); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #subSearchResults,
-        #playerSearchResults {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .tab-sheet-overlay {
-            position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            display: flex; align-items: flex-end; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-        }
-        .tab-sheet-overlay.open { opacity: 1; pointer-events: auto; }
-        .tab-sheet {
-            background: #18181b; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px;
-            padding: 20px 16px 32px; transform: translateY(100%);
-            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-            border: 1px solid rgba(255,255,255,0.06); border-bottom: none;
-            box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
-        }
-        .tab-sheet-overlay.open .tab-sheet { transform: translateY(0); }
-        .tab-sheet-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 18px; }
-        .tab-sheet-btn {
-            display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px;
-            border-radius: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer;
-            border: none; text-align: left; color: #d4d4d8;
-            background: rgba(255,255,255,0.03); margin-bottom: 4px;
-        }
-        .tab-sheet-btn:hover { background: rgba(99,102,241,0.08); }
-        .tab-sheet-btn.active { background: rgba(99,102,241,0.12); color: #c7d2fe; font-weight: 600; }
-        .tabs-btn {
-            display: flex; align-items: center; gap: 5px; padding: 6px 12px;
-            border-radius: 8px; font-size: 0.78rem; font-weight: 500; cursor: pointer;
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            color: #a1a1aa; transition: all 0.2s;
-        }
-        .tabs-btn:hover { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.25); color: #c7d2fe; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
+<div class="nebula"></div>
 <div class="stars" id="starsContainer"></div>
 
-<div id="burgerMenuContainer"></div>
-
-<aside class="hidden md:flex glass-sidebar w-64 min-h-screen p-5 flex-col relative z-10 shrink-0">
-    <div class="flex items-center gap-2.5 mb-8 px-1">
-        <img src="/img.png" class="w-9 h-9 rounded-xl object-cover">
+<aside class="hidden md:flex glass-sidebar w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
+    <div class="flex items-center gap-3 mb-10 px-1">
+        <img src="/img.png" class="w-11 h-11 rounded-xl shadow-lg object-cover">
         <div>
-            <h1 class="text-base font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1>
-            <p class="text-xs text-zinc-500">Админ-панель</p>
+            <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent">PulseCore</h1>
+            <p class="text-xs text-zinc-400">Админ-панель</p>
         </div>
     </div>
-    <nav class="flex flex-col gap-0.5 flex-1">
-        <div class="nav-item active" id="nav-players" onclick="showSection('players')">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-            <div><div class="font-medium text-sm">Игроки</div></div>
+    <nav class="flex flex-col gap-2 flex-1">
+        <div>
+            <div class="nav-item" id="nav-players" onclick="toggleSubmenu('submenu-players')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <div><div class="font-medium text-sm">Игроки</div></div>
+                <svg class="nav-arrow" id="arrow-nav-players" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="submenu" id="submenu-players" style="display:none;">
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this)">Поиск и управление</button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this)">Расчёт</button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this)">Рассылка</button>
+            </div>
         </div>
-        <div class="nav-item" id="nav-subscriptions" onclick="showSection('subscriptions')">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            <div><div class="font-medium text-sm">Подписки</div></div>
+        <div>
+            <div class="nav-item" id="nav-subscriptions" onclick="toggleSubmenu('submenu-subscriptions')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <div><div class="font-medium text-sm">Подписки</div></div>
+                <svg class="nav-arrow" id="arrow-nav-subscriptions" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="submenu" id="submenu-subscriptions" style="display:none;">
+                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this)">Управление ценами</button>
+            </div>
         </div>
-        <div class="nav-item" id="nav-prices" onclick="showSection('prices')">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            <div><div class="font-medium text-sm">Цены</div></div>
+        <div>
+            <div class="nav-item" id="nav-tournaments" onclick="toggleSubmenu('submenu-tournaments')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div><div class="font-medium text-sm">Турниры</div></div>
+                <svg class="nav-arrow" id="arrow-nav-tournaments" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="submenu" id="submenu-tournaments" style="display:none;">
+                <button class="submenu-btn" onclick="selectAction('tournaments', null, this)">Управление турнирами</button>
+                <button class="submenu-btn" onclick="selectAction('scheduler', null, this)">Управление шедулерами</button>
+            </div>
         </div>
-        <div class="nav-item" id="nav-calculate" onclick="showSection('calculate')">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/></svg>
-            <div><div class="font-medium text-sm">Расчёт</div></div>
-        </div>
-        <div class="nav-item" id="nav-broadcast" onclick="showSection('broadcast')">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/></svg>
-            <div><div class="font-medium text-sm">Рассылка</div></div>
-        </div>
-        <div class="nav-item" id="nav-stats" onclick="showSection('stats')">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            <div><div class="font-medium text-sm">Статистика</div></div>
+        <div>
+            <div class="nav-item" id="nav-stats" onclick="toggleSubmenu('submenu-stats')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <div><div class="font-medium text-sm">Статистика</div></div>
+                <svg class="nav-arrow" id="arrow-nav-stats" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="submenu" id="submenu-stats" style="display:none;">
+                <button class="submenu-btn" onclick="selectAction('stats', null, this)">Просмотр</button>
+            </div>
         </div>
     </nav>
     <a href="/dashboard" class="flex items-center gap-2 text-zinc-500 hover:text-zinc-300 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-white/5 w-full">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Дашборд
     </a>
     <button onclick="logout()" class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm mt-1 py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Выйти
     </button>
 </aside>
 
-<main class="flex-1 relative z-10 p-4 sm:p-6 md:p-8">
-    <div class="max-w-2xl">
+<main class="flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
+    <div class="max-w-3xl mx-auto">
+        <div class="compare-header md:hidden">
+            <h1 class="compare-title">Админ-панель</h1>
+            <div class="compare-actions">
+                <a href="/dashboard" class="period-toggle">Назад</a>
+                <button class="period-toggle" onclick="toggleAdminSheet()">Меню</button>
+            </div>
+        </div>
 
-        <div id="section-players">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-extrabold text-white">Игроки</h2>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
-                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
+        <div id="section-players" class="hidden">
+            <div class="sheet-accordion" id="acc-players-wrapper" style="display:none;">
+                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-players')">
+                    <span class="sheet-section-title" style="margin:0;">Поиск и управление</span>
+                    <svg class="sheet-accordion-arrow" id="arrow-acc-players" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="sheet-accordion-body" id="acc-players" style="display:none;">
+                    <div class="widget-card">
+                        <input id="playerSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('players')">
+                        <div id="playerSearchResults" class="mt-3 space-y-1 hidden"></div>
+                    </div>
+                    <div id="playerSelected" class="widget-card mt-3 hidden">
+                        <div class="player-card-head">
+                            <div class="avatar-circle"><span id="playerAvatar"></span></div>
+                            <div>
+                                <p class="text-white font-semibold" id="playerSelName"></p>
+                                <p class="text-xs text-zinc-500" id="playerSelEmail"></p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-1 flex-wrap mb-3" id="playerSelBadges"></div>
+
+                        <div class="subscription-controls mb-3">
+                            <div class="subscription-row">
+                                <button onclick="giveSub(30)" id="playerGiveSub30" class="sub-btn sub-btn-emerald">30 дней</button>
+                                <button onclick="giveSub(60)" id="playerGiveSub60" class="sub-btn sub-btn-indigo">60 дней</button>
+                            </div>
+                            <div class="subscription-row">
+                                <input id="playerCustomDays" type="number" min="1" max="3650" placeholder="Дней" class="sub-input">
+                                <button onclick="giveSubCustom()" class="sub-btn sub-btn-amber">Выдать</button>
+                            </div>
+                            <button onclick="removeSub()" id="playerRemoveSub" class="sub-btn sub-btn-danger hidden">Отключить подписку</button>
+                        </div>
+
+                        <div class="player-info-grid">
+                            <div class="player-info-item" style="grid-column: 1 / -1;">
+                                <span class="player-info-label">Имя</span>
+                                <input id="playerName" class="player-info-input" type="text" placeholder="Имя игрока" style="width: 100%; min-height: 45px; font-size: 16px; padding: 10px 15px;">
+                            </div>
+                            <div class="player-info-item" style="grid-column: 1 / -1;">
+                                <span class="player-info-label">Email</span>
+                                <input id="playerEmail" class="player-info-input" type="email" placeholder="Email" style="width: 100%; min-height: 45px; font-size: 16px; padding: 10px 15px;">
+                            </div>
+                            <div class="player-info-item">
+                                <span class="player-info-label">Лига</span>
+                                <input id="playerLeague" class="player-info-input" type="text" placeholder="—">
+                            </div>
+                            <div class="player-info-item">
+                                <span class="player-info-label">Избранные залы</span>
+                                <input id="playerHalls" class="player-info-input" type="text" placeholder="—">
+                            </div>
+                            <div class="player-info-item">
+                                <span class="player-info-label">Live залы</span>
+                                <input id="playerLiveHalls" class="player-info-input" type="text" placeholder="—">
+                            </div>
+                            <div class="player-info-item">
+                                <span class="player-info-label">Push</span>
+                                <div class="status-item" onclick="togglePlayerStatus('playerPush')">
+                                    <span class="status-checkbox" id="playerPushCheckbox"></span>
+                                    <span class="status-label" id="playerPushLabel">Выкл</span>
+                                </div>
+                            </div>
+                            <div class="player-info-item">
+                                <span class="player-info-label">Уведомления</span>
+                                <div class="status-item" onclick="togglePlayerStatus('playerNotifications')">
+                                    <span class="status-checkbox" id="playerNotificationsCheckbox"></span>
+                                    <span class="status-label" id="playerNotificationsLabel">Выкл</span>
+                                </div>
+                            </div>
+                            <div class="player-info-item">
+                                <span class="player-info-label">Последний вход</span>
+                                <span id="playerLastLogin" class="player-info-value">—</span>
+                            </div>
+                        </div>
+
+                        <div class="player-actions-grid mt-3">
+                            <button onclick="updatePlayer()" class="btn btn-indigo">Сохранить</button>
+                            <button onclick="togglePlayerRole('ROLE_ADMIN')" id="toggleAdminBtn" class="btn btn-amber hidden">Сделать админом</button>
+                            <button onclick="deletePlayerTournaments()" class="btn btn-danger">Удалить турниры</button>
+                            <button onclick="resyncPlayerTournaments()" class="btn btn-indigo">Пересинхронизация</button>
+                            <button onclick="deletePlayerAccount()" class="btn btn-danger">Удалить аккаунт</button>
+                        </div>
+                        <p id="playerMsg" class="text-xs text-center mt-2 hidden"></p>
+                    </div>
                 </div>
             </div>
-            <div class="widget-card rounded-2xl p-4 mb-3">
-                <input id="playerSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('players')">
-                <div id="playerSearchResults" class="mt-3 space-y-1 hidden"></div>
+
+            <div class="sheet-accordion" id="acc-calculate-wrapper" style="display:none;">
+                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-calculate')">
+                    <span class="sheet-section-title" style="margin:0;">Расчёт</span>
+                    <svg class="sheet-accordion-arrow" id="arrow-acc-calculate" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="sheet-accordion-body" id="acc-calculate" style="display:none;">
+                    <div class="widget-card">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="text-xs text-zinc-400 mb-1 block">Имя игрока</label>
+                                <input id="calcName" type="text" class="input" placeholder="Иван Петров">
+                            </div>
+                            <div>
+                                <label class="text-xs text-zinc-400 mb-1 block">Дата с</label>
+                                <input id="calcStartDate" type="date" class="input">
+                            </div>
+                            <div>
+                                <label class="text-xs text-zinc-400 mb-1 block">Дата по</label>
+                                <input id="calcEndDate" type="date" class="input">
+                            </div>
+                        </div>
+                        <button onclick="adminCalculate()" id="calcBtn" class="btn btn-indigo">Посчитать</button>
+                        <p id="calcError" class="text-xs text-red-400 text-center mt-2 hidden"></p>
+                        <div id="calcLoading" class="text-center py-4 hidden">
+                            <div class="spinner"></div>
+                        </div>
+                        <div id="calcResult" class="hidden mt-4">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="flex-1 text-center">
+                                    <p class="text-xs text-zinc-400">Всего</p>
+                                    <p class="text-xl font-bold text-white" id="calcTotal">0 ₽</p>
+                                </div>
+                                <div class="flex-1 text-center">
+                                    <p class="text-xs text-zinc-400">Турниров</p>
+                                    <p class="text-xl font-bold text-white" id="calcCount">0</p>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs">
+                                    <thead>
+                                    <tr class="text-zinc-500">
+                                        <th class="text-left py-1">#</th>
+                                        <th class="text-left py-1">Дата</th>
+                                        <th class="text-left py-1">Турнир</th>
+                                        <th class="text-right py-1">Сумма</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="calcTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="playerSelected" class="widget-card rounded-2xl p-4 hidden">
-                <div class="mb-3">
-                    <p class="text-white font-semibold" id="playerSelName"></p>
-                    <p class="text-xs text-zinc-500" id="playerSelEmail"></p>
-                    <div class="flex gap-1 flex-wrap mt-1" id="playerSelBadges"></div>
+
+            <div class="sheet-accordion" id="acc-broadcast-wrapper" style="display:none;">
+                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-broadcast')">
+                    <span class="sheet-section-title" style="margin:0;">Рассылка</span>
+                    <svg class="sheet-accordion-arrow" id="arrow-acc-broadcast" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <button onclick="togglePlayerRole('ROLE_ADMIN')" id="grantAdminBtn" class="btn btn-amber hidden">Сделать админом</button>
-                    <button onclick="togglePlayerRole('ROLE_ADMIN')" id="revokeAdminBtn" class="btn btn-danger hidden">Разжаловать</button>
-                    <button onclick="deletePlayerTournaments()" class="btn btn-danger">Удалить все турниры</button>
-                    <button onclick="resyncPlayerTournaments()" class="btn btn-indigo">Перезагрузить историю</button>
-                    <button onclick="deletePlayerAccount()" class="btn btn-danger">Удалить аккаунт</button>
+                <div class="sheet-accordion-body" id="acc-broadcast" style="display:none;">
+                    <div class="widget-card">
+                        <textarea id="broadcastMessage" class="input" rows="4" placeholder="Текст рассылки..."></textarea>
+                        <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-indigo mt-3">Отправить</button>
+                        <p id="broadcastMsg" class="text-xs text-center mt-2 hidden"></p>
+                    </div>
                 </div>
-                <p id="playerMsg" class="text-xs text-center mt-2 hidden"></p>
             </div>
         </div>
 
         <div id="section-subscriptions" class="hidden">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-extrabold text-white">Подписки</h2>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
-                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
+            <div class="sheet-accordion" id="acc-prices-wrapper" style="display:none;">
+                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-prices')">
+                    <span class="sheet-section-title" style="margin:0;">Управление ценами</span>
+                    <svg class="sheet-accordion-arrow" id="arrow-acc-prices" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
-            </div>
-            <div class="widget-card rounded-2xl p-4 mb-3">
-                <input id="subSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('sub')">
-                <div id="subSearchResults" class="mt-3 space-y-1 hidden"></div>
-            </div>
-            <div id="subSelectedPlayer" class="widget-card rounded-2xl p-4 hidden">
-                <div class="mb-3">
-                    <p class="text-white font-semibold" id="subSelName"></p>
-                    <p class="text-xs text-zinc-500" id="subSelEmail"></p>
-                    <div class="flex gap-1 flex-wrap mt-1" id="subSelBadges"></div>
+                <div class="sheet-accordion-body" id="acc-prices" style="display:none;">
+                    <div class="widget-card">
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div><label class="text-xs text-zinc-400 mb-1 block">1 мес (₽)</label><input id="price1Input" type="number" min="1" class="input"></div>
+                            <div><label class="text-xs text-zinc-400 mb-1 block">2 мес (₽)</label><input id="price2Input" type="number" min="1" class="input"></div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button onclick="loadCurrentPrices()" class="btn btn-ghost">Загрузить текущие</button>
+                            <button onclick="updatePrices()" id="updatePricesBtn" class="btn btn-amber">Сохранить</button>
+                        </div>
+                        <p id="pricesMsg" class="text-xs text-center mt-2 hidden"></p>
+                    </div>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <button onclick="giveSub(30)" class="btn btn-emerald">Выдать 30 дней</button>
-                    <button onclick="giveSub(60)" class="btn btn-indigo">Выдать 60 дней</button>
-                    <button onclick="removeSub()" id="removeSubBtn" class="btn btn-danger hidden">Отключить подписку</button>
-                </div>
-                <p id="subMsg" class="text-xs text-center mt-2 hidden"></p>
             </div>
         </div>
 
-        <div id="section-prices" class="hidden">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-extrabold text-white">Цены</h2>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
-                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
+        <div id="section-tournaments" class="hidden">
+            <div class="widget-card">
+                <div class="flex items-center gap-2 mb-3">
+                    <input type="date" id="tournamentDateInput" class="input w-auto" onchange="loadTournaments(this.value)">
+                    <span id="tournamentDateLabel" class="text-xs text-zinc-400"></span>
                 </div>
-            </div>
-            <div class="widget-card rounded-2xl p-4 mb-3">
-                <div class="grid grid-cols-2 gap-3 mb-3">
-                    <div><label class="text-xs text-zinc-400 mb-1 block">1 мес (₽)</label><input id="price1Input" type="number" min="1" class="input"></div>
-                    <div><label class="text-xs text-zinc-400 mb-1 block">2 мес (₽)</label><input id="price2Input" type="number" min="1" class="input"></div>
+                <div id="tournamentList">
+                    <p class="text-center text-zinc-500 py-8">Загрузка...</p>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <button onclick="loadCurrentPrices()" class="btn btn-ghost">Загрузить текущие</button>
-                    <button onclick="updatePrices()" id="updatePricesBtn" class="btn btn-amber">Сохранить</button>
-                </div>
-                <p id="pricesMsg" class="text-xs text-center mt-2 hidden"></p>
             </div>
         </div>
 
-        <div id="section-calculate" class="hidden">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-extrabold text-white">Расчёт</h2>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
-                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
+        <div id="section-scheduler" class="hidden">
+            <div class="widget-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <p class="text-white font-semibold">Планировщик</p>
+                        <p id="schedulerStatusText" class="text-xs text-zinc-400">Загрузка...</p>
+                    </div>
+                    <span id="schedulerStatusDot" class="scheduler-dot"></span>
                 </div>
-            </div>
-            <div class="widget-card rounded-2xl p-4 mb-3">
-                <div class="flex flex-col gap-3 mb-3">
-                    <div><label class="text-xs text-zinc-400 mb-1 block">Имя и фамилия</label><input id="calcName" type="text" placeholder="Павлов Евгений" class="input"></div>
-                    <div><label class="text-xs text-zinc-400 mb-1 block">Дата с</label><input id="calcStartDate" type="date" class="input"></div>
-                    <div><label class="text-xs text-zinc-400 mb-1 block">Дата по</label><input id="calcEndDate" type="date" class="input"></div>
-                </div>
-                <button onclick="adminCalculate()" id="calcBtn" class="btn btn-amber">Посчитать</button>
-                <p id="calcError" class="text-red-400 text-xs mt-2 hidden"></p>
-                <div id="calcLoading" class="hidden mt-2 text-center"><span class="spinner-sm"></span> Поиск...</div>
-            </div>
-            <div id="calcResult" class="widget-card rounded-2xl p-4 hidden">
-                <div class="flex gap-3 mb-4">
-                    <div class="flex-1 text-center bg-white/5 rounded-xl p-4"><div class="text-xs text-zinc-500">Сумма</div><div class="text-xl font-bold text-indigo-400" id="calcTotal"></div></div>
-                    <div class="flex-1 text-center bg-white/5 rounded-xl p-4"><div class="text-xs text-zinc-500">Турниров</div><div class="text-xl font-bold text-indigo-400" id="calcCount"></div></div>
-                </div>
-                <div class="overflow-x-auto"><table class="w-full text-xs"><thead><tr class="text-zinc-500"><th class="text-left py-1">№</th><th class="text-left py-1">Дата</th><th class="text-left py-1">Турнир</th><th class="text-right py-1">Сумма</th></tr></thead><tbody id="calcTableBody"></tbody></table></div>
-            </div>
-        </div>
-
-        <div id="section-broadcast" class="hidden">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-extrabold text-white">Рассылка</h2>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
-                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
-                </div>
-            </div>
-            <div class="widget-card rounded-2xl p-4 mb-3">
-                <textarea id="broadcastMessage" rows="3" placeholder="Текст сообщения..." class="input resize-none mb-3"></textarea>
-                <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-amber">Отправить всем</button>
-                <p id="broadcastMsg" class="text-xs text-center mt-2 hidden"></p>
+                <button id="schedulerToggleBtn" class="btn btn-amber" onclick="toggleScheduler()">Приостановить</button>
             </div>
         </div>
 
         <div id="section-stats" class="hidden">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-extrabold text-white">Статистика</h2>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleAdminSheet()" class="md:hidden tabs-btn">Меню ▴</button>
-                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
-                </div>
-            </div>
-            <div class="widget-card rounded-2xl p-4 mb-3">
+            <div class="widget-card">
                 <div class="flex items-center gap-2 mb-3">
                     <select id="statsDays" onchange="loadPageStats()" class="input w-auto">
                         <option value="1">1 день</option><option value="3">3 дня</option><option value="7" selected>7 дней</option><option value="14">14 дней</option><option value="30">30 дней</option>
@@ -290,50 +328,67 @@
         </div>
 
     </div>
-
-    <div class="tab-sheet-overlay" id="adminSheetOverlay" onclick="toggleAdminSheet()">
-        <div class="tab-sheet" onclick="event.stopPropagation()">
-            <div class="tab-sheet-handle"></div>
-            <button class="tab-sheet-btn active" id="sheet-players" onclick="showSection('players');toggleAdminSheet()">Игроки</button>
-            <button class="tab-sheet-btn" id="sheet-subscriptions" onclick="showSection('subscriptions');toggleAdminSheet()">Подписки</button>
-            <button class="tab-sheet-btn" id="sheet-prices" onclick="showSection('prices');toggleAdminSheet()">Цены</button>
-            <button class="tab-sheet-btn" id="sheet-calculate" onclick="showSection('calculate');toggleAdminSheet()">Расчёт</button>
-            <button class="tab-sheet-btn" id="sheet-broadcast" onclick="showSection('broadcast');toggleAdminSheet()">Рассылка</button>
-            <button class="tab-sheet-btn" id="sheet-stats" onclick="showSection('stats');toggleAdminSheet()">Статистика</button>
-        </div>
-    </div>
 </main>
 
+<div class="period-sheet-overlay" id="adminSheetOverlay" onclick="toggleAdminSheet()">
+    <div class="period-sheet" onclick="event.stopPropagation()">
+        <div class="period-sheet-handle"></div>
+
+        <div class="sheet-accordion">
+            <div class="sheet-accordion-header" onclick="toggleSubmenu('submenu-mobile-players')">
+                <span class="sheet-section-title" style="margin:0;">Игроки</span>
+                <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-players" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sheet-accordion-body" id="submenu-mobile-players" style="display:none;">
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this); toggleAdminSheet()">Поиск и управление</button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this); toggleAdminSheet()">Расчёт</button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this); toggleAdminSheet()">Рассылка</button>
+            </div>
+        </div>
+
+        <div class="sheet-accordion">
+            <div class="sheet-accordion-header" onclick="toggleSubmenu('submenu-mobile-subscriptions')">
+                <span class="sheet-section-title" style="margin:0;">Подписки</span>
+                <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-subscriptions" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sheet-accordion-body" id="submenu-mobile-subscriptions" style="display:none;">
+                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this); toggleAdminSheet()">Управление ценами</button>
+            </div>
+        </div>
+
+        <div class="sheet-accordion">
+            <div class="sheet-accordion-header" onclick="toggleSubmenu('submenu-mobile-tournaments')">
+                <span class="sheet-section-title" style="margin:0;">Турниры</span>
+                <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-tournaments" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sheet-accordion-body" id="submenu-mobile-tournaments" style="display:none;">
+                <button class="submenu-btn" onclick="selectAction('tournaments', null, this); toggleAdminSheet()">Управление турнирами</button>
+                <button class="submenu-btn" onclick="selectAction('scheduler', null, this); toggleAdminSheet()">Управление шедулерами</button>
+            </div>
+        </div>
+
+        <button class="period-sheet-btn" onclick="showSection('stats'); toggleAdminSheet()">Статистика</button>
+    </div>
+</div>
+
+<script type="module" src="/js/admin/admin-app.js"></script>
 <script type="module">
+    import { loadTournaments, toggleTournamentExpand, toggleStatus, saveTournament } from '/js/admin/admin-tournaments.js';
+    import { loadSchedulerStatus, toggleScheduler } from '/js/admin/admin-scheduler.js';
+    window.loadTournaments = loadTournaments;
+    window.toggleTournamentExpand = toggleTournamentExpand;
+    window.toggleStatus = toggleStatus;
+    window.saveTournament = saveTournament;
+    window.loadSchedulerStatus = loadSchedulerStatus;
+    window.toggleScheduler = toggleScheduler;
+
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
+    import { initStars } from '/js/modules/stars.js';
+    import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
     initBurgerMenu();
     initRoleCheck();
-</script>
-<script type="module" src="/js/admin-app.js"></script>
-<script>
-    window.toggleAdminSheet = function() {
-        document.getElementById('adminSheetOverlay').classList.toggle('open');
-        updateAdminSheetActive();
-    };
-    function updateAdminSheetActive() {
-        const sections = ['players','subscriptions','prices','calculate','broadcast','stats'];
-        const active = sections.find(s => !document.getElementById('section-'+s).classList.contains('hidden'));
-        document.querySelectorAll('.tab-sheet-btn').forEach(b => b.classList.remove('active'));
-        if (active) document.getElementById('sheet-'+active)?.classList.add('active');
-    }
-    const origShow = window.showSection;
-    window.showSection = function(s) {
-        origShow(s);
-        setTimeout(updateAdminSheetActive, 100);
-    };
-</script>
-<script type="module">
-    import { initStars } from '/js/modules/stars.js';
     initStars();
-</script>
-<script type="module">
-    import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
     initThemePicker();
     window.toggleThemeSheet = toggleThemeSheet;
     window.setTheme = setTheme;

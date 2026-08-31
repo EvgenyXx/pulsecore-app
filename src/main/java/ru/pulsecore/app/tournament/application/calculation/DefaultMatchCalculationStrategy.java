@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.application.calculation.league.PointsCalculatorFactory;
+
 import ru.pulsecore.app.tournament.infrastructure.util.DateConstants;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.application.calculation.league.PlacementCalculator;
@@ -25,6 +26,8 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
 
     private final PlacementCalculator placementCalculator;
     private final PointsCalculatorFactory factory;
+
+
 
     @Override
     public StrategyType getType() {
@@ -52,6 +55,7 @@ public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy
         }
 
         log.debug("📊 Итог расчёта: очки={}, места={}", pointsMap, placeMap);
+
         return new MatchProcessingResult(pointsMap, placeMap);
     }
 

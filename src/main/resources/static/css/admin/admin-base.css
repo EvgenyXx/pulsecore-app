@@ -1,0 +1,505 @@
+/* ===== ADMIN — APPLE STYLE ===== */
+
+:root {
+    --admin-bg: #0c0c18;
+    --admin-card: rgba(255, 255, 255, 0.04);
+    --admin-card-hover: rgba(255, 255, 255, 0.07);
+    --admin-border: rgba(255, 255, 255, 0.08);
+    --admin-text: #f5f5f7;
+    --admin-text-secondary: #98989d;
+    --admin-accent: #0a84ff;
+    --admin-accent-hover: #409cff;
+    --admin-danger: #ff453a;
+    --admin-danger-bg: rgba(255, 69, 58, 0.1);
+    --admin-emerald: #30d158;
+    --admin-emerald-bg: rgba(48, 209, 88, 0.1);
+    --admin-amber: #ff9f0a;
+    --admin-amber-bg: rgba(255, 159, 10, 0.1);
+    --admin-radius: 12px;
+    --admin-transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    padding-top: env(safe-area-inset-top, 0px);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--admin-bg);
+    overscroll-behavior: none;
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--admin-text);
+}
+
+/* =====================================================
+   ПРИНУДИТЕЛЬНО ТЁМНЫЕ ИНПУТЫ — ЗАЩИТА ОТ DAISYUI
+   ===================================================== */
+
+input,
+select,
+textarea {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: var(--admin-radius) !important;
+    color: #f5f5f7 !important;
+    padding: 12px 16px !important;
+    font-size: 0.9rem !important;
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    outline: none !important;
+    width: 100%;
+    box-shadow: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    caret-color: var(--admin-accent);
+    transition: var(--admin-transition);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: rgba(10, 132, 255, 0.5) !important;
+    box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #6e6e73 !important;
+    opacity: 1 !important;
+}
+
+/* Date input — иконка календаря */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6);
+    cursor: pointer;
+}
+
+input[type="date"]::-webkit-datetime-edit {
+    color: #f5f5f7 !important;
+}
+
+/* Select */
+select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2398989d' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    padding-right: 36px !important;
+}
+
+select option {
+    background: #1c1c1e !important;
+    color: #f5f5f7 !important;
+}
+
+/* Number input — убираем стрелки */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
+/* Textarea */
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* =====================================================
+   КНОПКИ — ЗАЩИТА ОТ DAISYUI
+   ===================================================== */
+
+.btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    border-radius: var(--admin-radius) !important;
+    padding: 12px 20px !important;
+    cursor: pointer !important;
+    font-size: 0.9rem !important;
+    width: 100% !important;
+    text-align: center !important;
+    transition: var(--admin-transition) !important;
+    letter-spacing: -0.2px !important;
+    text-transform: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    line-height: 1.4 !important;
+}
+
+.btn:active {
+    transform: scale(0.97) !important;
+}
+
+.btn-indigo {
+    background: var(--admin-accent) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.25) !important;
+}
+
+.btn-indigo:hover {
+    background: var(--admin-accent-hover) !important;
+    box-shadow: 0 6px 16px rgba(10, 132, 255, 0.35) !important;
+}
+
+.btn-emerald {
+    background: var(--admin-emerald) !important;
+    color: #000 !important;
+    box-shadow: 0 4px 12px rgba(48, 209, 88, 0.25) !important;
+}
+
+.btn-emerald:hover {
+    background: #34d960 !important;
+    box-shadow: 0 6px 16px rgba(48, 209, 88, 0.35) !important;
+}
+
+.btn-danger {
+    background: var(--admin-danger-bg) !important;
+    color: var(--admin-danger) !important;
+    border: 1px solid rgba(255, 69, 58, 0.2) !important;
+}
+
+.btn-danger:hover {
+    background: rgba(255, 69, 58, 0.18) !important;
+    border-color: rgba(255, 69, 58, 0.35) !important;
+}
+
+.btn-amber {
+    background: var(--admin-amber) !important;
+    color: #000 !important;
+    box-shadow: 0 4px 12px rgba(255, 159, 10, 0.25) !important;
+}
+
+.btn-amber:hover {
+    background: #ffab2e !important;
+    box-shadow: 0 6px 16px rgba(255, 159, 10, 0.35) !important;
+}
+
+.btn-ghost {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: var(--admin-text-secondary) !important;
+    border: 1px solid var(--admin-border) !important;
+    padding: 10px 16px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: var(--admin-text) !important;
+}
+
+/* =====================================================
+   СПИННЕР
+   ===================================================== */
+
+.spinner {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-top-color: var(--admin-accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+}
+
+.spinner-sm {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-top-color: var(--admin-accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =====================================================
+   ШАПКА
+   ===================================================== */
+
+.compare-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 0 4px;
+}
+
+.compare-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--admin-text);
+    letter-spacing: -0.5px;
+}
+
+.period-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--admin-border);
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: var(--admin-accent) !important;
+    transition: var(--admin-transition);
+}
+
+.period-toggle:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* =====================================================
+   ШТОРКА
+   ===================================================== */
+
+.period-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.period-sheet-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.period-sheet {
+    background: rgba(28, 28, 30, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px 16px 34px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    border: 1px solid var(--admin-border);
+    border-bottom: none;
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.period-sheet-overlay.open .period-sheet {
+    transform: translateY(0);
+}
+
+.period-sheet-handle {
+    width: 36px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+    margin: 0 auto 20px;
+}
+
+.period-sheet-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    color: var(--admin-text) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    margin-bottom: 6px;
+    transition: var(--admin-transition);
+}
+
+.period-sheet-btn:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.period-sheet-btn.active {
+    background: rgba(10, 132, 255, 0.15) !important;
+    color: #409cff !important;
+    font-weight: 600;
+}
+
+/* =====================================================
+   КАРТОЧКИ
+   ===================================================== */
+
+.widget-card {
+    background: var(--admin-card) !important;
+    border-radius: 16px !important;
+    padding: 18px !important;
+    border: 1px solid var(--admin-border) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 12px;
+    transition: var(--admin-transition);
+}
+
+.widget-card:hover {
+    background: var(--admin-card-hover) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* =====================================================
+   АВАТАР
+   ===================================================== */
+
+.avatar-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(10, 132, 255, 0.25), rgba(0, 85, 204, 0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #409cff;
+    font-weight: 700;
+    font-size: 1.3rem;
+    border: 2px solid rgba(10, 132, 255, 0.3);
+    flex-shrink: 0;
+}
+
+/* =====================================================
+   ДЕСКТОП
+   ===================================================== */
+
+@media (min-width: 768px) {
+    .btn {
+        width: auto !important;
+    }
+}
+
+/* ===== УПРАВЛЕНИЕ ПОДПИСКОЙ ===== */
+
+.subscription-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.subscription-row {
+    display: flex;
+    gap: 6px;
+}
+
+.sub-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    letter-spacing: -0.2px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.sub-btn:active {
+    transform: scale(0.96);
+}
+
+.sub-btn-emerald {
+    background: #30d158;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(48, 209, 88, 0.2);
+}
+
+.sub-btn-emerald:hover {
+    background: #34d960;
+}
+
+.sub-btn-indigo {
+    background: #0a84ff;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(10, 132, 255, 0.2);
+}
+
+.sub-btn-indigo:hover {
+    background: #409cff;
+}
+
+.sub-btn-amber {
+    background: #ff9f0a;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(255, 159, 10, 0.2);
+}
+
+.sub-btn-amber:hover {
+    background: #ffab2e;
+}
+
+.sub-btn-danger {
+    background: rgba(255, 69, 58, 0.1);
+    color: #ff453a;
+    border: 1px solid rgba(255, 69, 58, 0.2);
+    width: 100%;
+}
+
+.sub-btn-danger:hover {
+    background: rgba(255, 69, 58, 0.18);
+}
+
+.sub-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: #f5f5f7;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    outline: none;
+    font-family: 'Inter', -apple-system, sans-serif;
+    transition: all 0.2s ease;
+    min-width: 0;
+}
+
+.sub-input:focus {
+    border-color: rgba(10, 132, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.12);
+}
+
+.sub-input::placeholder {
+    color: #6e6e73;
+}
+
+.sub-input::-webkit-inner-spin-button,
+.sub-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

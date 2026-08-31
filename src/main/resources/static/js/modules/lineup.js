@@ -34,11 +34,31 @@ export async function saveSelectedHalls() {
 
 export function switchHallsDate(date) {
     state.hallsDate = date;
+
+    const slider = document.querySelector('.date-slider');
+    const dates = getDates();
+    const activeIndex = dates.indexOf(date);
+    if (slider) {
+        slider.className = `date-slider pos-${activeIndex}`;
+    }
+
     document.querySelectorAll('.date-tab').forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-date') === date) btn.classList.add('active');
     });
+
     refreshLineupsOnly();
+}
+
+function getDates() {
+    const today = new Date();
+    const dates = [];
+    for (let i = 0; i < 3; i++) {
+        const d = new Date(today);
+        d.setDate(d.getDate() + i);
+        dates.push(d.toISOString().split('T')[0]);
+    }
+    return dates;
 }
 
 function renderLineupRows(lineupsByHall) {
@@ -49,23 +69,30 @@ function renderLineupRows(lineupsByHall) {
     allLineups.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
 
     let html = '';
-    allLineups.forEach(l => {
+    allLineups.forEach((l, i) => {
         const playersArray = (l.players || '—').split(',').map(p => capitalizeName(p.trim())).filter(p => p);
+
         const playersList = playersArray.length > 0
-            ? playersArray.map(p => `<span class="player-name">${p}</span>`).join('')
-            : '<span class="player-name">—</span>';
+            ? `<div class="lineup-players-column">${playersArray.map(p => `<span class="lineup-player-name">${p}</span>`).join('')}</div>`
+            : '<span class="text-zinc-600 text-xs">—</span>';
 
         const isPlayerInLineup = l.player || l.inLineup || l.isPlayer || false;
-        const rowClass = isPlayerInLineup ? 'lineup-row player-row' : 'lineup-row';
+        const rowClass = isPlayerInLineup ? 'lineup-card is-player' : 'lineup-card';
 
-        html += `<div class="${rowClass}">
-            <div class="lineup-info">
-                <span class="time-badge">${l.time || '??:??'}</span>
-                <span class="league-badge">${l.league || '?'}</span>
-                <span class="hall-badge">${l.hall}</span>
+        html += `
+            <div class="${rowClass}" style="animation-delay: ${i * 40}ms">
+                <div class="lineup-card-header">
+                    <div class="lineup-left">
+                        <span class="lineup-time-badge">${l.time || '??:??'}</span>
+                        <span class="lineup-league-badge">${l.league || '?'}</span>
+                        <span class="lineup-hall-badge">${l.hall}</span>
+                    </div>
+                </div>
+                <div class="lineup-players-wrapper">
+                    ${playersList}
+                </div>
             </div>
-            <div class="players-text">${playersList}</div>
-        </div>`;
+        `;
     });
     return html;
 }
@@ -111,6 +138,9 @@ export async function loadHallsContent() {
     const c = document.getElementById('actionContent');
     c.innerHTML = '<div class="text-center py-8"></div>';
 
+    // ВАЖНО: загружаем сохранённые залы с базы при каждом заходе
+    await loadSelectedHalls();
+
     const uiState = loadHallsUIState();
 
     let allHalls = [];
@@ -127,29 +157,32 @@ export async function loadHallsContent() {
     }
 
     let html = '';
-    const today = new Date();
-    const dates = [];
-    for (let i = 0; i < 3; i++) { const d = new Date(today); d.setDate(d.getDate() + i); dates.push(d.toISOString().split('T')[0]); }
+    const dates = getDates();
+    const activeDateIndex = dates.indexOf(state.hallsDate) >= 0 ? dates.indexOf(state.hallsDate) : 0;
 
-    html += '<div class="flex gap-2 mb-4 flex-wrap">';
-    dates.forEach(d => {
-        const label = d === dates[0] ? 'Сегодня' : d === dates[1] ? 'Завтра' : 'Послезавтра';
-        html += `<button onclick="switchHallsDate('${d}')" data-date="${d}" class="date-tab ${d === state.hallsDate ? 'active' : ''}">${label}<br><span class="text-xs opacity-60">${formatDateShort(d)}</span></button>`;
+    html += '<div class="date-switcher mb-5">';
+    html += `<div class="date-slider pos-${activeDateIndex}"></div>`;
+    dates.forEach((d, idx) => {
+        const label = idx === 0 ? 'Сегодня' : idx === 1 ? 'Завтра' : 'Послезавтра';
+        html += `<button onclick="switchHallsDate('${d}')" data-date="${d}" class="date-tab ${d === state.hallsDate ? 'active' : ''}">
+            <span class="date-tab-label">${label}</span>
+            <span class="date-tab-date">${formatDateShort(d)}</span>
+        </button>`;
     });
     html += '</div>';
 
     if (allHalls.length > 0) {
         const allSelected = uiState.allSelected && state.selectedHalls.length === allHalls.length;
-        html += `<div class="widget-card rounded-2xl p-4 mb-4">
+        html += `<div class="apple-card mb-4">
             <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleHallsCheckboxes()">
-                <div class="flex items-center gap-3">
-                    <h3 class="text-sm font-semibold text-white">🏛 Выберите залы</h3>
-                    <label class="hall-checkbox-card" style="padding: 4px 10px; gap: 6px;" onclick="event.stopPropagation()">
+                <h3 class="text-[15px] font-semibold text-white tracking-tight">Выберите залы</h3>
+                <div class="flex items-center gap-2">
+                    <label class="hall-select-all" onclick="event.stopPropagation()">
                         <input type="checkbox" id="allHallsCheckbox" ${allSelected ? 'checked' : ''} onchange="toggleAllHalls()" class="accent-indigo-500 w-4 h-4">
                         <span class="text-xs text-zinc-300 select-none">Все</span>
                     </label>
+                    <span class="toggle-arrow text-zinc-400 text-xs transition-transform duration-300 ${uiState.collapsed ? 'rotate-180' : ''}" id="hallsToggleArrow">▼</span>
                 </div>
-                <span class="toggle-arrow text-zinc-400 text-xs ${uiState.collapsed ? 'rotate-180' : ''}" id="hallsToggleArrow">▼</span>
             </div>
             <div id="hallsCheckboxesWrapper" class="${uiState.collapsed ? 'hidden' : ''}">
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="hallsCheckboxes">`;
@@ -157,12 +190,12 @@ export async function loadHallsContent() {
             const checked = state.selectedHalls.includes(hall);
             html += `<label class="hall-checkbox-card ${checked ? 'selected' : ''}"><input type="checkbox" value="${hall}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)"><span class="text-sm text-white">${hall}</span></label>`;
         });
-        html += '</div><button onclick="saveSelectedHalls()" class="btn-gold w-full mt-3 py-2 text-sm">💾 Сохранить выбранные залы</button></div></div>';
+        html += '</div><button onclick="saveSelectedHalls()" class="apple-save-btn">Сохранить</button></div></div>';
     } else {
         html += '<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Залы не загружены</p></div>';
     }
 
-    html += '<div class="widget-card rounded-2xl p-4" id="lineupsContainer">';
+    html += '<div class="apple-card" id="lineupsContainer">';
     if (Object.keys(lineupsByHall).length > 0) {
         html += renderLineupRows(lineupsByHall);
     } else if (state.selectedHalls.length > 0) {

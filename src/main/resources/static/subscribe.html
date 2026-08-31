@@ -14,44 +14,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/app.css">
-    <style>
-        body { padding-top: env(safe-area-inset-top, 0px); }
-        .plan-card {
-            background: rgba(255,255,255,0.025); border-radius: 16px; padding: 20px 16px;
-            border: 1px solid rgba(99,102,241,0.12); cursor: pointer; position: relative; overflow: hidden;
-            transition: all 0.25s ease; min-width: 160px; max-width: 200px; flex-shrink: 0;
-            scroll-snap-align: center; text-align: center;
-        }
-        .plan-card:active { transform: scale(0.97); }
-        .plan-card.selected { border-color: #6366f1; box-shadow: 0 0 30px rgba(99,102,241,0.20); }
-        .plan-card.popular { border-color: rgba(99,102,241,0.35); }
-        .plan-card.popular::before {
-            content: "ВЫГОДНО"; position: absolute; top: 10px; right: -25px;
-            background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff;
-            font-size: 0.55rem; font-weight: 700; padding: 2px 30px;
-            transform: rotate(45deg); letter-spacing: 0.5px;
-        }
-        .price-old { text-decoration: line-through; color: #71717a; font-size: 0.8rem; }
-        .pro-badge {
-            background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff;
-            font-weight: 700; font-size: 0.6rem; padding: 2px 10px; border-radius: 20px;
-            display: inline-flex; align-items: center; gap: 3px;
-        }
-        .amount-gold { color: #818cf8; font-weight: 700; }
-        .btn-pay {
-            background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff;
-            font-weight: 600; border: none; border-radius: 12px; padding: 14px 24px;
-            cursor: pointer; font-size: 1rem; transition: all 0.2s ease; width: 100%;
-        }
-        .btn-pay:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-pay:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-        .plans-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-        .plans-scroll::-webkit-scrollbar { display: none; }
-        @media (min-width: 768px) {
-            .plan-card { min-width: 200px; max-width: 240px; padding: 28px 24px; }
-            .plans-scroll { justify-content: center; overflow-x: visible; }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/subscribe.css">
 </head>
 <body class="flex min-h-screen">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
@@ -114,19 +77,21 @@
 </main>
 
 <script type="module" src="/js/subscribe-app.js"></script>
+<script type="module" src="/js/modules/burger-menu.js"></script>
+<script type="module" src="/js/modules/role-check.js"></script>
+<script type="module" src="/js/modules/stars.js"></script>
+<script type="module" src="/js/modules/theme-picker.js"></script>
 <script type="module">
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
+    import { initStars } from '/js/modules/stars.js';
+    import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
+
     initBurgerMenu();
     initRoleCheck();
-</script>
-<script type="module">
-    import { initStars } from '/js/modules/stars.js';
     initStars();
-</script>
-<script type="module">
-    import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
     initThemePicker();
+
     window.toggleThemeSheet = toggleThemeSheet;
     window.setTheme = setTheme;
 </script>

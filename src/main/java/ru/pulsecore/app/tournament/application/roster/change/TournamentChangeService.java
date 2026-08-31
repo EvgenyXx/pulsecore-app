@@ -66,8 +66,7 @@ public class TournamentChangeService {
                     if (originalName != null) {
                         t.setHallNumber(NumberUtils.extractInt(t.getHall()));
                         result.get(originalName).add(t);
-                        log.debug("Изменения: игрок={}, турнир={}, зал={}",
-                                originalName, t.getLink(), t.getHallNumber());
+
                     }
                 }
             }

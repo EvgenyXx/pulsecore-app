@@ -12,6 +12,13 @@ public class TournamentApi {
 
     public static final String BASE_PATH = "/api/tournament";
 
+
+    /**
+     * Матчи турнира.
+     * MATCHES_BY_RESULT — матчи по ID результата игрока.
+     */
+    public static final String MATCHES_BY_RESULT = "/matches/by-result/{resultId}";
+
     /**
      * Онлайн трансляции.
      * LIVE — текущие матчи онлайн.
@@ -103,5 +110,14 @@ public class TournamentApi {
     public static final String PARAM_LINEUP_ID = "lineupId";
     public static final String MESSAGE = "/message/{id}";
     public static final String PARAM_MESSAGE_ID = "id";
+
+    /**
+     * Сравнение игроков.
+     * COMPARE_PLAYERS — список игроков для сравнения за период.
+     * Compare.
+     */
+    public static final String COMPARE_PLAYERS = "/compare/players";
+    public static final String COMPARE_MATCH_STATS = "/compare/match-stats";
+    public static final String COMPARE_H2H = "/compare/h2h";
 
 }

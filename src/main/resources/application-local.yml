@@ -44,6 +44,7 @@ app:
   qr-color: "#14b8a6"
 
 server:
+  address: 0.0.0.0  # ← слушать все интерфейсы
   port: 8080
   servlet:
     session:

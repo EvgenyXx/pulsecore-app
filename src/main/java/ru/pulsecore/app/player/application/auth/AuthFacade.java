@@ -7,6 +7,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
@@ -16,6 +18,7 @@ import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.session.RememberMeService;
 import ru.pulsecore.app.player.application.profile.ThemeService;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -27,6 +30,7 @@ public class AuthFacade {
     private final PlayerDtoMapper mapper;
     private final ThemeService themeService;
     private final RememberMeService rememberMeService;
+    private final PlayerCommandService playerCommandService;
 
     public AuthResponse login(String email, String rawPassword, HttpSession session, HttpServletResponse response) {
         Player player = authenticationService.authenticate(email, rawPassword);
@@ -43,18 +47,22 @@ public class AuthFacade {
         return authResponse;
     }
 
+    @Transactional
     public MeResponse me(String playerId, HttpServletResponse response) {
         rememberMeService.refresh(response, playerId);
 
         Player player = playerSearchService.getById(UUID.fromString(playerId));
+        player.setLastLoginAt(LocalDateTime.now());
+        playerCommandService.save(player);
+
         String theme = themeService.getTheme(UUID.fromString(playerId));
 
         return new MeResponse(
                 playerId,
-                player != null ? player.getName() : null,
-                player != null ? player.getEmail() : null,
-                player != null ? player.getCreatedAt() : null,
-                player != null && player.isAdmin(),
+                player.getName(),
+                player.getEmail(),
+                player.getCreatedAt(),
+                player.isAdmin(),
                 theme
         );
     }

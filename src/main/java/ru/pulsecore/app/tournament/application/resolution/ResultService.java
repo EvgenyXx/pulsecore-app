@@ -61,7 +61,7 @@ public class ResultService {
                 isFinalRemoved(ctx),
                 ctx.getLeague().name(),
                 ctx.getTime(),
-                ctx.getDate()
+                ctx.getDate(),ctx.getMatches()
         );
     }
 
