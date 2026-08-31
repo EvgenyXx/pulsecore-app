@@ -125,16 +125,16 @@
 
                         <div class="flex gap-1 flex-wrap mb-3" id="playerSelBadges"></div>
 
-                        <div class="flex flex-col gap-2 mb-3">
-                            <div class="flex gap-2">
-                                <button onclick="giveSub(30)" id="playerGiveSub30" class="btn btn-emerald">30 дней</button>
-                                <button onclick="giveSub(60)" id="playerGiveSub60" class="btn btn-indigo">60 дней</button>
+                        <div class="subscription-controls mb-3">
+                            <div class="subscription-row">
+                                <button onclick="giveSub(30)" id="playerGiveSub30" class="sub-btn sub-btn-emerald">30 дней</button>
+                                <button onclick="giveSub(60)" id="playerGiveSub60" class="sub-btn sub-btn-indigo">60 дней</button>
                             </div>
-                            <div class="flex gap-2">
-                                <input id="playerCustomDays" type="number" min="1" max="3650" placeholder="Дней" class="input">
-                                <button onclick="giveSubCustom()" class="btn btn-amber">Выдать</button>
+                            <div class="subscription-row">
+                                <input id="playerCustomDays" type="number" min="1" max="3650" placeholder="Дней" class="sub-input">
+                                <button onclick="giveSubCustom()" class="sub-btn sub-btn-amber">Выдать</button>
                             </div>
-                            <button onclick="removeSub()" id="playerRemoveSub" class="btn btn-danger hidden">Отключить подписку</button>
+                            <button onclick="removeSub()" id="playerRemoveSub" class="sub-btn sub-btn-danger hidden">Отключить подписку</button>
                         </div>
 
                         <div class="player-info-grid">
@@ -180,8 +180,7 @@
 
                         <div class="player-actions-grid mt-3">
                             <button onclick="updatePlayer()" class="btn btn-indigo">Сохранить</button>
-                            <button onclick="togglePlayerRole('ROLE_ADMIN')" id="grantAdminBtn" class="btn btn-amber hidden">Сделать админом</button>
-                            <button onclick="togglePlayerRole('ROLE_ADMIN')" id="revokeAdminBtn" class="btn btn-danger hidden">Разжаловать</button>
+                            <button onclick="togglePlayerRole('ROLE_ADMIN')" id="toggleAdminBtn" class="btn btn-amber hidden">Сделать админом</button>
                             <button onclick="deletePlayerTournaments()" class="btn btn-danger">Удалить турниры</button>
                             <button onclick="resyncPlayerTournaments()" class="btn btn-indigo">Пересинхронизация</button>
                             <button onclick="deletePlayerAccount()" class="btn btn-danger">Удалить аккаунт</button>

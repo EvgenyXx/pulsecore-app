@@ -83,7 +83,7 @@ async function refreshPlayerUI(section) {
         // Обновляем бейджи
         document.getElementById('playerSelBadges').innerHTML = badges;
 
-        // Обновляем кнопки подписки в карточке игрока
+        // Обновляем кнопки подписки
         document.getElementById('playerGiveSub30').classList.toggle('hidden', false);
         document.getElementById('playerGiveSub60').classList.toggle('hidden', false);
         document.getElementById('playerRemoveSub').classList.toggle('hidden', !subActive);
@@ -94,8 +94,19 @@ async function refreshPlayerUI(section) {
                 badges += ' <span class="badge badge-admin">Админ</span>';
             }
             document.getElementById('playerSelBadges').innerHTML = badges;
-            document.getElementById('grantAdminBtn').classList.toggle('hidden', roles.includes('ROLE_ADMIN'));
-            document.getElementById('revokeAdminBtn').classList.toggle('hidden', !roles.includes('ROLE_ADMIN'));
+
+            // ОДНА КНОПКА АДМИНА
+            const toggleBtn = document.getElementById('toggleAdminBtn');
+            if (toggleBtn) {
+                toggleBtn.classList.remove('hidden');
+                if (roles.includes('ROLE_ADMIN')) {
+                    toggleBtn.textContent = 'Разжаловать';
+                    toggleBtn.className = 'btn btn-danger';
+                } else {
+                    toggleBtn.textContent = 'Сделать админом';
+                    toggleBtn.className = 'btn btn-amber';
+                }
+            }
         } catch (e) {}
 
         try {
@@ -257,7 +268,8 @@ export async function updatePlayer() {
 export async function togglePlayerRole(roleName) {
     if (!selectedPlayerId) return;
     const msg = document.getElementById('playerMsg');
-    const isGrant = !document.getElementById('grantAdminBtn').classList.contains('hidden');
+    const toggleBtn = document.getElementById('toggleAdminBtn');
+    const isGrant = toggleBtn.classList.contains('btn-amber');
 
     msg.textContent = isGrant ? 'Выдача роли...' : 'Отзыв роли...';
     msg.className = 'text-xs text-center text-zinc-400';
