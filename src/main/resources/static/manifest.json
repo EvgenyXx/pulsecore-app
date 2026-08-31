@@ -3,6 +3,8 @@
   "short_name": "PulseCore",
   "start_url": "/dashboard",
   "display": "standalone",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "portrait",
   "background_color": "#06060f",
   "theme_color": "#f59e0b",
   "icons": [

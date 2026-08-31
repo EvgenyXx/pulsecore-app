@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.config.SchedulerConfig;
+import ru.pulsecore.app.tournament.application.admin.SchedulerPauseService;
 import ru.pulsecore.app.tournament.application.lineup.LineupCleanupService;
 import ru.pulsecore.app.tournament.application.lineup.LineupUpsertService;
 import ru.pulsecore.app.tournament.infrastructure.circuit.MastersApiCircuitBreaker;
@@ -14,22 +15,6 @@ import ru.pulsecore.app.tournament.infrastructure.circuit.MastersApiCircuitBreak
 import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Шедулер загрузки и очистки составов.
- *
- * <p>При старте приложения загружает составы на 3 дня (сегодня, завтра, послезавтра)
- * с паузами между запросами, чтобы не создавать нагрузку на API.</p>
- *
- * <p>Далее по расписанию обновляет данные:</p>
- * <ul>
- *     <li>Сегодня — каждые 30 минут</li>
- *     <li>Завтра — каждые 30 минут, со смещением 5 минут</li>
- *     <li>Послезавтра — каждые 3 часа, со смещением 10 минут</li>
- *     <li>Очистка старых составов — каждые 15 минут</li>
- * </ul>
- *
- * <p>Смещения initialDelay гарантируют, что задачи не накладываются друг на друга.</p>
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -38,9 +23,14 @@ public class LineupScheduler implements ApplicationRunner {
     private final LineupUpsertService lineupUpsertService;
     private final LineupCleanupService lineupCleanupService;
     private final MastersApiCircuitBreaker circuitBreaker;
+    private final SchedulerPauseService schedulerPauseService;
 
     @Override
     public void run(ApplicationArguments args) {
+        if (schedulerPauseService.isPaused()) {
+            log.debug("Планировщик на паузе — стартовая загрузка составов пропущена");
+            return;
+        }
         if (circuitBreaker.isBlocked()) return;
         try {
             TimeUnit.MINUTES.sleep(3);
@@ -59,20 +49,29 @@ public class LineupScheduler implements ApplicationRunner {
     }
 
     @Scheduled(
-            initialDelay =30 ,
+            initialDelay = 30,
             fixedDelay = 90,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadToday() {
+        if (schedulerPauseService.isPaused()) {
+            log.debug("Планировщик на паузе — loadToday пропущен");
+            return;
+        }
         if (circuitBreaker.isBlocked()) return;
         lineupUpsertService.loadDay(LocalDate.now());
     }
+
     @Scheduled(
             initialDelay = 20,
             fixedDelay = 30,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadTomorrow() {
+        if (schedulerPauseService.isPaused()) {
+            log.debug("Планировщик на паузе — loadTomorrow пропущен");
+            return;
+        }
         if (circuitBreaker.isBlocked()) return;
         lineupUpsertService.loadDay(LocalDate.now().plusDays(1));
     }
@@ -83,6 +82,10 @@ public class LineupScheduler implements ApplicationRunner {
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void loadDayAfterTomorrow() {
+        if (schedulerPauseService.isPaused()) {
+            log.debug("Планировщик на паузе — loadDayAfterTomorrow пропущен");
+            return;
+        }
         if (circuitBreaker.isBlocked()) return;
         lineupUpsertService.loadDay(LocalDate.now().plusDays(2));
     }

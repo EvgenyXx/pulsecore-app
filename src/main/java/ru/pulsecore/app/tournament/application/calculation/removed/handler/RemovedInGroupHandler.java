@@ -9,7 +9,6 @@ import ru.pulsecore.app.tournament.domain.RemovedPlayerHandler;
 import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -20,6 +19,8 @@ import java.util.stream.Stream;
 public class RemovedInGroupHandler implements RemovedPlayerHandler {
 
     private final DefaultMatchCalculationStrategy defaultStrategy;
+
+
 
     @Override
     public RemovedStage getStage() {

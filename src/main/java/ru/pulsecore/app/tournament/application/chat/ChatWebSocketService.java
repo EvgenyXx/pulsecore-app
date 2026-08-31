@@ -52,8 +52,9 @@ public class ChatWebSocketService {
                 .flatMap(user -> user.getSessions().stream())
                 .flatMap(session -> session.getSubscriptions().stream())
                 .map(SimpSubscription::getDestination)
-                .filter(dest -> dest.startsWith(TOPIC_CHAT) && !dest.contains(TOPIC_ONLINE))
+                .filter(dest -> dest != null && dest.startsWith(TOPIC_CHAT) && !dest.contains(TOPIC_ONLINE))
                 .map(dest -> dest.replace(TOPIC_CHAT, ""))
+                .filter(id -> id.matches("\\d+")) // Только числовые ID
                 .map(Long::parseLong)
                 .collect(Collectors.toSet());
     }

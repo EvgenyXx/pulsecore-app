@@ -1,0 +1,193 @@
+/* Дата-переключатель со слайдером */
+.date-switcher {
+    position: relative;
+    display: flex;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 2px;
+    gap: 0;
+    overflow: hidden;
+}
+
+.date-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(33.333% - 2px);
+    height: calc(100% - 4px);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    will-change: transform;
+}
+
+.date-slider.pos-0 { transform: translateX(0); }
+.date-slider.pos-1 { transform: translateX(100%); }
+.date-slider.pos-2 { transform: translateX(200%); }
+
+.date-tab {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    padding: 8px 4px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.date-tab-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a1a1aa;
+    transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.date-tab.active .date-tab-label {
+    color: #ffffff;
+}
+
+.date-tab-date {
+    display: block;
+    font-size: 10px;
+    color: #71717a;
+    margin-top: 2px;
+    transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.date-tab.active .date-tab-date {
+    color: #a5b4fc;
+}
+
+/* Карточки залов */
+.hall-select-all {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+}
+
+/* Карточки составов */
+.lineup-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    animation: lineupSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+}
+
+.lineup-card.is-player {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.1);
+}
+
+.lineup-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.lineup-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.lineup-time-badge {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.lineup-league-badge {
+    font-size: 13px;
+    font-weight: 600;
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.12);
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.lineup-hall-badge {
+    font-size: 13px;
+    font-weight: 500;
+    color: #71717a;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.lineup-players-wrapper {
+    padding-left: 4px;
+}
+
+.lineup-players-column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lineup-player-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #e5e5e5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@keyframes lineupSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.apple-save-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px 0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.apple-save-btn:hover {
+    background: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.5);
+}
+
+.apple-save-btn:active {
+    transform: scale(0.98);
+}

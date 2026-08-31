@@ -172,18 +172,18 @@ export function initStars() {
         }
 
         // Туманности (3 шт)
-        for (let i = 0; i < 3; i++) {
-            const size = Math.random() * 250 + 150;
-            html += `<div style="
-                position:absolute; left:${Math.random() * 80}%; top:${Math.random() * 80}%;
-                width:${size}px; height:${size}px;
-                background:radial-gradient(circle, rgba(80,100,180,0.05) 0%, transparent 70%);
-                border-radius:50%;
-                animation: nebulaDrift ${Math.random() * 18 + 15}s ease-in-out infinite;
-                animation-delay: ${Math.random() * 10}s;
-                pointer-events:none;
-            "></div>`;
-        }
+        // for (let i = 0; i < 3; i++) {
+        //     const size = Math.random() * 250 + 150;
+        //     html += `<div style="
+        //         position:absolute; left:${Math.random() * 80}%; top:${Math.random() * 80}%;
+        //         width:${size}px; height:${size}px;
+        //         background:radial-gradient(circle, rgba(80,100,180,0.05) 0%, transparent 70%);
+        //         border-radius:50%;
+        //         animation: nebulaDrift ${Math.random() * 18 + 15}s ease-in-out infinite;
+        //         animation-delay: ${Math.random() * 10}s;
+        //         pointer-events:none;
+        //     "></div>`;
+        // }
     }
 
     container.innerHTML = html;

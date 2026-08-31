@@ -1,14 +1,13 @@
 import { API } from './core/api.js';
 import { state } from './core/state.js';
 import { capitalizeName } from './core/utils.js';
-import { loadDashboardWidgets, goHome, highlightNav } from './modules/dashboard.js';
-import { loadTopWeekPreview, toggleTopWeek, switchLeague, switchPeriod, loadTopWeek } from './modules/top.js';
+import { loadDashboardWidgets, goHome, highlightNav } from './dashboard/dashboard.js';
+import { loadTopWeek, switchLeague, switchPeriod } from './modules/top.js';
 import { loadSelectedHalls, loadHallsContent, switchHallsDate, toggleAllHalls, toggleHallsCheckboxes, saveSelectedHalls } from './modules/lineup.js';
 import { executeSum, openEditTournamentModal, closeEditTournamentModal, saveTournamentEdit, changePage } from './modules/sum.js';
 
 window.goHome = goHome;
 window.showAction = showAction;
-window.toggleTopWeek = toggleTopWeek;
 window.switchLeague = switchLeague;
 window.switchPeriod = switchPeriod;
 window.executeSum = executeSum;
@@ -23,16 +22,15 @@ window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 window.toggleTheme = toggleTheme;
 
-// Сплэш-лоадер для плавного старта
 document.body.insertAdjacentHTML('afterbegin', '<div id="appLoader" style="position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;"><div class="spinner"></div></div>');
 
-const subBlockHtml = () => `<div class="widget-card rounded-2xl p-8 text-center" style="animation: fadeIn 0.2s ease">
+const subBlockHtml = () => `<div class="apple-card p-8 text-center" style="animation: fadeIn 0.2s ease">
     <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     </div>
     <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
     <p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы открыть все функции</p>
-    <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all">Оформить подписку</a>
+    <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>
 </div>`;
 
 function showAction(action) {
@@ -40,36 +38,30 @@ function showAction(action) {
     const actionPage = document.getElementById('actionPage');
     const content = document.getElementById('actionContent');
     const title = document.getElementById('actionTitle');
-    const subtitle = document.getElementById('actionSubtitle');
     const burgerBtn = `<button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white ml-auto">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>`;
 
     highlightNav('nav-' + action);
 
-    if (homePage.style.display !== 'none') {
-        homePage.style.transition = 'opacity 0.12s ease';
-        homePage.style.opacity = '0';
-        setTimeout(() => {
-            homePage.style.display = 'none';
-            actionPage.classList.remove('hidden');
-            actionPage.style.opacity = '0';
-            actionPage.style.transition = 'opacity 0.12s ease';
-            requestAnimationFrame(() => { actionPage.style.opacity = '1'; });
-        }, 120);
-    } else {
-        actionPage.classList.remove('hidden');
-        actionPage.style.opacity = '1';
-    }
+    homePage.style.display = 'none';
+    actionPage.classList.remove('hidden');
+    actionPage.style.opacity = '1';
 
     if (action === 'halls') {
-        title.innerHTML = 'Расписание турниров' + burgerBtn;
-        subtitle.textContent = 'Составы по выбранным залам';
+        title.innerHTML = `
+    <h2 class="action-title-3d" data-text="Расписание турниров">Расписание турниров</h2>
+    ${burgerBtn}
+`;
+
         fetch('/api/player/halls', { credentials: 'same-origin' })
             .then(r => { if (r.status === 402) { content.innerHTML = subBlockHtml(); return; } loadHallsContent(); });
     } else if (action === 'sum') {
-        title.innerHTML = '💰 Сумма за период' + burgerBtn;
-        subtitle.textContent = 'Подсчёт заработка и список турниров';
+        title.innerHTML = `
+    <h2 class="action-title-3d" data-text="Сумма за период">Сумма за период</h2>
+    ${burgerBtn}
+`;
+
         state.currentSumPage = 0;
 
         fetch('/api/player/halls', { credentials: 'same-origin' })
@@ -79,9 +71,28 @@ function showAction(action) {
                     return;
                 }
                 content.innerHTML = `
-                <div id="sumButtons" class="space-y-3">
-                    <button onclick="showSumCalculator()" class="btn-gold w-full py-4 text-base font-semibold">Посмотреть в приложении</button>
-                    <button onclick="showReportForm()" class="btn-gold w-full py-4 text-base font-semibold">Заказать отчёт на почту</button>
+                <div class="sum-menu space-y-2">
+                    <div class="apple-card menu-card" onclick="showSumCalculator()">
+                        <div class="menu-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="menu-title">Подсчёт суммы</h3>
+                            <p class="menu-subtitle">Заработок за период</p>
+                        </div>
+                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    
+                    <div class="apple-card menu-card" onclick="showReportForm()">
+                        <div class="menu-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="menu-title">Отчёт на почту</h3>
+                            <p class="menu-subtitle">Запланировать отправку</p>
+                        </div>
+                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
                 </div>
                 <div id="sumCalculator" class="hidden mt-4"></div>
                 <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
@@ -92,7 +103,7 @@ function showAction(action) {
 }
 
 window.showSumCalculator = function() {
-    document.getElementById('sumButtons').classList.add('hidden');
+    document.querySelector('.sum-menu')?.classList.add('hidden');
     document.getElementById('actionResult').innerHTML = '';
     const calc = document.getElementById('sumCalculator');
     calc.classList.remove('hidden');
@@ -100,21 +111,20 @@ window.showSumCalculator = function() {
         <button onclick="backToSumButtons()" class="flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-4 transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Назад
         </button>
-        <div class="widget-card rounded-2xl p-4 mb-4">
+        <div class="apple-card mb-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 <div><label class="text-xs text-zinc-400 mb-1 block">Дата с</label><input id="dateStart" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
                 <div><label class="text-xs text-zinc-400 mb-1 block">Дата по</label><input id="dateEnd" type="text" class="flatpickr-input" placeholder="Выберите дату"></div>
             </div>
-            <button onclick="executeSum()" class="btn-gold w-full">Рассчитать</button>
+            <button onclick="executeSum()" class="apple-save-btn">Рассчитать</button>
         </div>
     `;
     flatpickr('#dateStart', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
     flatpickr('#dateEnd', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
 };
 
-// Форма заказного отчёта
 window.showReportForm = function() {
-    document.getElementById('sumButtons').classList.add('hidden');
+    document.querySelector('.sum-menu')?.classList.add('hidden');
     document.getElementById('actionResult').innerHTML = '';
     import('/js/modules/scheduled-report.js').then(m => {
         const calc = document.getElementById('sumCalculator');
@@ -131,7 +141,7 @@ window.showReportForm = function() {
 };
 
 window.backToSumButtons = function() {
-    document.getElementById('sumButtons').classList.remove('hidden');
+    document.querySelector('.sum-menu')?.classList.remove('hidden');
     document.getElementById('sumCalculator').classList.add('hidden');
     document.getElementById('actionResult').innerHTML = '';
 };
@@ -153,7 +163,6 @@ function toggleTheme() {
 
 async function checkPushStatus() {
     const container = document.getElementById('pushToggleContainer');
-    // Сразу прячем, чтобы не мелькал
     if (container) container.style.display = 'none';
 
     try {
@@ -218,40 +227,35 @@ function urlB64ToUint8Array(base64String) {
 
 async function init() {
     try {
-        const data = await API.getMe();
+        const res = await fetch('/api/player/me', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Not authenticated');
+        const data = await res.json();
+
         state.playerId = data.id;
         state.isAdmin = data.admin || false;
+
         if (data.admin) {
             document.getElementById('nav-admin')?.classList.remove('hidden');
             document.getElementById('mobile-nav-admin')?.classList.remove('hidden');
         }
         document.getElementById('playerName').textContent = capitalizeName(data.name);
-        document.getElementById('sidebarPlayerName').textContent = capitalizeName(data.name);
-        const mobileName = document.getElementById('mobilePlayerName');
-        if (mobileName) mobileName.textContent = capitalizeName(data.name);
 
         if (data.theme) {
             document.documentElement.setAttribute('data-theme', data.theme);
         }
 
-        const p = new URLSearchParams(window.location.search).get('page');
-        if (p === 'sum' || p === 'halls') {
-            document.getElementById('homePage').style.display = 'none';
-            document.getElementById('actionPage').classList.remove('hidden');
-            document.getElementById('actionPage').style.opacity = '1';
-            if (p === 'sum') showAction('sum');
-            else showAction('halls');
-            loadDashboardWidgets();
-            loadTopWeekPreview();
-            loadSelectedHalls();
-        } else {
-            await loadDashboardWidgets();
-            loadTopWeekPreview();
-            loadSelectedHalls();
-        }
+        await loadDashboardWidgets();
+        loadTopWeek(null);
+        loadSelectedHalls();
+
+        // Подключаем роутер
+        const { initDashboardRouter } = await import('./modules/dashboard-router.js');
+        initDashboardRouter();
 
         checkPushStatus();
-    } catch (e) { window.location.href = '/'; } finally {
+    } catch (e) {
+        console.error('Init error:', e);
+    } finally {
         document.getElementById('appLoader')?.remove();
     }
 }
@@ -260,7 +264,7 @@ const ptr = document.getElementById('ptrIndicator');
 let ptrStart = 0, ptrTriggered = false;
 document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientX; ptrTriggered = false; } }, { passive: true });
 document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientX - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, { passive: true });
-document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeekPreview(); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => ptr.classList.remove('active', 'done'), 1200); }, 500); } ptrStart = 0; });
+document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeek(null); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => ptr.classList.remove('active', 'done'), 1200); }, 500); } ptrStart = 0; });
 
 window.toggleMobileMenu = function() {
     const menu = document.getElementById('mobileMenu'), overlay = document.getElementById('mobileMenuOverlay');
@@ -271,7 +275,9 @@ window.mobileNav = function(action, el) {
     toggleMobileMenu();
     document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('bg-indigo-500/10','border-indigo-500/20'));
     el.classList.add('bg-indigo-500/10','border-indigo-500/20');
-    if (action === 'home') goHome(); else showAction(action);
+    if (action === 'home') window.location.hash = '#/';
+    else if (action === 'halls') window.location.hash = '#/halls';
+    else if (action === 'sum') window.location.hash = '#/sum';
 };
 
 document.addEventListener('DOMContentLoaded', init);

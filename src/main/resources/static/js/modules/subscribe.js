@@ -15,7 +15,7 @@ export async function loadPrices() {
 }
 
 function getMonthLabel(months) {
-    if (months === 1) return '1 месяц';
+    if (months === 1) return 'Месяц';
     const lastDigit = months % 10;
     const lastTwo = months % 100;
     if (lastTwo >= 11 && lastTwo <= 14) return months + ' месяцев';
@@ -56,16 +56,17 @@ function renderPlans() {
 
         return `
             <div class="plan-card ${isPopular ? 'popular' : ''}" id="plan${plan.months}" onclick="selectPlan(${plan.months})">
-                <div class="text-2xl mb-3">${index === 0 ? '⭐' : '🌟'}</div>
-                <h3 class="text-base font-bold text-white mb-1">${getMonthLabel(plan.months)}</h3>
-                <p class="text-[11px] text-zinc-500 mb-2">
-                    ${hasDiscount ? 'Экономия ' + discount + '%' : 'Полный доступ'}
-                </p>
-                <p class="text-2xl font-bold amount-gold">${plan.price} ₽</p>
-                <p class="text-[11px] text-zinc-500 mt-1">
-                    ${hasDiscount ? '<span class="price-old">' + fullPrice + ' ₽</span> ' : ''}
-                    ${perMonth} ₽ / мес
-                </p>
+                <div class="plan-name">${getMonthLabel(plan.months)}</div>
+                <div class="plan-price"><span class="amount-gold">${plan.price}</span> ₽</div>
+                <div class="plan-period">${perMonth} ₽ / мес</div>
+                ${hasDiscount ? `
+                <div class="plan-savings">
+                    <span class="price-old">${fullPrice} ₽</span>
+                    <span class="savings-badge">−${discount}%</span>
+                </div>` : `
+                <div class="plan-savings">
+                    <span class="savings-badge">Полный доступ</span>
+                </div>`}
             </div>
         `;
     }).join('');

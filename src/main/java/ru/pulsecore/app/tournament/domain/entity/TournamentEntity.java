@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tournament")
+@Table(name = "tournament",
+        uniqueConstraints = @UniqueConstraint(columnNames = "link"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,4 +40,7 @@ public class TournamentEntity {
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlayerNotification> notifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TournamentMatchEntity> matches = new ArrayList<>();
 }

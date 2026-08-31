@@ -15,6 +15,26 @@
     <meta name="apple-mobile-web-app-title" content="PulseCore">
     <link rel="icon" type="image/png" href="/img.png">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/dashboard/top.css">
+    <link rel="stylesheet" href="/css/dashboard/top-period.css">
+    <link rel="stylesheet" href="/css/dashboard/top-league.css">
+    <link rel="stylesheet" href="/css/dashboard/top-mobile.css">
+    <link rel="stylesheet" href="/css/dashboard/lineup.css">
+    <link rel="stylesheet" href="/css/dashboard/sum.css">
+    <link rel="stylesheet" href="/css/live.css">
+    <link rel="stylesheet" href="/css/live-tournament.css">
+    <link rel="stylesheet" href="/css/live-tournament-mobile.css">
+    <link rel="stylesheet" href="/css/compare/compare-base.css">
+    <link rel="stylesheet" href="/css/compare/compare-sheet.css">
+    <link rel="stylesheet" href="/css/compare/compare-wheels.css">
+    <link rel="stylesheet" href="/css/compare/compare-cards.css">
+    <link rel="stylesheet" href="/css/compare/compare-mobile.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/css/profile-mobile.css">
+    <link rel="stylesheet" href="/css/analytics/analytics-base.css">
+    <link rel="stylesheet" href="/css/analytics/analytics-mobile.css">
+    <link rel="stylesheet" href="/css/analytics/analytics-desktop.css">
+    <link rel="stylesheet" href="/css/analytics/analytics-sheet.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config={theme:{extend:{screens:{'xs':'475px','sm':'640px','md':'768px','lg':'1024px','xl':'1280px','2xl':'1536px'}}}}</script>
@@ -22,165 +42,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
         body { padding-top: env(safe-area-inset-top, 0px); }
-
-        /* Шторка заказных отчётов сверху по центру */
-        .report-dropdown {
-            position: fixed;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-120%);
-            z-index: 100;
-            background: rgba(24, 24, 27, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 20px;
-            width: 90%;
-            max-width: 380px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-        .report-dropdown.open {
-            transform: translateX(-50%) translateY(0);
-        }
-        .report-dropdown-handle {
-            width: 32px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin: 0 auto 16px;
-        }
-        .report-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: 99;
-            background: rgba(0,0,0,0.3);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .report-backdrop.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        /* Бейдж отчёта */
-        .report-badge {
-            background: rgba(99,102,241,0.12) !important;
-            border-color: rgba(99,102,241,0.25) !important;
-            gap: 7px;
-            padding: 5px 12px !important;
-            transition: all 0.3s ease;
-        }
-        .report-badge:hover {
-            background: rgba(99,102,241,0.22) !important;
-            border-color: rgba(99,102,241,0.4) !important;
-            transform: scale(1.05);
-        }
-        .report-badge-icon {
-            animation: mailPulse 2s ease-in-out infinite;
-            color: #818cf8;
-        }
-        .report-badge-count {
-            background: #818cf8;
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 5px;
-        }
-        @keyframes mailPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.15); opacity: 0.8; }
-        }
-
-        /* Стили карточек отчётов */
-        .report-sheet-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #e5e5e5;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        .report-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .report-item-period {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #a78bfa;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .report-item-schedule {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #a1a1aa;
-            font-size: 0.8rem;
-            margin-bottom: 12px;
-        }
-        .report-progress {
-            margin-bottom: 12px;
-        }
-        .report-progress-bar {
-            height: 4px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 2px;
-            margin-bottom: 6px;
-            overflow: hidden;
-        }
-        .report-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #818cf8, #a78bfa);
-            border-radius: 2px;
-            transition: width 1s ease;
-        }
-        .report-progress-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: #71717a;
-        }
-        .report-progress-pct {
-            color: #a78bfa;
-            font-weight: 600;
-        }
-        .report-progress-time {
-            color: #71717a;
-        }
-        .report-cancel-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            width: 100%;
-            padding: 8px;
-            background: rgba(239,68,68,0.08);
-            border: 1px solid rgba(239,68,68,0.15);
-            border-radius: 10px;
-            color: #f87171;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .report-cancel-btn:hover {
-            background: rgba(239,68,68,0.15);
-            border-color: rgba(239,68,68,0.3);
-        }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -194,7 +61,7 @@
 
 <div id="editTournamentModal" class="modal-overlay hidden" onclick="if(event.target===this)closeEditTournamentModal()">
     <div class="modal-box">
-        <h3 class="text-white font-semibold mb-1">✏️ Скорректировать турнир</h3>
+        <h3 class="text-white font-semibold mb-1">Скорректировать турнир</h3>
         <p class="text-xs text-zinc-400 mb-4">Ручная корректировка суммы</p>
         <p class="text-sm text-zinc-300 mb-2" id="editTournamentInfo"></p>
         <div class="mb-4">
@@ -202,7 +69,7 @@
             <input id="editTournamentAmount" type="number" step="0.01" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-indigo-500 focus:outline-none">
         </div>
         <div class="flex gap-2">
-            <button onclick="saveTournamentEdit()" class="btn-gold flex-1 py-2 rounded-lg text-sm">💾 Сохранить</button>
+            <button onclick="saveTournamentEdit()" class="btn-gold flex-1 py-2 rounded-lg text-sm">Сохранить</button>
             <button onclick="closeEditTournamentModal()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-2 rounded-lg text-sm">Отмена</button>
         </div>
         <p id="editTournamentError" class="text-red-400 text-xs mt-2 hidden"></p>
@@ -210,50 +77,7 @@
 </div>
 
 <div id="burgerMenuContainer"></div>
-
-<aside class="hidden md:flex glass-sidebar w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
-    <div class="flex items-center gap-3 mb-10 px-1">
-        <img src="/img.png" alt="PulseCore" class="w-11 h-11 rounded-xl shadow-lg object-cover">
-        <div>
-            <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent tracking-tight">PulseCore</h1>
-            <p id="sidebarPlayerName" class="text-xs text-zinc-400"></p>
-        </div>
-    </div>
-    <nav class="flex flex-col gap-1 flex-1">
-        <div class="nav-item active" onclick="goHome()" id="nav-home">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
-            <div><div class="font-medium text-sm">Главная</div><div class="text-xs text-zinc-500">Обзор</div></div>
-        </div>
-        <div class="nav-item" onclick="showAction('halls')" id="nav-halls">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-            <div><div class="font-medium text-sm">Расписание</div><div class="text-xs text-zinc-500">Турниры и составы</div></div>
-        </div>
-        <div class="nav-item" onclick="showAction('sum')" id="nav-sum">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-            <div><div class="font-medium text-sm">Сумма за период</div><div class="text-xs text-zinc-500">Подсчёт и список</div></div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/live'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>
-            <div><div class="font-medium text-sm">Live</div><div class="text-xs text-zinc-500">Трансляции</div></div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/analytics'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-            <div><div class="font-medium text-sm">Аналитика</div><div class="text-xs text-zinc-500">Статистика по лигам</div></div>
-        </div>
-        <div class="nav-item admin-item hidden" id="nav-admin" onclick="window.location.href='/admin'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-            <div><div class="font-medium text-sm text-emerald-400">Админка</div></div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='/profile'">
-            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-            <div><div class="font-medium text-sm">Настройки</div><div class="text-xs text-zinc-500">Аккаунт и подписка</div></div>
-        </div>
-    </nav>
-    <button onclick="logout()" class="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm mt-auto py-2 px-3 rounded-lg hover:bg-red-500/5 w-full">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>Выйти</span>
-    </button>
-</aside>
+<div id="sidebarContainer"></div>
 
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10">
     <div id="contentArea" class="max-w-5xl mx-auto w-full">
@@ -283,17 +107,7 @@
                 </div>
             </div>
 
-            <div id="topWeekBanner" class="hidden mb-4 px-4 py-2.5 bg-[rgba(255,255,255,0.025)] border border-white/5 rounded-xl flex items-center gap-3 cursor-pointer transition-all duration-300 hover:bg-[rgba(255,255,255,0.06)]" onclick="toggleTopWeek()">
-                <span class="text-xl">🏆</span>
-                <div class="flex-1">
-                    <p class="text-sm font-semibold text-white">Зал славы</p>
-                    <p class="text-xs text-zinc-400" id="topWeekPreview">Нажмите чтобы посмотреть</p>
-                </div>
-                <span class="text-zinc-400 text-sm transition-transform duration-300" id="topWeekArrow">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </span>
-            </div>
-            <div id="topWeekPanel" class="hidden widget-card rounded-2xl p-5 sm:p-6 mb-6 content-panel max-h-[500px] overflow-y-auto"></div>
+            <div id="topWeekPanel" class="widget-card rounded-2xl p-5 sm:p-6 mb-6 content-panel"></div>
 
             <div id="dashboardWidgets" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
         </div>
@@ -305,8 +119,426 @@
             </div>
             <div id="actionContent"></div>
         </div>
+
+        <!-- Live Page -->
+        <div id="livePage" class="hidden">
+            <div class="flex items-center justify-between mb-4">
+                <div></div>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="text-center pt-4 pb-6">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-500/10">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                </div>
+                <h1 class="text-[22px] font-bold text-white tracking-tight">Live-трансляции</h1>
+                <p class="text-zinc-500 text-xs mt-1" id="subtitle">Загрузка...</p>
+            </div>
+
+            <div id="tabFilter" class="hidden">
+                <span class="hall-filter-tag tab-filter-tag active" data-tab="live">LIVE</span>
+                <span class="hall-filter-tag tab-filter-tag" data-tab="upcoming">Скоро</span>
+                <span class="hall-filter-tag tab-filter-tag" data-tab="finished">Завершён</span>
+            </div>
+
+            <div id="hallFilter" class="hidden"></div>
+
+            <div id="loading" class="text-center py-20">
+                <div class="spinner mb-4"></div>
+                <p class="text-zinc-500 text-sm">Загрузка...</p>
+            </div>
+
+            <div id="noSubBlock" class="hidden max-w-md mx-auto mt-10"></div>
+
+            <div id="liveList" class="space-y-4 hidden"></div>
+
+            <div id="empty" class="text-center py-20 hidden">
+                <p class="text-zinc-400 font-medium">Нет активных трансляций</p>
+                <p class="text-zinc-600 text-sm mt-1">Турниры начнутся — появятся здесь</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- H2H Page -->
+    <div id="comparePage" class="hidden flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="compare-header">
+                <h1 class="compare-title" data-text="HEAD TO HEAD">HEAD TO HEAD</h1>
+                <div class="compare-actions">
+                    <button class="period-toggle" onclick="toggleSettingsSheet()">
+                        <span id="settingsLabel">Настройки</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <button class="burger-btn md:hidden" onclick="window.toggleMobileMenu()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="wheels-row" id="wheelsRow">
+                <div class="wheel-container"><div id="pickerLeft" class="wheel-picker"></div></div>
+                <div class="vs-badge">VS</div>
+                <div class="wheel-container"><div id="pickerRight" class="wheel-picker"></div></div>
+            </div>
+            <div class="cards-row" id="cardsRow">
+                <div id="leftCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p></div>
+                <div class="card-spacer"></div>
+                <div id="rightCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p></div>
+            </div>
+
+            <div class="flex justify-center my-4" id="h2hCompareBtnWrapper" style="display: none;">
+                <button onclick="compareH2H()" id="h2hCompareBtn" class="h2h-compare-btn">
+                    Сравнить
+                </button>
+            </div>
+
+            <div id="h2hResult" class="hidden mt-4"></div>
+        </div>
+    </div>
+
+    <!-- Live Tournament Page -->
+    <div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen">
+        <div class="max-w-4xl mx-auto">
+            <div class="live-header">
+                <button class="back-btn" onclick="navigate('live')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+                <span class="league-title" id="leagueTitle">Загрузка...</span>
+                <span class="online-count" id="onlineCount"></span>
+                <span class="tournament-info" id="tournamentInfo"></span>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white ml-auto">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="players-row" id="playersList"></div>
+
+            <div id="tournamentLoading" class="loading-block">
+                <div class="spinner mb-4"></div>
+                <p class="text-zinc-500 text-sm">Загрузка...</p>
+            </div>
+
+            <div id="content" class="hidden">
+                <div class="video-card" id="videoWrapper">
+                    <button onclick="toggleFullscreen()" class="fullscreen-btn" title="На весь экран">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                    </button>
+                    <div id="videoPlaceholder" class="video-placeholder">Загрузка трансляции...</div>
+                    <iframe id="streamFrame" style="border: 0; display: none; background: #000; width: 100%; aspect-ratio: 16/9; border-radius: 16px;" allow="fullscreen" src="" scrolling="no"></iframe>
+                </div>
+
+                <h3 class="chat-title">Чат</h3>
+                <div class="chat-container">
+                    <div id="chatMessages" class="chat-messages">
+                        <div class="text-center text-zinc-600 text-xs py-4">Сообщений пока нет</div>
+                    </div>
+                    <div id="replyBar" class="reply-bar hidden">
+                        <div class="reply-bar-info">
+                            <div class="reply-bar-sender" id="replyBarSender"></div>
+                            <div class="reply-bar-text" id="replyBarText"></div>
+                        </div>
+                        <span class="reply-bar-close" onclick="cancelReply()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </span>
+                    </div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение..." maxlength="300">
+                        <button onclick="sendMessage()" id="sendBtn" class="send-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Page -->
+    <div id="analyticsPage" class="hidden">
+        <div class="analytics-tabs hidden md:flex mb-4">
+            <div class="analytics-slider pos-0"></div>
+            <button class="analytics-tab active" id="nav-league" onclick="switchTab('league')">Средняя по лигам</button>
+            <button class="analytics-tab" id="nav-monthly" onclick="switchTab('monthly')">Доход по месяцам</button>
+            <button class="analytics-tab" id="nav-daily" onclick="switchTab('daily')">Доход по дням</button>
+            <button class="analytics-tab" id="nav-best-time" onclick="switchTab('best-time')">Лучшее время</button>
+        </div>
+
+        <div class="flex items-center justify-between mb-4 md:hidden">
+            <h2 class="action-title-3d" data-text="Аналитика">Аналитика</h2>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleAnalyticsSheet()" class="tabs-btn">Меню ▴</button>
+                <button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="analyticsLoading"></div>
+        <div id="analyticsNoSub" class="hidden max-w-md mx-auto mt-10"></div>
+
+        <div id="tab-league" class="hidden content-panel max-w-2xl mx-auto">
+            <h2 class="text-xl font-extrabold text-white mb-4">Средняя по лигам</h2>
+            <p class="text-zinc-400 text-sm mb-5">Средний заработок за турнир по всем игрокам</p>
+            <div class="chart-card"><div class="chart-wrap"><canvas id="leagueChart"></canvas></div>
+                <div class="flex flex-col items-center gap-1 mt-4"><span class="avg-badge"><span class="text-zinc-400">Ваша средняя:</span><span class="text-white font-bold" id="playerAvgPill">-</span></span><p class="text-xs text-zinc-500" id="closestInfo"></p></div></div>
+        </div>
+
+        <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
+            <h2 class="text-xl font-extrabold text-white mb-4">Доход по месяцам</h2>
+            <div class="flex items-center gap-2 mb-5"><span class="text-zinc-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-zinc-400 text-sm">год</span></div>
+            <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+            <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill"><span class="text-zinc-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
+            <p class="swipe-hint">← листай влево/вправо →</p>
+        </div>
+
+        <div id="tab-daily" class="hidden content-panel max-w-2xl mx-auto">
+            <h2 class="text-xl font-extrabold text-white mb-4">Доход по дням</h2>
+            <div class="daily-header">
+                <button onclick="prevDailyMonth()" class="nav-arrows-desktop" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;">◂</button>
+                <span class="daily-month-title" id="dailyMonthLabel">Июнь 2026</span>
+                <button onclick="nextDailyMonth()" class="nav-arrows-desktop" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;">▸</button>
+            </div>
+            <div class="chart-card"><div class="chart-wrap"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+            <div class="daily-stats-row">
+                <div class="daily-stat"><div class="daily-stat-value" id="dailyTotal">0 ₽</div><div class="daily-stat-label">За месяц</div></div>
+                <div class="daily-stat"><div class="daily-stat-value" id="dailyAvg">0 ₽</div><div class="daily-stat-label">В день</div></div>
+                <div class="daily-stat"><div class="daily-stat-value" id="dailyBest">0 ₽</div><div class="daily-stat-label">Лучший день</div></div>
+            </div>
+            <p class="swipe-hint">← листай влево/вправо →</p>
+        </div>
+
+        <div id="tab-best-time" class="hidden content-panel max-w-2xl mx-auto">
+            <h2 class="text-xl font-extrabold text-white mb-4">Лучшее время</h2>
+            <p class="text-zinc-400 text-sm mb-5">В какое время суток вы зарабатываете больше всего</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button onclick="setBestTimePeriod('all')" id="bt-all" class="period-btn active">Всё время</button>
+                <button onclick="setBestTimePeriod('month')" id="bt-month" class="period-btn">Месяц</button>
+                <button onclick="setBestTimePeriod('week')" id="bt-week" class="period-btn">Неделя</button>
+                <span class="text-zinc-500 text-xs mx-1">или</span>
+                <input type="text" id="bestTimeStart" class="flatpickr-input" placeholder="Дата с">
+                <span class="text-zinc-500 text-xs">—</span>
+                <input type="text" id="bestTimeEnd" class="flatpickr-input" placeholder="Дата по">
+                <button onclick="setBestTimePeriod('custom')" class="period-btn">Применить</button>
+            </div>
+            <div class="chart-card"><div class="chart-wrap"><canvas id="bestTimeChart"></canvas></div>
+                <table class="best-time-table"><thead><tr><th>Время</th><th>Игр</th><th>Средний</th><th>Всего</th></tr></thead><tbody id="bestTimeTableBody"></tbody></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Sheet -->
+    <div class="tab-sheet-overlay" id="analyticsSheetOverlay" onclick="toggleAnalyticsSheet()">
+        <div class="tab-sheet" onclick="event.stopPropagation()">
+            <div class="tab-sheet-handle"></div>
+            <button class="tab-sheet-btn active" id="sheet-league" onclick="switchTab('league');toggleAnalyticsSheet()">Средняя по лигам</button>
+            <button class="tab-sheet-btn" id="sheet-monthly" onclick="switchTab('monthly');toggleAnalyticsSheet()">Доход по месяцам</button>
+            <button class="tab-sheet-btn" id="sheet-daily" onclick="switchTab('daily');toggleAnalyticsSheet()">Доход по дням</button>
+            <button class="tab-sheet-btn" id="sheet-best-time" onclick="switchTab('best-time');toggleAnalyticsSheet()">Лучшее время</button>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profilePage" class="hidden">
+        <div id="settings-main">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Настройки</h2>
+                    <p class="text-xs text-zinc-500 mt-1"><span id="profileName">Загрузка...</span> · <span id="createdAt">—</span></p>
+                </div>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="space-y-1">
+                <div class="settings-item" onclick="showSettingsPage('account')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Аккаунт</div><div class="text-xs text-zinc-500">Email, уведомления</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                </div>
+                <div class="settings-item" onclick="showSettingsPage('subscription')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Подписка</div><div class="text-xs text-zinc-500">Статус и управление</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                </div>
+                <div class="settings-item" onclick="showSettingsPage('appearance')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Оформление</div><div class="text-xs text-zinc-500">Тема приложения</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                </div>
+                <div class="settings-item" onclick="showSettingsPage('security')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Безопасность</div><div class="text-xs text-zinc-500">Смена пароля</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                </div>
+                <div class="settings-item" onclick="showSettingsPage('share')">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Поделиться</div><div class="text-xs text-zinc-500">QR-код приложения</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                </div>
+            </div>
+
+            <div class="mt-8 md:hidden">
+                <div class="settings-item" onclick="logout()">
+                    <div class="settings-item-icon" style="background: rgba(248,113,113,0.1);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    </div>
+                    <div class="flex-1"><div class="font-medium text-sm" style="color: #f87171;">Выйти</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-account" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Аккаунт</h3>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01"/></svg></div>
+                    <div><h3 class="font-semibold text-white text-sm">Email</h3></div>
+                </div>
+                <input id="emailInput" type="email" class="input-field mb-3" placeholder="your@email.com">
+                <button onclick="saveEmail()" id="saveEmailBtn" class="btn-indigo w-full">Сохранить email</button>
+            </div>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div><h3 class="font-semibold text-white text-sm">Уведомления на почту</h3><p class="text-xs text-zinc-500" id="notifLabel">Загрузка...</p></div>
+                    </div>
+                    <div class="toggle-wrapper" onclick="toggleNotifications()"><div class="toggle-track off" id="toggleTrack"><div class="toggle-thumb" id="toggleThumb"></div></div></div>
+                </div>
+            </div>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+                        <div><h3 class="font-semibold text-white text-sm">Push-уведомления</h3><p class="text-xs text-zinc-500" id="pushLabel">Загрузка...</p></div>
+                    </div>
+                    <div class="toggle-wrapper" onclick="togglePush()"><div class="toggle-track off" id="pushToggleTrack"><div class="toggle-thumb" id="pushToggleThumb"></div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-subscription" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Подписка</h3>
+            <div class="widget-card rounded-2xl p-4 mb-3 text-center">
+                <p class="text-sm" id="subInfoText">Загрузка...</p>
+            </div>
+            <button id="subActionBtn" onclick="window.location.href='/subscribe'" class="btn-indigo w-full" style="display:none;">Оформить подписку</button>
+        </div>
+
+        <div id="settings-appearance" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Оформление</h3>
+            <p class="text-sm text-zinc-400 mb-4">Выберите тему оформления</p>
+            <div class="space-y-2" id="themeListInline"></div>
+        </div>
+
+        <div id="settings-security" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Безопасность</h3>
+            <div class="widget-card rounded-2xl p-4 mb-3">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                    <div><h3 class="font-semibold text-white text-sm">Смена пароля</h3></div>
+                </div>
+                <button onclick="showPasswordForm()" id="changePasswordBtn" class="btn-outline w-full">Изменить пароль</button>
+                <div id="passwordForm" class="hidden mt-3 space-y-3">
+                    <div id="stepOld" class="space-y-3">
+                        <div class="relative"><input id="oldPasswordInput" type="password" class="input-field pr-10" placeholder="Текущий пароль"><button onclick="togglePassword('oldPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer bg-transparent border-0 p-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                        <p id="oldPasswordError" class="text-xs text-red-400 hidden"></p>
+                        <button onclick="checkOldPassword()" id="checkOldBtn" class="btn-indigo w-full">Проверить</button>
+                    </div>
+                    <div id="stepNew" class="hidden space-y-3">
+                        <div class="pt-2"><p class="text-xs text-emerald-400">Старый пароль подтверждён</p></div>
+                        <div class="relative"><input id="newPasswordInput" type="password" class="input-field pr-10" placeholder="Новый пароль (мин. 6)"><button onclick="togglePassword('newPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer bg-transparent border-0 p-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                        <p id="newPasswordError" class="text-xs text-red-400 hidden"></p>
+                        <button onclick="changePassword()" id="changeBtn" class="btn-indigo w-full">Сменить пароль</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-share" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <button class="back-btn" onclick="showSettingsPage('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-4">Поделиться приложением</h3>
+            <div class="widget-card rounded-2xl p-0 overflow-hidden" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                <img src="/api/player/qr" alt="QR-код" style="width:100%;display:block;">
+            </div>
+            <p class="text-sm text-zinc-400 mt-3 text-center">Наведите камеру телефона</p>
+        </div>
     </div>
 </main>
+
+<!-- H2H Settings Sheet -->
+<div class="period-sheet-overlay" id="settingsSheetOverlay" onclick="toggleSettingsSheet()">
+    <div class="period-sheet" onclick="event.stopPropagation()">
+        <div class="period-sheet-handle"></div>
+        <p class="sheet-section-title">Режим</p>
+        <div class="sheet-segment-row" id="modeSegmentRow">
+            <button class="sheet-segment-btn active" id="modeVersus" onclick="setMode('versus')">Версус</button>
+            <button class="sheet-segment-btn" id="modeSingle" onclick="setMode('single')">Одиночный</button>
+        </div>
+        <div class="sheet-accordion" id="metricAccordion">
+            <div class="sheet-accordion-header" onclick="toggleMetricAccordion()">
+                <span class="sheet-section-title" style="margin: 0;">Метрика</span>
+                <svg class="sheet-accordion-arrow" id="metricArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sheet-accordion-body" id="metricAccordionBody" style="display: none;"></div>
+        </div>
+        <p class="sheet-section-title">Период</p>
+        <div class="sheet-segment-row" id="periodSegmentRow">
+            <button class="sheet-segment-btn" id="periodWeek" onclick="setPeriod('week')">Неделя</button>
+            <button class="sheet-segment-btn" id="periodMonth" onclick="setPeriod('month')">Месяц</button>
+            <button class="sheet-segment-btn" id="periodYear" onclick="setPeriod('year')">Год</button>
+            <button class="sheet-segment-btn active" id="periodAll" onclick="setPeriod('all')">Всё</button>
+        </div>
+        <div class="date-row">
+            <input type="date" id="customStart" class="date-input" placeholder="дд.мм.гггг">
+            <span class="text-zinc-500 text-xs">—</span>
+            <input type="date" id="customEnd" class="date-input" placeholder="дд.мм.гггг">
+        </div>
+        <button class="period-sheet-btn" onclick="applySettings()" style="justify-content: center; background: rgba(99,102,241,0.1); color: #c7d2fe; margin-top: 8px;">Применить</button>
+    </div>
+</div>
 
 <!-- Шторка заказных отчётов -->
 <div class="report-backdrop" id="reportBackdrop" onclick="closeScheduledReports()"></div>
@@ -315,13 +547,23 @@
     <div id="reportSheetContent"></div>
 </div>
 
-<script type="module" src="/js/app.js"></script>
 <script type="module">
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
+    import { initSidebar } from '/js/sidebar.js';
     initBurgerMenu();
     initRoleCheck();
+    initSidebar('home');
 </script>
+
+<script type="module" src="/js/app.js"></script>
+<script type="module" src="/js/modules/top.js"></script>
+<script type="module" src="/js/modules/subscription-block.js"></script>
+<script type="module" src="/js/modules/live.js"></script>
+<script type="module" src="/js/modules/live-tournament.js"></script>
+<script type="module" src="/js/compare/compare-app.js"></script>
+<script type="module" src="/js/profile-app.js"></script>
+<script type="module" src="/js/analytics-app.js"></script>
 <script type="module">
     import { initStars } from '/js/modules/stars.js';
     initStars();
@@ -333,5 +575,14 @@
     window.setTheme = setTheme;
 </script>
 <script type="module" src="/js/modules/scheduled-report.js"></script>
+<script>
+    function showSettingsPage(page) {
+        document.getElementById('settings-main').style.display = page === 'main' ? 'block' : 'none';
+        ['account','subscription','appearance','security','share'].forEach(t => {
+            const el = document.getElementById('settings-' + t);
+            if (el) el.style.display = t === page ? 'block' : 'none';
+        });
+    }
+</script>
 </body>
 </html>

@@ -1,0 +1,113 @@
+/* ===== ADMIN MOBILE — APPLE STYLE PWA ===== */
+@media (max-width: 640px) {
+    main {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 8px 10px;
+        height: 100dvh;
+        height: 100svh;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100vw;
+    }
+
+    .max-w-3xl {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .widget-card {
+        padding: 14px 12px;
+        border-radius: 14px;
+    }
+
+    .sheet-accordion-header {
+        padding: 12px 14px;
+        font-size: 0.85rem;
+    }
+
+    .submenu-btn {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+
+    .avatar-circle {
+        width: 38px;
+        height: 38px;
+        font-size: 0.9rem;
+    }
+
+    /* Компактные кнопки подписки */
+    .player-actions-grid {
+        gap: 6px;
+    }
+
+    .player-actions-grid .btn {
+        padding: 10px 12px !important;
+        font-size: 0.8rem !important;
+        border-radius: 10px !important;
+    }
+
+    /* Кнопки 30/60 дней и Выдать — ещё компактнее */
+    .flex.gap-2 .btn {
+        padding: 9px 10px !important;
+        font-size: 0.78rem !important;
+        border-radius: 9px !important;
+    }
+
+    .btn {
+        padding: 11px 14px;
+        font-size: 0.82rem;
+    }
+
+    .input {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    .period-sheet {
+        padding: 16px 12px 28px;
+    }
+
+    .period-sheet-btn {
+        padding: 14px;
+        font-size: 0.85rem;
+    }
+
+    /* Карточка игрока — компактнее */
+    .player-card-head {
+        gap: 10px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+    }
+
+    .player-card-head .text-white {
+        font-size: 0.95rem !important;
+    }
+
+    .player-card-head .text-xs {
+        font-size: 0.7rem !important;
+    }
+
+    /* Инфо-сетка — одна колонка на мобиле */
+    .player-info-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    .player-info-item {
+        padding: 10px 6px;
+        min-height: 50px;
+    }
+
+    .player-info-label {
+        font-size: 0.6rem;
+    }
+
+    .player-info-input {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+}

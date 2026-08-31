@@ -21,6 +21,8 @@ public class RemovedInSemiFinalHandler implements RemovedPlayerHandler {
 
     private final DefaultMatchCalculationStrategy defaultStrategy;
 
+
+
     @Override
     public RemovedStage getStage() {
         return RemovedStage.SEMI_FINAL;
@@ -67,6 +69,7 @@ public class RemovedInSemiFinalHandler implements RemovedPlayerHandler {
                     String loser = m.getScore1() > m.getScore2() ? p2 : p1;
                     result.getPlaceMap().put(loser, 3);
                 });
+
 
         return result;
     }

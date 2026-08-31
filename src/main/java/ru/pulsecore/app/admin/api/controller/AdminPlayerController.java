@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
+import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
 import ru.pulsecore.app.admin.client.PlayerClient;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
@@ -35,5 +36,13 @@ public class AdminPlayerController {
             @RequestParam(defaultValue = "5") int size
             ) {
         return ResponseEntity.ok(playerClient.searchByNamePage(q,page,size));
+    }
+
+    @Operation(summary = "Обновить игрока")
+    @PatchMapping(AdminApi.PLAYER_UPDATE)
+    public ResponseEntity<PlayerData> updatePlayer(
+            @PathVariable UUID id,
+            @RequestBody UpdatePlayerRequest request) {
+        return ResponseEntity.ok(playerClient.updatePlayer(id, request));
     }
 }

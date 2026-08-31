@@ -2,9 +2,6 @@ package ru.pulsecore.app.admin.api;
 
 public final class AdminApi {
 
-
-
-
     private AdminApi() {}
 
     public static final String BASE = "/api/admin";
@@ -33,10 +30,12 @@ public final class AdminApi {
      * Управление игроками.
      * DELETE_PLAYER — /players/{id}, удалить игрока.
      * SEARCH_BY_NAME — /search, поиск по имени.
+     * PLAYER_UPDATE — /players/{id}, обновить игрока.
      * Admin.
      */
     public static final String DELETE_PLAYER = "/players/{id}";
     public static final String SEARCH_BY_NAME = "/search";
+    public static final String PLAYER_UPDATE = "/players/{id}";
 
     /**
      * Подписка игрока.
@@ -61,6 +60,17 @@ public final class AdminApi {
     public static final String PLAYER_TOURNAMENTS_RESYNC = "/players/{id}/tournaments/resync";
 
     /**
+     * Управление турнирами.
+     * TOURNAMENTS_BY_DATE — /tournaments?date=, получить турниры по дате.
+     * TOURNAMENT_BY_ID — /tournaments/{id}, получить турнир.
+     * TOURNAMENT_UPDATE — /tournaments/{id}, обновить турнир.
+     * Admin.
+     */
+    public static final String TOURNAMENTS_BY_DATE = "/tournaments";
+    public static final String TOURNAMENT_BY_ID = "/tournaments/{id}";
+    public static final String TOURNAMENT_UPDATE = "/tournaments/{id}";
+
+    /**
      * Рассылки.
      * BROADCAST — /broadcast, отправить сообщение всем.
      * Admin.
@@ -75,4 +85,15 @@ public final class AdminApi {
      */
     public static final String PAGE_VIEWS_STATS = "/stats/page-views";
     public static final String PAGE_VIEWS_PLAYERS = "/stats/page-views/players";
+
+    /**
+     * Управление планировщиком.
+     * SCHEDULER_PAUSE — /scheduler/pause, приостановить.
+     * SCHEDULER_RESUME — /scheduler/resume, возобновить.
+     * SCHEDULER_STATUS — /scheduler/status, статус.
+     * Admin.
+     */
+    public static final String SCHEDULER_PAUSE = "/scheduler/pause";
+    public static final String SCHEDULER_RESUME = "/scheduler/resume";
+    public static final String SCHEDULER_STATUS = "/scheduler/status";
 }

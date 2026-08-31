@@ -2,6 +2,8 @@ package ru.pulsecore.app.player.infrastructure.persistence.repository.projection
 
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface PlayerDataProjection {
@@ -14,6 +16,7 @@ public interface PlayerDataProjection {
     Boolean getHasActiveSubscription();
     String getSelectedHalls();
     String getLiveSelectedHalls();
+    LocalDateTime getLastLoginAt();
 
     default PlayerData toPlayerData() {
         return new PlayerData(
@@ -25,7 +28,8 @@ public interface PlayerDataProjection {
                 getNotificationsEnabled(),
                 getHasActiveSubscription() != null && getHasActiveSubscription(),
                 getSelectedHalls(),
-                getLiveSelectedHalls()
+                getLiveSelectedHalls(),
+                getLastLoginAt()
         );
     }
 }

@@ -1,0 +1,27 @@
+/* ===== ANALYTICS — PWA ===== */
+@media (max-width: 640px) {
+    .chart-wrap {
+        height: 240px;
+    }
+
+    .chart-card {
+        padding: 12px 10px;
+        border-radius: 14px;
+    }
+
+    .daily-stats-row {
+        gap: 6px;
+    }
+
+    .daily-stat {
+        padding: 10px 6px;
+    }
+
+    .swipe-hint {
+        display: inline-block;
+    }
+
+    .nav-arrows-desktop {
+        display: none !important;
+    }
+}
