@@ -159,12 +159,10 @@ async function loadData() {
         playerName = me.name || 'Аноним';
         playerId = me.id || '00000000-0000-0000-0000-000000000000';
 
-        // Ищем турнир в уже загруженном списке
-        const lineup = allTournaments.find(t => t.externalId == lineupId);
-
-        if (!lineup) {
-            throw new Error('Турнир не найден');
-        }
+        // Загружаем турнир по ID напрямую с сервера
+        const res = await fetch(`/api/lineups/${lineupId}`, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Турнир не найден');
+        const lineup = await res.json();
 
         document.getElementById('tournamentLoading').classList.add('hidden');
         document.getElementById('content').classList.remove('hidden');

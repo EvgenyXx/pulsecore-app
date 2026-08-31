@@ -160,6 +160,7 @@ window.setPeriod = setPeriod;
 window.setPeriodFromSheet = setPeriod;
 window.applySettings = applySettings;
 window.loadCompare = loadCompare;
+window.initCompareApp = loadCompare;
 
 window.addEventListener('settings-applied', (e) => {
     const { mode, metricId, start, end } = e.detail;
@@ -178,5 +179,4 @@ window.addEventListener('settings-applied', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     initSettingsSheet();
     initTooltips();
-    loadCompare();
 });

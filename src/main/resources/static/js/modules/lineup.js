@@ -138,6 +138,9 @@ export async function loadHallsContent() {
     const c = document.getElementById('actionContent');
     c.innerHTML = '<div class="text-center py-8"></div>';
 
+    // ВАЖНО: загружаем сохранённые залы с базы при каждом заходе
+    await loadSelectedHalls();
+
     const uiState = loadHallsUIState();
 
     let allHalls = [];

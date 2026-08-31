@@ -227,7 +227,9 @@ export function initDashboardRouter() {
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById('nav-analytics')?.classList.add('active');
 
-        if (window.switchTab) {
+        if (window.initAnalyticsApp) {
+            window.initAnalyticsApp();
+        } else if (window.switchTab) {
             window.switchTab('league');
         }
     }
