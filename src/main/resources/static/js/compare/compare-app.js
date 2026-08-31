@@ -25,6 +25,23 @@ let leftWheel = null;
 let rightWheel = null;
 let currentMode = 'versus';
 
+const subBlockHtml = () => `
+    <div class="flex items-center justify-between mb-4">
+        <div></div>
+        <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+    </div>
+    <div class="apple-card p-8 text-center" style="animation: fadeIn 0.2s ease">
+        <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
+        <p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы открыть все функции</p>
+        <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>
+    </div>
+`;
+
 function getRandomPlayers(players, count) {
     const shuffled = [...players].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, Math.min(count, shuffled.length));
@@ -110,6 +127,30 @@ async function loadAllPlayers(start, end) {
     }
 }
 
+async function loadCompare() {
+    try {
+        const res = await fetch('/api/player/halls', { credentials: 'same-origin' });
+        if (res.status === 402) {
+            document.querySelector('.wheels-row').style.display = 'none';
+            document.querySelector('.cards-row').style.display = 'none';
+            document.querySelector('.compare-header').style.display = 'none';
+
+            const container = document.querySelector('#comparePage .max-w-5xl');
+            container.insertAdjacentHTML('beforeend', `<div id="compareNoSub">${subBlockHtml()}</div>`);
+            return;
+        }
+
+        document.querySelector('.wheels-row').style.display = '';
+        document.querySelector('.cards-row').style.display = '';
+        document.querySelector('.compare-header').style.display = '';
+        document.getElementById('compareNoSub')?.remove();
+
+        await loadAllPlayers(null, null);
+    } catch (e) {
+        console.error('Ошибка загрузки H2H:', e);
+    }
+}
+
 // Экспортируем функции в window
 window.toggleSettingsSheet = toggleSettingsSheet;
 window.toggleMetricAccordion = toggleMetricAccordion;
@@ -118,6 +159,7 @@ window.setMetric = setMetric;
 window.setPeriod = setPeriod;
 window.setPeriodFromSheet = setPeriod;
 window.applySettings = applySettings;
+window.loadCompare = loadCompare;
 
 window.addEventListener('settings-applied', (e) => {
     const { mode, metricId, start, end } = e.detail;
@@ -136,5 +178,5 @@ window.addEventListener('settings-applied', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     initSettingsSheet();
     initTooltips();
-    loadAllPlayers(null, null);
+    loadCompare();
 });

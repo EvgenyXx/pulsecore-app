@@ -1,3 +1,5 @@
+import { checkSubscription, subBlockHtml } from './subscription-block.js';
+
 let selectedTab = 'live';
 let allTournaments = [];
 let allHalls = [];
@@ -43,15 +45,22 @@ function initTabListeners() {
 
 async function loadLive() {
     try {
-        const sub = await fetch('/api/player/subscription', { credentials: 'same-origin' }).then(r => r.json()).catch(() => null);
-        if (!sub || !sub.active) {
-            document.getElementById('loading').classList.add('hidden');
+        const hasSub = await checkSubscription();
+        if (!hasSub) {
+            // Скрываем ВСЁ внутри livePage кроме noSubBlock
+            document.querySelectorAll('#livePage > *').forEach(el => {
+                if (el.id !== 'noSubBlock') el.style.display = 'none';
+            });
+            document.getElementById('noSubBlock').innerHTML = subBlockHtml();
             document.getElementById('noSubBlock').classList.remove('hidden');
-            document.getElementById('tabFilter').classList.add('hidden');
-            document.getElementById('hallFilter').classList.add('hidden');
-            document.getElementById('subtitle').textContent = 'Требуется PRO';
             return;
         }
+
+        // Показываем всё обратно
+        document.querySelectorAll('#livePage > *').forEach(el => {
+            el.style.display = '';
+        });
+        document.getElementById('noSubBlock').classList.add('hidden');
 
         const [tournamentsRes, hallsRes] = await Promise.all([
             fetch('/api/tournament/live', { credentials: 'same-origin' }),

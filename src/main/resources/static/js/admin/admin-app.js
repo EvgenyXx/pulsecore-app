@@ -1,6 +1,5 @@
 import { AdminAPI } from './admin-api.js';
-import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus } from './admin-players.js';
-import { giveSub, removeSub, setSelectedPlayer } from './admin-subscriptions.js';
+import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus, giveSub, giveSubCustom, removeSub } from './admin-players.js';
 import { loadCurrentPrices, updatePrices } from './admin-prices.js';
 import { adminCalculate } from './admin-calculate.js';
 import { sendBroadcast } from './admin-broadcast.js';
@@ -9,10 +8,7 @@ import { loadTournaments, toggleTournamentExpand, toggleStatus, saveTournament }
 import { loadSchedulerStatus, toggleScheduler } from './admin-scheduler.js';
 
 window.searchPlayers = searchPlayers;
-window.selectPlayer = (id, name, email, section) => {
-    setSelectedPlayer(id);
-    selectPlayer(id, name, email, section);
-};
+window.selectPlayer = selectPlayer;
 window.togglePlayerRole = togglePlayerRole;
 window.deletePlayerTournaments = deletePlayerTournaments;
 window.resyncPlayerTournaments = resyncPlayerTournaments;
@@ -20,6 +16,7 @@ window.deletePlayerAccount = deletePlayerAccount;
 window.updatePlayer = updatePlayer;
 window.togglePlayerStatus = togglePlayerStatus;
 window.giveSub = giveSub;
+window.giveSubCustom = giveSubCustom;
 window.removeSub = removeSub;
 window.loadCurrentPrices = loadCurrentPrices;
 window.updatePrices = updatePrices;

@@ -14,6 +14,23 @@ window.onYearChange = onYearChange;
 window.setBestTimePeriod = setBestTimePeriod;
 window.toggleAnalyticsSheet = toggleAnalyticsSheet;
 
+const subBlockHtml = () => `
+    <div class="flex items-center justify-between mb-4">
+        <div></div>
+        <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+    </div>
+    <div class="apple-card p-8 text-center" style="animation: fadeIn 0.2s ease">
+        <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
+        <p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы открыть все функции</p>
+        <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>
+    </div>
+`;
+
 function updateAnalyticsSlider(tab) {
     const slider = document.querySelector('.analytics-slider');
     if (!slider) return;
@@ -30,7 +47,6 @@ function updateAnalyticsTabs(tab) {
 }
 
 function switchTab(tab) {
-    // Убираем active ТОЛЬКО у вкладок аналитики, не трогаем сайдбар
     document.querySelectorAll('.analytics-tab').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-sheet-btn').forEach(btn => btn.classList.remove('active'));
 
@@ -112,12 +128,21 @@ async function init() {
 
         const hasSub = await checkSubscription();
         if (!hasSub) {
-            document.getElementById('analyticsLoading').classList.add('hidden');
-            document.getElementById('analyticsNoSub').classList.remove('hidden');
+            // Скрываем ВСЁ внутри analyticsPage кроме analyticsNoSub
+            document.querySelectorAll('#analyticsPage > *').forEach(el => {
+                if (el.id !== 'analyticsNoSub') el.style.display = 'none';
+            });
+            const noSubBlock = document.getElementById('analyticsNoSub');
+            noSubBlock.innerHTML = subBlockHtml();
+            noSubBlock.classList.remove('hidden');
             return;
         }
 
-        document.getElementById('analyticsLoading').classList.add('hidden');
+        // Показываем всё обратно
+        document.querySelectorAll('#analyticsPage > *').forEach(el => {
+            el.style.display = '';
+        });
+        document.getElementById('analyticsNoSub').classList.add('hidden');
 
         flatpickr('#bestTimeStart', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
         flatpickr('#bestTimeEnd', { locale: 'ru', dateFormat: 'Y-m-d', maxDate: 'today' });
@@ -132,10 +157,8 @@ async function init() {
     }
 }
 
-// Экспортируем для роутера
 window.initAnalyticsApp = init;
 
-// Для отдельной страницы analytics.html
 if (document.getElementById('analyticsPage')) {
     document.addEventListener('DOMContentLoaded', init);
 }

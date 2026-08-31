@@ -24,6 +24,33 @@ export async function giveSub(days) {
     }
 }
 
+export async function giveSubCustom() {
+    if (!selectedPlayerId) return;
+    const days = parseInt(document.getElementById('customDaysInput').value);
+    const msg = document.getElementById('subMsg');
+
+    if (!days || days < 1 || days > 3650) {
+        msg.textContent = 'Введите число от 1 до 3650';
+        msg.className = 'text-xs text-center mt-3 text-red-400';
+        msg.classList.remove('hidden');
+        return;
+    }
+
+    msg.textContent = 'Выдача...';
+    msg.className = 'text-xs text-center mt-3 text-emerald-300/60';
+    msg.classList.remove('hidden');
+
+    try {
+        await AdminAPI.giveSubscription(selectedPlayerId, days);
+        msg.textContent = `Подписка выдана на ${days} дней`;
+        msg.className = 'text-xs text-center mt-3 text-emerald-400';
+        await refreshSubUI();
+    } catch (e) {
+        msg.textContent = 'Ошибка при выдаче';
+        msg.className = 'text-xs text-center mt-3 text-red-400';
+    }
+}
+
 export async function removeSub() {
     if (!selectedPlayerId) return;
     const msg = document.getElementById('subMsg');

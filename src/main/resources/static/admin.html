@@ -58,7 +58,6 @@
                 <svg class="nav-arrow" id="arrow-nav-subscriptions" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="submenu" id="submenu-subscriptions" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-sub-manage', this)">Выдать подписку</button>
                 <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this)">Управление ценами</button>
             </div>
         </div>
@@ -125,6 +124,18 @@
                         </div>
 
                         <div class="flex gap-1 flex-wrap mb-3" id="playerSelBadges"></div>
+
+                        <div class="flex flex-col gap-2 mb-3">
+                            <div class="flex gap-2">
+                                <button onclick="giveSub(30)" id="playerGiveSub30" class="btn btn-emerald">30 дней</button>
+                                <button onclick="giveSub(60)" id="playerGiveSub60" class="btn btn-indigo">60 дней</button>
+                            </div>
+                            <div class="flex gap-2">
+                                <input id="playerCustomDays" type="number" min="1" max="3650" placeholder="Дней" class="input">
+                                <button onclick="giveSubCustom()" class="btn btn-amber">Выдать</button>
+                            </div>
+                            <button onclick="removeSub()" id="playerRemoveSub" class="btn btn-danger hidden">Отключить подписку</button>
+                        </div>
 
                         <div class="player-info-grid">
                             <div class="player-info-item" style="grid-column: 1 / -1;">
@@ -251,34 +262,6 @@
         </div>
 
         <div id="section-subscriptions" class="hidden">
-            <div class="sheet-accordion" id="acc-sub-manage-wrapper" style="display:none;">
-                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-sub-manage')">
-                    <span class="sheet-section-title" style="margin:0;">Выдать подписку</span>
-                    <svg class="sheet-accordion-arrow" id="arrow-acc-sub-manage" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </div>
-                <div class="sheet-accordion-body" id="acc-sub-manage" style="display:none;">
-                    <div class="widget-card">
-                        <input id="subSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('sub')">
-                        <div id="subSearchResults" class="mt-3 space-y-1 hidden"></div>
-                    </div>
-                    <div id="subSelectedPlayer" class="widget-card mt-3 hidden">
-                        <div class="player-card-head">
-                            <div class="avatar-circle"><span id="subAvatar"></span></div>
-                            <div>
-                                <p class="text-white font-semibold" id="subSelName"></p>
-                                <p class="text-xs text-zinc-500" id="subSelEmail"></p>
-                            </div>
-                        </div>
-                        <div class="flex gap-1 flex-wrap mb-4" id="subSelBadges"></div>
-                        <div class="flex flex-col gap-2">
-                            <button onclick="giveSub(30)" class="btn btn-emerald">Выдать 30 дней</button>
-                            <button onclick="giveSub(60)" class="btn btn-indigo">Выдать 60 дней</button>
-                            <button onclick="removeSub()" id="removeSubBtn" class="btn btn-danger hidden">Отключить подписку</button>
-                        </div>
-                        <p id="subMsg" class="text-xs text-center mt-2 hidden"></p>
-                    </div>
-                </div>
-            </div>
             <div class="sheet-accordion" id="acc-prices-wrapper" style="display:none;">
                 <div class="sheet-accordion-header" onclick="toggleAccordion('acc-prices')">
                     <span class="sheet-section-title" style="margin:0;">Управление ценами</span>
@@ -370,7 +353,6 @@
                 <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-subscriptions" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="sheet-accordion-body" id="submenu-mobile-subscriptions" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-sub-manage', this); toggleAdminSheet()">Выдать подписку</button>
                 <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this); toggleAdminSheet()">Управление ценами</button>
             </div>
         </div>

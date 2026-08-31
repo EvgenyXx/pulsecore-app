@@ -60,11 +60,13 @@ async function refreshPlayerUI(section) {
     if (!selectedPlayerId) return;
 
     let badges = '';
+    let subActive = false;
 
     try {
         const sub = await AdminAPI.getPlayerSubscription(selectedPlayerId);
         playersCache[selectedPlayerId] = sub;
         if (sub && sub.active) {
+            subActive = true;
             const expiresDate = new Date(sub.expiresAt);
             const daysLeft = Math.ceil((expiresDate - new Date()) / (1000 * 60 * 60 * 24));
             badges += `<span class="badge badge-active">Подписка до ${expiresDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`;
@@ -76,9 +78,16 @@ async function refreshPlayerUI(section) {
 
     if (section === 'sub') {
         document.getElementById('subSelBadges').innerHTML = badges;
-        const cached = playersCache[selectedPlayerId];
-        document.getElementById('removeSubBtn').classList.toggle('hidden', !(cached && cached.active));
+        document.getElementById('removeSubBtn').classList.toggle('hidden', !subActive);
     } else {
+        // Обновляем бейджи
+        document.getElementById('playerSelBadges').innerHTML = badges;
+
+        // Обновляем кнопки подписки в карточке игрока
+        document.getElementById('playerGiveSub30').classList.toggle('hidden', false);
+        document.getElementById('playerGiveSub60').classList.toggle('hidden', false);
+        document.getElementById('playerRemoveSub').classList.toggle('hidden', !subActive);
+
         try {
             const roles = await AdminAPI.getPlayerRoles(selectedPlayerId);
             if (roles.includes('ROLE_ADMIN')) {
@@ -149,6 +158,71 @@ export function togglePlayerStatus(prefix) {
 function isStatusChecked(prefix) {
     const checkbox = document.getElementById(prefix + 'Checkbox');
     return checkbox ? checkbox.classList.contains('checked') : false;
+}
+
+// ===== ПОДПИСКА В КАРТОЧКЕ ИГРОКА =====
+
+export async function giveSub(days) {
+    if (!selectedPlayerId) return;
+    const msg = document.getElementById('playerMsg');
+    msg.textContent = 'Выдача...';
+    msg.className = 'text-xs text-center text-zinc-400';
+    msg.classList.remove('hidden');
+
+    try {
+        await AdminAPI.giveSubscription(selectedPlayerId, days);
+        msg.textContent = `Подписка выдана на ${days} дней`;
+        msg.className = 'text-xs text-center text-emerald-400';
+        await refreshPlayerUI('players');
+    } catch (e) {
+        msg.textContent = 'Ошибка при выдаче';
+        msg.className = 'text-xs text-center text-red-400';
+    }
+}
+
+export async function giveSubCustom() {
+    if (!selectedPlayerId) return;
+    const days = parseInt(document.getElementById('playerCustomDays').value);
+    const msg = document.getElementById('playerMsg');
+
+    if (!days || days < 1 || days > 3650) {
+        msg.textContent = 'Введите число от 1 до 3650';
+        msg.className = 'text-xs text-center text-red-400';
+        msg.classList.remove('hidden');
+        return;
+    }
+
+    msg.textContent = 'Выдача...';
+    msg.className = 'text-xs text-center text-zinc-400';
+    msg.classList.remove('hidden');
+
+    try {
+        await AdminAPI.giveSubscription(selectedPlayerId, days);
+        msg.textContent = `Подписка выдана на ${days} дней`;
+        msg.className = 'text-xs text-center text-emerald-400';
+        await refreshPlayerUI('players');
+    } catch (e) {
+        msg.textContent = 'Ошибка при выдаче';
+        msg.className = 'text-xs text-center text-red-400';
+    }
+}
+
+export async function removeSub() {
+    if (!selectedPlayerId) return;
+    const msg = document.getElementById('playerMsg');
+    msg.textContent = 'Отключение...';
+    msg.className = 'text-xs text-center text-zinc-400';
+    msg.classList.remove('hidden');
+
+    try {
+        await AdminAPI.removeSubscription(selectedPlayerId);
+        msg.textContent = 'Подписка отключена';
+        msg.className = 'text-xs text-center text-emerald-400';
+        await refreshPlayerUI('players');
+    } catch (e) {
+        msg.textContent = 'Ошибка при отключении';
+        msg.className = 'text-xs text-center text-red-400';
+    }
 }
 
 export async function updatePlayer() {

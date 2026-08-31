@@ -31,7 +31,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/player/*/monthly-income",
                         "/api/player/*/daily-income",
 //                        "/api/lineups/**",
-                        "/api/tournament/sum**"
+                        "/api/tournament/sum**",
+                        "/api/player/compare**"
                 );
     }
 
