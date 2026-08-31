@@ -3,6 +3,7 @@ package ru.pulsecore.app.tournament.application.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.domain.entity.MatchStage;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
@@ -24,7 +25,7 @@ public class TournamentMatchService {
 
     private final TournamentMatchRepository matchRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createMatches(ParsedResult parsed, TournamentEntity tournament) {
         if (hasNoMatches(parsed)) return;
         if (tournamentAlreadyExists(tournament)) return;
@@ -40,8 +41,16 @@ public class TournamentMatchService {
     }
 
     private boolean tournamentAlreadyExists(TournamentEntity tournament) {
-        boolean exists = matchRepository.existsByTournamentId(tournament.getId());
-        if (exists) log.debug("Матчи: турнир {} уже существует, пропуск", tournament.getId());
+        Long tournamentId = tournament.getId();
+        if (tournamentId == null) {
+            log.warn("Матчи: tournamentId is null — пропуск проверки");
+            return false;
+        }
+
+        boolean exists = matchRepository.existsByTournamentId(tournamentId);
+        if (exists) {
+            log.debug("Матчи: турнир {} уже имеет матчи — ПОЛНЫЙ ПРОПУСК", tournamentId);
+        }
         return exists;
     }
 
@@ -83,8 +92,12 @@ public class TournamentMatchService {
 
     private void saveMatches(List<TournamentMatchEntity> matches, ParsedResult parsed) {
         if (matches.isEmpty()) return;
-        matchRepository.saveAll(matches);
-        log.info("Матчи: сохранено={} для турнира={}", matches.size(), parsed.tournamentId());
+        try {
+            matchRepository.saveAll(matches);
+            log.debug("Матчи: сохранено={} для турнира={}", matches.size(), parsed.tournamentId());
+        } catch (Exception e) {
+            log.warn("Матчи: ошибка сохранения турнира={}: {}", parsed.tournamentId(), e.getMessage());
+        }
     }
 
     private MatchStage parseStage(String stage) {
