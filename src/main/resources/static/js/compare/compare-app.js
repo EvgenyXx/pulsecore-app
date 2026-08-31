@@ -2,6 +2,7 @@
 
 import { compareMetrics } from './metrics.js';
 import { renderPlayerCard } from './player-card.js';
+import { renderH2HCard } from './h2h-card.js';
 import { WheelPicker } from './wheel.js';
 import { getPeriodDates } from './period.js';
 import { loadPlayers as fetchPlayers, loadStatsPlayers } from './data-loader.js';
@@ -24,6 +25,9 @@ let selectedRight = null;
 let leftWheel = null;
 let rightWheel = null;
 let currentMode = 'versus';
+let currentPeriod = 'all';
+let customStartDate = null;
+let customEndDate = null;
 
 const subBlockHtml = () => `
     <div class="flex items-center justify-between mb-4">
@@ -42,6 +46,12 @@ const subBlockHtml = () => `
     </div>
 `;
 
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 function getRandomPlayers(players, count) {
     const shuffled = [...players].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, Math.min(count, shuffled.length));
@@ -50,6 +60,11 @@ function getRandomPlayers(players, count) {
 function updateCard(cardId, player) {
     const card = document.getElementById(cardId);
     const metric = getCurrentMetric();
+
+    if (metric.id === 'h2h') {
+        card.innerHTML = '';
+        return;
+    }
 
     if (!player) {
         card.innerHTML = '<p class="text-zinc-500 text-sm text-center">Выберите игрока</p>';
@@ -86,6 +101,108 @@ function renderSingleMode() {
     document.querySelector('.card-spacer').style.display = 'none';
 }
 
+function toggleCardsVisibility(metricId) {
+    const cardsRow = document.getElementById('cardsRow');
+    if (!cardsRow) return;
+
+    if (metricId === 'h2h') {
+        cardsRow.style.display = 'none';
+    } else {
+        cardsRow.style.display = '';
+    }
+}
+
+function showH2HButton() {
+    const wrapper = document.getElementById('h2hCompareBtnWrapper');
+    if (wrapper) wrapper.style.display = '';
+    const result = document.getElementById('h2hResult');
+    if (result) {
+        result.classList.add('hidden');
+        result.innerHTML = '';
+    }
+    toggleCardsVisibility('h2h');
+}
+
+function hideH2HButton() {
+    const wrapper = document.getElementById('h2hCompareBtnWrapper');
+    if (wrapper) wrapper.style.display = 'none';
+    const result = document.getElementById('h2hResult');
+    if (result) {
+        result.classList.add('hidden');
+        result.innerHTML = '';
+    }
+    toggleCardsVisibility('other');
+}
+
+function hideH2HResult() {
+    const resultContainer = document.getElementById('h2hResult');
+    if (resultContainer) {
+        resultContainer.classList.add('hidden');
+        resultContainer.innerHTML = '';
+    }
+}
+
+async function compareH2H() {
+    if (!selectedLeft || !selectedRight) return;
+
+    const btn = document.getElementById('h2hCompareBtn');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.textContent = 'Загрузка...';
+
+    try {
+        let start = customStartDate;
+        let end = customEndDate;
+
+        if (!start || !end) {
+            const dates = getPeriodDates(currentPeriod || 'all');
+            start = dates.start;
+            end = dates.end;
+        }
+
+        const params = new URLSearchParams({
+            player1Name: selectedLeft.playerName,
+            player2Name: selectedRight.playerName
+        });
+
+        if (start) params.append('start', start);
+        if (end) params.append('end', end);
+
+        const res = await fetch(`/api/tournament/compare/h2h?${params}`, {
+            credentials: 'same-origin'
+        });
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        const data = await res.json();
+
+        let dateRange = '';
+        if (start && end) {
+            dateRange = `${formatDate(start)} — ${formatDate(end)}`;
+        } else if (start) {
+            dateRange = `С ${formatDate(start)}`;
+        } else if (end) {
+            dateRange = `До ${formatDate(end)}`;
+        } else {
+            dateRange = 'За всё время';
+        }
+
+        const resultContainer = document.getElementById('h2hResult');
+        resultContainer.innerHTML = renderH2HCard(data, dateRange);
+        resultContainer.classList.remove('hidden');
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    } catch (e) {
+        console.error('Ошибка H2H:', e);
+        const resultContainer = document.getElementById('h2hResult');
+        resultContainer.innerHTML = '<p class="text-red-400 text-center py-4">Ошибка загрузки H2H</p>';
+        resultContainer.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Сравнить';
+    }
+}
+
 async function loadAllPlayers(start, end) {
     try {
         allPlayers = await fetchPlayers(start, end);
@@ -106,10 +223,12 @@ async function loadAllPlayers(start, end) {
         leftWheel = new WheelPicker('pickerLeft', allPlayers, (player) => {
             selectedLeft = player;
             updateCard('leftCard', player);
+            hideH2HResult();
         });
         rightWheel = new WheelPicker('pickerRight', allPlayers, (player) => {
             selectedRight = player;
             updateCard('rightCard', player);
+            hideH2HResult();
         });
 
         leftWheel.render(selectedLeft?.playerId);
@@ -134,6 +253,7 @@ async function loadCompare() {
             document.querySelector('.wheels-row').style.display = 'none';
             document.querySelector('.cards-row').style.display = 'none';
             document.querySelector('.compare-header').style.display = 'none';
+            document.getElementById('h2hCompareBtnWrapper')?.remove();
 
             const container = document.querySelector('#comparePage .max-w-5xl');
             container.insertAdjacentHTML('beforeend', `<div id="compareNoSub">${subBlockHtml()}</div>`);
@@ -145,13 +265,14 @@ async function loadCompare() {
         document.querySelector('.compare-header').style.display = '';
         document.getElementById('compareNoSub')?.remove();
 
+        hideH2HButton();
+
         await loadAllPlayers(null, null);
     } catch (e) {
         console.error('Ошибка загрузки H2H:', e);
     }
 }
 
-// Экспортируем функции в window
 window.toggleSettingsSheet = toggleSettingsSheet;
 window.toggleMetricAccordion = toggleMetricAccordion;
 window.setMode = setMode;
@@ -161,16 +282,29 @@ window.setPeriodFromSheet = setPeriod;
 window.applySettings = applySettings;
 window.loadCompare = loadCompare;
 window.initCompareApp = loadCompare;
+window.compareH2H = compareH2H;
 
 window.addEventListener('settings-applied', (e) => {
     const { mode, metricId, start, end } = e.detail;
 
     currentMode = mode;
+    currentPeriod = getSettings().period || currentPeriod;
+
+    const customStartInput = document.getElementById('customStart');
+    const customEndInput = document.getElementById('customEnd');
+    customStartDate = customStartInput?.value || null;
+    customEndDate = customEndInput?.value || null;
 
     if (mode === 'versus') {
         renderVersusMode();
     } else {
         renderSingleMode();
+    }
+
+    if (metricId === 'h2h') {
+        showH2HButton();
+    } else {
+        hideH2HButton();
     }
 
     loadAllPlayers(start, end);

@@ -27,5 +27,18 @@ export const compareMetrics = [
             { key: 'thirdPlaceWinPercent', label: '3-е место', type: 'progress' },
             { key: 'finalWinPercent', label: 'Финал', type: 'progress' }
         ]
+    },
+    {
+        id: 'h2h',
+        label: 'H2H',
+        title: 'Личные встречи',
+        description: 'Сравнение двух игроков между собой',
+        endpoint: '/api/tournament/compare/h2h',
+        matchKey: 'playerName',
+        fields: [
+            { key: 'totalMatches', label: 'Всего матчей', type: 'text' },
+            { key: 'player1Wins', label: 'Победы игрока 1', type: 'text' },
+            { key: 'player2Wins', label: 'Победы игрока 2', type: 'text' }
+        ]
     }
 ];

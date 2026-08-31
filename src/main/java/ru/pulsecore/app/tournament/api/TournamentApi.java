@@ -118,5 +118,6 @@ public class TournamentApi {
      */
     public static final String COMPARE_PLAYERS = "/compare/players";
     public static final String COMPARE_MATCH_STATS = "/compare/match-stats";
+    public static final String COMPARE_H2H = "/compare/h2h";
 
 }

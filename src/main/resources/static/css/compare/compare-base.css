@@ -83,7 +83,6 @@ body {
 .burger-btn:active {
     transform: scale(0.95);
 }
-/* ===== ЕДИНЫЙ СТИЛЬ ЗАГОЛОВКОВ ===== */
 
 /* ===== ЕДИНЫЙ СТИЛЬ ЗАГОЛОВКОВ ===== */
 
@@ -121,4 +120,258 @@ body {
         font-size: 32px;
         letter-spacing: -1.5px;
     }
+}
+
+/* ===== H2H КАРТОЧКА — APPLE STYLE ===== */
+
+.h2h-compare-btn {
+    background: linear-gradient(135deg, #0a84ff, #0066cc);
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 36px;
+    cursor: pointer;
+    font-size: 1rem;
+    letter-spacing: -0.2px;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: 0 4px 16px rgba(10, 132, 255, 0.35);
+    text-transform: none;
+}
+
+.h2h-compare-btn:hover {
+    background: linear-gradient(135deg, #409cff, #0077e6);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(10, 132, 255, 0.45);
+}
+
+.h2h-compare-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
+}
+
+.h2h-compare-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.h2h-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    padding: 28px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.h2h-title {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #98989d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+}
+
+.h2h-players {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.h2h-player {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+}
+
+.h2h-player-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #f5f5f7;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.h2h-player-wins {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.h2h-player-label {
+    font-size: 0.7rem;
+    color: #6e6e73;
+    margin-top: 4px;
+}
+
+.h2h-vs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    padding: 0 4px;
+}
+
+.h2h-total {
+    font-size: 0.75rem;
+    color: #6e6e73;
+    font-weight: 600;
+}
+
+.h2h-vs-text {
+    font-size: 1.8rem;
+    font-weight: 900;
+    font-style: italic;
+    color: #c7d2fe;
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+.h2h-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.h2h-bar-left {
+    background: linear-gradient(90deg, #0a84ff, #409cff);
+    border-radius: 3px 0 0 3px;
+    transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.h2h-bar-right {
+    background: linear-gradient(90deg, #ff9f0a, #ffab2e);
+    border-radius: 0 3px 3px 0;
+    transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.h2h-date-range {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6e6e73;
+    margin-bottom: 16px;
+}
+
+.h2h-stages {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 16px;
+}
+
+.h2h-stages-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #98989d;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+/* Таблица по стадиям — GRID */
+.h2h-stage-header {
+    display: grid;
+    grid-template-columns: 1fr 70px 70px 70px 70px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 10px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.h2h-header-stage {
+    font-size: 0.65rem;
+    color: #6e6e73;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.h2h-stage-header-score {
+    display: contents;
+}
+
+.h2h-header-col {
+    font-size: 0.6rem;
+    color: #6e6e73;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+.h2h-stage-row {
+    display: grid;
+    grid-template-columns: 1fr 70px 70px 70px 70px;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.h2h-stage-row:last-child {
+    border-bottom: none;
+}
+
+.h2h-stage-label {
+    font-size: 0.85rem;
+    color: #f5f5f7;
+    font-weight: 500;
+    text-align: left;
+}
+
+.h2h-stage-score {
+    display: contents;
+}
+
+.h2h-stage-col {
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.h2h-wins-left {
+    color: #409cff;
+    font-weight: 700;
+}
+
+.h2h-stage-total {
+    color: #98989d;
+    font-weight: 500;
+}
+
+.h2h-wins-right {
+    color: #ffab2e;
+    font-weight: 700;
+}
+
+.h2h-diff {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.h2h-diff-left {
+    color: #30d158;
+}
+
+.h2h-diff-right {
+    color: #ff9f0a;
+}
+
+.h2h-diff-zero {
+    color: #6e6e73;
 }

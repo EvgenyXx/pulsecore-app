@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.tournament.api.TournamentApi;
 import ru.pulsecore.app.tournament.api.dto.response.PlayerCompareDto;
+import ru.pulsecore.app.tournament.api.dto.response.PlayerH2HResponseDto;
 import ru.pulsecore.app.tournament.api.dto.response.PlayerMatchStatsDto;
 import ru.pulsecore.app.tournament.application.compare.CompareService;
 
@@ -41,5 +42,17 @@ public class CompareController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
         return compareService.getPlayersMatchStats(start, end);
+    }
+
+
+    @GetMapping(TournamentApi.COMPARE_H2H)
+    public ResponseEntity<PlayerH2HResponseDto> getH2H(
+            @RequestParam String player1Name,
+            @RequestParam String player2Name,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+        return ResponseEntity.ok(compareService.getH2H(player1Name, player2Name, start, end));
     }
 }

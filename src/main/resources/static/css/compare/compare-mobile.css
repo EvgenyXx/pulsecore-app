@@ -256,3 +256,55 @@
         text-align: right;
     }
 }
+/* ===== МОБИЛЬНАЯ ТАБЛИЦА H2H ===== */
+
+/* ===== МОБИЛЬНАЯ ТАБЛИЦА H2H ===== */
+
+/* ===== МОБИЛЬНАЯ ТАБЛИЦА H2H ===== */
+
+@media (max-width: 640px) {
+    .h2h-stage-header {
+        display: grid;
+        grid-template-columns: 1fr 60px 60px 60px 60px;
+        align-items: center;
+        gap: 8px;
+        padding: 0 0 10px;
+        margin-bottom: 6px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .h2h-stage-row {
+        display: grid;
+        grid-template-columns: 1fr 60px 60px 60px 60px;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .h2h-header-stage {
+        font-size: 0.65rem;
+        text-align: left;
+    }
+
+    .h2h-header-col {
+        font-size: 0.6rem;
+        text-align: center;
+        letter-spacing: 0;
+    }
+
+    .h2h-stage-label {
+        font-size: 0.85rem;
+        text-align: left;
+    }
+
+    .h2h-stage-col {
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .h2h-diff {
+        font-size: 0.85rem;
+        text-align: center;
+    }
+}

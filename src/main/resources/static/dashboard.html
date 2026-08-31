@@ -164,7 +164,6 @@
     <div id="comparePage" class="hidden flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
         <div class="max-w-5xl mx-auto">
             <div class="compare-header">
-<!--                <h1 class="compare-title">HEAD TO HEAD</h1>-->
                 <h1 class="compare-title" data-text="HEAD TO HEAD">HEAD TO HEAD</h1>
                 <div class="compare-actions">
                     <button class="period-toggle" onclick="toggleSettingsSheet()">
@@ -186,7 +185,14 @@
                 <div class="card-spacer"></div>
                 <div id="rightCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p></div>
             </div>
-<!--            <div id="compareSubBlock"></div>-->
+
+            <div class="flex justify-center my-4" id="h2hCompareBtnWrapper" style="display: none;">
+                <button onclick="compareH2H()" id="h2hCompareBtn" class="h2h-compare-btn">
+                    Сравнить
+                </button>
+            </div>
+
+            <div id="h2hResult" class="hidden mt-4"></div>
         </div>
     </div>
 
