@@ -83,3 +83,42 @@ body {
 .burger-btn:active {
     transform: scale(0.95);
 }
+/* ===== ЕДИНЫЙ СТИЛЬ ЗАГОЛОВКОВ ===== */
+
+/* ===== ЕДИНЫЙ СТИЛЬ ЗАГОЛОВКОВ ===== */
+
+.compare-title,
+.action-title-3d {
+    font-size: 24px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #6366f1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+    text-shadow: none;
+    position: relative;
+    display: inline-block;
+    line-height: 1.1;
+}
+
+.compare-title::after,
+.action-title-3d::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #6366f1, #a5b4fc, transparent);
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+@media (min-width: 768px) {
+    .compare-title,
+    .action-title-3d {
+        font-size: 32px;
+        letter-spacing: -1.5px;
+    }
+}

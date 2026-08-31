@@ -49,12 +49,18 @@ function showAction(action) {
     actionPage.style.opacity = '1';
 
     if (action === 'halls') {
-        title.innerHTML = 'Расписание турниров' + burgerBtn;
+        title.innerHTML = `
+    <h2 class="action-title-3d" data-text="Расписание турниров">Расписание турниров</h2>
+    ${burgerBtn}
+`;
 
         fetch('/api/player/halls', { credentials: 'same-origin' })
             .then(r => { if (r.status === 402) { content.innerHTML = subBlockHtml(); return; } loadHallsContent(); });
     } else if (action === 'sum') {
-        title.innerHTML = 'Сумма за период' + burgerBtn;
+        title.innerHTML = `
+    <h2 class="action-title-3d" data-text="Сумма за период">Сумма за период</h2>
+    ${burgerBtn}
+`;
 
         state.currentSumPage = 0;
 
