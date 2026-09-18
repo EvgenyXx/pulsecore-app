@@ -13,9 +13,9 @@ export function initStars() {
     let stars = [];
     let bgRgb = '12,12,24'; // fallback
 
-    const STAR_COUNT = 400;
+    const STAR_COUNT = 300;
     const MAX_DEPTH = 1000;
-    const SPEED = 3;
+    const SPEED = 1;
     const FOV = 300;
 
     const cosmicThemes = ['dark', 'ocean', 'aurora', 'neon'];

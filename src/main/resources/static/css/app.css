@@ -303,9 +303,9 @@ body {
 /* ===== Ocean Theme (Северное сияние) ===== */
 [data-theme="ocean"] {
     --bg: #0a1628;
-    --accent: #06b6d4;
-    --accent-light: #22d3ee;
-    --accent-dim: #0891b2;
+    --accent: #2ee5f5;
+    --accent-light: #8af0ff;
+    --accent-dim: #22d3ee;
 }
 [data-theme="ocean"] body { background: #060d1a; color: #cbd5e1; }
 [data-theme="ocean"] .bg-mesh {

@@ -269,7 +269,6 @@ async function init() {
             document.getElementById('nav-admin')?.classList.remove('hidden');
             document.getElementById('mobile-nav-admin')?.classList.remove('hidden');
         }
-        document.getElementById('playerName').textContent = capitalizeName(data.name);
 
         if (data.theme) {
             document.documentElement.setAttribute('data-theme', data.theme);
