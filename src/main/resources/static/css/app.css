@@ -442,51 +442,6 @@ body {
 
 @keyframes nebulaBreathe { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:.8;transform:scale(1.05)} }
 
-/* ===== Звёздное небо ===== */
-.star-layer-1::before,
-.star-layer-2::before,
-.star-layer-3::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: white;
-    clip-path: polygon(
-            50% 0%, 53% 30%, 88% 34%,
-            60% 50%, 70% 84%,
-            50% 63%, 30% 84%,
-            40% 50%, 12% 34%, 47% 30%
-    );
-}
-.star-layer-1::after,
-.star-layer-2::after,
-.star-layer-3::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 22%; height: 22%;
-    background: white;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 2px 1px rgba(255,255,255,0.7);
-}
-
-.star-layer-1, .star-layer-2, .star-layer-3 {
-    pointer-events: none;
-    opacity: 0.8;
-}
-
-/* Дрейф вправо */
-@keyframes driftHorizontal {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(var(--drift)); }
-}
-
-/* Дрейф туманностей */
-@keyframes nebulaDrift {
-    0%, 100% { transform: translate(0, 0); opacity: 0.4; }
-    50% { transform: translate(20px, -15px); opacity: 0.8; }
-}
-
 /* Дрейф песка */
 @keyframes sandDrift {
     0% { transform: translate(0, 0); opacity: 0; }
@@ -581,11 +536,6 @@ body {
     height: 100% !important;
     overflow: hidden;
     pointer-events: none;
-}
-
-#starsContainer > div {
-    position: absolute;
-    background: #fff !important;
 }
 
 /* Матчи турнира */
