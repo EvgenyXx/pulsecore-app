@@ -15,6 +15,8 @@
     <meta name="apple-mobile-web-app-title" content="PulseCore">
     <link rel="icon" type="image/png" href="/img.png">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/bottom-tab.css">
+    <link rel="stylesheet" href="/css/more-hub.css">
     <link rel="stylesheet" href="/css/dashboard/top.css">
     <link rel="stylesheet" href="/css/dashboard/top-period.css">
     <link rel="stylesheet" href="/css/dashboard/top-league.css">
@@ -120,7 +122,55 @@
             <div id="actionContent"></div>
         </div>
 
-        <!-- Live Page -->
+        <!-- ===== More (Прочее) ===== -->
+        <div id="morePage" class="hidden">
+            <div class="more-hub-header">
+                <h1 class="more-hub-title">Прочее</h1>
+                <p class="more-hub-subtitle">Дополнительные разделы</p>
+            </div>
+
+            <div class="more-hub-list">
+                <a href="#" onclick="event.preventDefault();navigate('live')" class="more-hub-card">
+                    <span class="more-hub-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    </span>
+                    <span class="more-hub-text">
+                        <span class="more-hub-card-title">Live</span>
+                        <span class="more-hub-card-desc">Трансляции турниров</span>
+                    </span>
+                    <span class="more-hub-arrow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
+                </a>
+
+                <a href="#" onclick="event.preventDefault();navigate('analytics')" class="more-hub-card">
+                    <span class="more-hub-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </span>
+                    <span class="more-hub-text">
+                        <span class="more-hub-card-title">Аналитика</span>
+                        <span class="more-hub-card-desc">Доход по лигам и месяцам</span>
+                    </span>
+                    <span class="more-hub-arrow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
+                </a>
+
+                <a href="#" onclick="event.preventDefault();navigate('compare')" class="more-hub-card">
+                    <span class="more-hub-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path d="M21 21l-7-7"/><path d="M3 21l7-7"/></svg>
+                    </span>
+                    <span class="more-hub-text">
+                        <span class="more-hub-card-title">H2H / Сравнение</span>
+                        <span class="more-hub-card-desc">Статистика противостояний</span>
+                    </span>
+                    <span class="more-hub-arrow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
+                </a>
+            </div>
+        </div>
+
         <div id="livePage" class="hidden">
             <div class="flex items-center justify-between mb-4">
                 <div></div>
@@ -160,7 +210,6 @@
         </div>
     </div>
 
-    <!-- H2H Page -->
     <div id="comparePage" class="hidden flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
         <div class="max-w-5xl mx-auto">
             <div class="compare-header">
@@ -196,11 +245,10 @@
         </div>
     </div>
 
-    <!-- Live Tournament Page -->
     <div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen">
         <div class="max-w-4xl mx-auto">
             <div class="live-header">
-                <button class="back-btn" onclick="navigate('live')">
+                <button class="back-btn" onclick="navigate('more')">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 <span class="live-badge"><span class="live-dot"></span> LIVE</span>
@@ -255,7 +303,6 @@
         </div>
     </div>
 
-    <!-- Analytics Page -->
     <div id="analyticsPage" class="hidden">
         <div class="analytics-tabs hidden md:flex mb-4">
             <div class="analytics-slider pos-0"></div>
@@ -328,7 +375,6 @@
         </div>
     </div>
 
-    <!-- Analytics Sheet -->
     <div class="tab-sheet-overlay" id="analyticsSheetOverlay" onclick="toggleAnalyticsSheet()">
         <div class="tab-sheet" onclick="event.stopPropagation()">
             <div class="tab-sheet-handle"></div>
@@ -339,7 +385,6 @@
         </div>
     </div>
 
-    <!-- Profile Page -->
     <div id="profilePage" class="hidden">
         <div id="settings-main">
             <div class="flex items-center justify-between mb-6">
@@ -376,6 +421,11 @@
                 <div class="settings-item" onclick="showSettingsPage('share')">
                     <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
                     <div class="flex-1"><div class="font-medium text-sm">Поделиться</div><div class="text-xs text-zinc-500">QR-код приложения</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                </div>
+                <div class="settings-item hidden" id="nav-admin-item" onclick="window.location.href='/admin'">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Админка</div><div class="text-xs text-zinc-500">Управление</div></div>
                     <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                 </div>
             </div>
@@ -508,7 +558,6 @@
     </div>
 </main>
 
-<!-- H2H Settings Sheet -->
 <div class="period-sheet-overlay" id="settingsSheetOverlay" onclick="toggleSettingsSheet()">
     <div class="period-sheet" onclick="event.stopPropagation()">
         <div class="period-sheet-handle"></div>
@@ -540,7 +589,6 @@
     </div>
 </div>
 
-<!-- Шторка заказных отчётов -->
 <div class="report-backdrop" id="reportBackdrop" onclick="closeScheduledReports()"></div>
 <div class="report-dropdown" id="reportDropdown">
     <div class="report-dropdown-handle"></div>
@@ -551,9 +599,11 @@
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
     import { initSidebar } from '/js/sidebar.js';
+    import { initBottomTab } from '/js/modules/bottom-tab.js';
     initBurgerMenu();
     initRoleCheck();
     initSidebar('home');
+    initBottomTab('home');
 </script>
 
 <script type="module" src="/js/app.js"></script>

@@ -1,0 +1,151 @@
+/* ===== Bottom Tab Navigation (PWA / Mobile) ===== */
+.bottom-tab {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(12, 12, 24, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    z-index: 50;
+    box-sizing: content-box;
+}
+
+/* Скрываем на десктопе */
+@media (min-width: 768px) {
+    .bottom-tab { display: none !important; }
+}
+
+/* Отступ для контента, чтобы панель не перекрывала */
+body.has-bottom-tab {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+    body.has-bottom-tab { padding-bottom: 0; }
+}
+
+.bottom-tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: #71717a;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 0;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.2s ease;
+}
+
+.bottom-tab-item.active {
+    color: var(--accent-light, #818cf8);
+}
+
+.bottom-tab-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bottom-tab-item.active .bottom-tab-icon {
+    transform: translateY(-1px) scale(1.08);
+}
+
+.bottom-tab-label {
+    line-height: 1;
+    letter-spacing: 0.1px;
+}
+
+/* Анимация иконки при клике */
+.bottom-tab-icon.icon-anim {
+    animation: tabIconPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tabIconPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(0.82); }
+    70%  { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* Ripple-эффект */
+.bottom-tab-ripple {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(129, 140, 248, 0.35);
+    transform: translate(-50%, -50%) scale(0);
+    animation: tabRipple 0.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes tabRipple {
+    to {
+        transform: translate(-50%, -50%) scale(14);
+        opacity: 0;
+    }
+}
+
+/* Тёмная тема (Cosmic) — уже дефолт */
+[data-theme="dark"] .bottom-tab {
+    background: rgba(12, 12, 24, 0.92);
+}
+[data-theme="dark"] .bottom-tab-item.active {
+    color: #818cf8;
+}
+
+/* Ocean */
+[data-theme="ocean"] .bottom-tab {
+    background: rgba(6, 13, 26, 0.92);
+    border-top-color: rgba(6, 182, 212, 0.1);
+}
+[data-theme="ocean"] .bottom-tab-item { color: #94a3b8; }
+[data-theme="ocean"] .bottom-tab-item.active { color: #22d3ee; }
+[data-theme="ocean"] .bottom-tab-ripple { background: rgba(34, 211, 238, 0.3); }
+
+/* Mars */
+[data-theme="mars"] .bottom-tab {
+    background: rgba(26, 15, 10, 0.92);
+    border-top-color: rgba(245, 158, 11, 0.1);
+}
+[data-theme="mars"] .bottom-tab-item { color: #a09480; }
+[data-theme="mars"] .bottom-tab-item.active { color: #fbbf24; }
+[data-theme="mars"] .bottom-tab-ripple { background: rgba(251, 191, 36, 0.3); }
+
+/* Aurora */
+[data-theme="aurora"] .bottom-tab {
+    background: rgba(4, 20, 15, 0.92);
+    border-top-color: rgba(16, 185, 129, 0.1);
+}
+[data-theme="aurora"] .bottom-tab-item { color: #6ee7b7; }
+[data-theme="aurora"] .bottom-tab-item.active { color: #34d399; }
+[data-theme="aurora"] .bottom-tab-ripple { background: rgba(52, 211, 153, 0.3); }
+
+/* Neon */
+[data-theme="neon"] .bottom-tab {
+    background: rgba(10, 0, 20, 0.92);
+    border-top-color: rgba(240, 171, 252, 0.12);
+}
+[data-theme="neon"] .bottom-tab-item { color: #e9d5ff; }
+[data-theme="neon"] .bottom-tab-item.active { color: #f0abfc; }
+[data-theme="neon"] .bottom-tab-ripple { background: rgba(240, 171, 252, 0.3); }
