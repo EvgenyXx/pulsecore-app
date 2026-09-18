@@ -78,7 +78,6 @@
     </div>
 </div>
 
-<div id="burgerMenuContainer"></div>
 <div id="sidebarContainer"></div>
 
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10">
@@ -91,9 +90,6 @@
                         <span id="proBadge" class="pro-badge hidden"><span class="pro-diamond">💎</span>PRO</span>
                         <span id="reportBadge"></span>
                     </div>
-                    <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
                 </div>
                 <p class="text-zinc-400 mt-1 text-xs sm:text-sm" id="subStatusText"></p>
                 <div id="pushToggleContainer" class="hidden mt-2 flex items-center gap-2">
@@ -172,12 +168,6 @@
         </div>
 
         <div id="livePage" class="hidden">
-            <div class="flex items-center justify-between mb-4">
-                <div></div>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
-            </div>
             <div class="text-center pt-4 pb-6">
                 <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-500/10">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
@@ -219,9 +209,6 @@
                         <span id="settingsLabel">Настройки</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
-                    <button class="burger-btn md:hidden" onclick="window.toggleMobileMenu()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
                 </div>
             </div>
             <div class="wheels-row" id="wheelsRow">
@@ -255,9 +242,6 @@
                 <span class="league-title" id="leagueTitle">Загрузка...</span>
                 <span class="online-count" id="onlineCount"></span>
                 <span class="tournament-info" id="tournamentInfo"></span>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white ml-auto">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
 
             <div class="players-row" id="playersList"></div>
@@ -314,12 +298,7 @@
 
         <div class="flex items-center justify-between mb-4 md:hidden">
             <h2 class="action-title-3d" data-text="Аналитика">Аналитика</h2>
-            <div class="flex items-center gap-2">
-                <button onclick="toggleAnalyticsSheet()" class="tabs-btn">Меню ▴</button>
-                <button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
-            </div>
+            <button onclick="toggleAnalyticsSheet()" class="tabs-btn">Меню ▴</button>
         </div>
 
         <div id="analyticsLoading"></div>
@@ -392,9 +371,6 @@
                     <h2 class="text-lg font-bold text-white">Настройки</h2>
                     <p class="text-xs text-zinc-500 mt-1"><span id="profileName">Загрузка...</span> · <span id="createdAt">—</span></p>
                 </div>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
 
             <div class="space-y-1">
@@ -445,9 +421,6 @@
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Аккаунт</h3>
             <div class="widget-card rounded-2xl p-4 mb-3">
@@ -483,9 +456,6 @@
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Подписка</h3>
             <div class="widget-card rounded-2xl p-4 mb-3 text-center">
@@ -499,9 +469,6 @@
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Оформление</h3>
             <p class="text-sm text-zinc-400 mb-4">Выберите тему оформления</p>
@@ -512,9 +479,6 @@
             <div class="flex items-center justify-between mb-5">
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Безопасность</h3>
@@ -544,9 +508,6 @@
             <div class="flex items-center justify-between mb-5">
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Поделиться приложением</h3>
@@ -596,11 +557,9 @@
 </div>
 
 <script type="module">
-    import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
     import { initSidebar } from '/js/sidebar.js';
     import { initBottomTab } from '/js/modules/bottom-tab.js';
-    initBurgerMenu();
     initRoleCheck();
     initSidebar('home');
     initBottomTab('home');

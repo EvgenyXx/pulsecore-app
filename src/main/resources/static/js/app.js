@@ -38,9 +38,6 @@ function showAction(action) {
     const actionPage = document.getElementById('actionPage');
     const content = document.getElementById('actionContent');
     const title = document.getElementById('actionTitle');
-    const burgerBtn = `<button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white ml-auto">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>`;
 
     highlightNav('nav-' + action);
 
@@ -51,7 +48,6 @@ function showAction(action) {
     if (action === 'halls') {
         title.innerHTML = `
     <h2 class="action-title-3d" data-text="Расписание турниров">Расписание турниров</h2>
-    ${burgerBtn}
 `;
 
         fetch('/api/player/halls', { credentials: 'same-origin' })
@@ -59,7 +55,6 @@ function showAction(action) {
     } else if (action === 'sum') {
         title.innerHTML = `
     <h2 class="action-title-3d" data-text="Сумма за период">Сумма за период</h2>
-    ${burgerBtn}
 `;
 
         state.currentSumPage = 0;
@@ -265,19 +260,5 @@ let ptrStart = 0, ptrTriggered = false;
 document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientX; ptrTriggered = false; } }, { passive: true });
 document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientX - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, { passive: true });
 document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeek(null); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => ptr.classList.remove('active', 'done'), 1200); }, 500); } ptrStart = 0; });
-
-window.toggleMobileMenu = function() {
-    const menu = document.getElementById('mobileMenu'), overlay = document.getElementById('mobileMenuOverlay');
-    if (menu.classList.contains('translate-x-0')) { menu.classList.remove('translate-x-0'); menu.classList.add('translate-x-full'); overlay.classList.add('hidden'); }
-    else { menu.classList.remove('translate-x-full'); menu.classList.add('translate-x-0'); overlay.classList.remove('hidden'); }
-};
-window.mobileNav = function(action, el) {
-    toggleMobileMenu();
-    document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('bg-indigo-500/10','border-indigo-500/20'));
-    el.classList.add('bg-indigo-500/10','border-indigo-500/20');
-    if (action === 'home') window.location.hash = '#/';
-    else if (action === 'halls') window.location.hash = '#/halls';
-    else if (action === 'sum') window.location.hash = '#/sum';
-};
 
 document.addEventListener('DOMContentLoaded', init);
