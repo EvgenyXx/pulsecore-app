@@ -68,7 +68,7 @@ public class ChatService {
                     originalMsg.getPlayerId(),
                     "Новый ответ",
                     replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
-                    "/live/" + originalMsg.getLineupId()
+                    "/dashboard#/live/" + originalMsg.getLineupId()
             );
         } catch (Exception e) {
             log.warn("Не удалось отправить push за ответ: {}", e.getMessage());

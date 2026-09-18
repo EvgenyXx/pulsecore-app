@@ -193,21 +193,57 @@ async function togglePush() {
 window.togglePush = togglePush;
 
 async function enablePushNotifications() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) { alert('Браузер не поддерживает push'); return false; }
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        alert('Браузер не поддерживает push-уведомления');
+        return false;
+    }
+
+    // ✅ ЭТОГО НЕ ХВАТАЛО — ЗАПРОС РАЗРЕШЕНИЯ
+    if (Notification.permission === 'denied') {
+        alert('Уведомления запрещены. Разрешите их в настройках браузера для этого сайта.');
+        return false;
+    }
+
+    if (Notification.permission !== 'granted') {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            return false;
+        }
+    }
+
     try {
         const reg = await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.ready;
+
         const vapidKey = await API.getVapidKey();
-        const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8Array(vapidKey) });
-        await API.subscribePush({ endpoint: sub.endpoint, p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))), auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')))) });
+        const sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlB64ToUint8Array(vapidKey)
+        });
+
+        // ✅ Убираем expirationTime — бэк его не ждёт
+        const subJson = sub.toJSON();
+        await API.subscribePush({
+            endpoint: subJson.endpoint,
+            p256dh: subJson.keys.p256dh,
+            auth: subJson.keys.auth
+        });
+
         return true;
-    } catch(e) { console.error(e); return false; }
+    } catch(e) {
+        console.error('Push subscribe error:', e);
+        return false;
+    }
 }
 
 async function disablePushNotifications() {
     try {
         const reg = await navigator.serviceWorker.ready;
         const sub = await reg.pushManager.getSubscription();
-        if (sub) { await sub.unsubscribe(); await API.unsubscribePush({ endpoint: sub.endpoint }); }
+        if (sub) {
+            await sub.unsubscribe();
+            await API.unsubscribePush({ endpoint: sub.endpoint });
+        }
     } catch(e) {}
 }
 

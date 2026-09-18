@@ -49,7 +49,7 @@ public class ChatMentionService {
                         playerId,
                         "💬 " + msg.getPlayerName(),
                         msg.getMessage(),
-                        "/live/" + lineupId
+                        "/dashboard#/live/" + lineupId
                 );
                 log.info("Push-уведомление отправлено игроку {} за упоминание в чате {}", playerId, lineupId);
             } catch (Exception e) {
