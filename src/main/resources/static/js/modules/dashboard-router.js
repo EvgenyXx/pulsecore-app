@@ -6,6 +6,10 @@ export function initDashboardRouter() {
             const el = document.getElementById(id);
             if (el) { el.classList.add('hidden'); el.style.display = 'none'; }
         });
+
+        // Прячем HTML-тултип графика при переходе между разделами
+        const chartTip = document.getElementById('chartjs-tooltip');
+        if (chartTip) chartTip.style.opacity = 0;
     }
 
     function showHome() {

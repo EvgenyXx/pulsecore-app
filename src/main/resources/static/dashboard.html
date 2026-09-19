@@ -109,7 +109,7 @@
             <div id="dashboardWidgets" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
         </div>
 
-        <div id="actionPage" class="hidden content-panel">
+        <div id="actionPage" class="hidden content-panel" style="display: none;">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white" id="actionTitle"></h2>
                 <p class="text-zinc-400 mt-1.5 text-sm" id="actionSubtitle"></p>
@@ -118,7 +118,7 @@
         </div>
 
         <!-- ===== More (Прочее) ===== -->
-        <div id="morePage" class="hidden">
+        <div id="morePage" class="hidden" style="display: none;">
             <div class="more-hub-header">
                 <h1 class="more-hub-title">Прочее</h1>
                 <p class="more-hub-subtitle">Дополнительные разделы</p>
@@ -166,7 +166,7 @@
             </div>
         </div>
 
-        <div id="livePage" class="hidden">
+        <div id="livePage" class="hidden" style="display: none;">
             <div class="text-center pt-4 pb-6">
                 <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-500/10">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
@@ -199,7 +199,7 @@
         </div>
     </div>
 
-    <div id="comparePage" class="hidden flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
+    <div id="comparePage" class="hidden flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10" style="display: none;">
         <div class="max-w-5xl mx-auto">
             <div class="compare-header">
                 <h1 class="compare-title" data-text="HEAD TO HEAD">HEAD TO HEAD</h1>
@@ -233,7 +233,7 @@
         </div>
     </div>
 
-    <div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen">
+    <div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen" style="display: none;">
         <div class="max-w-4xl mx-auto">
             <div class="live-header">
                 <button class="back-btn" onclick="navigate('more')">
@@ -288,7 +288,7 @@
         </div>
     </div>
 
-    <div id="analyticsPage" class="hidden">
+    <div id="analyticsPage" class="hidden" style="display: none;">
         <div class="analytics-tabs hidden md:flex mb-4">
             <div class="analytics-slider pos-0"></div>
             <button class="analytics-tab active" id="nav-league" onclick="switchTab('league')">Средняя по лигам</button>
@@ -361,7 +361,7 @@
         </div>
     </div>
 
-    <div id="profilePage" class="hidden">
+    <div id="profilePage" class="hidden" style="display: none;">
         <div id="settings-main">
             <div class="flex items-center justify-between mb-6">
                 <div>
@@ -516,7 +516,6 @@
     </div>
 </main>
 
-<!-- Шторка табов аналитики — вынесена из main, чтобы выходила поверх навигации -->
 <div class="tab-sheet-overlay" id="analyticsSheetOverlay" onclick="toggleAnalyticsSheet()">
     <div class="tab-sheet" onclick="event.stopPropagation()">
         <div class="tab-sheet-handle"></div>

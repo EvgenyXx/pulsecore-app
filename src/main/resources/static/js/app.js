@@ -22,7 +22,45 @@ window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 window.toggleTheme = toggleTheme;
 
-document.body.insertAdjacentHTML('afterbegin', '<div id="appLoader" style="position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;"><div class="spinner"></div></div>');
+// Красивый лоадер
+document.body.insertAdjacentHTML('afterbegin', `
+    <div id="appLoader" style="
+        position:fixed;inset:0;z-index:9999;
+        background: radial-gradient(ellipse at center, #0c0c18 0%, #060610 100%);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        transition: opacity 0.4s ease;
+        opacity: 1;
+    ">
+        <div style="
+            position:relative;
+            width:64px;height:64px;
+            margin-bottom:22px;
+        ">
+            <div style="
+                position:absolute;inset:0;
+                border:3px solid rgba(99,102,241,0.12);
+                border-radius:50%;
+            "></div>
+            <div style="
+                position:absolute;inset:0;
+                border:3px solid transparent;
+                border-top-color:#818cf8;
+                border-radius:50%;
+                animation: appSpin 0.9s linear infinite;
+                filter: drop-shadow(0 0 8px rgba(129,140,248,0.5));
+            "></div>
+        </div>
+        <div style="
+            font-family:'Inter',sans-serif;
+            font-size:15px;
+            font-weight:600;
+            color:#818cf8;
+            letter-spacing:1.5px;
+            opacity:0.85;
+        ">PULSECORE</div>
+        <style>@keyframes appSpin{to{transform:rotate(360deg)}}</style>
+    </div>
+`);
 
 const subBlockHtml = () => `<div class="apple-card p-8 text-center" style="animation: fadeIn 0.2s ease">
     <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
@@ -198,7 +236,6 @@ async function enablePushNotifications() {
         return false;
     }
 
-    // ✅ ЭТОГО НЕ ХВАТАЛО — ЗАПРОС РАЗРЕШЕНИЯ
     if (Notification.permission === 'denied') {
         alert('Уведомления запрещены. Разрешите их в настройках браузера для этого сайта.');
         return false;
@@ -221,7 +258,6 @@ async function enablePushNotifications() {
             applicationServerKey: urlB64ToUint8Array(vapidKey)
         });
 
-        // ✅ Убираем expirationTime — бэк его не ждёт
         const subJson = sub.toJSON();
         await API.subscribePush({
             endpoint: subJson.endpoint,
@@ -256,6 +292,13 @@ function urlB64ToUint8Array(base64String) {
     return outputArray;
 }
 
+function hideLoader() {
+    const loader = document.getElementById('appLoader');
+    if (!loader) return;
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 400);
+}
+
 async function init() {
     try {
         const res = await fetch('/api/player/me', { credentials: 'same-origin' });
@@ -279,7 +322,6 @@ async function init() {
         loadTopWeek(null);
         loadSelectedHalls();
 
-        // Подключаем роутер
         const { initDashboardRouter } = await import('./modules/dashboard-router.js');
         initDashboardRouter();
 
@@ -287,7 +329,7 @@ async function init() {
     } catch (e) {
         console.error('Init error:', e);
     } finally {
-        document.getElementById('appLoader')?.remove();
+        hideLoader();
     }
 }
 
