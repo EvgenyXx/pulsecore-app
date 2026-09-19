@@ -263,6 +263,7 @@ async function init() {
         const data = await res.json();
 
         state.playerId = data.id;
+        state.playerName = data.name || '';
         state.isAdmin = data.admin || false;
 
         if (data.admin) {

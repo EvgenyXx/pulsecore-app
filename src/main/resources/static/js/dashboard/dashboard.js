@@ -1,10 +1,10 @@
 import { API } from '../core/api.js';
 import { state } from '../core/state.js';
 import { formatMoney, formatDateShort, capitalizeName } from '../core/utils.js';
+import { checkSubscription } from '../modules/subscription-block.js';
 
 let dashboardLoaded = false;
 
-// Раскрытие матчей турнира в стиле Apple
 window.toggleTournamentMatches = async function(resultId, el) {
     const container = el.querySelector('.matches-container');
     if (!container) return;
@@ -80,7 +80,6 @@ function getStageLabel(stage) {
     }
 }
 
-// Загрузка бейджа отчётов
 async function loadReportBadge() {
     try {
         const res = await fetch('/api/tournament/reports/pending', { credentials: 'same-origin' });
@@ -110,7 +109,18 @@ export async function loadDashboardWidgets() {
         const data = await API.getDashboard(state.playerId);
         state.primaryLeague = data.primaryLeague || 'A';
 
-        document.getElementById('proBadge').classList.remove('hidden');
+        // Сохраняем имя игрока в state (для подсветки в зале славы)
+        if (data.playerName) {
+            state.playerName = data.playerName;
+        }
+
+        // Бейдж PRO — только если подписка активна
+        const hasSub = await checkSubscription();
+        const proBadge = document.getElementById('proBadge');
+        if (proBadge && hasSub) {
+            proBadge.classList.remove('hidden');
+        }
+
         document.getElementById('pushToggleContainer')?.classList.remove('hidden');
         if (typeof checkPushStatus === 'function') checkPushStatus();
         if (typeof loadOnlineCount === 'function') loadOnlineCount();
