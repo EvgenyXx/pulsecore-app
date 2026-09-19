@@ -204,9 +204,11 @@
             <div class="compare-header">
                 <h1 class="compare-title" data-text="HEAD TO HEAD">HEAD TO HEAD</h1>
                 <div class="compare-actions">
-                    <button class="period-toggle" onclick="toggleSettingsSheet()">
-                        <span id="settingsLabel">Настройки</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    <button class="period-toggle" onclick="toggleSettingsSheet()" aria-label="Настройки сравнения">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -297,7 +299,13 @@
 
         <div class="flex items-center justify-between mb-4 md:hidden">
             <h2 class="action-title-3d" data-text="Аналитика">Аналитика</h2>
-            <button onclick="toggleAnalyticsSheet()" class="tabs-btn">Меню ▴</button>
+            <button onclick="toggleAnalyticsSheet()" class="tabs-btn" aria-label="Разделы аналитики">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="4" y1="7" x2="20" y2="7"/>
+                    <line x1="4" y1="12" x2="20" y2="12"/>
+                    <line x1="4" y1="17" x2="20" y2="17"/>
+                </svg>
+            </button>
         </div>
 
         <div id="analyticsLoading"></div>
@@ -313,7 +321,7 @@
         <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
             <h2 class="text-xl font-extrabold text-white mb-4">Доход по месяцам</h2>
             <div class="flex items-center gap-2 mb-5"><span class="text-zinc-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-zinc-400 text-sm">год</span></div>
-            <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+            <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap scrollable" id="monthlyChartWrap"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
             <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill"><span class="text-zinc-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
             <p class="swipe-hint">← листай влево/вправо →</p>
         </div>
@@ -325,7 +333,7 @@
                 <span class="daily-month-title" id="dailyMonthLabel">Июнь 2026</span>
                 <button onclick="nextDailyMonth()" class="nav-arrows-desktop" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;">▸</button>
             </div>
-            <div class="chart-card"><div class="chart-wrap"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+            <div class="chart-card"><div class="chart-wrap scrollable" id="dailyChartWrap"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
             <div class="daily-stats-row">
                 <div class="daily-stat"><div class="daily-stat-value" id="dailyTotal">0 ₽</div><div class="daily-stat-label">За месяц</div></div>
                 <div class="daily-stat"><div class="daily-stat-value" id="dailyAvg">0 ₽</div><div class="daily-stat-label">В день</div></div>
@@ -350,16 +358,6 @@
             <div class="chart-card"><div class="chart-wrap"><canvas id="bestTimeChart"></canvas></div>
                 <table class="best-time-table"><thead><tr><th>Время</th><th>Игр</th><th>Средний</th><th>Всего</th></tr></thead><tbody id="bestTimeTableBody"></tbody></table>
             </div>
-        </div>
-    </div>
-
-    <div class="tab-sheet-overlay" id="analyticsSheetOverlay" onclick="toggleAnalyticsSheet()">
-        <div class="tab-sheet" onclick="event.stopPropagation()">
-            <div class="tab-sheet-handle"></div>
-            <button class="tab-sheet-btn active" id="sheet-league" onclick="switchTab('league');toggleAnalyticsSheet()">Средняя по лигам</button>
-            <button class="tab-sheet-btn" id="sheet-monthly" onclick="switchTab('monthly');toggleAnalyticsSheet()">Доход по месяцам</button>
-            <button class="tab-sheet-btn" id="sheet-daily" onclick="switchTab('daily');toggleAnalyticsSheet()">Доход по дням</button>
-            <button class="tab-sheet-btn" id="sheet-best-time" onclick="switchTab('best-time');toggleAnalyticsSheet()">Лучшее время</button>
         </div>
     </div>
 
@@ -517,6 +515,17 @@
         </div>
     </div>
 </main>
+
+<!-- Шторка табов аналитики — вынесена из main, чтобы выходила поверх навигации -->
+<div class="tab-sheet-overlay" id="analyticsSheetOverlay" onclick="toggleAnalyticsSheet()">
+    <div class="tab-sheet" onclick="event.stopPropagation()">
+        <div class="tab-sheet-handle"></div>
+        <button class="tab-sheet-btn active" id="sheet-league" onclick="switchTab('league');toggleAnalyticsSheet()">Средняя по лигам</button>
+        <button class="tab-sheet-btn" id="sheet-monthly" onclick="switchTab('monthly');toggleAnalyticsSheet()">Доход по месяцам</button>
+        <button class="tab-sheet-btn" id="sheet-daily" onclick="switchTab('daily');toggleAnalyticsSheet()">Доход по дням</button>
+        <button class="tab-sheet-btn" id="sheet-best-time" onclick="switchTab('best-time');toggleAnalyticsSheet()">Лучшее время</button>
+    </div>
+</div>
 
 <div class="period-sheet-overlay" id="settingsSheetOverlay" onclick="toggleSettingsSheet()">
     <div class="period-sheet" onclick="event.stopPropagation()">

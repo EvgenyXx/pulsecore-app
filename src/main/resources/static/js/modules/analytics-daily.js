@@ -1,5 +1,6 @@
 import { AnalyticsAPI } from '../core/analytics-api.js';
 import { formatMoney } from '../core/utils.js';
+import { externalTooltipHandler } from './chart-tooltip.js';
 
 let dailyChart = null;
 export let dailyYear, dailyMonth;
@@ -10,73 +11,149 @@ export function updateDailyLabel() { document.getElementById('dailyMonthLabel').
 export function prevDailyMonth() { dailyMonth--; if (dailyMonth < 1) { dailyMonth = 12; dailyYear--; } updateDailyLabel(); loadDaily(); }
 export function nextDailyMonth() { dailyMonth++; if (dailyMonth > 12) { dailyMonth = 1; dailyYear++; } updateDailyLabel(); loadDaily(); }
 
+// Плагин свечения
+const glowPlugin = {
+    id: 'dailyGlow',
+    beforeDatasetsDraw(chart) {
+        const { ctx } = chart;
+        ctx.save();
+        ctx.shadowColor = 'rgba(129, 140, 248, 0.55)';
+        ctx.shadowBlur = 24;
+    },
+    afterDatasetsDraw(chart) {
+        chart.ctx.restore();
+    }
+};
+
+// Плагин crosshair
+const crosshairPlugin = {
+    id: 'dailyCrosshair',
+    afterDatasetsDraw(chart) {
+        if (chart.tooltip?._active?.length) {
+            const x = chart.tooltip._active[0].element.x;
+            const { top, bottom } = chart.chartArea;
+            const ctx = chart.ctx;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x, top);
+            ctx.lineTo(x, bottom);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(165, 180, 252, 0.35)';
+            ctx.setLineDash([4, 4]);
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+};
+
 export function buildDailyChart(data) {
     if (!data?.days?.length) return;
     if (dailyChart) dailyChart.destroy();
 
-    const ctx = document.getElementById('dailyChart').getContext('2d');
+    const canvas = document.getElementById('dailyChart');
+    const wrap = document.getElementById('dailyChartWrap');
+    const ctx = canvas.getContext('2d');
     const labels = data.days.map(d => d.day);
     const values = data.days.map(d => Math.round(d.total));
+    const counts = data.days.map(d => d.count);
     const isMobile = window.innerWidth < 768;
 
-    const bgGradients = values.map(v => {
-        const grad = ctx.createLinearGradient(0, 0, 0, 350);
-        if (v > 0) {
-            grad.addColorStop(0, '#818cf8');
-            grad.addColorStop(1, '#4f46e5');
-        } else {
-            grad.addColorStop(0, 'rgba(255,255,255,0.03)');
-            grad.addColorStop(1, 'rgba(255,255,255,0.01)');
-        }
-        return grad;
-    });
+    // Ширина canvas = 40px на день (мобилка) / 50px (десктоп)
+    const pxPerDay = isMobile ? 40 : 50;
+    const canvasWidth = Math.max(labels.length * pxPerDay, wrap.clientWidth);
+
+    canvas.style.width = canvasWidth + 'px';
+    canvas.style.height = '100%';
+    canvas.width = canvasWidth;
+    canvas.height = wrap.clientHeight;
+
+    // Градиент под линией
+    const areaGrad = ctx.createLinearGradient(0, 0, 0, 380);
+    areaGrad.addColorStop(0, 'rgba(129, 140, 248, 0.45)');
+    areaGrad.addColorStop(0.6, 'rgba(99, 102, 241, 0.12)');
+    areaGrad.addColorStop(1, 'rgba(79, 70, 229, 0)');
 
     dailyChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels,
             datasets: [{
                 data: values,
-                backgroundColor: bgGradients,
-                borderRadius: isMobile ? 4 : 6,
-                borderSkipped: false,
-                barPercentage: isMobile ? 0.9 : 0.8,
-                categoryPercentage: isMobile ? 0.95 : 0.85
+                borderColor: '#a5b4fc',
+                borderWidth: 2.5,
+                fill: true,
+                backgroundColor: areaGrad,
+                tension: 0.4,
+                pointRadius: isMobile ? 3 : 4,
+                pointHoverRadius: isMobile ? 6 : 8,
+                pointBackgroundColor: '#a5b4fc',
+                pointBorderColor: 'rgba(255,255,255,0.9)',
+                pointBorderWidth: 2,
+                pointHoverBackgroundColor: '#c4b5fc',
+                pointHoverBorderColor: '#fff',
+                pointHoverBorderWidth: 3
             }]
         },
         options: {
-            responsive: true,
+            responsive: false,
             maintainAspectRatio: false,
-            animation: { duration: 600, easing: 'easeOutQuart' },
+            animation: { duration: 1200, easing: 'easeOutQuart' },
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#18181b',
-                    titleColor: '#e5e5e5',
-                    bodyColor: '#a5b4fc',
-                    borderColor: 'rgba(165,180,252,0.4)',
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 10,
-                    callbacks: { label: (ctx) => ctx.raw > 0 ? ' ' + formatMoney(ctx.raw) : ' Нет дохода' }
+                    enabled: false,
+                    external: externalTooltipHandler,
+                    callbacks: {
+                        title: (ctx) => `${ctx[0].label} ${monthNames[dailyMonth - 1].toLowerCase()}`,
+                        label: (ctx) => {
+                            const v = ctx.raw;
+                            const c = counts[ctx.dataIndex];
+                            if (v === 0) return 'Нет дохода';
+                            return `${formatMoney(v)} · турниров: ${c}`;
+                        }
+                    }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: Math.max(...values, 1) * 1.3,
+                    max: Math.max(...values, 1) * 1.25,
                     grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false, lineWidth: 1 },
-                    ticks: { color: '#a1a1aa', font: { size: isMobile ? 8 : 10 }, padding: 6, callback: v => formatMoney(v) },
+                    ticks: {
+                        color: '#a1a1aa',
+                        font: { size: isMobile ? 11 : 12 },
+                        padding: 8,
+                        callback: v => formatMoney(v)
+                    },
                     border: { display: false }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#71717a', font: { size: isMobile ? 8 : 10 }, padding: 0, maxRotation: 0, autoSkip: true },
+                    ticks: {
+                        color: '#e5e5e5',
+                        font: { size: isMobile ? 11 : 13, weight: '600' },
+                        padding: 6,
+                        maxRotation: 0,
+                        autoSkip: false
+                    },
                     border: { display: false }
                 }
             }
-        }
+        },
+        plugins: [glowPlugin, crosshairPlugin]
     });
+
+    // Автоскролл к сегодняшнему дню
+    const today = new Date();
+    if (today.getFullYear() === dailyYear && today.getMonth() + 1 === dailyMonth) {
+        const todayX = (today.getDate() - 1) * pxPerDay;
+        wrap.scrollLeft = Math.max(0, todayX - wrap.clientWidth / 2);
+    }
 }
 
 export async function loadDaily() {

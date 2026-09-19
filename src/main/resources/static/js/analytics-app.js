@@ -81,30 +81,8 @@ function updateAnalyticsSheet() {
     }
 }
 
-function initSwipes() {
-    const dA = document.getElementById('dailyChartCard');
-    if (dA) {
-        let sx = 0;
-        dA.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
-        dA.addEventListener('touchend', e => {
-            if (!sx) return;
-            const dx = e.changedTouches[0].clientX - sx;
-            if (Math.abs(dx) > 35) { if (dx > 0) prevDailyMonth(); else nextDailyMonth(); }
-            sx = 0;
-        });
-    }
-    const mA = document.getElementById('monthlyChartCard');
-    if (mA) {
-        let sx = 0;
-        mA.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
-        mA.addEventListener('touchend', e => {
-            if (!sx) return;
-            const dx = e.changedTouches[0].clientX - sx;
-            if (Math.abs(dx) > 35) { if (dx > 0) prevMonthlyYear(); else nextMonthlyYear(); }
-            sx = 0;
-        });
-    }
-}
+// Свайпы убраны — они конфликтуют со скроллом графиков.
+// Переключение месяца/года — через кнопки ◂ ▸ и селект.
 
 function populateYears() {
     const s = document.getElementById('yearSelect');
@@ -149,7 +127,6 @@ async function init() {
 
         initDailyMonth();
         initMonthlyYear();
-        initSwipes();
         populateYears();
         switchTab('league');
     } catch (e) {
