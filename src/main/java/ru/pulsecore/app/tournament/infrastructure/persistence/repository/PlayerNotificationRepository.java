@@ -31,24 +31,10 @@ public interface PlayerNotificationRepository
 
     boolean existsByPlayerIdAndTournament_ExternalId(UUID playerId, Long externalId);
 
-    void deleteByTournament_FinishedTrueAndTournament_DateBefore(LocalDate date);
-
-    @Query("""
-                SELECT pn
-                FROM PlayerNotification pn
-                JOIN pn.tournament t
-                WHERE t.finished = false
-                  AND t.cancelled = false
-                  AND pn.pushReminderSent = false
-            """)
-    List<PlayerNotification> findPendingWithTournament();
-
-
     @Query("SELECT DISTINCT t.link FROM PlayerNotification pn JOIN pn.tournament t" +
             " WHERE t.started = false AND t.finished = false AND t.cancelled = false AND" +
             " t.date = CURRENT_DATE AND t.time <= :currentTime")
     List<String> findStartingSoonLinks(@Param("currentTime") String currentTime);
-
 
     @Query(value = """
                  select distinct
@@ -63,26 +49,38 @@ public interface PlayerNotificationRepository
             """, nativeQuery = true)
     List<String> findStartedNotFinishedLinks();
 
-
     @Query("SELECT pn FROM PlayerNotification pn JOIN FETCH pn.tournament WHERE pn.tournament.link = :link")
     List<PlayerNotification> findByTournamentLink(@Param("link") String link);
-
 
     @Query("SELECT DISTINCT t.link FROM PlayerNotification pn" +
             " JOIN pn.tournament t WHERE t.started = false AND " +
             "t.cancelled = false AND t.finished = false")
     List<String> findNotStartedForCancelLinks();
 
-
     Optional<PlayerNotification> findByPlayerIdAndTournamentId(UUID playerId, Long tournamentId);
 
     @Query("SELECT pn.playerId FROM PlayerNotification pn WHERE pn.tournament.id = :tournamentId")
     Set<UUID> findPlayerIdsByTournamentId(@Param("tournamentId") Long tournamentId);
 
+    // ==================== ЧАСОВЫЕ ПУШИ (турнир СЕГОДНЯ) ====================
 
-    @Query("SELECT DISTINCT pn.hall FROM PlayerNotification pn WHERE pn.tournament.id = :tournamentId")
-    List<Integer> findHallsByTournamentId(@Param("tournamentId") Long tournamentId);
+    /**
+     * Часовые — все залы (fallback, если у региона нет залов)
+     */
+    @Query("""
+                SELECT pn
+                FROM PlayerNotification pn
+                JOIN pn.tournament t
+                WHERE t.finished = false
+                  AND t.cancelled = false
+                  AND t.date = CURRENT_DATE
+                  AND pn.pushReminderSent = false
+            """)
+    List<PlayerNotification> findPendingHourReminders();
 
+    /**
+     * Часовые — конкретные залы
+     */
     @Query("""
                 SELECT pn
                 FROM PlayerNotification pn
@@ -90,7 +88,39 @@ public interface PlayerNotificationRepository
                 WHERE pn.hall IN :halls
                   AND t.finished = false
                   AND t.cancelled = false
-                  AND (pn.pushReminderSent = false OR pn.pushEveningSent = false)
+                  AND t.date = CURRENT_DATE
+                  AND pn.pushReminderSent = false
             """)
-    List<PlayerNotification> findPendingByHalls(@Param("halls") List<Integer> halls);
+    List<PlayerNotification> findPendingHourRemindersByHalls(@Param("halls") List<Integer> halls);
+
+    // ==================== ВЕЧЕРНИЕ ПУШИ (турнир ЗАВТРА) ====================
+
+    /**
+     * Вечерние — все залы (fallback)
+     */
+    @Query("""
+                SELECT pn
+                FROM PlayerNotification pn
+                JOIN pn.tournament t
+                WHERE t.finished = false
+                  AND t.cancelled = false
+                  AND t.date = :tomorrow
+                  AND pn.pushEveningSent = false
+            """)
+    List<PlayerNotification> findPendingEveningReminders(@Param("tomorrow") LocalDate tomorrow);
+
+    /**
+     * Вечерние — конкретные залы
+     */
+    @Query("""
+                SELECT pn
+                FROM PlayerNotification pn
+                JOIN pn.tournament t
+                WHERE pn.hall IN :halls
+                  AND t.finished = false
+                  AND t.cancelled = false
+                  AND t.date = :tomorrow
+                  AND pn.pushEveningSent = false
+            """)
+    List<PlayerNotification> findPendingEveningRemindersByHalls(@Param("halls") List<Integer> halls, @Param("tomorrow") LocalDate tomorrow);
 }

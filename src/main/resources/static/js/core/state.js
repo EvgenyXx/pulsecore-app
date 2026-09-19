@@ -1,5 +1,6 @@
 export const state = {
     playerId: null,
+    playerName: '',
     isAdmin: false,
     primaryLeague: 'A',
     editingTournamentResultId: null,

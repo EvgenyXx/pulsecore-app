@@ -28,7 +28,11 @@ export const AdminAPI = {
     getPlayerSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/subscription`),
     getPlayerRoles: (playerId) => apiRequest(`/admin/players/${playerId}/roles`),
     deletePlayerTournaments: (playerId) => apiRequest(`/admin/players/${playerId}/tournaments`, { method: 'DELETE' }),
-    resyncPlayerTournaments: (playerId) => apiRequest(`/admin/players/${playerId}/tournaments/resync`, { method: 'POST' }),
+    resyncPlayerTournaments: (playerId, from, to) => apiRequest(`/admin/players/${playerId}/tournaments/resync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from, to })
+    }),
     deletePlayerAccount: (playerId) => apiRequest(`/admin/players/${playerId}`, { method: 'DELETE' }),
     togglePlayerRole: (playerId, role, isGrant) => apiRequest(`/admin/players/${playerId}/roles/${isGrant ? 'grant' : 'revoke'}?role=${role}`, { method: isGrant ? 'POST' : 'DELETE' }),
     giveSubscription: (playerId, days) => apiRequest(`/admin/players/${playerId}/subscribe?days=${days}`, { method: 'POST' }),

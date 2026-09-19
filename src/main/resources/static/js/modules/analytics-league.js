@@ -1,124 +1,157 @@
 import { AnalyticsAPI } from '../core/analytics-api.js';
 import { formatMoney } from '../core/utils.js';
+import { externalTooltipHandler } from './chart-tooltip.js';
 
 let leagueChart = null;
+
+// Плагин свечения
+const glowPlugin = {
+    id: 'leagueGlow',
+    beforeDatasetsDraw(chart) {
+        const { ctx } = chart;
+        ctx.save();
+        ctx.shadowColor = 'rgba(129, 140, 248, 0.55)';
+        ctx.shadowBlur = 24;
+    },
+    afterDatasetsDraw(chart) {
+        chart.ctx.restore();
+    }
+};
+
+// Плагин crosshair
+const crosshairPlugin = {
+    id: 'leagueCrosshair',
+    afterDatasetsDraw(chart) {
+        if (chart.tooltip?._active?.length) {
+            const x = chart.tooltip._active[0].element.x;
+            const { top, bottom } = chart.chartArea;
+            const ctx = chart.ctx;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x, top);
+            ctx.lineTo(x, bottom);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(165, 180, 252, 0.35)';
+            ctx.setLineDash([4, 4]);
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+};
 
 export function buildLeagueChart(data) {
     if (!data?.leagueStats?.length) return;
     if (leagueChart) leagueChart.destroy();
 
-    const ctx = document.getElementById('leagueChart').getContext('2d');
-    const all = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
+    const canvas = document.getElementById('leagueChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
 
+    if (canvas.tagName !== 'CANVAS') {
+        canvas.outerHTML = '<canvas id="leagueChart"></canvas>';
+        return buildLeagueChart(data);
+    }
+
+    const all = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
     const labels = [], values = [];
+
     all.forEach(l => {
         const f = data.leagueStats.find(s => s.league === l);
         labels.push(l === 'SUPER_LEAGUE' ? 'СУПЕР' : l);
         values.push(f ? Math.round(f.averageAmount) : 0);
     });
 
-    const columnColors = [
-        ['#818cf8', '#6366f1'],
-        ['#6366f1', '#4f46e5'],
-        ['#4f46e5', '#4338ca'],
-        ['#4338ca', '#3730a3'],
-        ['#8b5cf6', '#7c3aed']
-    ];
+    const isMobile = window.innerWidth < 768;
 
-    const bgGradients = columnColors.map(([top, bottom]) => {
-        const grad = ctx.createLinearGradient(0, 0, 0, 350);
-        grad.addColorStop(0, top);
-        grad.addColorStop(1, bottom);
-        return grad;
-    });
+    // Реальный максимум из данных
+    const maxValue = Math.max(...values, 1);
+
+    // Верхняя граница — просто чуть выше максимума (для отступа точки)
+    const yMax = maxValue * 1.08;
+
+    // Шаг сетки — 4 части от максимума
+    const stepSize = Math.round(maxValue / 4);
+
+    // Градиент под линией
+    const areaGrad = ctx.createLinearGradient(0, 0, 0, 380);
+    areaGrad.addColorStop(0, 'rgba(129, 140, 248, 0.5)');
+    areaGrad.addColorStop(0.6, 'rgba(99, 102, 241, 0.12)');
+    areaGrad.addColorStop(1, 'rgba(79, 70, 229, 0)');
 
     leagueChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels,
             datasets: [{
                 data: values,
-                backgroundColor: bgGradients,
-                borderRadius: { topLeft: 14, topRight: 14, bottomLeft: 6, bottomRight: 6 },
-                borderSkipped: false,
-                barPercentage: 0.5,
-                categoryPercentage: 0.7
+                borderColor: '#a5b4fc',
+                borderWidth: 3,
+                fill: true,
+                backgroundColor: areaGrad,
+                tension: 0.4,
+                pointRadius: isMobile ? 6 : 8,
+                pointHoverRadius: isMobile ? 9 : 11,
+                pointBackgroundColor: '#a5b4fc',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointHoverBackgroundColor: '#c4b5fc',
+                pointHoverBorderColor: '#fff',
+                pointHoverBorderWidth: 3
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: { duration: 1200, easing: 'easeOutQuart', delay: (ctx) => ctx.index * 80 },
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            animation: { duration: 1200, easing: 'easeOutQuart' },
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: false,
+                    external: externalTooltipHandler,
+                    callbacks: {
+                        title: (ctx) => `Лига ${ctx[0].label}`,
+                        label: (ctx) => {
+                            if (ctx.raw === 0) return 'Нет данных';
+                            return formatMoney(ctx.raw);
+                        }
+                    }
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: Math.max(...values, 1) * 1.35,
-                    grid: { color: 'rgba(255,255,255,0.06)', drawBorder: false, lineWidth: 1 },
-                    ticks: { color: '#a1a1aa', font: { size: 11 }, padding: 10, callback: v => formatMoney(v) },
+                    max: yMax,
+                    grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false, lineWidth: 1 },
+                    ticks: {
+                        color: '#a1a1aa',
+                        font: { size: isMobile ? 11 : 12 },
+                        padding: 8,
+                        stepSize: stepSize,
+                        callback: function(v) {
+                            // Скрываем верхнюю метку (которая = maxValue * 1.08)
+                            if (v > maxValue) return '';
+                            return formatMoney(v);
+                        }
+                    },
                     border: { display: false }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#e5e5e5', font: { weight: '700', size: 15, family: 'Inter' }, padding: 14 },
+                    ticks: {
+                        color: '#e5e5e5',
+                        font: { weight: '700', size: isMobile ? 13 : 15, family: 'Inter' },
+                        padding: isMobile ? 8 : 14
+                    },
                     border: { display: false }
                 }
             }
         },
-        plugins: [{
-            id: 'valueLabels',
-            afterDatasetsDraw(chart) {
-                const { ctx } = chart;
-                const meta = chart.getDatasetMeta(0);
-                meta.data.forEach((bar, i) => {
-                    if (values[i] === 0) return;
-                    const x = bar.x, y = bar.y;
-                    const lineY = y - 40;
-
-                    ctx.strokeStyle = '#a5b4fc';
-                    ctx.lineWidth = 2;
-                    ctx.setLineDash([4, 4]);
-                    ctx.beginPath();
-                    ctx.moveTo(x, y - 10);
-                    ctx.lineTo(x, lineY);
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-
-                    ctx.fillStyle = '#c4b5fc';
-                    ctx.shadowColor = '#a5b4fc';
-                    ctx.shadowBlur = 14;
-                    ctx.beginPath();
-                    ctx.arc(x, y - 10, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-
-                    const text = formatMoney(values[i]);
-                    const textW = ctx.measureText(text).width + 24;
-                    const textH = 28;
-                    const textX = x - textW / 2;
-                    const textY = lineY - textH - 10;
-
-                    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-                    ctx.beginPath();
-                    ctx.roundRect(textX + 2, textY + 2, textW, textH, 10);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#18181b';
-                    ctx.beginPath();
-                    ctx.roundRect(textX, textY, textW, textH, 10);
-                    ctx.fill();
-
-                    ctx.strokeStyle = '#a5b4fc';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '700 13px Inter';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(text, x, textY + 20);
-                });
-            }
-        }]
+        plugins: [glowPlugin, crosshairPlugin]
     });
 }
 
@@ -132,7 +165,6 @@ export async function loadLeagueAvg() {
         const data = await AnalyticsAPI.getLeagueAvg();
         document.getElementById('playerAvgPill').textContent = formatMoney(data.playerAverage);
 
-        // Бэк возвращает closestLeague — ближайшую лигу игрока
         if (data.closestLeague) {
             const league = data.leagueStats.find(s => s.league === data.closestLeague);
             if (league) {

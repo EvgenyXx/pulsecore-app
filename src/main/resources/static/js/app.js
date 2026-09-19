@@ -5,6 +5,7 @@ import { loadDashboardWidgets, goHome, highlightNav } from './dashboard/dashboar
 import { loadTopWeek, switchLeague, switchPeriod } from './modules/top.js';
 import { loadSelectedHalls, loadHallsContent, switchHallsDate, toggleAllHalls, toggleHallsCheckboxes, saveSelectedHalls } from './modules/lineup.js';
 import { executeSum, openEditTournamentModal, closeEditTournamentModal, saveTournamentEdit, changePage } from './modules/sum.js';
+import { checkSubscription, subBlockHtml } from './modules/subscription-block.js';
 
 window.goHome = goHome;
 window.showAction = showAction;
@@ -22,25 +23,51 @@ window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 window.toggleTheme = toggleTheme;
 
-document.body.insertAdjacentHTML('afterbegin', '<div id="appLoader" style="position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;"><div class="spinner"></div></div>');
-
-const subBlockHtml = () => `<div class="apple-card p-8 text-center" style="animation: fadeIn 0.2s ease">
-    <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+// Красивый лоадер
+document.body.insertAdjacentHTML('afterbegin', `
+    <div id="appLoader" style="
+        position:fixed;inset:0;z-index:9999;
+        background: radial-gradient(ellipse at center, #0c0c18 0%, #060610 100%);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        transition: opacity 0.4s ease;
+        opacity: 1;
+    ">
+        <div style="
+            position:relative;
+            width:64px;height:64px;
+            margin-bottom:22px;
+        ">
+            <div style="
+                position:absolute;inset:0;
+                border:3px solid rgba(99,102,241,0.12);
+                border-radius:50%;
+            "></div>
+            <div style="
+                position:absolute;inset:0;
+                border:3px solid transparent;
+                border-top-color:#818cf8;
+                border-radius:50%;
+                animation: appSpin 0.9s linear infinite;
+                filter: drop-shadow(0 0 8px rgba(129,140,248,0.5));
+            "></div>
+        </div>
+        <div style="
+            font-family:'Inter',sans-serif;
+            font-size:15px;
+            font-weight:600;
+            color:#818cf8;
+            letter-spacing:1.5px;
+            opacity:0.85;
+        ">PULSECORE</div>
+        <style>@keyframes appSpin{to{transform:rotate(360deg)}}</style>
     </div>
-    <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
-    <p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы открыть все функции</p>
-    <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>
-</div>`;
+`);
 
-function showAction(action) {
+async function showAction(action) {
     const homePage = document.getElementById('homePage');
     const actionPage = document.getElementById('actionPage');
     const content = document.getElementById('actionContent');
     const title = document.getElementById('actionTitle');
-    const burgerBtn = `<button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white ml-auto">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>`;
 
     highlightNav('nav-' + action);
 
@@ -51,54 +78,51 @@ function showAction(action) {
     if (action === 'halls') {
         title.innerHTML = `
     <h2 class="action-title-3d" data-text="Расписание турниров">Расписание турниров</h2>
-    ${burgerBtn}
 `;
 
-        fetch('/api/player/halls', { credentials: 'same-origin' })
-            .then(r => { if (r.status === 402) { content.innerHTML = subBlockHtml(); return; } loadHallsContent(); });
+        loadHallsContent();
     } else if (action === 'sum') {
         title.innerHTML = `
     <h2 class="action-title-3d" data-text="Сумма за период">Сумма за период</h2>
-    ${burgerBtn}
 `;
+
+        // Проверяем подписку через /api/player/subscription
+        const hasSub = await checkSubscription();
+        if (!hasSub) {
+            content.innerHTML = subBlockHtml();
+            return;
+        }
 
         state.currentSumPage = 0;
 
-        fetch('/api/player/halls', { credentials: 'same-origin' })
-            .then(r => {
-                if (r.status === 402) {
-                    content.innerHTML = subBlockHtml();
-                    return;
-                }
-                content.innerHTML = `
-                <div class="sum-menu space-y-2">
-                    <div class="apple-card menu-card" onclick="showSumCalculator()">
-                        <div class="menu-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="menu-title">Подсчёт суммы</h3>
-                            <p class="menu-subtitle">Заработок за период</p>
-                        </div>
-                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </div>
-                    
-                    <div class="apple-card menu-card" onclick="showReportForm()">
-                        <div class="menu-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="menu-title">Отчёт на почту</h3>
-                            <p class="menu-subtitle">Запланировать отправку</p>
-                        </div>
-                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </div>
+        content.innerHTML = `
+        <div class="sum-menu space-y-2">
+            <div class="apple-card menu-card" onclick="showSumCalculator()">
+                <div class="menu-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
-                <div id="sumCalculator" class="hidden mt-4"></div>
-                <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
-                <div id="actionResult" class="mt-4"></div>
-            `;
-            });
+                <div class="flex-1">
+                    <h3 class="menu-title">Подсчёт суммы</h3>
+                    <p class="menu-subtitle">Заработок за период</p>
+                </div>
+                <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            
+            <div class="apple-card menu-card" onclick="showReportForm()">
+                <div class="menu-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="menu-title">Отчёт на почту</h3>
+                    <p class="menu-subtitle">Запланировать отправку</p>
+                </div>
+                <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+        </div>
+        <div id="sumCalculator" class="hidden mt-4"></div>
+        <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
+        <div id="actionResult" class="mt-4"></div>
+        `;
     }
 }
 
@@ -198,21 +222,55 @@ async function togglePush() {
 window.togglePush = togglePush;
 
 async function enablePushNotifications() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) { alert('Браузер не поддерживает push'); return false; }
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        alert('Браузер не поддерживает push-уведомления');
+        return false;
+    }
+
+    if (Notification.permission === 'denied') {
+        alert('Уведомления запрещены. Разрешите их в настройках браузера для этого сайта.');
+        return false;
+    }
+
+    if (Notification.permission !== 'granted') {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            return false;
+        }
+    }
+
     try {
         const reg = await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.ready;
+
         const vapidKey = await API.getVapidKey();
-        const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8Array(vapidKey) });
-        await API.subscribePush({ endpoint: sub.endpoint, p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))), auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')))) });
+        const sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlB64ToUint8Array(vapidKey)
+        });
+
+        const subJson = sub.toJSON();
+        await API.subscribePush({
+            endpoint: subJson.endpoint,
+            p256dh: subJson.keys.p256dh,
+            auth: subJson.keys.auth
+        });
+
         return true;
-    } catch(e) { console.error(e); return false; }
+    } catch(e) {
+        console.error('Push subscribe error:', e);
+        return false;
+    }
 }
 
 async function disablePushNotifications() {
     try {
         const reg = await navigator.serviceWorker.ready;
         const sub = await reg.pushManager.getSubscription();
-        if (sub) { await sub.unsubscribe(); await API.unsubscribePush({ endpoint: sub.endpoint }); }
+        if (sub) {
+            await sub.unsubscribe();
+            await API.unsubscribePush({ endpoint: sub.endpoint });
+        }
     } catch(e) {}
 }
 
@@ -225,6 +283,13 @@ function urlB64ToUint8Array(base64String) {
     return outputArray;
 }
 
+function hideLoader() {
+    const loader = document.getElementById('appLoader');
+    if (!loader) return;
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 400);
+}
+
 async function init() {
     try {
         const res = await fetch('/api/player/me', { credentials: 'same-origin' });
@@ -232,13 +297,13 @@ async function init() {
         const data = await res.json();
 
         state.playerId = data.id;
+        state.playerName = data.name || '';
         state.isAdmin = data.admin || false;
 
         if (data.admin) {
             document.getElementById('nav-admin')?.classList.remove('hidden');
             document.getElementById('mobile-nav-admin')?.classList.remove('hidden');
         }
-        document.getElementById('playerName').textContent = capitalizeName(data.name);
 
         if (data.theme) {
             document.documentElement.setAttribute('data-theme', data.theme);
@@ -248,7 +313,6 @@ async function init() {
         loadTopWeek(null);
         loadSelectedHalls();
 
-        // Подключаем роутер
         const { initDashboardRouter } = await import('./modules/dashboard-router.js');
         initDashboardRouter();
 
@@ -256,7 +320,7 @@ async function init() {
     } catch (e) {
         console.error('Init error:', e);
     } finally {
-        document.getElementById('appLoader')?.remove();
+        hideLoader();
     }
 }
 
@@ -265,19 +329,5 @@ let ptrStart = 0, ptrTriggered = false;
 document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientX; ptrTriggered = false; } }, { passive: true });
 document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientX - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, { passive: true });
 document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeek(null); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => ptr.classList.remove('active', 'done'), 1200); }, 500); } ptrStart = 0; });
-
-window.toggleMobileMenu = function() {
-    const menu = document.getElementById('mobileMenu'), overlay = document.getElementById('mobileMenuOverlay');
-    if (menu.classList.contains('translate-x-0')) { menu.classList.remove('translate-x-0'); menu.classList.add('translate-x-full'); overlay.classList.add('hidden'); }
-    else { menu.classList.remove('translate-x-full'); menu.classList.add('translate-x-0'); overlay.classList.remove('hidden'); }
-};
-window.mobileNav = function(action, el) {
-    toggleMobileMenu();
-    document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('bg-indigo-500/10','border-indigo-500/20'));
-    el.classList.add('bg-indigo-500/10','border-indigo-500/20');
-    if (action === 'home') window.location.hash = '#/';
-    else if (action === 'halls') window.location.hash = '#/halls';
-    else if (action === 'sum') window.location.hash = '#/sum';
-};
 
 document.addEventListener('DOMContentLoaded', init);

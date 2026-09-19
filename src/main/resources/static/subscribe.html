@@ -21,8 +21,6 @@
 <div class="nebula"></div>
 <div class="stars" id="starsContainer"></div>
 
-<div id="burgerMenuContainer"></div>
-
 <aside class="hidden md:flex glass-sidebar w-64 min-h-screen p-5 flex-col relative z-10 shrink-0">
     <div class="flex items-center gap-2.5 mb-8 px-1">
         <img src="/img.png" alt="PulseCore" class="w-9 h-9 rounded-xl object-cover">
@@ -52,9 +50,6 @@
                     <p class="text-xs text-zinc-400" id="pageSubtitle">Загрузка...</p>
                 </div>
             </div>
-            <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
         </div>
 
         <div id="activeSubBlock" class="hidden">
@@ -77,17 +72,14 @@
 </main>
 
 <script type="module" src="/js/subscribe-app.js"></script>
-<script type="module" src="/js/modules/burger-menu.js"></script>
 <script type="module" src="/js/modules/role-check.js"></script>
 <script type="module" src="/js/modules/stars.js"></script>
 <script type="module" src="/js/modules/theme-picker.js"></script>
 <script type="module">
-    import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
     import { initStars } from '/js/modules/stars.js';
     import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
 
-    initBurgerMenu();
     initRoleCheck();
     initStars();
     initThemePicker();

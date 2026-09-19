@@ -1,4 +1,3 @@
-
 package ru.pulsecore.app.tournament.application.admin;
 
 import lombok.RequiredArgsConstructor;
@@ -9,13 +8,15 @@ import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
+
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
  * Сервис для управления данными игроков из админки.
  *
  * deleteAllTournaments — удаляет все результаты игрока.
- * resyncAll — запускает полную пересинхронизацию истории турниров с 2025 года.
+ * resyncPeriod — запускает пересинхронизацию турниров за период.
  *
  * Используется в AdminPlayerController.
  */
@@ -27,8 +28,7 @@ public class AdminTournamentManagementService {
     private final PlayerClient playerClient;
     private final TournamentCascadeSyncService cascadeSyncService;
     private final TournamentRepository tournamentRepository;
-    private final PlayerNotificationRepository  playerNotificationRepository;
-
+    private final PlayerNotificationRepository playerNotificationRepository;
 
     @Transactional
     public int deleteAllTournaments(UUID playerId) {
@@ -38,9 +38,13 @@ public class AdminTournamentManagementService {
         return deletedResults + deletedNotifications + deletedTournaments;
     }
 
+    /**
+     * Пересинхронизация за указанный период.
+     * Даты приходят из админки.
+     */
     @Transactional
-    public void resyncAll(UUID playerId) {
+    public void resyncPeriod(UUID playerId, LocalDate from, LocalDate to) {
         var player = playerClient.getPlayerById(playerId);
-        cascadeSyncService.syncAllHistory(player.playerId(), player.playerName());
+        cascadeSyncService.syncPeriod(player.playerId(), player.playerName(), from, to);
     }
 }

@@ -80,10 +80,8 @@ async function refreshPlayerUI(section) {
         document.getElementById('subSelBadges').innerHTML = badges;
         document.getElementById('removeSubBtn').classList.toggle('hidden', !subActive);
     } else {
-        // Обновляем бейджи
         document.getElementById('playerSelBadges').innerHTML = badges;
 
-        // Обновляем кнопки подписки
         document.getElementById('playerGiveSub30').classList.toggle('hidden', false);
         document.getElementById('playerGiveSub60').classList.toggle('hidden', false);
         document.getElementById('playerRemoveSub').classList.toggle('hidden', !subActive);
@@ -95,7 +93,6 @@ async function refreshPlayerUI(section) {
             }
             document.getElementById('playerSelBadges').innerHTML = badges;
 
-            // ОДНА КНОПКА АДМИНА
             const toggleBtn = document.getElementById('toggleAdminBtn');
             if (toggleBtn) {
                 toggleBtn.classList.remove('hidden');
@@ -305,17 +302,93 @@ export async function deletePlayerTournaments() {
 
 export async function resyncPlayerTournaments() {
     if (!selectedPlayerId) return;
+
+    // Дефолтные даты
+    const today = new Date();
+    const yearAgo = new Date();
+    yearAgo.setFullYear(today.getFullYear() - 1);
+
+    const defaultFrom = yearAgo.toISOString().split('T')[0];
+    const defaultTo = today.toISOString().split('T')[0];
+
+    // Показываем модалку
+    showResyncModal(defaultFrom, defaultTo);
+}
+
+function showResyncModal(defaultFrom, defaultTo) {
+    // Если модалка уже есть — удаляем
+    document.getElementById('resyncModal')?.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'resyncModal';
+    modal.className = 'modal-overlay';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+
+    modal.innerHTML = `
+        <div style="background:#12121f;border-radius:14px;padding:20px;max-width:400px;width:90%;border:1px solid rgba(255,255,255,0.08);">
+            <h3 class="text-white font-semibold mb-1">Пересинхронизация турниров</h3>
+            <p class="text-xs text-zinc-400 mb-4">Укажите период загрузки</p>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                    <label class="text-xs text-zinc-400 mb-1 block">С даты</label>
+                    <input id="resyncFrom" type="date" value="${defaultFrom}" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white text-sm focus:border-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-xs text-zinc-400 mb-1 block">По дату</label>
+                    <input id="resyncTo" type="date" value="${defaultTo}" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white text-sm focus:border-indigo-500 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="resyncConfirm" class="btn-gold flex-1 py-2 rounded-lg text-sm">Запустить</button>
+                <button id="resyncCancel" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-2 rounded-lg text-sm">Отмена</button>
+            </div>
+            <p id="resyncError" class="text-red-400 text-xs mt-2 hidden"></p>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('resyncCancel').onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+    document.getElementById('resyncConfirm').onclick = async () => {
+        const from = document.getElementById('resyncFrom').value;
+        const to = document.getElementById('resyncTo').value;
+        const err = document.getElementById('resyncError');
+
+        err.classList.add('hidden');
+
+        if (!from || !to) {
+            err.textContent = 'Заполните обе даты';
+            err.classList.remove('hidden');
+            return;
+        }
+
+        if (from > to) {
+            err.textContent = 'Дата "с" позже даты "по"';
+            err.classList.remove('hidden');
+            return;
+        }
+
+        modal.remove();
+        await executeResync(from, to);
+    };
+}
+
+async function executeResync(from, to) {
     const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Синхронизация...';
+    msg.textContent = `Синхронизация ${from} – ${to}...`;
     msg.className = 'text-xs text-center text-zinc-400';
     msg.classList.remove('hidden');
 
     try {
-        const data = await AdminAPI.resyncPlayerTournaments(selectedPlayerId);
-        msg.textContent = data.message;
+        const data = await AdminAPI.resyncPlayerTournaments(selectedPlayerId, from, to);
+        msg.textContent = data.message || `Синхронизация запущена: ${from} – ${to}`;
         msg.className = 'text-xs text-center text-emerald-400';
     } catch (e) {
-        msg.textContent = 'Ошибка';
+        msg.textContent = e.message || 'Ошибка синхронизации';
         msg.className = 'text-xs text-center text-red-400';
     }
 }

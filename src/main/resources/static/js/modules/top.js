@@ -2,30 +2,12 @@ import {API} from '../core/api.js';
 import {state} from '../core/state.js';
 import {capitalizeName} from '../core/utils.js';
 
-function isPro() {
-    const badge = document.getElementById('proBadge');
-    return badge && !badge.classList.contains('hidden');
-}
-
 export async function loadTopWeek(league) {
     const panel = document.getElementById('topWeekPanel');
     if (!panel) return;
 
     const period = state.currentPeriod.toUpperCase();
     const periodLabel = period === 'WEEK' ? '7 дней' : period === 'MONTH' ? '30 дней' : '365 дней';
-
-    if (!isPro()) {
-        panel.innerHTML = `
-            <div class="text-center py-12">
-                <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-5">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                </div>
-                <h3 class="text-[17px] font-semibold text-white mb-1.5">Требуется подписка</h3>
-                <p class="text-[13px] text-zinc-500 mb-5">Оформите подписку чтобы видеть топ игроков</p>
-                <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-full px-7 py-2.5 text-[15px] transition-all">Оформить подписку</a>
-            </div>`;
-        return;
-    }
 
     const leagues = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
     const labels = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
@@ -40,7 +22,6 @@ export async function loadTopWeek(league) {
             </div>
             <div>
                 <h3 class="text-[17px] font-semibold text-white tracking-tight">Зал славы</h3>
-<!--                <p class="text-[12px] text-zinc-500">Топ игроков</p>-->
             </div>
         </div>
 
@@ -66,7 +47,7 @@ export async function loadTopWeek(league) {
 
     try {
         const data = await API.getTop(period, league);
-        const currentPlayerName = document.getElementById('playerName')?.textContent?.trim();
+        const currentPlayerName = state.playerName || '';
 
         if (!data.top5 || data.top5.length === 0) {
             html += `<div class="text-center py-10">

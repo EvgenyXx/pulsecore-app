@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.config.SchedulerConfig;
+import ru.pulsecore.app.tournament.application.admin.SchedulerPauseService;
 import ru.pulsecore.app.tournament.application.roster.reminder.MoscowReminderService;
 import ru.pulsecore.app.tournament.application.roster.reminder.OrenburgReminderService;
 import ru.pulsecore.app.tournament.application.roster.reminder.VladivostokReminderService;
@@ -21,6 +22,7 @@ public class ReminderScheduler {
     private final MoscowReminderService moscowReminderService;
     private final VladivostokReminderService vladivostokReminderService;
     private final OrenburgReminderService orenburgReminderService;
+    private final SchedulerPauseService schedulerPauseService;
 
     @Scheduled(
             initialDelay = 0,
@@ -28,6 +30,11 @@ public class ReminderScheduler {
             timeUnit = TimeUnit.SECONDS,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void sendTournamentReminders() {
+
+        if (schedulerPauseService.isPaused()) {
+            log.debug("Планировщик на паузе — loadToday пропущен");
+            return;
+        }
         CompletableFuture<Void> moscow = CompletableFuture.runAsync(moscowReminderService::sendReminders);
         CompletableFuture<Void> vladivostok = CompletableFuture.runAsync(vladivostokReminderService::sendReminders);
         CompletableFuture<Void> orenburg = CompletableFuture.runAsync(orenburgReminderService::sendReminders);

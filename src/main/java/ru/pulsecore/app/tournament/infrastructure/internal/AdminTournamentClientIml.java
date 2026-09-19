@@ -39,9 +39,9 @@ public class AdminTournamentClientIml implements TournamentClient {
     }
 
     @Override
-    public MessageResponse resyncAll(UUID playerId) {
-        adminTournamentManagementService.resyncAll(playerId);
-        return new MessageResponse("Загрузка турниров запущена в фоне");
+    public MessageResponse resyncPeriod(UUID playerId, LocalDate from, LocalDate to) {
+        adminTournamentManagementService.resyncPeriod(playerId, from, to);
+        return new MessageResponse("Загрузка турниров запущена в фоне: " + from + " – " + to);
     }
 
 
