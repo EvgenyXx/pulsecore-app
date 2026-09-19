@@ -3,7 +3,6 @@ package ru.pulsecore.app.tournament.application.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.domain.entity.MatchStage;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
@@ -25,7 +24,7 @@ public class TournamentMatchService {
 
     private final TournamentMatchRepository matchRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void createMatches(ParsedResult parsed, TournamentEntity tournament) {
         if (hasNoMatches(parsed)) return;
         if (tournamentAlreadyExists(tournament)) return;

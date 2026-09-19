@@ -68,20 +68,14 @@ public class ChatService {
                     originalMsg.getPlayerId(),
                     "Новый ответ",
                     replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
-                    "/live/" + originalMsg.getLineupId()
+                    "/dashboard#/live/" + originalMsg.getLineupId()
             );
         } catch (Exception e) {
             log.warn("Не удалось отправить push за ответ: {}", e.getMessage());
         }
     }
 
-    @Transactional(readOnly = true)
-    public long getOnlineCount(Long lineupId) {
-        return chatMessageRepository.countDistinctPlayerIdByLineupIdAndCreatedAtAfter(
-                lineupId,
-                LocalDateTime.now().minusMinutes(2)
-        );
-    }
+  
 
     @Transactional(readOnly = true)
     public List<ChatMessageDto> getMessagesAfter(Long lineupId, Long afterId) {

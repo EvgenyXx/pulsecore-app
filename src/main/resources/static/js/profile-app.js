@@ -15,7 +15,7 @@ import {
 } from './modules/profile.js';
 
 window.toggleNotifications = toggleNotifications;
-window.togglePush = togglePush;
+window.toggleProfilePush = togglePush;  // ← ИЗМЕНЕНО: было window.togglePush
 window.togglePassword = togglePasswordVisibility;
 window.showPasswordForm = showPasswordForm;
 window.checkOldPassword = checkOldPassword;

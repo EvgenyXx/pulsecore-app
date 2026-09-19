@@ -1,6 +1,7 @@
 package ru.pulsecore.app.tournament.application.roster.reminder;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ReminderNotificationSender {
@@ -27,6 +29,9 @@ public class ReminderNotificationSender {
             List<PlayerData> hourPushed,
             PlayerNotification pn) {
 
+
+        if (pn.isPushReminderSent()) return;
+
         if (tournamentTime == null || tournamentTime.isEmpty()) return;
 
         LocalTime nowMsk = LocalTime.now(ZoneId.of("Europe/Moscow"));
@@ -36,33 +41,46 @@ public class ReminderNotificationSender {
 
         if (player.pushEnabled()) {
             hourPushed.add(player);
-            publisher.publishEvent(
-                    new PushNotificationEvent(
-                            player.playerId(),
-                            "🏆 Турнир начинается!",
-                            PushMessageBuilder.buildHourReminderBody(tournamentTime, minutes),
-                            "/dashboard"
-                    )
-            );
+            try {
+                publisher.publishEvent(
+                        new PushNotificationEvent(
+                                player.playerId(),
+                                "🏆 Турнир начинается!",
+                                PushMessageBuilder.buildHourReminderBody(tournamentTime, minutes),
+                                "/dashboard"
+                        )
+                );
+            } catch (Exception e) {
+                log.error("Hour push failed for {}: {}", player.playerId(), e.getMessage());
+            }
         }
+
         pn.setPushReminderSent(true);
         notificationRepository.save(pn);
     }
 
     public void sendEveningReminder(PlayerData player, PlayerNotification pn, LocalTime now, List<PlayerData> eveningPushed) {
-        if (now.getHour() != 20 || pn.isPushEveningSent()) return;
+
+        if (pn.isPushEveningSent()) return;
+        if (now.getHour() < 20) return;
+
         if (player.pushEnabled()) {
             eveningPushed.add(player);
             String time = pn.getTournament().getTime();
-            publisher.publishEvent(
-                    new PushNotificationEvent(
-                            player.playerId(),
-                            "📅 Завтра турнир!",
-                            PushMessageBuilder.buildEveningReminderBody(time),
-                            "/dashboard"
-                    )
-            );
+            try {
+                publisher.publishEvent(
+                        new PushNotificationEvent(
+                                player.playerId(),
+                                "📅 Завтра турнир!",
+                                PushMessageBuilder.buildEveningReminderBody(time),
+                                "/dashboard"
+                        )
+                );
+            } catch (Exception e) {
+                log.error("Evening push failed for {}: {}", player.playerId(), e.getMessage());
+            }
         }
+
         pn.setPushEveningSent(true);
         notificationRepository.save(pn);
     }

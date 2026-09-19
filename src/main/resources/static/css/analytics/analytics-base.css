@@ -13,7 +13,26 @@
 
 .chart-wrap {
     position: relative;
-    height: 280px;
+    height: 380px;
+}
+
+/* Обёртка для скролла (дневной график) */
+.chart-wrap.scrollable {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99,102,241,0.2) transparent;
+}
+.chart-wrap.scrollable::-webkit-scrollbar {
+    height: 6px;
+}
+.chart-wrap.scrollable::-webkit-scrollbar-track {
+    background: transparent;
+}
+.chart-wrap.scrollable::-webkit-scrollbar-thumb {
+    background: rgba(99,102,241,0.2);
+    border-radius: 3px;
 }
 
 .avg-badge {
@@ -314,3 +333,57 @@
 
 .analytics-tab:hover { color: #e5e5e5; }
 .analytics-tab.active { color: #ffffff; font-weight: 600; }
+
+/* ===== Chart.js HTML Tooltip ===== */
+#chartjs-tooltip {
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -100%);
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(20, 20, 30, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.25);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 100;
+    white-space: nowrap;
+}
+#chartjs-tooltip .ct-title {
+    font-size: 0.7rem;
+    color: #a1a1aa;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+#chartjs-tooltip .ct-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #c4b5fc;
+    text-shadow: 0 0 12px rgba(165, 180, 252, 0.6);
+}
+
+[data-theme="ocean"] #chartjs-tooltip {
+    background: rgba(10, 22, 40, 0.9);
+    border-color: rgba(34, 211, 238, 0.35);
+    box-shadow: 0 8px 32px rgba(34, 211, 238, 0.25);
+}
+[data-theme="ocean"] #chartjs-tooltip .ct-value {
+    color: #67e8f9;
+    text-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
+}
+
+[data-theme="mars"] #chartjs-tooltip {
+    background: rgba(26, 15, 10, 0.9);
+    border-color: rgba(245, 158, 11, 0.35);
+    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.25);
+}
+[data-theme="mars"] #chartjs-tooltip .ct-value {
+    color: #fbbf24;
+    text-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+}

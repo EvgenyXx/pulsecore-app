@@ -15,6 +15,8 @@
     <meta name="apple-mobile-web-app-title" content="PulseCore">
     <link rel="icon" type="image/png" href="/img.png">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/bottom-tab.css">
+    <link rel="stylesheet" href="/css/more-hub.css">
     <link rel="stylesheet" href="/css/dashboard/top.css">
     <link rel="stylesheet" href="/css/dashboard/top-period.css">
     <link rel="stylesheet" href="/css/dashboard/top-league.css">
@@ -76,7 +78,6 @@
     </div>
 </div>
 
-<div id="burgerMenuContainer"></div>
 <div id="sidebarContainer"></div>
 
 <main class="flex-1 relative z-10 p-4 sm:p-6 md:p-7 lg:p-9 xl:p-10">
@@ -85,13 +86,9 @@
             <div class="mb-6 sm:mb-8">
                 <div class="flex items-center justify-between gap-2 flex-wrap">
                     <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white"><span id="playerName"></span></h2>
-                        <span id="proBadge" class="pro-badge hidden"><span class="pro-diamond">💎</span>PRO</span>
+                        <span id="proBadge" class="pro-badge hidden" title="Premium"><span class="pro-diamond">💎</span></span>
                         <span id="reportBadge"></span>
                     </div>
-                    <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                    </button>
                 </div>
                 <p class="text-zinc-400 mt-1 text-xs sm:text-sm" id="subStatusText"></p>
                 <div id="pushToggleContainer" class="hidden mt-2 flex items-center gap-2">
@@ -112,7 +109,7 @@
             <div id="dashboardWidgets" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
         </div>
 
-        <div id="actionPage" class="hidden content-panel">
+        <div id="actionPage" class="hidden content-panel" style="display: none;">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white" id="actionTitle"></h2>
                 <p class="text-zinc-400 mt-1.5 text-sm" id="actionSubtitle"></p>
@@ -120,14 +117,56 @@
             <div id="actionContent"></div>
         </div>
 
-        <!-- Live Page -->
-        <div id="livePage" class="hidden">
-            <div class="flex items-center justify-between mb-4">
-                <div></div>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
+        <!-- ===== More (Прочее) ===== -->
+        <div id="morePage" class="hidden" style="display: none;">
+            <div class="more-hub-header">
+                <h1 class="more-hub-title">Прочее</h1>
+                <p class="more-hub-subtitle">Дополнительные разделы</p>
             </div>
+
+            <div class="more-hub-list">
+                <a href="#" onclick="event.preventDefault();navigate('live')" class="more-hub-card">
+                    <span class="more-hub-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    </span>
+                    <span class="more-hub-text">
+                        <span class="more-hub-card-title">Live</span>
+                        <span class="more-hub-card-desc">Трансляции турниров</span>
+                    </span>
+                    <span class="more-hub-arrow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
+                </a>
+
+                <a href="#" onclick="event.preventDefault();navigate('analytics')" class="more-hub-card">
+                    <span class="more-hub-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </span>
+                    <span class="more-hub-text">
+                        <span class="more-hub-card-title">Аналитика</span>
+                        <span class="more-hub-card-desc">Доход по лигам и месяцам</span>
+                    </span>
+                    <span class="more-hub-arrow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
+                </a>
+
+                <a href="#" onclick="event.preventDefault();navigate('compare')" class="more-hub-card">
+                    <span class="more-hub-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path d="M21 21l-7-7"/><path d="M3 21l7-7"/></svg>
+                    </span>
+                    <span class="more-hub-text">
+                        <span class="more-hub-card-title">H2H / Сравнение</span>
+                        <span class="more-hub-card-desc">Статистика противостояний</span>
+                    </span>
+                    <span class="more-hub-arrow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <div id="livePage" class="hidden" style="display: none;">
             <div class="text-center pt-4 pb-6">
                 <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-500/10">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
@@ -160,18 +199,16 @@
         </div>
     </div>
 
-    <!-- H2H Page -->
-    <div id="comparePage" class="hidden flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
+    <div id="comparePage" class="hidden flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10" style="display: none;">
         <div class="max-w-5xl mx-auto">
             <div class="compare-header">
                 <h1 class="compare-title" data-text="HEAD TO HEAD">HEAD TO HEAD</h1>
                 <div class="compare-actions">
-                    <button class="period-toggle" onclick="toggleSettingsSheet()">
-                        <span id="settingsLabel">Настройки</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <button class="burger-btn md:hidden" onclick="window.toggleMobileMenu()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    <button class="period-toggle" onclick="toggleSettingsSheet()" aria-label="Настройки сравнения">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -196,20 +233,16 @@
         </div>
     </div>
 
-    <!-- Live Tournament Page -->
-    <div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen">
+    <div id="liveTournamentScreen" class="hidden flex-1 relative z-10 overflow-y-auto p-3 md:p-6 min-h-screen" style="display: none;">
         <div class="max-w-4xl mx-auto">
             <div class="live-header">
-                <button class="back-btn" onclick="navigate('live')">
+                <button class="back-btn" onclick="navigate('more')">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 <span class="live-badge"><span class="live-dot"></span> LIVE</span>
                 <span class="league-title" id="leagueTitle">Загрузка...</span>
                 <span class="online-count" id="onlineCount"></span>
                 <span class="tournament-info" id="tournamentInfo"></span>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white ml-auto">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
 
             <div class="players-row" id="playersList"></div>
@@ -255,8 +288,7 @@
         </div>
     </div>
 
-    <!-- Analytics Page -->
-    <div id="analyticsPage" class="hidden">
+    <div id="analyticsPage" class="hidden" style="display: none;">
         <div class="analytics-tabs hidden md:flex mb-4">
             <div class="analytics-slider pos-0"></div>
             <button class="analytics-tab active" id="nav-league" onclick="switchTab('league')">Средняя по лигам</button>
@@ -267,12 +299,13 @@
 
         <div class="flex items-center justify-between mb-4 md:hidden">
             <h2 class="action-title-3d" data-text="Аналитика">Аналитика</h2>
-            <div class="flex items-center gap-2">
-                <button onclick="toggleAnalyticsSheet()" class="tabs-btn">Меню ▴</button>
-                <button onclick="toggleMobileMenu()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
-            </div>
+            <button onclick="toggleAnalyticsSheet()" class="tabs-btn" aria-label="Разделы аналитики">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="4" y1="7" x2="20" y2="7"/>
+                    <line x1="4" y1="12" x2="20" y2="12"/>
+                    <line x1="4" y1="17" x2="20" y2="17"/>
+                </svg>
+            </button>
         </div>
 
         <div id="analyticsLoading"></div>
@@ -288,7 +321,7 @@
         <div id="tab-monthly" class="hidden content-panel max-w-2xl mx-auto">
             <h2 class="text-xl font-extrabold text-white mb-4">Доход по месяцам</h2>
             <div class="flex items-center gap-2 mb-5"><span class="text-zinc-400 text-sm">Динамика заработка за</span><select id="yearSelect" class="year-select" onchange="onYearChange()"></select><span class="text-zinc-400 text-sm">год</span></div>
-            <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+            <div class="chart-card" id="monthlyChartCard"><div class="chart-wrap scrollable" id="monthlyChartWrap"><canvas id="monthlyChart"></canvas><div id="monthlyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
             <div class="flex justify-center mt-3"><span class="avg-badge" id="monthlyAvgPill"><span class="text-zinc-400">Средняя в месяц:</span><span class="text-white font-bold" id="monthlyAvg">-</span></span></div>
             <p class="swipe-hint">← листай влево/вправо →</p>
         </div>
@@ -300,7 +333,7 @@
                 <span class="daily-month-title" id="dailyMonthLabel">Июнь 2026</span>
                 <button onclick="nextDailyMonth()" class="nav-arrows-desktop" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:1rem;">▸</button>
             </div>
-            <div class="chart-card"><div class="chart-wrap"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
+            <div class="chart-card"><div class="chart-wrap scrollable" id="dailyChartWrap"><canvas id="dailyChart"></canvas><div id="dailyNoData" class="no-data-msg hidden">Нет данных</div></div></div>
             <div class="daily-stats-row">
                 <div class="daily-stat"><div class="daily-stat-value" id="dailyTotal">0 ₽</div><div class="daily-stat-label">За месяц</div></div>
                 <div class="daily-stat"><div class="daily-stat-value" id="dailyAvg">0 ₽</div><div class="daily-stat-label">В день</div></div>
@@ -328,28 +361,13 @@
         </div>
     </div>
 
-    <!-- Analytics Sheet -->
-    <div class="tab-sheet-overlay" id="analyticsSheetOverlay" onclick="toggleAnalyticsSheet()">
-        <div class="tab-sheet" onclick="event.stopPropagation()">
-            <div class="tab-sheet-handle"></div>
-            <button class="tab-sheet-btn active" id="sheet-league" onclick="switchTab('league');toggleAnalyticsSheet()">Средняя по лигам</button>
-            <button class="tab-sheet-btn" id="sheet-monthly" onclick="switchTab('monthly');toggleAnalyticsSheet()">Доход по месяцам</button>
-            <button class="tab-sheet-btn" id="sheet-daily" onclick="switchTab('daily');toggleAnalyticsSheet()">Доход по дням</button>
-            <button class="tab-sheet-btn" id="sheet-best-time" onclick="switchTab('best-time');toggleAnalyticsSheet()">Лучшее время</button>
-        </div>
-    </div>
-
-    <!-- Profile Page -->
-    <div id="profilePage" class="hidden">
+    <div id="profilePage" class="hidden" style="display: none;">
         <div id="settings-main">
             <div class="flex items-center justify-between mb-6">
                 <div>
                     <h2 class="text-lg font-bold text-white">Настройки</h2>
                     <p class="text-xs text-zinc-500 mt-1"><span id="profileName">Загрузка...</span> · <span id="createdAt">—</span></p>
                 </div>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
 
             <div class="space-y-1">
@@ -378,6 +396,11 @@
                     <div class="flex-1"><div class="font-medium text-sm">Поделиться</div><div class="text-xs text-zinc-500">QR-код приложения</div></div>
                     <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                 </div>
+                <div class="settings-item hidden" id="nav-admin-item" onclick="window.location.href='/admin'">
+                    <div class="settings-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="flex-1"><div class="font-medium text-sm">Админка</div><div class="text-xs text-zinc-500">Управление</div></div>
+                    <span class="settings-item-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+                </div>
             </div>
 
             <div class="mt-8 md:hidden">
@@ -394,9 +417,6 @@
             <div class="flex items-center justify-between mb-5">
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Аккаунт</h3>
@@ -423,7 +443,7 @@
                         <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
                         <div><h3 class="font-semibold text-white text-sm">Push-уведомления</h3><p class="text-xs text-zinc-500" id="pushLabel">Загрузка...</p></div>
                     </div>
-                    <div class="toggle-wrapper" onclick="togglePush()"><div class="toggle-track off" id="pushToggleTrack"><div class="toggle-thumb" id="pushToggleThumb"></div></div></div>
+                    <div class="toggle-wrapper" onclick="toggleProfilePush()"><div class="toggle-track off" id="pushToggleTrack"><div class="toggle-thumb" id="pushToggleThumb"></div></div></div>
                 </div>
             </div>
         </div>
@@ -432,9 +452,6 @@
             <div class="flex items-center justify-between mb-5">
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Подписка</h3>
@@ -449,9 +466,6 @@
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Оформление</h3>
             <p class="text-sm text-zinc-400 mb-4">Выберите тему оформления</p>
@@ -462,9 +476,6 @@
             <div class="flex items-center justify-between mb-5">
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Безопасность</h3>
@@ -495,9 +506,6 @@
                 <button class="back-btn" onclick="showSettingsPage('main')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
-                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-white">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
             </div>
             <h3 class="text-base font-semibold text-white mb-4">Поделиться приложением</h3>
             <div class="widget-card rounded-2xl p-0 overflow-hidden" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
@@ -508,7 +516,16 @@
     </div>
 </main>
 
-<!-- H2H Settings Sheet -->
+<div class="tab-sheet-overlay" id="analyticsSheetOverlay" onclick="toggleAnalyticsSheet()">
+    <div class="tab-sheet" onclick="event.stopPropagation()">
+        <div class="tab-sheet-handle"></div>
+        <button class="tab-sheet-btn active" id="sheet-league" onclick="switchTab('league');toggleAnalyticsSheet()">Средняя по лигам</button>
+        <button class="tab-sheet-btn" id="sheet-monthly" onclick="switchTab('monthly');toggleAnalyticsSheet()">Доход по месяцам</button>
+        <button class="tab-sheet-btn" id="sheet-daily" onclick="switchTab('daily');toggleAnalyticsSheet()">Доход по дням</button>
+        <button class="tab-sheet-btn" id="sheet-best-time" onclick="switchTab('best-time');toggleAnalyticsSheet()">Лучшее время</button>
+    </div>
+</div>
+
 <div class="period-sheet-overlay" id="settingsSheetOverlay" onclick="toggleSettingsSheet()">
     <div class="period-sheet" onclick="event.stopPropagation()">
         <div class="period-sheet-handle"></div>
@@ -540,7 +557,6 @@
     </div>
 </div>
 
-<!-- Шторка заказных отчётов -->
 <div class="report-backdrop" id="reportBackdrop" onclick="closeScheduledReports()"></div>
 <div class="report-dropdown" id="reportDropdown">
     <div class="report-dropdown-handle"></div>
@@ -548,12 +564,12 @@
 </div>
 
 <script type="module">
-    import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
     import { initSidebar } from '/js/sidebar.js';
-    initBurgerMenu();
+    import { initBottomTab } from '/js/modules/bottom-tab.js';
     initRoleCheck();
     initSidebar('home');
+    initBottomTab('home');
 </script>
 
 <script type="module" src="/js/app.js"></script>
@@ -583,6 +599,81 @@
             if (el) el.style.display = t === page ? 'block' : 'none';
         });
     }
+</script>
+
+<script>
+    (function() {
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+        const THRESHOLD_X = 60;
+        const MAX_DELTA_Y = 80;
+
+        function getTabs() {
+            return document.querySelectorAll('.date-tab');
+        }
+
+        function isScheduleOpen() {
+            const actionPage = document.getElementById('actionPage');
+            const title = document.getElementById('actionTitle');
+            if (!actionPage || actionPage.classList.contains('hidden')) return false;
+            if (!title) return false;
+            return title.textContent.includes('Расписание');
+        }
+
+        function switchDay(direction) {
+            const tabs = getTabs();
+            if (!tabs.length) return;
+
+            let activeIndex = -1;
+            tabs.forEach((t, i) => {
+                if (t.classList.contains('active')) activeIndex = i;
+            });
+            if (activeIndex === -1) return;
+
+            const next = activeIndex + direction;
+            if (next < 0 || next >= tabs.length) return;
+
+            tabs[next].click();
+        }
+
+        document.addEventListener('touchstart', function(e) {
+            if (!isScheduleOpen()) return;
+
+            const t = e.target;
+            const tag = t.tagName;
+            if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'A' || tag === 'SELECT' || tag === 'TEXTAREA') {
+                if (!t.classList.contains('date-tab')) {
+                    tracking = false;
+                    return;
+                }
+            }
+
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            tracking = true;
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            if (!tracking) return;
+            tracking = false;
+
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+
+            if (Math.abs(deltaY) > MAX_DELTA_Y) return;
+            if (Math.abs(deltaX) < THRESHOLD_X) return;
+
+            if (deltaX < 0) {
+                switchDay(1);
+            } else {
+                switchDay(-1);
+            }
+        }, { passive: true });
+    })();
 </script>
 </body>
 </html>
