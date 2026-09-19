@@ -176,13 +176,25 @@
                                 <span class="player-info-label">Последний вход</span>
                                 <span id="playerLastLogin" class="player-info-value">—</span>
                             </div>
+
+                            <!-- НОВЫЙ БЛОК: ПЕРЕСИНХРОНИЗАЦИЯ С ДАТАМИ -->
+                            <div class="player-info-item" style="grid-column: 1 / -1; display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 130px;">
+                                    <span class="player-info-label">С даты</span>
+                                    <input id="resyncFrom" type="date" class="player-info-input" style="width: 100%;">
+                                </div>
+                                <div style="flex: 1; min-width: 130px;">
+                                    <span class="player-info-label">По дату</span>
+                                    <input id="resyncTo" type="date" class="player-info-input" style="width: 100%;">
+                                </div>
+                                <button onclick="resyncPlayerTournaments()" class="btn btn-indigo" style="height: 42px; flex-shrink: 0;">Пересинхронизация</button>
+                            </div>
                         </div>
 
                         <div class="player-actions-grid mt-3">
                             <button onclick="updatePlayer()" class="btn btn-indigo">Сохранить</button>
                             <button onclick="togglePlayerRole('ROLE_ADMIN')" id="toggleAdminBtn" class="btn btn-amber hidden">Сделать админом</button>
                             <button onclick="deletePlayerTournaments()" class="btn btn-danger">Удалить турниры</button>
-                            <button onclick="resyncPlayerTournaments()" class="btn btn-indigo">Пересинхронизация</button>
                             <button onclick="deletePlayerAccount()" class="btn btn-danger">Удалить аккаунт</button>
                         </div>
                         <p id="playerMsg" class="text-xs text-center mt-2 hidden"></p>

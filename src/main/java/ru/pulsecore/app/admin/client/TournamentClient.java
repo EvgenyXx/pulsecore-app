@@ -30,11 +30,14 @@ public interface TournamentClient {
     MessageResponse deleteAllTournaments(UUID playerId);
 
     /**
-     * Перезагружает всю историю результатов игрока в фоне.
+     * Перезагружает историю результатов игрока за указанный период в фоне.
+     *
      * @param playerId ID игрока
+     * @param from     с какой даты
+     * @param to       по какую дату
      * @return сообщение о запуске перезагрузки
      */
-    MessageResponse resyncAll(UUID playerId);
+    MessageResponse resyncPeriod(UUID playerId, LocalDate from, LocalDate to);
 
     List<AdminTournamentResponse> getTournamentsByDate(LocalDate date);
 

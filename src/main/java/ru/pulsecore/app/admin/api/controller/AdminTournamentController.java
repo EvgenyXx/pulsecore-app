@@ -2,6 +2,7 @@ package ru.pulsecore.app.admin.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.admin.api.AdminApi;
+import ru.pulsecore.app.admin.api.dto.request.ResyncRequest;
 import ru.pulsecore.app.admin.client.TournamentClient;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
@@ -43,9 +45,11 @@ public class AdminTournamentController {
         return ResponseEntity.ok(tournamentClient.deleteAllTournaments(id));
     }
 
-    @Operation(summary = "Запустить полную ресинхронизацию турниров игрока")
+    @Operation(summary = "Запустить ресинхронизацию турниров игрока за период")
     @PostMapping(AdminApi.PLAYER_TOURNAMENTS_RESYNC)
-    public ResponseEntity<MessageResponse> resyncPlayerTournaments(@PathVariable UUID id) {
-        return ResponseEntity.ok(tournamentClient.resyncAll(id));
+    public ResponseEntity<MessageResponse> resyncPlayerTournaments(
+            @PathVariable UUID id,
+            @RequestBody @Valid ResyncRequest request) {
+        return ResponseEntity.ok(tournamentClient.resyncPeriod(id, request.from(),request.to()));
     }
 }
