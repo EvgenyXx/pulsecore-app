@@ -22,17 +22,35 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(subscriptionInterceptor)
                 .addPathPatterns(
-//                        "/api/tournament/*/dashboard",
-                        "/api/player/halls",
+                        // Главная — открыта
+//              "/api/tournament/*/dashboard",
+
+                        // Расписание — открыто
+//              "/api/player/halls",
+
+                        // Сумма — защищена
                         "/api/player/*/sum",
-                        "/api/player/*/tournaments",
-//                        "/api/player/*/top/**",
-                        "/api/player/analytics**",
-                        "/api/player/*/monthly-income",
-                        "/api/player/*/daily-income",
-//                        "/api/lineups/**",
                         "/api/tournament/sum**",
-                        "/api/player/compare**"
+
+                        // Турниры — защищены
+                        "/api/player/*/tournaments",
+
+                        // Зал славы — открыт
+//              "/api/tournament/top/**",
+
+                        // Аналитика — ЗАЩИЩЕНА
+//                        "/api/tournament/analytics",
+//                        "/api/tournament/best-time",
+//                        "/api/tournament/monthly-income",
+//                        "/api/tournament/daily-income",
+
+                        // Live — защищён
+                        "/api/tournament/live",
+                        "/api/player/live/halls",
+                        "/api/player/live-halls",
+
+                        // 2×2 — защищён
+                        "/api/tournament/compare/**"
                 );
     }
 

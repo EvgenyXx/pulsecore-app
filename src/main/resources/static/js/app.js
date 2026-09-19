@@ -5,6 +5,7 @@ import { loadDashboardWidgets, goHome, highlightNav } from './dashboard/dashboar
 import { loadTopWeek, switchLeague, switchPeriod } from './modules/top.js';
 import { loadSelectedHalls, loadHallsContent, switchHallsDate, toggleAllHalls, toggleHallsCheckboxes, saveSelectedHalls } from './modules/lineup.js';
 import { executeSum, openEditTournamentModal, closeEditTournamentModal, saveTournamentEdit, changePage } from './modules/sum.js';
+import { checkSubscription, subBlockHtml } from './modules/subscription-block.js';
 
 window.goHome = goHome;
 window.showAction = showAction;
@@ -62,16 +63,7 @@ document.body.insertAdjacentHTML('afterbegin', `
     </div>
 `);
 
-const subBlockHtml = () => `<div class="apple-card p-8 text-center" style="animation: fadeIn 0.2s ease">
-    <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    </div>
-    <h3 class="text-lg font-bold text-white mb-2">Требуется подписка</h3>
-    <p class="text-zinc-400 text-sm mb-4">Оформите подписку чтобы открыть все функции</p>
-    <a href="/subscribe" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full px-6 py-3 text-sm transition-all">Оформить подписку</a>
-</div>`;
-
-function showAction(action) {
+async function showAction(action) {
     const homePage = document.getElementById('homePage');
     const actionPage = document.getElementById('actionPage');
     const content = document.getElementById('actionContent');
@@ -88,50 +80,49 @@ function showAction(action) {
     <h2 class="action-title-3d" data-text="Расписание турниров">Расписание турниров</h2>
 `;
 
-        fetch('/api/player/halls', { credentials: 'same-origin' })
-            .then(r => { if (r.status === 402) { content.innerHTML = subBlockHtml(); return; } loadHallsContent(); });
+        loadHallsContent();
     } else if (action === 'sum') {
         title.innerHTML = `
     <h2 class="action-title-3d" data-text="Сумма за период">Сумма за период</h2>
 `;
 
+        // Проверяем подписку через /api/player/subscription
+        const hasSub = await checkSubscription();
+        if (!hasSub) {
+            content.innerHTML = subBlockHtml();
+            return;
+        }
+
         state.currentSumPage = 0;
 
-        fetch('/api/player/halls', { credentials: 'same-origin' })
-            .then(r => {
-                if (r.status === 402) {
-                    content.innerHTML = subBlockHtml();
-                    return;
-                }
-                content.innerHTML = `
-                <div class="sum-menu space-y-2">
-                    <div class="apple-card menu-card" onclick="showSumCalculator()">
-                        <div class="menu-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="menu-title">Подсчёт суммы</h3>
-                            <p class="menu-subtitle">Заработок за период</p>
-                        </div>
-                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </div>
-                    
-                    <div class="apple-card menu-card" onclick="showReportForm()">
-                        <div class="menu-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="menu-title">Отчёт на почту</h3>
-                            <p class="menu-subtitle">Запланировать отправку</p>
-                        </div>
-                        <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </div>
+        content.innerHTML = `
+        <div class="sum-menu space-y-2">
+            <div class="apple-card menu-card" onclick="showSumCalculator()">
+                <div class="menu-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
-                <div id="sumCalculator" class="hidden mt-4"></div>
-                <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
-                <div id="actionResult" class="mt-4"></div>
-            `;
-            });
+                <div class="flex-1">
+                    <h3 class="menu-title">Подсчёт суммы</h3>
+                    <p class="menu-subtitle">Заработок за период</p>
+                </div>
+                <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            
+            <div class="apple-card menu-card" onclick="showReportForm()">
+                <div class="menu-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="menu-title">Отчёт на почту</h3>
+                    <p class="menu-subtitle">Запланировать отправку</p>
+                </div>
+                <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+        </div>
+        <div id="sumCalculator" class="hidden mt-4"></div>
+        <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
+        <div id="actionResult" class="mt-4"></div>
+        `;
     }
 }
 
