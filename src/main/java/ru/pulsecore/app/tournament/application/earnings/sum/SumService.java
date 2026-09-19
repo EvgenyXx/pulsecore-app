@@ -1,9 +1,11 @@
 package ru.pulsecore.app.tournament.application.earnings.sum;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentResultNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PeriodStatsProjection;
@@ -26,13 +28,13 @@ public class SumService {
     private final TournamentResultRepository tournamentResultRepository;
 
 
+    @CacheEvict(value = CacheNames.DASHBOARD, allEntries = true)
     public void updateResult(Long id, Double amount, Double bonus) {
         TournamentResultEntity result = tournamentResultRepository.findById(id)
                 .orElseThrow(() -> new TournamentResultNotFoundException(id));
         if (amount != null) result.setAmount(amount);
         if (bonus != null) result.setBonus(bonus);
         tournamentResultRepository.save(result);
-
     }
 
     public SumResponse getSum(UUID playerId, LocalDate start, LocalDate end, int page, int size) {

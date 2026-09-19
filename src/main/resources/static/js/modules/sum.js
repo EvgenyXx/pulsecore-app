@@ -20,8 +20,25 @@ export async function saveTournamentEdit() {
     try {
         await API.updateResult(state.editingTournamentResultId, amount, 0);
         closeEditTournamentModal();
-        executeSum();
+
+        // Задержка — бэк коммитит транзакцию
+        await new Promise(r => setTimeout(r, 300));
+
+        // Перезагружаем главную через прямой динамический импорт
+        try {
+            const mod = await import('../dashboard/dashboard.js');
+            await mod.loadDashboardWidgets();
+        } catch (err) {
+            console.error('Не удалось обновить главную:', err);
+        }
+
+        // Если открыта «Сумма за период» — обновляем её
+        const actionPage = document.getElementById('actionPage');
+        if (actionPage && !actionPage.classList.contains('hidden')) {
+            executeSum();
+        }
     } catch (e) {
+        console.error('Ошибка сохранения:', e);
     }
 }
 
@@ -117,7 +134,6 @@ export async function executeSum() {
             return;
         }
 
-        // Сводная карточка в стиле Apple
         let html = `<div class="apple-card mb-4">
             <div class="grid grid-cols-3 gap-3">
                 <div class="sum-stat">
@@ -135,7 +151,6 @@ export async function executeSum() {
             </div>
         </div>`;
 
-        // Список турниров
         html += '<div class="space-y-1.5">';
         data.tournaments.forEach((t, i) => {
             html += `
@@ -157,7 +172,6 @@ export async function executeSum() {
         });
         html += '</div>';
 
-        // Пагинация в стиле Apple
         if (data.totalPages > 1) {
             html += `<div class="flex items-center justify-center gap-4 mt-4">
                 <button onclick="changePage(${state.currentSumPage - 1})" ${state.currentSumPage === 0 ? 'disabled' : ''} class="pagination-btn">Назад</button>
