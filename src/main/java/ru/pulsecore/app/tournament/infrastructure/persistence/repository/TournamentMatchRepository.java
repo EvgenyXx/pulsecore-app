@@ -1,5 +1,7 @@
 package ru.pulsecore.app.tournament.infrastructure.persistence.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -101,5 +103,27 @@ public interface TournamentMatchRepository extends JpaRepository<TournamentMatch
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    @Query(
+            value = """
+        SELECT DISTINCT name FROM (
+            SELECT player1_name AS name FROM tournament_match
+            UNION
+            SELECT player2_name AS name FROM tournament_match
+        ) AS all_players
+        WHERE LOWER(name) LIKE LOWER(CONCAT('%', :query, '%'))
+        ORDER BY name
+    """,
+            countQuery = """
+        SELECT COUNT(DISTINCT name) FROM (
+            SELECT player1_name AS name FROM tournament_match
+            UNION
+            SELECT player2_name AS name FROM tournament_match
+        ) AS all_players
+        WHERE LOWER(name) LIKE LOWER(CONCAT('%', :query, '%'))
+    """,
+            nativeQuery = true
+    )
+    Page<String> searchPlayerNames(@Param("query") String query, Pageable pageable);
 
 }
