@@ -17,6 +17,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LeagueAnalyticsService {
 
+    private static final int LAST_GAMES_LIMIT = 30;
+
     private final TournamentResultRepository tournamentResultRepository;
     private final AnalyticsMapper mapper;
 
@@ -24,7 +26,7 @@ public class LeagueAnalyticsService {
         LocalDate since = LocalDate.now().minusDays(days);
 
         List<LeagueStatProjection> leagueStats = tournamentResultRepository.getAllLeaguesStats(since);
-        double playerAverage = tournamentResultRepository.getPlayerAverage(playerId, since);
+        double playerAverage = tournamentResultRepository.getPlayerAverageLastGames(playerId, LAST_GAMES_LIMIT);
 
         List<AnalyticsResponse.LeagueStat> leagueStatDtos = mapper.toLeagueStats(leagueStats);
 
