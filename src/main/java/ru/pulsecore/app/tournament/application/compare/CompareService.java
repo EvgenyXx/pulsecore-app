@@ -2,6 +2,9 @@ package ru.pulsecore.app.tournament.application.compare;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.tournament.api.dto.response.*;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentMatchRepository;
@@ -81,6 +84,11 @@ public class CompareService {
                         .finalWinPercent(p.getFinalWinPercent())
                         .build())
                 .toList();
+    }
+
+    public Page<String> searchPlayersPage(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return matchRepository.searchPlayerNames(query, pageable);
     }
 
 
