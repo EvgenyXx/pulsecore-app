@@ -86,7 +86,6 @@ async function showAction(action) {
     <h2 class="action-title-3d" data-text="Сумма за период">Сумма за период</h2>
 `;
 
-        // Проверяем подписку через /api/player/subscription
         const hasSub = await checkSubscription();
         if (!hasSub) {
             content.innerHTML = subBlockHtml();
@@ -185,29 +184,49 @@ function toggleTheme() {
     }).catch(() => {});
 }
 
+// ============ PUSH ============
+
+const SW_TIMEOUT = 3000;
+
+function swReadyWithTimeout() {
+    return Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, rej) => setTimeout(() => rej(new Error('SW timeout')), SW_TIMEOUT))
+    ]);
+}
+
 async function checkPushStatus() {
     const container = document.getElementById('pushToggleContainer');
-    if (container) container.style.display = 'none';
+    if (!container) return;
+
+    // Нет поддержки — показываем блок
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        container.style.display = '';
+        return;
+    }
 
     try {
-        const reg = await navigator.serviceWorker.ready;
-        const sub = await reg.pushManager.getSubscription();
+        const reg = await swReadyWithTimeout();
 
-        if (sub) {
-            if (container) container.remove();
-        } else {
-            if (container) container.classList.remove('hidden');
-            if (container) container.style.display = '';
+        // pushManager может быть undefined (iOS < 16.4)
+        if (!reg.pushManager) {
+            container.style.display = '';
+            return;
         }
-    } catch(e) {
-        if (container) container.classList.remove('hidden');
-        if (container) container.style.display = '';
+
+        const sub = await reg.pushManager.getSubscription();
+        container.style.display = sub ? 'none' : '';
+    } catch (e) {
+        console.warn('Push check:', e.message);
+        container.style.display = '';
     }
 }
 window.checkPushStatus = checkPushStatus;
 
 async function togglePush() {
     const toggle = document.getElementById('pushToggle');
+    if (!toggle) return;
+
     if (toggle.checked) {
         const ok = await enablePushNotifications();
         if (!ok) {
@@ -241,7 +260,7 @@ async function enablePushNotifications() {
 
     try {
         const reg = await navigator.serviceWorker.register('/sw.js');
-        await navigator.serviceWorker.ready;
+        await swReadyWithTimeout();
 
         const vapidKey = await API.getVapidKey();
         const sub = await reg.pushManager.subscribe({
@@ -257,7 +276,7 @@ async function enablePushNotifications() {
         });
 
         return true;
-    } catch(e) {
+    } catch (e) {
         console.error('Push subscribe error:', e);
         return false;
     }
@@ -265,13 +284,13 @@ async function enablePushNotifications() {
 
 async function disablePushNotifications() {
     try {
-        const reg = await navigator.serviceWorker.ready;
+        const reg = await swReadyWithTimeout();
         const sub = await reg.pushManager.getSubscription();
         if (sub) {
             await sub.unsubscribe();
             await API.unsubscribePush({ endpoint: sub.endpoint });
         }
-    } catch(e) {}
+    } catch (e) {}
 }
 
 function urlB64ToUint8Array(base64String) {
@@ -282,6 +301,8 @@ function urlB64ToUint8Array(base64String) {
     for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
     return outputArray;
 }
+
+// ============ INIT ============
 
 function hideLoader() {
     const loader = document.getElementById('appLoader');
@@ -307,6 +328,15 @@ async function init() {
 
         if (data.theme) {
             document.documentElement.setAttribute('data-theme', data.theme);
+        }
+
+        // Регистрируем SW сразу — иначе navigator.serviceWorker.ready висит вечно
+        if ('serviceWorker' in navigator) {
+            try {
+                await navigator.serviceWorker.register('/sw.js');
+            } catch (e) {
+                console.warn('SW register failed:', e);
+            }
         }
 
         await loadDashboardWidgets();

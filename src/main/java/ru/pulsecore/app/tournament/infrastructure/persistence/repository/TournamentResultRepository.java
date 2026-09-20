@@ -46,7 +46,7 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
     List<PrimaryLeagueProjection> findPrimaryLeagues(@Param("playerIds") Set<UUID> playerIds);
 
 
-    // TournamentResultRepository
+
     @Modifying
     @Query("DELETE FROM TournamentResultEntity t WHERE t.playerId = :playerId")
     int deleteByPlayerId(@Param("playerId") UUID playerId);
@@ -121,6 +121,19 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             @Param("start") LocalDate start,
             @Param("end") LocalDate end
     );
+
+
+    @Query(value = """
+        SELECT COALESCE(AVG(t.amount), 0)
+        FROM (
+            SELECT tr.amount
+            FROM tournament_results tr
+            WHERE tr.player_id = :playerId
+            ORDER BY tr.date DESC
+            LIMIT :limit
+        ) t
+        """, nativeQuery = true)
+    double getPlayerAverageLastGames(@Param("playerId") UUID playerId, @Param("limit") int limit);
 
 
 }
