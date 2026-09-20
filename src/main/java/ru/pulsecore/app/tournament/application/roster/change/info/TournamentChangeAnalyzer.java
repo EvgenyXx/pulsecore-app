@@ -8,15 +8,10 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.change.remove.PlayerReplacementService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.infrastructure.exception.TournamentNotFoundException;
-
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -32,9 +27,15 @@ public class TournamentChangeAnalyzer {
     public void analyze(TournamentDto newTournament, Map<String, List<TournamentDto>> allTournaments) {
         log.debug("Анализ: турнир={}, link={}", newTournament.getId(), newTournament.getLink());
 
-        TournamentEntity oldTournament = tournamentRepository
-                .findByLink(newTournament.getLink())
-                .orElseThrow(()-> new TournamentNotFoundException(newTournament.getLink()));
+        Optional<TournamentEntity> oldTournamentOpt = tournamentRepository
+                .findByLink(newTournament.getLink());
+
+        if (oldTournamentOpt.isEmpty()) {
+            log.warn("Турнир {} ещё не сохранён в БД — пропускаем проверку", newTournament.getLink());
+            return;
+        }
+
+        TournamentEntity oldTournament = oldTournamentOpt.get();
 
         Set<UUID> oldPlayerIds = notificationRepository
                 .findPlayerIdsByTournamentId(oldTournament.getId());
