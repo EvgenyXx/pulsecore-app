@@ -3,6 +3,7 @@ package ru.pulsecore.app.tournament.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,5 +55,18 @@ public class CompareController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
         return ResponseEntity.ok(compareService.getH2H(player1Name, player2Name, start, end));
+    }
+
+    @Operation(
+            summary = "Поиск игроков для сравнения",
+            description = "Ищет игроков по имени среди всех, кто играл матчи. " +
+                    "Включая незарегистрированных. С пагинацией."
+    )
+    @GetMapping(TournamentApi.COMPARE_PLAYERS_SEARCH)
+    public ResponseEntity<Page<String>> searchPlayers(
+            @RequestParam("q") String query,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size) {
+        return ResponseEntity.ok(compareService.searchPlayersPage(query, page, size));
     }
 }

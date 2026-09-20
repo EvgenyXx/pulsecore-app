@@ -4,6 +4,7 @@ import { compareMetrics } from './metrics.js';
 import { renderPlayerCard } from './player-card.js';
 import { renderH2HCard } from './h2h-card.js';
 import { WheelPicker } from './wheel.js';
+import { PlayerSearch } from './player-search.js';
 import { getPeriodDates } from './period.js';
 import { loadPlayers as fetchPlayers, loadStatsPlayers } from './data-loader.js';
 import { initTooltips } from './tooltip.js';
@@ -25,6 +26,8 @@ let selectedLeft = null;
 let selectedRight = null;
 let leftWheel = null;
 let rightWheel = null;
+let leftSearch = null;
+let rightSearch = null;
 let currentMode = 'versus';
 let currentPeriod = 'all';
 let customStartDate = null;
@@ -69,6 +72,16 @@ function updateCard(cardId, player) {
 function updateBothCards() {
     updateCard('leftCard', selectedLeft);
     updateCard('rightCard', selectedRight);
+}
+
+function showSearchRow() {
+    const searchRow = document.getElementById('playerSearchRow');
+    if (searchRow) searchRow.style.display = '';
+}
+
+function hideSearchRow() {
+    const searchRow = document.getElementById('playerSearchRow');
+    if (searchRow) searchRow.style.display = 'none';
 }
 
 function renderVersusMode() {
@@ -187,6 +200,38 @@ async function compareH2H() {
     }
 }
 
+function handleSearchSelect(side, playerName) {
+    const found = allPlayers.find(p =>
+        p.playerName.toLowerCase() === playerName.toLowerCase()
+    );
+
+    const player = found || { playerName: playerName, playerId: null };
+
+    if (side === 'left') {
+        selectedLeft = player;
+        if (found && leftWheel) leftWheel.scrollToPlayer(found.playerId);
+        updateCard('leftCard', player);
+    } else {
+        selectedRight = player;
+        if (found && rightWheel) rightWheel.scrollToPlayer(found.playerId);
+        updateCard('rightCard', player);
+    }
+
+    hideH2HResult();
+}
+
+function initSearch() {
+    if (leftSearch) return;
+
+    leftSearch = new PlayerSearch('searchLeft', 'searchLeftDropdown', (name) => {
+        handleSearchSelect('left', name);
+    });
+
+    rightSearch = new PlayerSearch('searchRight', 'searchRightDropdown', (name) => {
+        handleSearchSelect('right', name);
+    });
+}
+
 async function loadAllPlayers(start, end) {
     try {
         allPlayers = await fetchPlayers(start, end);
@@ -207,11 +252,13 @@ async function loadAllPlayers(start, end) {
         leftWheel = new WheelPicker('pickerLeft', allPlayers, (player) => {
             selectedLeft = player;
             updateCard('leftCard', player);
+            if (leftSearch) leftSearch.setValue(player.playerName);
             hideH2HResult();
         });
         rightWheel = new WheelPicker('pickerRight', allPlayers, (player) => {
             selectedRight = player;
             updateCard('rightCard', player);
+            if (rightSearch) rightSearch.setValue(player.playerName);
             hideH2HResult();
         });
 
@@ -238,6 +285,7 @@ async function loadCompare() {
             document.querySelector('.wheels-row').style.display = 'none';
             document.querySelector('.cards-row').style.display = 'none';
             document.querySelector('.compare-header').style.display = 'none';
+            document.getElementById('playerSearchRow')?.style.setProperty('display', 'none');
             document.getElementById('h2hCompareBtnWrapper')?.remove();
 
             const container = document.querySelector('#comparePage .max-w-5xl');
@@ -252,7 +300,22 @@ async function loadCompare() {
         document.querySelector('.compare-header').style.display = '';
         document.getElementById('compareNoSub')?.remove();
 
-        hideH2HButton();
+        initSearch();
+
+        if (currentMode === 'versus') {
+            renderVersusMode();
+        } else {
+            renderSingleMode();
+        }
+
+        const metric = getCurrentMetric();
+        if (metric.id === 'h2h') {
+            showSearchRow();
+            showH2HButton();
+        } else {
+            hideSearchRow();
+            hideH2HButton();
+        }
 
         await loadAllPlayers(null, null);
     } catch (e) {
@@ -289,8 +352,10 @@ window.addEventListener('settings-applied', (e) => {
     }
 
     if (metricId === 'h2h') {
+        showSearchRow();
         showH2HButton();
     } else {
+        hideSearchRow();
         hideH2HButton();
     }
 

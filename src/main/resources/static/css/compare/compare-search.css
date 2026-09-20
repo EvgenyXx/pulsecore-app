@@ -1,0 +1,205 @@
+/* css/compare/compare-search.css */
+
+.player-search-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.player-search-wrapper {
+    position: relative;
+}
+
+/* Обёртка input + кнопка очистки */
+.player-search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.player-search-input {
+    width: 100%;
+    padding: 10px 36px 10px 14px; /* справа больше места под крестик */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.player-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.player-search-input:focus {
+    outline: none;
+    border-color: #818cf8;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Кнопка очистки — внутри поля справа */
+.player-search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+    transition: all 0.15s;
+}
+
+.player-search-clear:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.player-search-clear.hidden {
+    display: none;
+}
+
+/* Дропдаун */
+.player-search-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.player-search-dropdown.hidden {
+    display: none;
+}
+
+.player-search-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    cursor: pointer;
+    color: #e5e7eb;
+    font-size: 14px;
+    transition: background 0.15s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.player-search-item:last-child {
+    border-bottom: none;
+}
+
+.player-search-item:hover {
+    background: rgba(129, 140, 248, 0.12);
+    color: #fff;
+}
+
+.player-search-badge {
+    color: #818cf8;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.player-search-empty {
+    padding: 14px;
+    color: #6b7280;
+    font-size: 13px;
+    text-align: center;
+}
+
+.player-search-loader {
+    padding: 10px 14px;
+    color: #6b7280;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Памятка */
+.player-search-hint {
+    margin-bottom: 10px;
+}
+
+.player-search-hint-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(129, 140, 248, 0.08);
+    border: 1px solid rgba(129, 140, 248, 0.2);
+    border-radius: 8px;
+    color: #a5b4fc;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.player-search-hint-btn:hover {
+    background: rgba(129, 140, 248, 0.15);
+}
+
+.player-search-hint-btn svg {
+    flex-shrink: 0;
+}
+
+.player-search-hint-body {
+    margin-top: 8px;
+    padding: 12px 14px;
+    background: rgba(129, 140, 248, 0.06);
+    border: 1px solid rgba(129, 140, 248, 0.15);
+    border-radius: 10px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #d1d5db;
+}
+
+.player-search-hint-body.hidden {
+    display: none;
+}
+
+.player-search-hint-body p {
+    margin: 0 0 6px 0;
+}
+
+.player-search-hint-body p:last-child {
+    margin-bottom: 0;
+}
+
+.player-search-hint-body strong {
+    color: #e5e7eb;
+}
+
+.player-search-hint-body .player-search-badge {
+    display: inline;
+    padding: 0 3px;
+    color: #818cf8;
+    font-weight: 600;
+}
+
+/* Мобильная версия */
+@media (max-width: 640px) {
+    .player-search-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .player-search-dropdown {
+        max-height: 200px;
+    }
+}
