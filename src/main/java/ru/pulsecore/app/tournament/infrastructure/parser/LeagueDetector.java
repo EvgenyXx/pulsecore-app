@@ -30,7 +30,7 @@ public class LeagueDetector {
     }
 
 
-    //todo тестовый
+
     private LeagueType detectFromText(String text) {
         String normalized = text.toLowerCase().replaceAll("\\s+", "");
 
@@ -41,16 +41,5 @@ public class LeagueDetector {
         if (normalized.contains("суперлига")) return LeagueType.SUPER_LEAGUE;
         return null;
     }
-//    private LeagueType detectFromText(String text) {
-//        if (text.contains("Лига A") || text.contains("Лига А")
-//                || text.contains("Лига: A") || text.contains("Лига: А")) return LeagueType.A;
-//        if (text.contains("Лига В") || text.contains("Лига B")
-//                || text.contains("Лига: B") || text.contains("Лига: В")) return LeagueType.B;
-//        if (text.contains("Лига С") || text.contains("Лига C")
-//                || text.contains("Лига: C") || text.contains("Лига: С")) return LeagueType.C;
-//        if (text.contains("Лига D") || text.contains("Лига: D")) return LeagueType.D;
-//        if (text.contains("Мужская Суперлига") || text.contains("Женская Суперлига")
-//                || text.contains("Суперлига")) return LeagueType.SUPER_LEAGUE;
-//        return null;
-//    }
+
 }

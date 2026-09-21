@@ -1,4 +1,4 @@
-// ==================== SumResponse.java — заменить ====================
+
 package ru.pulsecore.app.player.api.dto.response;
 
 import lombok.Builder;

@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
 import ru.pulsecore.app.admin.client.PlayerClient;
+import ru.pulsecore.app.shared.dto.response.LastLoginResponse;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 
@@ -22,6 +24,14 @@ public class AdminPlayerController {
 
     private final PlayerClient playerClient;
 
+    @Operation(summary = "Последние входы игроков")
+    @GetMapping(AdminApi.LAST_LOGIN)
+    public ResponseEntity<Page<LastLoginResponse>> getLastLogin(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(playerClient.getLastLogin(PageRequest.of(page, size)));
+    }
+
     @Operation(summary = "Удалить игрока")
     @DeleteMapping(AdminApi.DELETE_PLAYER)
     public ResponseEntity<MessageResponse> deletePlayer(@PathVariable UUID id) {
@@ -32,10 +42,10 @@ public class AdminPlayerController {
     @GetMapping(AdminApi.SEARCH_BY_NAME)
     public ResponseEntity<Page<PlayerData>> getPlayersByName(
             @RequestParam("q") String q,
-            @RequestParam(defaultValue = "0")int page ,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
-            ) {
-        return ResponseEntity.ok(playerClient.searchByNamePage(q,page,size));
+    ) {
+        return ResponseEntity.ok(playerClient.searchByNamePage(q, page, size));
     }
 
     @Operation(summary = "Обновить игрока")

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.tournament.api.TournamentApi;
@@ -31,5 +32,12 @@ public class LiveTournamentController {
     @GetMapping(TournamentApi.ONLINE_ALL)
     public ResponseEntity<Map<Long, Long>> getAllOnline() {
         return ResponseEntity.ok(liveService.getOnlineCounts());
+    }
+
+    @Operation(summary = "Получить состав по ID для лайв-трансляции")
+    @GetMapping(TournamentApi.LINEUP_BY_ID)
+    public ResponseEntity<TournamentLiveDto> getLineupById(
+            @PathVariable(TournamentApi.PARAM_LINEUP_BY_ID) Long id) {
+        return ResponseEntity.ok(liveService.getById(id));
     }
 }

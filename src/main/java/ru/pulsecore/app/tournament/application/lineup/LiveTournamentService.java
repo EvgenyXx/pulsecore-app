@@ -2,6 +2,7 @@ package ru.pulsecore.app.tournament.application.lineup;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.tournament.infrastructure.exception.LineupNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
 import ru.pulsecore.app.tournament.api.dto.response.TournamentLiveDto;
 import ru.pulsecore.app.tournament.domain.enums.LiveStatus;
@@ -28,6 +29,19 @@ public class LiveTournamentService {
 
     private static final int TOURNAMENT_MAX_DURATION_HOURS = 6;
 
+
+    /**
+     * Получить состав по ID для лайв-трансляции.
+     *
+     * @param id ID состава
+     * @return DTO состава
+     * @throws LineupNotFoundException если состав не найден
+     */
+    public TournamentLiveDto getById(Long id) {
+        return lineupRepository.findById(id)
+                .map(mapper::toDto)
+                .orElseThrow(() -> new LineupNotFoundException(id));
+    }
 
 
     public List<TournamentLiveDto> getLive() {

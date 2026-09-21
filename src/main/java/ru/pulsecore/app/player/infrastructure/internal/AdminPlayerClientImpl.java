@@ -10,16 +10,13 @@ import ru.pulsecore.app.player.application.admin.PlayerUpdateAdminService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
-import ru.pulsecore.app.shared.dto.response.PageViewStats;
-import ru.pulsecore.app.shared.dto.response.PlayerPageViewStats;
+import ru.pulsecore.app.shared.dto.response.*;
 import ru.pulsecore.app.admin.client.PlayerClient;
 import ru.pulsecore.app.player.application.analytic.PageViewStatsService;
 import ru.pulsecore.app.player.application.player.PlayerAdminService;
 import ru.pulsecore.app.player.application.role.RoleManagementService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionCommandService;
-import ru.pulsecore.app.shared.dto.response.MessageResponse;
-import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -32,13 +29,22 @@ import java.util.UUID;
 public class AdminPlayerClientImpl implements PlayerClient {
 
 
-    private final PlayerAdminService  playerAdminService;
+    private final PlayerAdminService playerAdminService;
     private final RoleManagementService roleManagementService;
     private final SubscriptionCommandService subscriptionCommandService;
     private final PageViewStatsService pageViewStatsService;
-    private final PlayerRepository  playerRepository;
-    private final SubscriptionQueryService  subscriptionQueryService;
+    private final PlayerRepository playerRepository;
+    private final SubscriptionQueryService subscriptionQueryService;
     private final PlayerUpdateAdminService updateAdminService;
+
+    @Override
+    public Page<LastLoginResponse> getLastLogin(Pageable pageable) {
+        return playerRepository.getLastLogin(pageable)
+                .map(p -> new LastLoginResponse(
+                        p.getName(),
+                        p.getLastLoginAt()
+                ));
+    }
 
     @Override
     public PlayerData updatePlayer(UUID playerId, UpdatePlayerRequest request) {
@@ -54,12 +60,12 @@ public class AdminPlayerClientImpl implements PlayerClient {
 
     @Override
     public MessageResponse deletePlayer(UUID playerId) {
-      return   playerAdminService.deletePlayer(playerId);
+        return playerAdminService.deletePlayer(playerId);
     }
 
     @Override
     public List<PlayerData> getPlayers() {
-       return playerAdminService.getPlayers();
+        return playerAdminService.getPlayers();
     }
 
     @Override
@@ -70,13 +76,13 @@ public class AdminPlayerClientImpl implements PlayerClient {
 
     @Override
     public MessageResponse revokeRole(UUID playerId, String role) {
-       roleManagementService.revokeRole(playerId, role);
+        roleManagementService.revokeRole(playerId, role);
         return new MessageResponse("Роль " + role + " отозвана");
     }
 
     @Override
     public List<String> getRoles(UUID playerId) {
-       return roleManagementService.getRoleNames(playerId);
+        return roleManagementService.getRoleNames(playerId);
     }
 
     @Override
@@ -93,7 +99,7 @@ public class AdminPlayerClientImpl implements PlayerClient {
 
     @Override
     public SubscriptionStatusResponse getSubscription(UUID playerId) {
-       return subscriptionQueryService.getSubscription(playerId);
+        return subscriptionQueryService.getSubscription(playerId);
     }
 
     @Override
