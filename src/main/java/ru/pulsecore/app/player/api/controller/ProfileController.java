@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.player.api.PlayerApi;
 import ru.pulsecore.app.player.api.dto.request.ChangePasswordRequest;
+import ru.pulsecore.app.player.api.dto.request.SetThemeRequest;
 import ru.pulsecore.app.player.api.dto.request.UpdateProfileRequest;
 import ru.pulsecore.app.player.api.dto.request.VerifyPasswordRequest;
 import ru.pulsecore.app.player.api.dto.response.NotificationsStatusResponse;
@@ -71,11 +72,10 @@ public class ProfileController {
     }
 
     @Operation(summary = "Сохранить тему оформления")
-    @PostMapping(PlayerApi.ME_THEME)//todo сделать дто request
+    @PostMapping(PlayerApi.ME_THEME)
     public ResponseEntity<Void> setTheme(@CurrentPlayer PlayerPrincipal principal,
-                                         @RequestBody Map<String, String> body) {
-        profileFacade.setTheme(principal.playerId().toString(),
-                body.getOrDefault("theme", "dark"));
+                                         @Valid @RequestBody SetThemeRequest request) {
+        profileFacade.setTheme(principal.playerId().toString(), request.theme());
         return ResponseEntity.ok().build();
     }
 

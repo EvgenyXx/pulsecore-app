@@ -2,6 +2,7 @@ package ru.pulsecore.app.tournament.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import ru.pulsecore.app.player.api.dto.response.SumResponse;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
 import ru.pulsecore.app.tournament.api.TournamentApi;
+import ru.pulsecore.app.tournament.api.dto.request.SumRequest;
 import ru.pulsecore.app.tournament.application.earnings.sum.SumFacade;
 
 import java.time.LocalDate;
@@ -27,11 +29,17 @@ public class SumController {
     @GetMapping(TournamentApi.SUM)
     public ResponseEntity<SumResponse> getSumById(
             @CurrentPlayer PlayerPrincipal principal,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
+            @Valid @ModelAttribute SumRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(sumFacade.getSum(principal.playerId(), start, end, page, size));
+
+        return ResponseEntity.ok(sumFacade.getSum(
+                principal.playerId(),
+                request.start(),
+                request.end(),
+                page,
+                size
+        ));
     }
 
     @Operation(summary = "Обновить результат турнира")

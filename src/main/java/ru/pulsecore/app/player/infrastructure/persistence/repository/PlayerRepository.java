@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
+import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerLastLoginProjection;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,13 @@ import java.util.UUID;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, UUID> {
+
+    @Query("""
+            SELECT p.name AS name, p.lastLoginAt AS lastLoginAt
+            FROM Player p
+            ORDER BY p.lastLoginAt DESC
+            """)
+    Page<PlayerLastLoginProjection> getLastLogin(Pageable pageable);
 
     boolean existsByEmail(String email);
 

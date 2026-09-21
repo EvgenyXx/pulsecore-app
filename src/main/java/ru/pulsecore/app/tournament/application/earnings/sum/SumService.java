@@ -39,11 +39,10 @@ public class SumService {
 
     public SumResponse getSum(UUID playerId, LocalDate start, LocalDate end, int page, int size) {
         var player = playerClient.getPlayerById(playerId);
-        if (start == null && end == null) {
-            return emptyResponse(player.playerName());
-        }
+
         if (start == null) start = end;
         if (end == null) end = start;
+
         PeriodStatsProjection stats =
                 tournamentResultQueryService.getStatsByPeriod(player.playerId(), start, end);
 
@@ -61,16 +60,6 @@ public class SumService {
                 .totalPages(pageResult.getTotalPages())
                 .currentPage(pageResult.getNumber())
                 .totalElements(pageResult.getTotalElements())
-                .build();
-    }
-
-    //todo возможно удалить проверку заполняемости дат сделать в контроллере или че то такок
-    private SumResponse emptyResponse(String playerName) {
-        return SumResponse.builder()
-                .playerName(StringUtils.capitalize(playerName))
-                .start("").end("")
-                .sum(0.0).average(0.0).count(0L)
-                .tournaments(null).totalPages(0).currentPage(0).totalElements(0)
                 .build();
     }
 

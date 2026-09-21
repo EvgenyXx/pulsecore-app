@@ -31,7 +31,7 @@ public class ChatFacade {
     }
 
     public List<PlayerData> searchPlayers(String q) {
-        return chatMentionService.searchPlayers(q);//todo вопросики что возвращать
+        return chatMentionService.searchPlayers(q);
     }
 
     public void deleteMessage(Long messageId, UUID playerId) {

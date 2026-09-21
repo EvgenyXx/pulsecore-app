@@ -96,4 +96,11 @@ public final class AdminApi {
     public static final String SCHEDULER_PAUSE = "/scheduler/pause";
     public static final String SCHEDULER_RESUME = "/scheduler/resume";
     public static final String SCHEDULER_STATUS = "/scheduler/status";
+
+    /**
+     * Последние входы игроков.
+     * LAST_LOGIN — /stats/last-login, список последних входов с пагинацией.
+     * Admin.
+     */
+    public static final String LAST_LOGIN = "/stats/last-login";
 }

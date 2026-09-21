@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.admin.api.AdminApi;
+import ru.pulsecore.app.admin.api.dto.request.AdminCalculateRequest;
 import ru.pulsecore.app.admin.api.dto.request.ResyncRequest;
 import ru.pulsecore.app.admin.client.TournamentClient;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
 
-import java.util.Map;
+
 import java.util.UUID;
 
 @Tag(name = "Admin", description = "Управление турнирами игроков")
@@ -25,18 +26,13 @@ public class AdminTournamentController {
 
     private final TournamentClient tournamentClient;
 
-    //todo сделать дто не принимать мапу ...
     @Operation(summary = "Рассчитать результаты игрока за период")
     @PostMapping(AdminApi.TOURNAMENT_CALCULATE)
-    public ResponseEntity<AdminCalculateResponse> calculate(@RequestBody Map<String, String> request) {
-        String name = request.get("name");
-        String startDate = request.get("startDate");
-        String endDate = request.get("endDate");
-
-        if (name == null || startDate == null || endDate == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(tournamentClient.calculate(name, startDate, endDate));
+    public ResponseEntity<AdminCalculateResponse> calculate(
+            @Valid @RequestBody AdminCalculateRequest request) {
+        return ResponseEntity.ok(
+                tournamentClient.calculate(request.name(), request.startDate(), request.endDate())
+        );
     }
 
     @Operation(summary = "Удалить все турниры игрока")

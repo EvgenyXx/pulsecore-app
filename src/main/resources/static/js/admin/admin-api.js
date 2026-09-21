@@ -1,3 +1,5 @@
+// js/admin/admin-api.js
+
 const BASE = '/api';
 
 async function apiRequest(endpoint, options = {}) {
@@ -11,6 +13,7 @@ async function apiRequest(endpoint, options = {}) {
 
 export const AdminAPI = {
     getMe: () => apiRequest('/player/me'),
+
     searchPlayers: (q, page = 0, size = 5) =>
         apiRequest(`/admin/search?q=${encodeURIComponent(q)}&page=${page}&size=${size}`)
             .then(data => data.content.map(p => ({
@@ -25,58 +28,120 @@ export const AdminAPI = {
                 liveSelectedHalls: p.liveSelectedHalls,
                 lastLoginAt: p.lastLoginAt
             }))),
-    getPlayerSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/subscription`),
-    getPlayerRoles: (playerId) => apiRequest(`/admin/players/${playerId}/roles`),
-    deletePlayerTournaments: (playerId) => apiRequest(`/admin/players/${playerId}/tournaments`, { method: 'DELETE' }),
-    resyncPlayerTournaments: (playerId, from, to) => apiRequest(`/admin/players/${playerId}/tournaments/resync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from, to })
-    }),
-    deletePlayerAccount: (playerId) => apiRequest(`/admin/players/${playerId}`, { method: 'DELETE' }),
-    togglePlayerRole: (playerId, role, isGrant) => apiRequest(`/admin/players/${playerId}/roles/${isGrant ? 'grant' : 'revoke'}?role=${role}`, { method: isGrant ? 'POST' : 'DELETE' }),
-    giveSubscription: (playerId, days) => apiRequest(`/admin/players/${playerId}/subscribe?days=${days}`, { method: 'POST' }),
-    removeSubscription: (playerId) => apiRequest(`/admin/players/${playerId}/unsubscribe`, { method: 'DELETE' }),
+
+    getPlayerSubscription: (playerId) =>
+        apiRequest(`/admin/players/${playerId}/subscription`),
+
+    getPlayerRoles: (playerId) =>
+        apiRequest(`/admin/players/${playerId}/roles`),
+
+    deletePlayerTournaments: (playerId) =>
+        apiRequest(`/admin/players/${playerId}/tournaments`, { method: 'DELETE' }),
+
+    resyncPlayerTournaments: (playerId, from, to) =>
+        apiRequest(`/admin/players/${playerId}/tournaments/resync`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from, to })
+        }),
+
+    deletePlayerAccount: (playerId) =>
+        apiRequest(`/admin/players/${playerId}`, { method: 'DELETE' }),
+
+    togglePlayerRole: (playerId, role, isGrant) =>
+        apiRequest(`/admin/players/${playerId}/roles/${isGrant ? 'grant' : 'revoke'}?role=${role}`, {
+            method: isGrant ? 'POST' : 'DELETE'
+        }),
+
+    giveSubscription: (playerId, days) =>
+        apiRequest(`/admin/players/${playerId}/subscribe?days=${days}`, {
+            method: 'POST'
+        }),
+
+    removeSubscription: (playerId) =>
+        apiRequest(`/admin/players/${playerId}/unsubscribe`, { method: 'DELETE' }),
 
     // ===== ОБНОВЛЕНИЕ ИГРОКА =====
-    updatePlayer: (playerId, data) => apiRequest(`/admin/players/${playerId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }),
+    updatePlayer: (playerId, data) =>
+        apiRequest(`/admin/players/${playerId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }),
 
     getPrices: () => apiRequest('/admin/prices'),
-    updatePrices: (prices) => apiRequest('/admin/update', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(prices)
-    }),
-    calculatePlayer: (data) => apiRequest('/admin/tournaments/calculate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }),
-    broadcast: (message) => apiRequest('/admin/broadcast', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
-    }),
-    getPageStats: (days) => apiRequest(`/admin/stats/page-views?days=${days}`),
-    getPlayerStats: (days) => apiRequest(`/admin/stats/page-views/players?days=${days}`),
+
+    updatePrices: (prices) =>
+        apiRequest('/admin/update', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prices)
+        }),
+
+    // ===== РАСЧЁТ РЕЗУЛЬТАТОВ (DTO) =====
+    /**
+     * Рассчитать результаты игрока за период.
+     * @param {{name: string, startDate: string, endDate: string}} request
+     * @returns {Promise<AdminCalculateResponse>}
+     */
+    calculatePlayer: ({ name, startDate, endDate }) =>
+        apiRequest('/admin/tournaments/calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name,
+                startDate,
+                endDate
+            })
+        }),
+
+    broadcast: (message) =>
+        apiRequest('/admin/broadcast', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        }),
+
+    getPageStats: (days) =>
+        apiRequest(`/admin/stats/page-views?days=${days}`),
+
+    getPlayerStats: (days) =>
+        apiRequest(`/admin/stats/page-views/players?days=${days}`),
+
+    // ===== ПОСЛЕДНИЕ ВХОДЫ =====
+    /**
+     * Последние входы игроков (с пагинацией).
+     * @param {number} page — номер страницы (с 0)
+     * @param {number} size — размер страницы
+     * @returns {Promise<{content: Array<{name: string, lastLoginAt: string}>, totalElements: number, totalPages: number, number: number, size: number, first: boolean, last: boolean}>}
+     */
+    getLastLogin: (page = 0, size = 20) =>
+        apiRequest(`/admin/stats/last-login?page=${page}&size=${size}`),
 
     // ===== ТУРНИРЫ =====
-    getTournamentsByDate: (date) => apiRequest(`/admin/tournaments?date=${date}`),
-    getTournamentById: (id) => apiRequest(`/admin/tournaments/${id}`),
-    updateTournament: (id, data) => apiRequest(`/admin/tournaments/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }),
+    getTournamentsByDate: (date) =>
+        apiRequest(`/admin/tournaments?date=${date}`),
+
+    getTournamentById: (id) =>
+        apiRequest(`/admin/tournaments/${id}`),
+
+    updateTournament: (id, data) =>
+        apiRequest(`/admin/tournaments/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }),
 
     // ===== ПЛАНИРОВЩИК =====
-    getSchedulerStatus: () => apiRequest('/admin/scheduler/status'),
-    pauseScheduler: () => apiRequest('/admin/scheduler/pause', { method: 'POST' }),
-    resumeScheduler: () => apiRequest('/admin/scheduler/resume', { method: 'POST' }),
+    getSchedulerStatus: () =>
+        apiRequest('/admin/scheduler/status'),
 
-    logout: () => fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })
+    pauseScheduler: () =>
+        apiRequest('/admin/scheduler/pause', { method: 'POST' }),
+
+    resumeScheduler: () =>
+        apiRequest('/admin/scheduler/resume', { method: 'POST' }),
+
+    logout: () =>
+        fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })
 };

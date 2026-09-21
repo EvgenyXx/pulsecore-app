@@ -19,7 +19,6 @@ public class AdminSubscriptionController {
 
     private final PlayerClient playerClient;
 
-    //todo сделать дто request?
     @Operation(summary = "Активировать подписку игроку")
     @PostMapping(AdminApi.SUBSCRIBE)
     public ResponseEntity<MessageResponse> subscribe(@PathVariable UUID id,
