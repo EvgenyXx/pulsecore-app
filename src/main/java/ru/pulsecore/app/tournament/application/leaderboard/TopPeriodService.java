@@ -45,7 +45,7 @@ public class TopPeriodService {
         return buildResponse(all, playerId);
     }
 
-    //todo вынести в другое место
+
     private TopLeagueResponse buildResponse(List<TopPlayersView> all, UUID playerId) {
         List<TopPlayersView> top5 = all.size() > 5 ? all.subList(0, 5) : all;
 

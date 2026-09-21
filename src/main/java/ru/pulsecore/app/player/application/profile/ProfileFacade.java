@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.NotificationsStatusResponse;
 import ru.pulsecore.app.player.api.dto.response.PlayerProfileResponse;
+import ru.pulsecore.app.player.infrastructure.exception.QrCodeGenerationException;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import java.util.UUID;
 
@@ -44,9 +45,12 @@ public class ProfileFacade {
             themeService.setTheme(UUID.fromString(playerId), theme);//??
     }
 
-    //todo обрабоать ошибку в сервисе
-    public byte[] generateQrCode() throws Exception {
-        return qrCodeService.generateQrCode();
+    public byte[] generateQrCode() {
+        try {
+            return qrCodeService.generateQrCode();
+        } catch (Exception e) {
+            throw new QrCodeGenerationException();
+        }
     }
 
 

@@ -31,7 +31,7 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
         }
 
         if (!subscriptionQueryServicenService.hasActiveSubscription(UUID.fromString(user.getPlayerId()))) {
-            throw new SubscriptionRequiredException();//todo добавить во фронт
+            throw new SubscriptionRequiredException();
         }
         return true;
     }

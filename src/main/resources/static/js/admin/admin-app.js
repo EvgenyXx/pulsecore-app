@@ -6,6 +6,7 @@ import { sendBroadcast } from './admin-broadcast.js';
 import { loadPageStats } from './admin-stats.js';
 import { loadTournaments, toggleTournamentExpand, toggleStatus, saveTournament } from './admin-tournaments.js';
 import { loadSchedulerStatus, toggleScheduler } from './admin-scheduler.js';
+import { loadLastLogin, loadLastLoginPrev, loadLastLoginNext } from './admin-last-login.js';
 
 window.searchPlayers = searchPlayers;
 window.selectPlayer = selectPlayer;
@@ -29,6 +30,9 @@ window.toggleStatus = toggleStatus;
 window.saveTournament = saveTournament;
 window.loadSchedulerStatus = loadSchedulerStatus;
 window.toggleScheduler = toggleScheduler;
+window.loadLastLogin = loadLastLogin;
+window.loadLastLoginPrev = loadLastLoginPrev;
+window.loadLastLoginNext = loadLastLoginNext;
 window.logout = logout;
 window.showSection = showSection;
 window.toggleAdminSheet = toggleAdminSheet;
@@ -46,7 +50,7 @@ function getTodayString() {
 function showSection(s) {
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
 
-    if (s === 'players' || s === 'calculate' || s === 'broadcast') {
+    if (s === 'players' || s === 'calculate' || s === 'broadcast' || s === 'last-login') {
         document.getElementById('nav-players')?.classList.add('active');
     } else if (s === 'subscriptions' || s === 'sub-manage' || s === 'prices') {
         document.getElementById('nav-subscriptions')?.classList.add('active');
@@ -122,6 +126,9 @@ function openAccordion(id) {
     if (body) body.style.display = 'block';
     const arrow = document.getElementById('arrow-' + id);
     if (arrow) arrow.style.transform = 'rotate(180deg)';
+
+    // При открытии аккордеона "Последние входы" — загружаем данные
+    if (id === 'acc-last-login') loadLastLogin(0);
 }
 
 function toggleAccordion(id) {
@@ -133,6 +140,9 @@ function toggleAccordion(id) {
     });
     body.style.display = (body.style.display === 'none' || body.style.display === '') ? 'block' : 'none';
     if (arrow) arrow.style.transform = body.style.display === 'block' ? 'rotate(180deg)' : 'rotate(0deg)';
+
+    // При открытии аккордеона "Последние входы" — загружаем данные
+    if (id === 'acc-last-login' && body.style.display === 'block') loadLastLogin(0);
 }
 
 async function logout() {

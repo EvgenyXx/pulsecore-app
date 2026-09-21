@@ -49,6 +49,7 @@
                 <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this)">Поиск и управление</button>
                 <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this)">Расчёт</button>
                 <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this)">Рассылка</button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-last-login', this)">Последние входы</button>
             </div>
         </div>
         <div>
@@ -177,7 +178,6 @@
                                 <span id="playerLastLogin" class="player-info-value">—</span>
                             </div>
 
-                            <!-- НОВЫЙ БЛОК: ПЕРЕСИНХРОНИЗАЦИЯ С ДАТАМИ -->
                             <div class="player-info-item" style="grid-column: 1 / -1; display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
                                 <div style="flex: 1; min-width: 130px;">
                                     <span class="player-info-label">С даты</span>
@@ -270,6 +270,35 @@
                     </div>
                 </div>
             </div>
+
+            <!-- НОВЫЙ РАЗДЕЛ: ПОСЛЕДНИЕ ВХОДЫ -->
+            <div class="sheet-accordion" id="acc-last-login-wrapper" style="display:none;">
+                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-last-login')">
+                    <span class="sheet-section-title" style="margin:0;">Последние входы</span>
+                    <svg class="sheet-accordion-arrow" id="arrow-acc-last-login" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="sheet-accordion-body" id="acc-last-login" style="display:none;">
+                    <div class="widget-card">
+                        <div class="mb-3">
+                            <span class="text-xs text-zinc-400" id="lastLoginInfo">Загрузка...</span>
+                        </div>
+
+                        <div class="overflow-y-auto" id="lastLoginScroll" style="max-height: 500px;">
+                            <table class="w-full text-xs">
+                                <thead>
+                                <tr class="text-zinc-500">
+                                    <th class="text-left py-2 sticky top-0" style="background: #12121f;">Имя</th>
+                                    <th class="text-right py-2 sticky top-0" style="background: #12121f;">Последний вход</th>
+                                </tr>
+                                </thead>
+                                <tbody id="lastLoginTableBody">
+                                <tr><td colspan="2" class="text-center text-zinc-500 py-4">Загрузка...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="section-subscriptions" class="hidden">
@@ -329,7 +358,7 @@
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs"><thead><tr class="text-zinc-500"><th class="text-left py-1">Путь</th><th class="text-right py-1">Запросов</th><th class="text-right py-1">%</th></tr></thead>
-                        <tbody id="statsTableBody"><tr><td colspan="3" class="text-center text-zinc-500 py-4">Загрузка...</td></tr></tbody>
+                        <tbody id="statsTableBody"><tr><td colspan="3" class="text-center text-zinc-500 py-5">Загрузка...</td></tr></tbody>
                     </table>
                 </div>
                 <div class="mt-6">
@@ -355,6 +384,7 @@
                 <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this); toggleAdminSheet()">Поиск и управление</button>
                 <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this); toggleAdminSheet()">Расчёт</button>
                 <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this); toggleAdminSheet()">Рассылка</button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-last-login', this); toggleAdminSheet()">Последние входы</button>
             </div>
         </div>
 

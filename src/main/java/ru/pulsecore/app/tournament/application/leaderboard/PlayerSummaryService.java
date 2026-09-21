@@ -44,54 +44,73 @@ public class PlayerSummaryService {
 
 
 
-    //todo доставать через проекцию
     private LastResultDto getLastResult(UUID playerId) {
-        return tournamentResultRepository.findTopByPlayerIdOrderByDateDesc(playerId)
-                .map(tournamentResultEntity -> LastResultDto.builder()
-                        .date(tournamentResultEntity.getDate().toString())
-                        .amount(tournamentResultEntity.getAmount())
-                        .resultId(tournamentResultEntity.getId())
-                        .build())
-                .orElse(null);
+        return tournamentResultRepository.getLastResult(playerId)
+                .map(lastResultProjection ->
+                        LastResultDto.builder()
+                                .date(lastResultProjection.getDate())
+                                .amount(lastResultProjection.getAmount())
+                                .resultId(lastResultProjection.getResultId()).build()).orElse(null);
     }
 
-    //todo этот пиздец тоже упростить . нахрена искать по имени если есть айди?
+
     private List<UpcomingLineupDto> getUpcomingLineups(String playerName) {
         String playerNameLower = playerName.toLowerCase();
         LocalDate today = LocalDate.now();
         List<Lineup> lineups = lineupRepository
                 .findByDateBetweenOrderByDateAscTimeAsc(today, today.plusDays(2));
 
-        Map<LocalDate, List<Lineup>> byDate = lineups.stream()
-                .collect(Collectors.groupingBy(Lineup::getDate, LinkedHashMap::new, Collectors.toList()));
+        Map<LocalDate, List<Lineup>> byDate = groupLineupsByDate(lineups);
 
-        LocalDate soonestDate = byDate.keySet().stream().min(LocalDate::compareTo).orElse(null);
+        LocalDate soonestDate = findSoonestDate(byDate);
 
         List<UpcomingLineupDto> result = new ArrayList<>();
         for (Map.Entry<LocalDate, List<Lineup>> entry : byDate.entrySet()) {
             LocalDate date = entry.getKey();
-            List<Lineup> myLineups = entry.getValue().stream()
-                    .filter(l -> l.getPlayers().toLowerCase().contains(playerNameLower))
-                    .toList();
+            List<Lineup> myLineups = filterMyLineups(entry.getValue(), playerNameLower);
 
             if (myLineups.isEmpty()) {
-                result.add(UpcomingLineupDto.builder()
-                        .date(date.toString())
-                        .inLineup(false)
-                        .isSoon(date.equals(soonestDate))
-                        .build());
+                result.add(buildNotInLineupDto(date, soonestDate));
             } else {
-                myLineups.forEach(lineup -> result.add(UpcomingLineupDto.builder()
-                        .date(lineup.getDate().toString())
-                        .time(lineup.getTime())
-                        .league(lineup.getLeague())
-                        .inLineup(true)
-                        .players(StringUtils.capitalize(lineup.getPlayers()))
-                        .isSoon(date.equals(soonestDate))
-                        .build()));
+                myLineups.forEach(lineup ->
+                        result.add(buildInLineupDto(lineup, date, soonestDate)));
             }
         }
         return result;
+    }
+
+    private Map<LocalDate, List<Lineup>> groupLineupsByDate(List<Lineup> lineups) {
+        return lineups.stream()
+                .collect(Collectors.groupingBy(Lineup::getDate, LinkedHashMap::new, Collectors.toList()));
+    }
+
+    private LocalDate findSoonestDate(Map<LocalDate, List<Lineup>> byDate) {
+        return byDate.keySet().stream().min(LocalDate::compareTo).orElse(null);
+    }
+
+    private List<Lineup> filterMyLineups(List<Lineup> lineups, String playerNameLower) {
+        return lineups.stream()
+                .filter(l -> l.getPlayers().toLowerCase().contains(playerNameLower))
+                .toList();
+    }
+
+    private UpcomingLineupDto buildNotInLineupDto(LocalDate date, LocalDate soonestDate) {
+        return UpcomingLineupDto.builder()
+                .date(date.toString())
+                .inLineup(false)
+                .isSoon(date.equals(soonestDate))
+                .build();
+    }
+
+    private UpcomingLineupDto buildInLineupDto(Lineup lineup, LocalDate date, LocalDate soonestDate) {
+        return UpcomingLineupDto.builder()
+                .date(lineup.getDate().toString())
+                .time(lineup.getTime())
+                .league(lineup.getLeague())
+                .inLineup(true)
+                .players(StringUtils.capitalize(lineup.getPlayers()))
+                .isSoon(date.equals(soonestDate))
+                .build();
     }
 
     private SubscriptionInfoDto getSubscriptionInfo(UUID playerId) {

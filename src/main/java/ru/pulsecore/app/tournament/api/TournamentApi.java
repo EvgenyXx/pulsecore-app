@@ -121,4 +121,6 @@ public class TournamentApi {
     public static final String COMPARE_H2H = "/compare/h2h";
     public static final String COMPARE_PLAYERS_SEARCH = "/compare/players/search";
 
+    public static final String LINEUP_BY_ID = "/lineups/{id}";
+    public static final String PARAM_LINEUP_BY_ID = "id";
 }
