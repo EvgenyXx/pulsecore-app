@@ -160,7 +160,7 @@ async function loadData() {
         playerId = me.id || '00000000-0000-0000-0000-000000000000';
 
         // Загружаем турнир по ID напрямую с сервера
-        const res = await fetch(`/api/lineups/${lineupId}`, { credentials: 'same-origin' });
+        const res = await fetch(`/api/tournament/lineups/${lineupId}`, { credentials: 'same-origin' });
         if (!res.ok) throw new Error('Турнир не найден');
         const lineup = await res.json();
 
