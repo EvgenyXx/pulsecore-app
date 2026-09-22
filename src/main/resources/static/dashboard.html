@@ -615,79 +615,43 @@
     }
 </script>
 
-<script>
-    (function() {
-        let startX = 0;
-        let startY = 0;
-        let tracking = false;
-        const THRESHOLD_X = 60;
-        const MAX_DELTA_Y = 80;
+<script type="module">
+    import { initSwipeTabs } from '/js/modules/swipe-tabs.js';
 
-        function getTabs() {
-            return document.querySelectorAll('.date-tab');
-        }
-
-        function isScheduleOpen() {
+    // Контекст 1: расписание (переключение дат)
+    const scheduleContext = {
+        container: document.body,
+        tabSelector: '.date-tab',
+        activeClass: 'active',
+        priority: 10,
+        isEnabled: () => {
             const actionPage = document.getElementById('actionPage');
             const title = document.getElementById('actionTitle');
             if (!actionPage || actionPage.classList.contains('hidden')) return false;
             if (!title) return false;
             return title.textContent.includes('Расписание');
         }
+    };
 
-        function switchDay(direction) {
-            const tabs = getTabs();
-            if (!tabs.length) return;
-
-            let activeIndex = -1;
-            tabs.forEach((t, i) => {
-                if (t.classList.contains('active')) activeIndex = i;
-            });
-            if (activeIndex === -1) return;
-
-            const next = activeIndex + direction;
-            if (next < 0 || next >= tabs.length) return;
-
-            tabs[next].click();
+    // Контекст 2: зал славы (переключение лиг)
+    const hallOfFameContext = {
+        container: document.body,
+        tabSelector: '.league-pill',
+        activeClass: 'active',
+        priority: 5,
+        isEnabled: () => {
+            const panel = document.getElementById('topWeekPanel');
+            const homePage = document.getElementById('homePage');
+            return panel
+                && panel.querySelector('.league-pill')
+                && homePage
+                && !homePage.classList.contains('hidden');
         }
+    };
 
-        document.addEventListener('touchstart', function(e) {
-            if (!isScheduleOpen()) return;
-
-            const t = e.target;
-            const tag = t.tagName;
-            if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'A' || tag === 'SELECT' || tag === 'TEXTAREA') {
-                if (!t.classList.contains('date-tab')) {
-                    tracking = false;
-                    return;
-                }
-            }
-
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            tracking = true;
-        }, { passive: true });
-
-        document.addEventListener('touchend', function(e) {
-            if (!tracking) return;
-            tracking = false;
-
-            const endX = e.changedTouches[0].clientX;
-            const endY = e.changedTouches[0].clientY;
-
-            const deltaX = endX - startX;
-            const deltaY = endY - startY;
-
-            if (Math.abs(deltaY) > MAX_DELTA_Y) return;
-            if (Math.abs(deltaX) < THRESHOLD_X) return;
-
-            if (deltaX < 0) {
-                switchDay(1);
-            } else {
-                switchDay(-1);
-            }
-        }, { passive: true });
-    })();
+    initSwipeTabs({
+        contexts: [scheduleContext, hallOfFameContext]
+    });
 </script>
 </body>
 </html>
