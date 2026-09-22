@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.application.resolution.ResultService;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
+import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
@@ -26,12 +27,13 @@ public class TournamentFinishService {
     private final TournamentProcessService processService;
     private final PlayerNotificationRepository repo;
     private final TournamentRepository tournamentRepository;
+    private final TournamentResultNotifier tournamentResultNotifier;
 
 
     @Transactional
     public void handleFinished(TournamentEntity t,
                                List<PlayerNotification> notifications,
-                               Document doc)  {
+                               Document doc) {
 
         ParsedResult parsed = resultService.calculateAll(doc);
 
@@ -43,14 +45,15 @@ public class TournamentFinishService {
             return;
         }
         if (parsed.status() != TournamentStatus.FINISHED) return;
-        processService.processTournament(notifications, parsed);
+        List<TournamentResultEntity> resultEntities = processService.processTournament(notifications, parsed);
 
 
         t.setFinished(true);
         t.setProcessed(true);
         tournamentRepository.save(t);
         repo.saveAll(notifications);
-        log.info("Турнир завершился. Дата:{},Время:{},URL:{}",t.getDate(),t.getTime(),doc.baseUri());
+        tournamentResultNotifier.publishLastResultEvent(resultEntities);
+        log.info("Турнир завершился. Дата:{},Время:{},URL:{}", t.getDate(), t.getTime(), doc.baseUri());
 
     }
 }

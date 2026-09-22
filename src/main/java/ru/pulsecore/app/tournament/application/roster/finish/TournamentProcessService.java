@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.application.event.TournamentMatchService;
+import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
@@ -28,18 +29,18 @@ public class TournamentProcessService {
     private final PlayerClient playerClient;
     private final TournamentMatchService matchService;
 
-    public void processTournament(
+    public List<TournamentResultEntity> processTournament(
             List<PlayerNotification> notifications,
             ParsedResult parsed) {
         if (notifications == null || notifications.isEmpty()) {
             log.debug("Финиш: нет уведомлений для обработки");
-            return;
+            return List.of();
         }
 
         TournamentEntity tournament = notifications.get(0).getTournament();
         if (tournament == null) {
             log.debug("Финиш: турнир не найден");
-            return;
+            return List.of();
         }
 
         log.debug("Финиш: обработка турнира={}, уведомлений={}",
@@ -61,14 +62,19 @@ public class TournamentProcessService {
 
         log.debug("Финиш: состав игроков={}", rosterData.values());
 
-        processPlayerResults(rosterData, parsed, tournament);
-        matchService.createMatches(parsed,tournament);
+        List<TournamentResultEntity> resultEntities = processPlayerResults(rosterData, parsed, tournament);
+
+        matchService.createMatches(parsed, tournament);
 
 
         tournament.setFinished(true);
+
         log.info("Финиш: турнир={} обработан, игроков={}",
                 tournament.getExternalId(), rosterData.size());
+
+        return resultEntities;
     }
+
 
     private void updateTournamentDates(TournamentEntity tournament, ParsedResult parsed) {
         if (tournament.getDate() == null) {
@@ -94,11 +100,11 @@ public class TournamentProcessService {
         }
     }
 
-    private void processPlayerResults(
+    private List<TournamentResultEntity> processPlayerResults(
             Map<UUID, String> roster,
             ParsedResult parsed,
             TournamentEntity tournament) {
-        resultProcessor.processResultsRoster(
+        return resultProcessor.processResultsRoster(
                 parsed.results(), roster, tournament,
                 parsed.nightBonus(),
                 parsed.isFinished() || parsed.isFinalRemoved(),
