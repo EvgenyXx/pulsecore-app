@@ -47,7 +47,7 @@ public class TournamentResultProcessor {
         }
     }
 
-    public void processResultsRoster(List<ResultDto> results,
+    public List<TournamentResultEntity> processResultsRoster(List<ResultDto> results,
                                      Map<UUID, String> roster,
                                      TournamentEntity tournament,
                                      double bonus,
@@ -56,7 +56,7 @@ public class TournamentResultProcessor {
                                      String league) {
         if (!isFinished) {
             log.debug("Результаты: турнир не завершён, пропуск roster");
-            return;
+            return List.of();
         }
 
         List<TournamentResultEntity> entities = new ArrayList<>();
@@ -72,6 +72,8 @@ public class TournamentResultProcessor {
             log.debug("Результаты: найдено {} записей для сохранения", entities.size());
             persistence.saveRoster(entities);
         }
+
+        return entities;
     }
 
     private TournamentResultEntity buildEntity(UUID playerId, TournamentEntity tournament, ResultDto r,
