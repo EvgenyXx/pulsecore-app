@@ -7,8 +7,11 @@
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
-    animation: rankSlideIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    transition: background 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.35s ease,
+                transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    will-change: opacity, transform;
 }
 
 .rank-card:hover {
@@ -20,12 +23,20 @@
 .rank-card.first {
     background: rgba(245, 158, 11, 0.06);
     border: 1px solid rgba(245, 158, 11, 0.25);
+    transition: background 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease,
+                transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .rank-card.mine {
     background: rgba(99, 102, 241, 0.12);
     border: 1px solid rgba(99, 102, 241, 0.35);
     box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+    transition: background 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease,
+                transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .rank-number {
@@ -40,7 +51,7 @@
     flex-shrink: 0;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.05);
-    transition: all 0.35s ease;
+    transition: background 0.35s ease, color 0.35s ease;
 }
 
 .rank-card.first .rank-number {
@@ -129,17 +140,6 @@
 }
 
 /* Анимации */
-@keyframes rankSlideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
 @keyframes matchSlideIn {
     from {
         opacity: 0;

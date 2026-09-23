@@ -31,7 +31,7 @@ public class TournamentBatchSaver {
     private void saveNewTournaments(List<TournamentEntity> newTournaments) {
         if (!newTournaments.isEmpty()) {
             tournamentRepository.saveAll(newTournaments);
-            log.info("Сохранение: новых турниров={}, ids={}",
+            log.debug("Сохранение: новых турниров={}, ids={}",
                     newTournaments.size(),
                     newTournaments.stream().map(TournamentEntity::getExternalId).toList());
         }

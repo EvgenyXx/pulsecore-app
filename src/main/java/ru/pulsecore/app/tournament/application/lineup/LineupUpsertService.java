@@ -56,7 +56,7 @@ public class LineupUpsertService {
         saveLineups(lineups);
         lineupHashCache.update(date,hash);
 
-        log.info("{} составов сохранено за дату {}", lineups.size(), date);
+        log.debug("{} составов сохранено за дату {}", lineups.size(), date);
     }
 
     private String calculateHash(List<TournamentDto> tournaments) {

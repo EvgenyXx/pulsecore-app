@@ -15,7 +15,7 @@ import {
 } from './modules/profile.js';
 
 window.toggleNotifications = toggleNotifications;
-window.toggleProfilePush = togglePush;  // ← ИЗМЕНЕНО: было window.togglePush
+window.toggleProfilePush = togglePush;
 window.togglePassword = togglePasswordVisibility;
 window.showPasswordForm = showPasswordForm;
 window.checkOldPassword = checkOldPassword;
@@ -44,7 +44,12 @@ async function init() {
             const sub = await ProfileAPI.getSubscription();
             const subText = document.getElementById('subInfoText');
             const subBtn = document.getElementById('subActionBtn');
+            const premiumBadge = document.getElementById('profilePremiumBadge');
+
             if (sub && sub.active) {
+                // ← ДОБАВЛЕНО: показываем галочку
+                if (premiumBadge) premiumBadge.classList.remove('hidden');
+
                 const until = new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
                 subText.innerHTML = '✅ <span class="text-emerald-400">Активна</span> до ' + until;
                 if (subBtn) subBtn.style.display = 'none';

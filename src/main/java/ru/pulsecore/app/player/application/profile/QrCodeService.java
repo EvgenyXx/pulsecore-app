@@ -22,7 +22,7 @@ public class QrCodeService {
 
     public byte[] generateQrCode() throws Exception {
         String url = qrProperties.getBaseUrl();
-        log.info("QR URL: {}", url);
+        log.debug("QR URL: {}", url);
 
         Color qrColor = parseColor(qrProperties.getQrColor());
 

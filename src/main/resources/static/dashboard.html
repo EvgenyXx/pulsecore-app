@@ -87,7 +87,6 @@
             <div class="mb-6 sm:mb-8">
                 <div class="flex items-center justify-between gap-2 flex-wrap">
                     <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <span id="proBadge" class="pro-badge hidden" title="Premium"><span class="pro-diamond">💎</span></span>
                         <span id="reportBadge"></span>
                     </div>
                 </div>
@@ -98,10 +97,6 @@
                         <input type="checkbox" id="pushToggle" class="sr-only peer" onchange="togglePush()">
                         <div class="w-9 h-5 bg-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
                     </label>
-                </div>
-                <div id="onlineCounter" class="hidden mt-2 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="text-xs text-zinc-400">Онлайн: <span id="onlineCount" class="text-emerald-400 font-semibold">0</span></span>
                 </div>
             </div>
 
@@ -379,8 +374,24 @@
         <div id="settings-main">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h2 class="text-lg font-bold text-white">Настройки</h2>
-                    <p class="text-xs text-zinc-500 mt-1"><span id="profileName">Загрузка...</span> · <span id="createdAt">—</span></p>
+                    <h2 class="text-lg font-bold text-white">Профиль</h2>
+                    <div class="flex items-center gap-2 mt-1.5">
+                        <span id="profileName" class="text-[15px] font-semibold text-white leading-none">Загрузка...</span>
+                        <span id="profilePremiumBadge" class="profile-premium-badge hidden" title="Premium">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="11" fill="#2AABEE"/>
+                                <path d="M7 12.5 L10.5 16 L17 8.5"
+                                      stroke="#fff"
+                                      stroke-width="2.5"
+                                      fill="none"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                    </div>
+                    <p class="text-xs text-zinc-500 mt-1.5">
+                        Регистрация: <span id="createdAt">—</span>
+                    </p>
                 </div>
             </div>
 

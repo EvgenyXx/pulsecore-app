@@ -114,16 +114,8 @@ export async function loadDashboardWidgets() {
             state.playerName = data.playerName;
         }
 
-        // Бейдж PRO — только если подписка активна
-        const hasSub = await checkSubscription();
-        const proBadge = document.getElementById('proBadge');
-        if (proBadge && hasSub) {
-            proBadge.classList.remove('hidden');
-        }
-
         document.getElementById('pushToggleContainer')?.classList.remove('hidden');
         if (typeof checkPushStatus === 'function') checkPushStatus();
-        if (typeof loadOnlineCount === 'function') loadOnlineCount();
 
         loadReportBadge();
 
@@ -167,18 +159,6 @@ export async function loadDashboardWidgets() {
             </div>`;
     }
 }
-
-async function loadOnlineCount() {
-    try {
-        const res = await fetch('/api/online');
-        if (res.ok) {
-            const data = await res.json();
-            document.getElementById('onlineCount').textContent = data.online;
-            document.getElementById('onlineCounter').classList.remove('hidden');
-        }
-    } catch(e) {}
-}
-setInterval(loadOnlineCount, 10000);
 
 export function goHome() {
     const homePage = document.getElementById('homePage');
