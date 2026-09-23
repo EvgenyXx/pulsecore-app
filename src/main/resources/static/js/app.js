@@ -199,7 +199,6 @@ async function checkPushStatus() {
     const container = document.getElementById('pushToggleContainer');
     if (!container) return;
 
-    // Нет поддержки — показываем блок
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         container.style.display = '';
         return;
@@ -208,7 +207,6 @@ async function checkPushStatus() {
     try {
         const reg = await swReadyWithTimeout();
 
-        // pushManager может быть undefined (iOS < 16.4)
         if (!reg.pushManager) {
             container.style.display = '';
             return;
@@ -330,7 +328,6 @@ async function init() {
             document.documentElement.setAttribute('data-theme', data.theme);
         }
 
-        // Регистрируем SW сразу — иначе navigator.serviceWorker.ready висит вечно
         if ('serviceWorker' in navigator) {
             try {
                 await navigator.serviceWorker.register('/sw.js');
@@ -354,10 +351,47 @@ async function init() {
     }
 }
 
+// ============ PULL-TO-REFRESH ============
+
 const ptr = document.getElementById('ptrIndicator');
-let ptrStart = 0, ptrTriggered = false;
-document.addEventListener('touchstart', e => { if (window.scrollY <= 5) { ptrStart = e.touches[0].clientX; ptrTriggered = false; } }, { passive: true });
-document.addEventListener('touchmove', e => { if (ptrTriggered || ptrStart === 0 || window.scrollY > 5) return; if (e.touches[0].clientX - ptrStart > 60) { ptrTriggered = true; ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...'; ptr.classList.add('active'); } }, { passive: true });
-document.addEventListener('touchend', () => { if (ptrTriggered) { loadDashboardWidgets(); loadTopWeek(null); setTimeout(() => { ptr.innerHTML = '✓ Обновлено'; ptr.classList.add('done'); setTimeout(() => ptr.classList.remove('active', 'done'), 1200); }, 500); } ptrStart = 0; });
+let ptrStartX = 0;
+let ptrStartY = 0;
+let ptrTriggered = false;
+
+document.addEventListener('touchstart', e => {
+    if (window.scrollY <= 5) {
+        ptrStartX = e.touches[0].clientX;
+        ptrStartY = e.touches[0].clientY;
+        ptrTriggered = false;
+    }
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+    if (ptrTriggered || ptrStartY === 0 || window.scrollY > 5) return;
+
+    const dy = e.touches[0].clientY - ptrStartY;
+    const dx = Math.abs(e.touches[0].clientX - ptrStartX);
+
+    // PTR — только если жест вертикальный (dy > dx)
+    if (dy > 60 && dy > dx) {
+        ptrTriggered = true;
+        ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...';
+        ptr.classList.add('active');
+    }
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+    if (ptrTriggered) {
+        loadDashboardWidgets();
+        loadTopWeek(state.currentLeague);
+        setTimeout(() => {
+            ptr.innerHTML = '✓ Обновлено';
+            ptr.classList.add('done');
+            setTimeout(() => ptr.classList.remove('active', 'done'), 1200);
+        }, 500);
+    }
+    ptrStartX = 0;
+    ptrStartY = 0;
+});
 
 document.addEventListener('DOMContentLoaded', init);

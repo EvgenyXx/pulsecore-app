@@ -31,7 +31,7 @@ public class TournamentChangeAnalyzer {
                 .findByLink(newTournament.getLink());
 
         if (oldTournamentOpt.isEmpty()) {
-            log.warn("Турнир {} ещё не сохранён в БД — пропускаем проверку", newTournament.getLink());
+            log.debug("Турнир {} ещё не сохранён в БД — пропускаем проверку", newTournament.getLink());
             return;
         }
 

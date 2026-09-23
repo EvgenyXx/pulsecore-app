@@ -30,7 +30,7 @@ public class RosterOrchestrationScheduler {
 
     @Scheduled(
             initialDelay = 3,
-            fixedDelay = 10,
+            fixedDelay = 3,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void checkStart() {
@@ -40,7 +40,7 @@ public class RosterOrchestrationScheduler {
 
     @Scheduled(
             initialDelay = 2,
-            fixedDelay = 12,
+            fixedDelay = 1,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void processFinishedTournaments() {
@@ -54,7 +54,7 @@ public class RosterOrchestrationScheduler {
 
     @Scheduled(
             initialDelay = 5,
-            fixedDelay = 30,
+            fixedDelay = 10,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void checkNewTournaments() {
@@ -67,7 +67,7 @@ public class RosterOrchestrationScheduler {
     }
 
     @Scheduled(
-            initialDelay = 8,
+            initialDelay = 10,
             fixedDelay = 15,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
@@ -81,8 +81,8 @@ public class RosterOrchestrationScheduler {
     }
 
     @Scheduled(
-            initialDelay = 12,
-            fixedDelay = 20,
+            initialDelay = 5,
+            fixedDelay = 15,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void checkCanceled() {
