@@ -24,7 +24,7 @@ public class TournamentFinishProcessor {
         List<String> links = repo.findStartedNotFinishedLinks();
         if (links.isEmpty()) return;
         asyncProcessor.clearStats();
-        log.info("Наблюдаются {} турниров", links.size());
+        log.debug("Наблюдаются {} турниров", links.size());
 
         List<CompletableFuture<Void>> futures = links.stream()
                 .map(asyncProcessor::processAsync)

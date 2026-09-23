@@ -87,7 +87,6 @@
             <div class="mb-6 sm:mb-8">
                 <div class="flex items-center justify-between gap-2 flex-wrap">
                     <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <span id="proBadge" class="pro-badge hidden" title="Premium"><span class="pro-diamond">💎</span></span>
                         <span id="reportBadge"></span>
                     </div>
                 </div>
@@ -98,10 +97,6 @@
                         <input type="checkbox" id="pushToggle" class="sr-only peer" onchange="togglePush()">
                         <div class="w-9 h-5 bg-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
                     </label>
-                </div>
-                <div id="onlineCounter" class="hidden mt-2 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="text-xs text-zinc-400">Онлайн: <span id="onlineCount" class="text-emerald-400 font-semibold">0</span></span>
                 </div>
             </div>
 
@@ -379,8 +374,24 @@
         <div id="settings-main">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h2 class="text-lg font-bold text-white">Настройки</h2>
-                    <p class="text-xs text-zinc-500 mt-1"><span id="profileName">Загрузка...</span> · <span id="createdAt">—</span></p>
+                    <h2 class="text-lg font-bold text-white">Профиль</h2>
+                    <div class="flex items-center gap-2 mt-1.5">
+                        <span id="profileName" class="text-[15px] font-semibold text-white leading-none">Загрузка...</span>
+                        <span id="profilePremiumBadge" class="profile-premium-badge hidden" title="Premium">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="11" fill="#2AABEE"/>
+                                <path d="M7 12.5 L10.5 16 L17 8.5"
+                                      stroke="#fff"
+                                      stroke-width="2.5"
+                                      fill="none"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                    </div>
+                    <p class="text-xs text-zinc-500 mt-1.5">
+                        Регистрация: <span id="createdAt">—</span>
+                    </p>
                 </div>
             </div>
 
@@ -615,79 +626,64 @@
     }
 </script>
 
-<script>
-    (function() {
-        let startX = 0;
-        let startY = 0;
-        let tracking = false;
-        const THRESHOLD_X = 60;
-        const MAX_DELTA_Y = 80;
+<script type="module">
+    import { initSwipeTabs } from '/js/modules/swipe-tabs.js';
+    import { initTapPeriod } from '/js/modules/tap-period.js';
+    import { state } from '/js/core/state.js';
 
-        function getTabs() {
-            return document.querySelectorAll('.date-tab');
-        }
+    // ===== СВАЙПЫ (как было) =====
 
-        function isScheduleOpen() {
+    const scheduleContext = {
+        container: document.body,
+        tabSelector: '.date-tab',
+        activeClass: 'active',
+        priority: 10,
+        isEnabled: () => {
             const actionPage = document.getElementById('actionPage');
             const title = document.getElementById('actionTitle');
             if (!actionPage || actionPage.classList.contains('hidden')) return false;
             if (!title) return false;
             return title.textContent.includes('Расписание');
         }
+    };
 
-        function switchDay(direction) {
-            const tabs = getTabs();
-            if (!tabs.length) return;
-
-            let activeIndex = -1;
-            tabs.forEach((t, i) => {
-                if (t.classList.contains('active')) activeIndex = i;
-            });
-            if (activeIndex === -1) return;
-
-            const next = activeIndex + direction;
-            if (next < 0 || next >= tabs.length) return;
-
-            tabs[next].click();
+    const hallOfFameContext = {
+        container: document.body,
+        tabSelector: '.league-pill',
+        activeClass: 'active',
+        priority: 5,
+        isEnabled: () => {
+            const panel = document.getElementById('topWeekPanel');
+            const homePage = document.getElementById('homePage');
+            return panel
+                && panel.querySelector('.league-pill')
+                && homePage
+                && !homePage.classList.contains('hidden');
         }
+    };
 
-        document.addEventListener('touchstart', function(e) {
-            if (!isScheduleOpen()) return;
+    initSwipeTabs({
+        contexts: [scheduleContext, hallOfFameContext]
+    });
 
-            const t = e.target;
-            const tag = t.tagName;
-            if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'A' || tag === 'SELECT' || tag === 'TEXTAREA') {
-                if (!t.classList.contains('date-tab')) {
-                    tracking = false;
-                    return;
-                }
-            }
+    // ===== ТАПЫ ПО ЭКРАНУ → ПЕРИОД =====
+    // 1 тап  → период вперёд (week → month → year)
+    // 2 тапа → период назад  (year → month → week)
 
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            tracking = true;
-        }, { passive: true });
-
-        document.addEventListener('touchend', function(e) {
-            if (!tracking) return;
-            tracking = false;
-
-            const endX = e.changedTouches[0].clientX;
-            const endY = e.changedTouches[0].clientY;
-
-            const deltaX = endX - startX;
-            const deltaY = endY - startY;
-
-            if (Math.abs(deltaY) > MAX_DELTA_Y) return;
-            if (Math.abs(deltaX) < THRESHOLD_X) return;
-
-            if (deltaX < 0) {
-                switchDay(1);
-            } else {
-                switchDay(-1);
-            }
-        }, { passive: true });
-    })();
+    initTapPeriod({
+        container: document.body,
+        excludeSelectors: ['.league-pill', '.period-pill', 'input', 'button', 'a', 'select', 'textarea'],
+        isEnabled: () => {
+            const panel = document.getElementById('topWeekPanel');
+            const homePage = document.getElementById('homePage');
+            return panel
+                && panel.querySelector('.period-pill')
+                && homePage
+                && !homePage.classList.contains('hidden');
+        },
+        getCurrent: () => state.currentPeriod || 'week',
+        setPeriod: (period) => window.switchPeriod(period)
+    });
 </script>
 </body>
 </html>
