@@ -617,8 +617,11 @@
 
 <script type="module">
     import { initSwipeTabs } from '/js/modules/swipe-tabs.js';
+    import { initTapPeriod } from '/js/modules/tap-period.js';
+    import { state } from '/js/core/state.js';
 
-    // Контекст 1: расписание (переключение дат)
+    // ===== СВАЙПЫ (как было) =====
+
     const scheduleContext = {
         container: document.body,
         tabSelector: '.date-tab',
@@ -633,7 +636,6 @@
         }
     };
 
-    // Контекст 2: зал славы (переключение лиг)
     const hallOfFameContext = {
         container: document.body,
         tabSelector: '.league-pill',
@@ -651,6 +653,25 @@
 
     initSwipeTabs({
         contexts: [scheduleContext, hallOfFameContext]
+    });
+
+    // ===== ТАПЫ ПО ЭКРАНУ → ПЕРИОД =====
+    // 1 тап  → период вперёд (week → month → year)
+    // 2 тапа → период назад  (year → month → week)
+
+    initTapPeriod({
+        container: document.body,
+        excludeSelectors: ['.league-pill', '.period-pill', 'input', 'button', 'a', 'select', 'textarea'],
+        isEnabled: () => {
+            const panel = document.getElementById('topWeekPanel');
+            const homePage = document.getElementById('homePage');
+            return panel
+                && panel.querySelector('.period-pill')
+                && homePage
+                && !homePage.classList.contains('hidden');
+        },
+        getCurrent: () => state.currentPeriod || 'week',
+        setPeriod: (period) => window.switchPeriod(period)
     });
 </script>
 </body>

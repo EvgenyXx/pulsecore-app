@@ -128,7 +128,7 @@ export async function loadDashboardWidgets() {
         loadReportBadge();
 
         const lastHtml = data.lastResult
-            ? `<div class="widget-card apple-card" onclick="toggleTournamentMatches(${data.lastResult.resultId || 0}, this)">
+            ? `<div class="widget-card apple-card">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
@@ -137,7 +137,6 @@ export async function loadDashboardWidgets() {
                             <h3 class="text-[15px] font-semibold text-white tracking-tight">Последний результат</h3>
                             <p class="text-[11px] text-zinc-500">${data.lastResult.date}</p>
                         </div>
-                        <svg class="ml-auto text-zinc-500 transition-transform duration-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                     </div>
                     <div class="flex items-center justify-between gap-3">
                         <p class="text-[28px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">${formatMoney(data.lastResult.amount)}</p>
