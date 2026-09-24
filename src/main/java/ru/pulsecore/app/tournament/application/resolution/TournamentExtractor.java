@@ -11,49 +11,51 @@ import ru.pulsecore.app.tournament.application.calculation.league.NightBonusServ
 import ru.pulsecore.app.tournament.domain.model.RemovedResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
-import ru.pulsecore.app.tournament.infrastructure.parser.MatchParser;
-import ru.pulsecore.app.tournament.infrastructure.parser.TournamentParser;
-import ru.pulsecore.app.tournament.infrastructure.parser.TournamentStatusParser;
-import java.util.List;
+import ru.pulsecore.app.tournament.infrastructure.parser.JsonMatchParser;
+import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
+import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
 
+import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class TournamentExtractor {
 
-    private final TournamentParser tournamentParser;
-    private final MatchParser matchParser;
+    // старые — не трогаем, оставлены для обратной совместимости
+    // private final TournamentParser tournamentParser;
+    // private final MatchParser matchParser;
+    // private final TournamentStatusParser tournamentStatusParser;
+
+    // новые — читают JSON из <script id="ml-tour-bootstrap">
+    private final JsonTournamentParser jsonTournamentParser;
+    private final JsonMatchParser jsonMatchParser;
+    private final JsonTournamentStatusParser jsonTournamentStatusParser;
+
+    // не зависят от формата — работают и с HTML, и с JSON
     private final LeagueDetector leagueDetector;
     private final NightBonusService nightBonusService;
-    private final TournamentStatusParser tournamentStatusParser;
     private final RemovedPlayerDetector removedPlayerDetector;
-    private final BrokenUriService brokenUriService;
-
 
     public TournamentContext extract(Document doc) {
 
-        Long tournamentId = tournamentParser.parseTournamentId(doc);
-        TournamentStatus status = tournamentStatusParser.parseStatus(doc);
-        String date = tournamentParser.parseDate(doc);
+        Long tournamentId = jsonTournamentParser.parseTournamentId(doc);
+        TournamentStatus status = jsonTournamentStatusParser.parseStatus(doc);
+        String date = jsonTournamentParser.parseDate(doc);
 
-        List<Match> matches = matchParser.parseMatches(doc);
+        List<Match> matches = jsonMatchParser.parseMatches(doc);
 
         LeagueType league = leagueDetector.detectLeague(doc);
-//        if (league == null) {
-//            String brokenUri = doc.baseUri();
-//            brokenUriService.handle(brokenUri);
-//            return null;
-//        }
 
         double nightBonus = nightBonusService.calculateBonus(doc, league.name());
 
-        String removedPlayer = tournamentParser.findRemovedPlayer(doc);
-        String time = tournamentParser.parseTime(doc);
-
+        String removedPlayer = jsonTournamentParser.findRemovedPlayer(doc);
+        String time = jsonTournamentParser.parseTime(doc);
 
         RemovedResult playerDetector = removedPlayerDetector.detect(removedPlayer, matches);
 
+        log.debug("Extract: id={}, date={}, time={}, league={}, matches={}, bonus={}, status={}",
+                tournamentId, date, time, league, matches.size(), nightBonus, status);
 
         return new TournamentContext(
                 tournamentId,
@@ -67,6 +69,4 @@ public class TournamentExtractor {
                 time
         );
     }
-
-
 }
