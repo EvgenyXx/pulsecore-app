@@ -14,9 +14,10 @@ import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.exception.PageNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
-import ru.pulsecore.app.tournament.infrastructure.parser.TournamentStatusParser;
+import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,19 +26,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-
-/**
- * Сервис проверки отмены турниров.
- *
- * <p>Каждый турнир обрабатывается асинхронно в пуле {@link AsyncConfig#CANCELED_EXECUTOR}.
- * Метод возвращает {@link CompletableFuture} для возможности ожидания завершения всех задач.</p>
- */
 @Service
 @Slf4j
 public class TournamentCanceledService {
 
     private final TournamentRepository tournamentRepository;
-    private final TournamentStatusParser tournamentStatusParser;
+    private final JsonTournamentStatusParser jsonTournamentStatusParser;
     private final TournamentCancellationService tournamentCancellationService;
     private final PlayerNotificationRepository notificationRepository;
     private final DocumentLoader documentLoader;
@@ -45,24 +39,21 @@ public class TournamentCanceledService {
     private final BrokenUriService brokenUriService;
     private final Map<String, Integer> stats = new ConcurrentHashMap<>();
 
-
     public TournamentCanceledService(TournamentRepository tournamentRepository,
-                                     TournamentStatusParser tournamentStatusParser
-            , TournamentCancellationService tournamentCancellationService,
+                                     JsonTournamentStatusParser jsonTournamentStatusParser,
+                                     TournamentCancellationService tournamentCancellationService,
                                      PlayerNotificationRepository notificationRepository,
                                      DocumentLoader documentLoader,
                                      @Qualifier(RateLimiterConfig.CANCELED_RATE_LIMITER) Bucket canceledRateLimiter,
                                      BrokenUriService brokenUriService) {
         this.tournamentRepository = tournamentRepository;
-        this.tournamentStatusParser = tournamentStatusParser;
+        this.jsonTournamentStatusParser = jsonTournamentStatusParser;
         this.tournamentCancellationService = tournamentCancellationService;
         this.notificationRepository = notificationRepository;
         this.documentLoader = documentLoader;
         this.canceledRateLimiter = canceledRateLimiter;
         this.brokenUriService = brokenUriService;
     }
-
-
 
     @Async(AsyncConfig.CANCELED_EXECUTOR)
     public CompletableFuture<Void> processLink(String link) {
@@ -95,8 +86,7 @@ public class TournamentCanceledService {
     }
 
     private void processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
-        TournamentStatus status = tournamentStatusParser.parseStatus(doc);
-
+        TournamentStatus status = jsonTournamentStatusParser.parseStatus(doc);
 
         if (status == TournamentStatus.CANCELLED) {
             tournamentCancellationService.handleCancelled(t, notifications);
@@ -108,7 +98,6 @@ public class TournamentCanceledService {
             log.warn("Турнир {} (ID={}) не найден в БД", t.getExternalId(), t.getId());
         }
     }
-
 
     public void logSummary() {
         int total = stats.getOrDefault("всего", 0);
