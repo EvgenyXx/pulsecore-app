@@ -12,7 +12,7 @@ import ru.pulsecore.app.tournament.infrastructure.cache.TournamentStatusCache;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.tournament.infrastructure.parser.TournamentStatusParser;
+import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 
@@ -21,16 +21,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-/**
- * Асинхронный обработчик завершённых турниров.
- *
- * <p>Каждый турнир обрабатывается в отдельном потоке пула {@link AsyncConfig#TOURNAMENT_EXECUTOR}.
- * Если турнир находится в кэше — пропускается. Если статус IN_PROGRESS — добавляется в кэш.
- * Иначе — обрабатывается как завершённый.</p>
- *
- * <p>Ведёт подсчёт попаданий в кэш и добавлений для итогового лога.</p>
- */
 @Service
 @Slf4j
 public class TournamentAsyncFinishProcessor {
@@ -38,7 +28,7 @@ public class TournamentAsyncFinishProcessor {
     private final DocumentLoader documentLoader;
     private final TournamentFinishService finishService;
     private final PlayerNotificationRepository repo;
-    private final TournamentStatusParser tournamentStatusParser;
+    private final JsonTournamentStatusParser jsonTournamentStatusParser;
     private final TournamentStatusCache tournamentStatusCache;
     private final Bucket finishRateLimiter;
 
@@ -47,13 +37,13 @@ public class TournamentAsyncFinishProcessor {
     public TournamentAsyncFinishProcessor(DocumentLoader documentLoader,
                                           TournamentFinishService finishService,
                                           PlayerNotificationRepository repo,
-                                          TournamentStatusParser tournamentStatusParser,
+                                          JsonTournamentStatusParser jsonTournamentStatusParser,
                                           TournamentStatusCache tournamentStatusCache,
                                           @Qualifier(RateLimiterConfig.FINISH_RATE_LIMITER) Bucket finishRateLimiter) {
         this.documentLoader = documentLoader;
         this.finishService = finishService;
         this.repo = repo;
-        this.tournamentStatusParser = tournamentStatusParser;
+        this.jsonTournamentStatusParser = jsonTournamentStatusParser;
         this.tournamentStatusCache = tournamentStatusCache;
         this.finishRateLimiter = finishRateLimiter;
     }
@@ -65,7 +55,6 @@ public class TournamentAsyncFinishProcessor {
         return CompletableFuture.completedFuture(null);
     }
 
-
     private void process(String link) {
 
         if (tournamentStatusCache.isInProgress(link)) {
@@ -74,7 +63,7 @@ public class TournamentAsyncFinishProcessor {
         }
 
         Document doc = documentLoader.load(link);
-        TournamentStatus status = tournamentStatusParser.parseStatus(doc);
+        TournamentStatus status = jsonTournamentStatusParser.parseStatus(doc);
 
         if (status == TournamentStatus.IN_PROGRESS) {
             tournamentStatusCache.setInProgress(link);
@@ -86,6 +75,10 @@ public class TournamentAsyncFinishProcessor {
         stats.merge("ЗАВЕРШЁН", 1, Integer::sum);
 
         List<PlayerNotification> notifications = repo.findByTournamentLink(link);
+        if (notifications.isEmpty()) {
+            log.warn("Турнир {} — нет уведомлений", link);
+            return;
+        }
         TournamentEntity t = notifications.get(0).getTournament();
         finishService.handleFinished(t, notifications, doc);
     }
@@ -101,6 +94,4 @@ public class TournamentAsyncFinishProcessor {
     public void clearStats() {
         stats.clear();
     }
-
-
 }

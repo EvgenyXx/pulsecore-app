@@ -40,7 +40,7 @@ public class RosterOrchestrationScheduler {
 
     @Scheduled(
             initialDelay = 2,
-            fixedDelay = 1,
+            fixedDelay = 7,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void processFinishedTournaments() {
@@ -53,7 +53,7 @@ public class RosterOrchestrationScheduler {
     }
 
     @Scheduled(
-            initialDelay = 5,
+            initialDelay = 1,
             fixedDelay = 10,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
