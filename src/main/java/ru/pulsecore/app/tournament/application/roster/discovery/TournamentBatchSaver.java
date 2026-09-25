@@ -40,12 +40,12 @@ public class TournamentBatchSaver {
     private void saveUpdatedTournaments(List<TournamentEntity> updatedTournaments) {
         if (!updatedTournaments.isEmpty()) {
             tournamentRepository.saveAll(updatedTournaments);
-            log.info("Обновлены externalId у {} турниров", updatedTournaments.size());
+            log.debug("Обновлены externalId у {} турниров", updatedTournaments.size());
         }
     }
 
     private void saveNotifications(List<PlayerNotification> allNotifications) {
         notificationRepo.saveAll(allNotifications);
-        log.info("Сохранение: уведомлений создано={}", allNotifications.size());
+        log.debug("Сохранение: уведомлений создано={}", allNotifications.size());
     }
 }

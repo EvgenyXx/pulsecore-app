@@ -96,12 +96,12 @@ public class TournamentAsyncFinishProcessor {
     }
 
     public void logSummary() {
-        int inCache = stats.getOrDefault("В КЭШЕ", 0);
-        int inProgress = stats.getOrDefault("IN_PROGRESS", 0);
-        int finished = stats.getOrDefault("ЗАВЕРШЁН", 0);
-        log.info("📊 Финиш: в кэше={}, in_progress={}, завершено={}",
-                inCache, inProgress, finished);
-    }
+    int inCache = stats.getOrDefault("В КЭШЕ", 0);
+    int inProgress = stats.getOrDefault("IN_PROGRESS", 0);
+    int finished = stats.getOrDefault("ЗАВЕРШЁН", 0);
+    log.info("🏁 FINISH: итог — в кэше={}, in_progress={}, завершено={}",
+            inCache, inProgress, finished);
+}
 
     public void clearStats() {
         stats.clear();

@@ -26,6 +26,7 @@ public class JsonTournamentParser {
                 root.path("time").asText(null),
                 root.path("hallTitle").asText(null),
                 root.path("leagueTitle").asText(null),
+                root.path("typeId").asText(null),
                 findRemovedPlayer(root)
         );
     }

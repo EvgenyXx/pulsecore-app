@@ -27,24 +27,27 @@ public class JsonMatchParser {
         return result;
     }
 
-    private Match parseGame(JsonNode g) {
-        try {
-            JsonNode p1 = g.path("player1");
-            JsonNode p2 = g.path("player2");
+   private Match parseGame(JsonNode g) {
+    try {
+        JsonNode p1 = g.path("player1");
+        JsonNode p2 = g.path("player2");
 
-            Match m = new Match();
-            m.setStage(g.path("groupTitle").asText(null));
-            m.setStatus(g.path("statusTitle").asText(null));
-            m.setPlayer1(p1.path("name").asText(null));
-            m.setPlayer2(p2.path("name").asText(null));
-            m.setScore1(p1.path("result").asInt(0));
-            m.setScore2(p2.path("result").asInt(0));
-            m.setSetsDetails(g.path("setsStr").asText(null));
-            m.setTable(g.path("hallTitle").asText(null));
-            return m;
-        } catch (Exception e) {
-            log.warn("JsonMatchParser: ошибка матча {}", e.getMessage());
-            return null;
-        }
+        Match m = new Match();
+        m.setStage(g.path("groupTitle").asText(null));
+        m.setStatus(g.path("statusTitle").asText(null));
+        m.setPlayer1(p1.path("name").asText(null));
+        m.setPlayer2(p2.path("name").asText(null));
+        m.setScore1(p1.path("result").asInt(0));
+        m.setScore2(p2.path("result").asInt(0));
+        m.setSetsDetails(g.path("setsStr").asText(null));
+        m.setTable(g.path("hallTitle").asText(null));
+        m.setGroupType(g.path("groupType").asText(null));
+        m.setSortNumber(g.path("sortNumber").asInt(0));
+
+        return m;
+    } catch (Exception e) {
+        log.warn("JsonMatchParser: ошибка матча {}", e.getMessage());
+        return null;
     }
+}
 }

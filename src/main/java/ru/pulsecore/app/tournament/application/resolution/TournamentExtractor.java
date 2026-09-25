@@ -54,6 +54,7 @@ public class TournamentExtractor {
         String date = page.date();
         String time = page.time();
         String removed = page.removedPlayer();
+        String typeId = page.typeId();
 
         TournamentStatus status = jsonTournamentStatusParser.parseStatus(page);
         List<Match> matches = jsonMatchParser.parseMatches(page);
@@ -80,7 +81,8 @@ public class TournamentExtractor {
                 nightBonus,
                 playerDetector.stage(),
                 playerDetector.player(),
-                time
+                time,
+                typeId
         );
     }
 }

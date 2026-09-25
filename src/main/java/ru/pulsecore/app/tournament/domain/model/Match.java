@@ -19,6 +19,8 @@ public class Match {
     private String league;
     private String table;
     private String status;
+    private String groupType;
+    private int sortNumber;
 
     // getters/setters
     public Match reverse() {
@@ -31,8 +33,8 @@ public class Match {
         m.setLeague(this.league);
         m.setTable(this.table);
         m.setStatus(this.status);
+        m.setGroupType(this.groupType);
+        m.setSortNumber(this.sortNumber);
         return m;
     }
-
-
 }

@@ -9,12 +9,14 @@ import org.jsoup.nodes.Document;
  * и передаётся по сервисам как аргумент.
  */
 public record TournamentPage(
-        Document document,      // исходный HTML — для TextLeagueResolver
-        JsonNode raw,           // сырой JSON — для глубокого обхода (games/players)
+        Document document,
+        JsonNode raw,
         Long id,
         String date,
-        String time,            // "06:00"
-        String hall,            // "№10"
-        String leagueTitle,     // "A" / "Суперлига"
+        String time,
+        String hall,
+        String leagueTitle,
+        String typeId,
         String removedPlayer
-) {}
+) {
+}

@@ -31,18 +31,24 @@ public class ResultService {
     private final StrategyResolver strategyResolver;
     private final ResultBuilder resultBuilder;
 
-    /** Загружает страницу по URL и считает результат. */
+    /**
+     * Загружает страницу по URL и считает результат.
+     */
     public ParsedResult calculateAll(String url) {
         Document doc = loader.load(url);
         return calculate(doc);
     }
 
-    /** Считает результат по уже загруженной странице. */
+    /**
+     * Считает результат по уже загруженной странице.
+     */
     public ParsedResult calculateAll(Document doc) {
         return calculate(doc);
     }
 
-    /** Считает результат по уже распарсенной странице (без повторного парсинга). */
+    /**
+     * Считает результат по уже распарсенной странице (без повторного парсинга).
+     */
     public ParsedResult calculateAll(TournamentPage page) {
         return calculate(page);
     }
@@ -67,6 +73,8 @@ public class ResultService {
     private ParsedResult buildParsedResult(TournamentContext ctx, String url) {
         List<ResultDto> results = buildResults(ctx);
         normalizeNames(results);
+        log.debug("🔎 typeId из контекста: '{}'", ctx.getTypeId());
+
         applyBonusPoints(ctx, results);
         results.sort((a, b) -> Integer.compare(b.getTotal(), a.getTotal()));
         logResults(ctx, url);
@@ -104,10 +112,7 @@ public class ResultService {
         LocalDate tournamentDate = LocalDate.parse(dateStr);
 
         for (ResultDto result : results) {
-            int total =
-
-
-PointsCalculatorUtils.applyDoubleBonus(result.getTotal(), tournamentDate);
+            int total = PointsCalculatorUtils.applyDoubleBonus(result.getTotal(), tournamentDate);
             result.setTotal(total);
         }
     }
