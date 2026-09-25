@@ -8,6 +8,7 @@ import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
 import ru.pulsecore.app.shared.config.CacheNames;
+import ru.pulsecore.app.shared.dto.response.PlayerSubscriptionResponse;
 import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
 import ru.pulsecore.app.player.domain.Subscription;
 
@@ -24,6 +25,8 @@ public class SubscriptionQueryService {
 
     private final PlayerSearchService  playerSearchService;
     private final SubscriptionRepository  subscriptionRepository;
+
+
 
     public SubscriptionStatusResponse getSubscription(UUID playerId) {
         Player player = playerSearchService.getById(playerId);

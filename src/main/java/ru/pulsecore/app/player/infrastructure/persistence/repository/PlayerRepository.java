@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerLastLoginProjection;
+import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerSubscriptionExpiryProjection;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +19,19 @@ import java.util.UUID;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, UUID> {
+
+
+    @Query(value = """
+        SELECT
+            p.name::text     AS name,
+            s.active         AS active,
+            s.expires_at     AS expiresAt
+        FROM players p
+        LEFT JOIN subscription s ON s.player_id = p.id
+        ORDER BY s.expires_at DESC NULLS LAST
+        """,
+        nativeQuery = true)
+List<PlayerSubscriptionExpiryProjection> getSubscription();
 
     @Query("""
             SELECT p.name AS name, p.lastLoginAt AS lastLoginAt

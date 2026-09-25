@@ -46,10 +46,29 @@
                 <svg class="nav-arrow" id="arrow-nav-players" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="submenu" id="submenu-players" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this)">Поиск и управление</button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this)">Расчёт</button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this)">Рассылка</button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-last-login', this)">Последние входы</button>
+                <div class="submenu-group-label">Управление</div>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Поиск и управление</span>
+                </button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-subs-overview', this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    <span>Обзор подписок</span>
+                </button>
+
+                <div class="submenu-group-label">Операции</div>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+                    <span>Расчёт</span>
+                </button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+                    <span>Рассылка</span>
+                </button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-last-login', this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Последние входы</span>
+                </button>
             </div>
         </div>
         <div>
@@ -59,7 +78,10 @@
                 <svg class="nav-arrow" id="arrow-nav-subscriptions" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="submenu" id="submenu-subscriptions" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this)">Управление ценами</button>
+                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <span>Управление ценами</span>
+                </button>
             </div>
         </div>
         <div>
@@ -69,8 +91,14 @@
                 <svg class="nav-arrow" id="arrow-nav-tournaments" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="submenu" id="submenu-tournaments" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('tournaments', null, this)">Управление турнирами</button>
-                <button class="submenu-btn" onclick="selectAction('scheduler', null, this)">Управление шедулерами</button>
+                <button class="submenu-btn" onclick="selectAction('tournaments', null, this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+                    <span>Управление турнирами</span>
+                </button>
+                <button class="submenu-btn" onclick="selectAction('scheduler', null, this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Управление шедулерами</span>
+                </button>
             </div>
         </div>
         <div>
@@ -80,7 +108,10 @@
                 <svg class="nav-arrow" id="arrow-nav-stats" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="submenu" id="submenu-stats" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('stats', null, this)">Просмотр</button>
+                <button class="submenu-btn" onclick="selectAction('stats', null, this)">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    <span>Просмотр</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -202,6 +233,45 @@
                 </div>
             </div>
 
+            <!-- ОБЗОР ПОДПИСОК -->
+            <div class="sheet-accordion" id="acc-subs-overview-wrapper" style="display:none;">
+                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-subs-overview')">
+                    <span class="sheet-section-title" style="margin:0;">Обзор подписок</span>
+                    <svg class="sheet-accordion-arrow" id="arrow-acc-subs-overview" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="sheet-accordion-body" id="acc-subs-overview" style="display:none;">
+                    <div class="widget-card">
+                        <div class="subs-overview-top">
+                            <span class="subs-overview-info" id="subsOverviewInfo">Загрузка...</span>
+                            <button onclick="refreshSubscriptionsOverview()" class="btn btn-ghost subs-overview-refresh">Обновить</button>
+                        </div>
+
+                        <!-- Desktop: таблица -->
+                        <div class="subs-table-wrap">
+                            <table class="subs-table">
+                                <thead>
+                                <tr>
+                                    <th class="subs-th-idx">#</th>
+                                    <th>Игрок</th>
+                                    <th>Статус</th>
+                                    <th class="subs-th-right">До</th>
+                                    <th class="subs-th-right">Осталось</th>
+                                </tr>
+                                </thead>
+                                <tbody id="subsOverviewBody">
+                                <tr><td colspan="5" class="subs-empty">Загрузка...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mobile: карточки -->
+                        <div id="subsOverviewCards" class="subs-cards">
+                            <div class="subs-card subs-card-empty">Загрузка...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="sheet-accordion" id="acc-calculate-wrapper" style="display:none;">
                 <div class="sheet-accordion-header" onclick="toggleAccordion('acc-calculate')">
                     <span class="sheet-section-title" style="margin:0;">Расчёт</span>
@@ -271,7 +341,6 @@
                 </div>
             </div>
 
-            <!-- НОВЫЙ РАЗДЕЛ: ПОСЛЕДНИЕ ВХОДЫ -->
             <div class="sheet-accordion" id="acc-last-login-wrapper" style="display:none;">
                 <div class="sheet-accordion-header" onclick="toggleAccordion('acc-last-login')">
                     <span class="sheet-section-title" style="margin:0;">Последние входы</span>
@@ -381,10 +450,28 @@
                 <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-players" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="sheet-accordion-body" id="submenu-mobile-players" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this); toggleAdminSheet()">Поиск и управление</button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this); toggleAdminSheet()">Расчёт</button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this); toggleAdminSheet()">Рассылка</button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-last-login', this); toggleAdminSheet()">Последние входы</button>
+                <div class="submenu-group-label">Управление</div>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this); toggleAdminSheet()">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Поиск и управление</span>
+                </button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-subs-overview', this); toggleAdminSheet()">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    <span>Обзор подписок</span>
+                </button>
+                <div class="submenu-group-label">Операции</div>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this); toggleAdminSheet()">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+                    <span>Расчёт</span>
+                </button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this); toggleAdminSheet()">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+                    <span>Рассылка</span>
+                </button>
+                <button class="submenu-btn" onclick="selectAction('players', 'acc-last-login', this); toggleAdminSheet()">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Последние входы</span>
+                </button>
             </div>
         </div>
 
@@ -394,7 +481,10 @@
                 <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-subscriptions" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="sheet-accordion-body" id="submenu-mobile-subscriptions" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this); toggleAdminSheet()">Управление ценами</button>
+                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this); toggleAdminSheet()">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <span>Управление ценами</span>
+                </button>
             </div>
         </div>
 
@@ -404,8 +494,14 @@
                 <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-tournaments" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="sheet-accordion-body" id="submenu-mobile-tournaments" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('tournaments', null, this); toggleAdminSheet()">Управление турнирами</button>
-                <button class="submenu-btn" onclick="selectAction('scheduler', null, this); toggleAdminSheet()">Управление шедулерами</button>
+                <button class="submenu-btn" onclick="selectAction('tournaments', null, this); toggleAdminSheet()">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+                    <span>Управление турнирами</span>
+                </button>
+                <button class="submenu-btn" onclick="selectAction('scheduler', null, this); toggleAdminSheet()">
+                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Управление шедулерами</span>
+                </button>
             </div>
         </div>
 

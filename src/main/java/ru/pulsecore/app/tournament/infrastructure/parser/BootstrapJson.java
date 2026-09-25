@@ -14,25 +14,27 @@ public final class BootstrapJson {
 
     private BootstrapJson() {}
 
-    public static JsonNode parse(Document doc) {
-        if (doc == null) return null;
-        Element script = doc.selectFirst(SELECTOR);
-        if (script == null) return null;
-        try {
-            return MAPPER.readTree(script.data());
-        } catch (Exception e) {
-            log.warn("BootstrapJson: ошибка {}", e.getMessage());
-            return null;
-        }
+   public static JsonNode parse(Document doc) {
+    if (doc == null) return null;
+    Element script = doc.selectFirst(SELECTOR);
+    if (script == null) return null;
+    try {
+        JsonNode root = MAPPER.readTree(script.data());
+        log.debug("BootstrapJson: parsed tree:\n{}", root.toPrettyString());
+        return root;
+    } catch (Exception e) {
+        log.warn("BootstrapJson: ошибка {}", e.getMessage());
+        return null;
     }
+}
 
-    public static String str(Document doc, String field) {
-        JsonNode root = parse(doc);
-        return root == null ? null : root.path(field).asText(null);
-    }
-
-    public static Long asLong(Document doc, String field) {
-        JsonNode root = parse(doc);
-        return root == null ? null : root.path(field).asLong();
-    }
+//    public static String str(Document doc, String field) {
+//        JsonNode root = parse(doc);
+//        return root == null ? null : root.path(field).asText(null);
+//    }
+//
+//    public static Long asLong(Document doc, String field) {
+//        JsonNode root = parse(doc);
+//        return root == null ? null : root.path(field).asLong();
+//    }
 }

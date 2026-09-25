@@ -1,0 +1,1 @@
+ALTER TABLE tournament_match DROP CONSTRAINT uq_tournament_match_unique;

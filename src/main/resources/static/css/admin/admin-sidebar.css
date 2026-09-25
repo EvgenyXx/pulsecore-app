@@ -1,44 +1,85 @@
 /* ===== ADMIN SIDEBAR — APPLE STYLE ===== */
 
 .submenu {
-    padding: 6px 0;
+    padding: 8px 0 4px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+}
+
+.submenu-group-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #6e6e73;
+    padding: 12px 14px 6px;
+    user-select: none;
+}
+
+.submenu-group-label:first-child {
+    padding-top: 6px;
 }
 
 .submenu-btn {
     display: flex;
     align-items: center;
+    gap: 10px;
     width: 100%;
-    padding: 10px 14px;
+    padding: 11px 14px;
     border-radius: 10px;
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     color: #98989d;
     cursor: pointer;
     background: transparent;
     border: 1px solid transparent;
     font-weight: 500;
     text-align: left;
-    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: all 0.22s cubic-bezier(0.25, 0.1, 0.25, 1);
     letter-spacing: -0.2px;
+    line-height: 1.2;
+}
+
+.submenu-btn span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.submenu-ico {
+    flex-shrink: 0;
+    color: currentColor;
+    opacity: 0.75;
+    transition: opacity 0.22s ease;
 }
 
 .submenu-btn:hover {
-    background: rgba(10, 132, 255, 0.08);
-    border-color: rgba(10, 132, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
     color: #f5f5f7;
 }
 
+.submenu-btn:hover .submenu-ico {
+    opacity: 1;
+}
+
 .submenu-btn:active {
-    transform: scale(0.97);
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .submenu-btn.active {
     background: rgba(10, 132, 255, 0.12);
-    border-color: rgba(10, 132, 255, 0.3);
+    border-color: rgba(10, 132, 255, 0.28);
     color: #409cff;
     font-weight: 600;
+}
+
+.submenu-btn.active .submenu-ico {
+    opacity: 1;
+    color: #409cff;
 }
 
 .nav-arrow {

@@ -1,5 +1,5 @@
 import { AdminAPI } from './admin-api.js';
-import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus, giveSub, giveSubCustom, removeSub } from './admin-players.js';
+import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus, giveSub, giveSubCustom, removeSub, loadSubscriptionsOverview, refreshSubscriptionsOverview } from './admin-players.js';
 import { loadCurrentPrices, updatePrices } from './admin-prices.js';
 import { adminCalculate } from './admin-calculate.js';
 import { sendBroadcast } from './admin-broadcast.js';
@@ -19,6 +19,8 @@ window.togglePlayerStatus = togglePlayerStatus;
 window.giveSub = giveSub;
 window.giveSubCustom = giveSubCustom;
 window.removeSub = removeSub;
+window.loadSubscriptionsOverview = loadSubscriptionsOverview;
+window.refreshSubscriptionsOverview = refreshSubscriptionsOverview;
 window.loadCurrentPrices = loadCurrentPrices;
 window.updatePrices = updatePrices;
 window.adminCalculate = adminCalculate;
@@ -129,6 +131,9 @@ function openAccordion(id) {
 
     // При открытии аккордеона "Последние входы" — загружаем данные
     if (id === 'acc-last-login') loadLastLogin(0);
+
+    // При открытии аккордеона "Обзор подписок" — загружаем данные
+    if (id === 'acc-subs-overview') loadSubscriptionsOverview();
 }
 
 function toggleAccordion(id) {
@@ -143,6 +148,9 @@ function toggleAccordion(id) {
 
     // При открытии аккордеона "Последние входы" — загружаем данные
     if (id === 'acc-last-login' && body.style.display === 'block') loadLastLogin(0);
+
+    // При открытии аккордеона "Обзор подписок" — загружаем данные
+    if (id === 'acc-subs-overview' && body.style.display === 'block') loadSubscriptionsOverview();
 }
 
 async function logout() {

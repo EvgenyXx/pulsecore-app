@@ -16,6 +16,7 @@ public interface PlayerClient {
     Page<PlayerData> searchByNamePage(String name, int page, int size);
     PlayerData updatePlayer(UUID playerId, UpdatePlayerRequest request);
     Page<LastLoginResponse> getLastLogin(Pageable pageable);
+    List<PlayerSubscriptionResponse>getSubscription();
 
     //analytic
     List<PlayerPageViewStats> getPlayerStats(int days);

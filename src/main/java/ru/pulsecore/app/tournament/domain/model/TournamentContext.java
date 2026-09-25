@@ -28,5 +28,7 @@ public class TournamentContext {
 
     private String time;
 
+    private  String typeId;
+
 
 }
