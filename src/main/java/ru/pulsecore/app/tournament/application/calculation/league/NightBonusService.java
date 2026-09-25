@@ -1,9 +1,8 @@
 package ru.pulsecore.app.tournament.application.calculation.league;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.infrastructure.parser.BootstrapJson;
+import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.infrastructure.util.RegionTimeUtils;
 
 import java.time.LocalTime;
@@ -22,16 +21,15 @@ public class NightBonusService {
         };
     }
 
-    public double calculateBonus(Document doc, String league) {
-        String timeStr = BootstrapJson.str(doc, "time");
-        String hallStr = BootstrapJson.str(doc, "hallTitle");
+    public double calculateBonus(TournamentPage page, String league) {
+        if (page == null) return 0;
 
-        LocalTime time = parseTime(timeStr);
-        int hall = parseHall(hallStr);
+        LocalTime time = parseTime(page.time());
+        int hall = parseHall(page.hall());
 
         if (time == null) {
-            log.warn("Ночной бонус: нет времени (doc={}), бонус = 0",
-                    doc != null ? doc.baseUri() : "null");
+            log.warn("Ночной бонус: нет времени (url={}), бонус = 0",
+                    page.document() != null ? page.document().baseUri() : "null");
             return 0;
         }
 

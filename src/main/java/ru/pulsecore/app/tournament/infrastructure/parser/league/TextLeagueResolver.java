@@ -1,37 +1,43 @@
-package ru.pulsecore.app.tournament.infrastructure.parser;
+package ru.pulsecore.app.tournament.infrastructure.parser.league;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.enums.LeagueType;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
-public class LeagueDetector {
+@Component
+public class TextLeagueResolver implements LeagueResolver {
 
-    public LeagueType detectLeague(Document doc) {
-        String title = doc.title();
+    @Override
+    public LeagueType resolve(TournamentPage page) {
+        if (page == null || page.document() == null) return null;
 
+        Document doc = page.document();
 
-        LeagueType fromTitle = detectFromText(title);
-        if (fromTitle != null) return fromTitle;
+        LeagueType fromTitle = detectFromText(doc.title());
+        if (fromTitle != null) {
+            log.debug("League detected from title: {}", fromTitle);
+            return fromTitle;
+        }
 
         String bodyText = doc.body().text();
         LeagueType fromBody = detectFromText(bodyText);
         if (fromBody != null) {
             log.info("League detected from body: {}", fromBody);
-            return fromBody;
         }
-
-        log.warn("Could not detect league: '{}'", title);
-        return null;
+        return fromBody;
     }
 
-
+    @Override
+    public int order() {
+        return 10;
+    }
 
     private LeagueType detectFromText(String text) {
+        if (text == null) return null;
+
         String normalized = text.toLowerCase().replaceAll("\\s+", "");
 
         if (normalized.contains("лигаa") || normalized.contains("лигаа")) return LeagueType.A;
@@ -41,5 +47,4 @@ public class LeagueDetector {
         if (normalized.contains("суперлига")) return LeagueType.SUPER_LEAGUE;
         return null;
     }
-
 }

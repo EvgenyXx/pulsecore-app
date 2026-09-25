@@ -7,14 +7,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.AsyncConfig;
+import ru.pulsecore.app.tournament.domain.TournamentPage;
+import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
+import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.cache.TournamentStatusCache;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
-import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
+import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ public class TournamentAsyncFinishProcessor {
     private final DocumentLoader documentLoader;
     private final TournamentFinishService finishService;
     private final PlayerNotificationRepository repo;
+    private final JsonTournamentParser jsonTournamentParser;
     private final JsonTournamentStatusParser jsonTournamentStatusParser;
     private final TournamentStatusCache tournamentStatusCache;
     private final Bucket finishRateLimiter;
@@ -37,12 +40,14 @@ public class TournamentAsyncFinishProcessor {
     public TournamentAsyncFinishProcessor(DocumentLoader documentLoader,
                                           TournamentFinishService finishService,
                                           PlayerNotificationRepository repo,
+                                          JsonTournamentParser jsonTournamentParser,
                                           JsonTournamentStatusParser jsonTournamentStatusParser,
                                           TournamentStatusCache tournamentStatusCache,
                                           @Qualifier(RateLimiterConfig.FINISH_RATE_LIMITER) Bucket finishRateLimiter) {
         this.documentLoader = documentLoader;
         this.finishService = finishService;
         this.repo = repo;
+        this.jsonTournamentParser = jsonTournamentParser;
         this.jsonTournamentStatusParser = jsonTournamentStatusParser;
         this.tournamentStatusCache = tournamentStatusCache;
         this.finishRateLimiter = finishRateLimiter;
@@ -63,7 +68,14 @@ public class TournamentAsyncFinishProcessor {
         }
 
         Document doc = documentLoader.load(link);
-        TournamentStatus status = jsonTournamentStatusParser.parseStatus(doc);
+
+        TournamentPage page = jsonTournamentParser.parse(doc);   // ← один раз
+        if (page == null) {
+            log.warn("Турнир {} — не удалось распарсить страницу", link);
+            return;
+        }
+
+        TournamentStatus status = jsonTournamentStatusParser.parseStatus(page);
 
         if (status == TournamentStatus.IN_PROGRESS) {
             tournamentStatusCache.setInProgress(link);
@@ -80,16 +92,16 @@ public class TournamentAsyncFinishProcessor {
             return;
         }
         TournamentEntity t = notifications.get(0).getTournament();
-        finishService.handleFinished(t, notifications, doc);
+        finishService.handleFinished(t, notifications, page);   // ← передаём page, не doc
     }
 
     public void logSummary() {
-        int inCache = stats.getOrDefault("В КЭШЕ", 0);
-        int inProgress = stats.getOrDefault("IN_PROGRESS", 0);
-        int finished = stats.getOrDefault("ЗАВЕРШЁН", 0);
-        log.info("📊 Финиш: в кэше={}, in_progress={}, завершено={}",
-                inCache, inProgress, finished);
-    }
+    int inCache = stats.getOrDefault("В КЭШЕ", 0);
+    int inProgress = stats.getOrDefault("IN_PROGRESS", 0);
+    int finished = stats.getOrDefault("ЗАВЕРШЁН", 0);
+    log.info("🏁 FINISH: итог — в кэше={}, in_progress={}, завершено={}",
+            inCache, inProgress, finished);
+}
 
     public void clearStats() {
         stats.clear();

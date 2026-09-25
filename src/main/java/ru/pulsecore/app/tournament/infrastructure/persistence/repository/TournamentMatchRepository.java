@@ -3,6 +3,7 @@ package ru.pulsecore.app.tournament.infrastructure.persistence.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -40,6 +41,30 @@ public interface TournamentMatchRepository extends JpaRepository<TournamentMatch
 
     boolean existsByTournamentId(Long tournamentId);
 
+    /**
+     * Идемпотентная вставка матча.
+     * При дубликате по (tournament_id, player1_name, player2_name, stage) —
+     * строка НЕ вставляется, исключение НЕ бросается.
+     */
+    @Modifying
+    @Query(value = """
+            INSERT INTO tournament_match
+                (id, tournament_id, player1_name, player2_name, winner_name, stage, score, created_at, played_at)
+            VALUES
+                (:id, :tournamentId, :player1Name, :player2Name, :winnerName, :stage, :score, :createdAt, :playedAt)
+            ON CONFLICT (tournament_id, player1_name, player2_name, stage) DO NOTHING
+            """, nativeQuery = true)
+    void insertIfNotExists(
+            @Param("id") UUID id,
+            @Param("tournamentId") Long tournamentId,
+            @Param("player1Name") String player1Name,
+            @Param("player2Name") String player2Name,
+            @Param("winnerName") String winnerName,
+            @Param("stage") String stage,
+            @Param("score") String score,
+            @Param("createdAt") LocalDateTime createdAt,
+            @Param("playedAt") LocalDateTime playedAt
+    );
 
     @Query("""
                 SELECT 
@@ -106,24 +131,23 @@ public interface TournamentMatchRepository extends JpaRepository<TournamentMatch
 
     @Query(
             value = """
-        SELECT DISTINCT name FROM (
-            SELECT player1_name AS name FROM tournament_match
-            UNION
-            SELECT player2_name AS name FROM tournament_match
-        ) AS all_players
-        WHERE LOWER(name) LIKE LOWER(CONCAT('%', :query, '%'))
-        ORDER BY name
-    """,
+                        SELECT DISTINCT name FROM (
+                            SELECT player1_name AS name FROM tournament_match
+                            UNION
+                            SELECT player2_name AS name FROM tournament_match
+                        ) AS all_players
+                        WHERE LOWER(name) LIKE LOWER(CONCAT('%', :query, '%'))
+                        ORDER BY name
+                    """,
             countQuery = """
-        SELECT COUNT(DISTINCT name) FROM (
-            SELECT player1_name AS name FROM tournament_match
-            UNION
-            SELECT player2_name AS name FROM tournament_match
-        ) AS all_players
-        WHERE LOWER(name) LIKE LOWER(CONCAT('%', :query, '%'))
-    """,
+                        SELECT COUNT(DISTINCT name) FROM (
+                            SELECT player1_name AS name FROM tournament_match
+                            UNION
+                            SELECT player2_name AS name FROM tournament_match
+                        ) AS all_players
+                        WHERE LOWER(name) LIKE LOWER(CONCAT('%', :query, '%'))
+                    """,
             nativeQuery = true
     )
     Page<String> searchPlayerNames(@Param("query") String query, Pageable pageable);
-
 }

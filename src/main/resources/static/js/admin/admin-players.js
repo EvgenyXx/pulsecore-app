@@ -1,3 +1,5 @@
+// js/admin/admin-players.js
+
 import { AdminAPI } from './admin-api.js';
 import { formatMoney, capitalizeName } from '../core/utils.js';
 
@@ -303,7 +305,6 @@ export async function deletePlayerTournaments() {
 export async function resyncPlayerTournaments() {
     if (!selectedPlayerId) return;
 
-    // Дефолтные даты
     const today = new Date();
     const yearAgo = new Date();
     yearAgo.setFullYear(today.getFullYear() - 1);
@@ -311,12 +312,10 @@ export async function resyncPlayerTournaments() {
     const defaultFrom = yearAgo.toISOString().split('T')[0];
     const defaultTo = today.toISOString().split('T')[0];
 
-    // Показываем модалку
     showResyncModal(defaultFrom, defaultTo);
 }
 
 function showResyncModal(defaultFrom, defaultTo) {
-    // Если модалка уже есть — удаляем
     document.getElementById('resyncModal')?.remove();
 
     const modal = document.createElement('div');
@@ -411,4 +410,143 @@ export async function deletePlayerAccount() {
         msg.textContent = 'Ошибка удаления';
         msg.className = 'text-xs text-center text-red-400';
     }
+}
+
+// ===== ОБЗОР ПОДПИСОК ВСЕХ ИГРОКОВ =====
+
+const subState = { loaded: false, loading: false, items: [] };
+
+function fmtDate(dateStr) {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '—';
+    return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function subIsActive(item) {
+    return !!(item.active ?? item.isActive ?? item.hasActiveSubscription);
+}
+
+function subName(item) {
+    return capitalizeName(item.name || item.playerName || item.player_name || '—');
+}
+
+function subEmail(item) {
+    return item.email || item.playerEmail || '';
+}
+
+function subExpires(item) {
+    return item.expiresAt || item.expires_at || item.subscriptionEnd || null;
+}
+
+function subDaysLeft(item) {
+    if (typeof item.daysLeft === 'number') return item.daysLeft;
+    const expires = subExpires(item);
+    if (!expires) return null;
+    return Math.max(0, Math.ceil((new Date(expires) - new Date()) / 86400000));
+}
+
+function subStatusBadge(item) {
+    return subIsActive(item)
+        ? '<span class="badge badge-active">Активна</span>'
+        : '<span class="badge badge-inactive">Нет</span>';
+}
+
+function subRowHtml(item, idx) {
+    const name = subName(item);
+    const email = subEmail(item);
+    const expires = subExpires(item);
+    const days = subDaysLeft(item);
+    const daysClass = days === null ? 'subs-muted' : (days <= 7 ? 'subs-warn' : '');
+
+    return `
+        <tr>
+            <td class="subs-idx">${idx + 1}</td>
+            <td>
+                <div class="subs-name">${name}</div>
+                ${email ? `<div class="subs-email">${email}</div>` : ''}
+            </td>
+            <td>${subStatusBadge(item)}</td>
+            <td class="subs-right">${fmtDate(expires)}</td>
+            <td class="subs-right ${daysClass}">${days === null ? '—' : days + ' дн.'}</td>
+        </tr>
+    `;
+}
+
+function subCardHtml(item) {
+    const name = subName(item);
+    const email = subEmail(item);
+    const expires = subExpires(item);
+    const days = subDaysLeft(item);
+    const daysClass = days === null ? 'subs-muted' : (days <= 7 ? 'subs-warn' : '');
+    const badge = subStatusBadge(item);
+
+    return `
+        <div class="subs-card">
+            <div class="subs-card-top">
+                <div style="min-width:0;flex:1;">
+                    <div class="subs-card-name">${name}</div>
+                    ${email ? `<div class="subs-card-email">${email}</div>` : ''}
+                </div>
+                <div style="flex-shrink:0;">${badge}</div>
+            </div>
+            <div class="subs-card-bottom">
+                <span class="subs-card-date">До ${fmtDate(expires)}</span>
+                <span class="subs-card-days ${daysClass}">${days === null ? '—' : days + ' дн.'}</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderSubsEmpty(text, isError = false) {
+    const cls = isError ? 'subs-empty subs-warn' : 'subs-empty';
+    const cardCls = isError ? 'subs-card subs-card-empty subs-warn' : 'subs-card subs-card-empty';
+
+    const tableEl = document.getElementById('subsOverviewBody');
+    if (tableEl) tableEl.innerHTML = `<tr><td colspan="5" class="${cls}">${text}</td></tr>`;
+
+    const cardsEl = document.getElementById('subsOverviewCards');
+    if (cardsEl) cardsEl.innerHTML = `<div class="${cardCls}">${text}</div>`;
+}
+
+export async function loadSubscriptionsOverview(force = false) {
+    const tableEl = document.getElementById('subsOverviewBody');
+    const cardsEl = document.getElementById('subsOverviewCards');
+    const info = document.getElementById('subsOverviewInfo');
+    if (!tableEl && !cardsEl) return;
+
+    if (subState.loaded && !force) return;
+    if (subState.loading) return;
+
+    subState.loading = true;
+    renderSubsEmpty('Загрузка...');
+    if (info) info.textContent = 'Загрузка...';
+
+    try {
+        const data = await AdminAPI.getAllSubscriptions();
+        const list = Array.isArray(data) ? data : (data?.content || []);
+        subState.items = list;
+        subState.loaded = true;
+
+        if (list.length === 0) {
+            renderSubsEmpty('Подписок нет');
+        } else {
+            if (tableEl) tableEl.innerHTML = list.map(subRowHtml).join('');
+            if (cardsEl) cardsEl.innerHTML = list.map(subCardHtml).join('');
+        }
+
+        if (info) {
+            const activeCount = list.filter(subIsActive).length;
+            info.textContent = `Всего: ${list.length} · Активных: ${activeCount}`;
+        }
+    } catch (e) {
+        renderSubsEmpty(`Ошибка: ${e.message || 'не удалось загрузить'}`, true);
+        if (info) info.textContent = 'Ошибка загрузки';
+    } finally {
+        subState.loading = false;
+    }
+}
+
+export function refreshSubscriptionsOverview() {
+    return loadSubscriptionsOverview(true);
 }

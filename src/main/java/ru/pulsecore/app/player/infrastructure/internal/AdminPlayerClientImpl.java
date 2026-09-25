@@ -38,6 +38,17 @@ public class AdminPlayerClientImpl implements PlayerClient {
     private final PlayerUpdateAdminService updateAdminService;
 
     @Override
+    public List<PlayerSubscriptionResponse> getSubscription() {
+        return playerRepository.getSubscription()
+                .stream()
+                .map(playerSubscriptionExpiryProjection ->
+                        new PlayerSubscriptionResponse(playerSubscriptionExpiryProjection.getName(),
+                                playerSubscriptionExpiryProjection.getActive(),
+                                playerSubscriptionExpiryProjection.getExpiresAt()))
+                .toList();
+    }
+
+    @Override
     public Page<LastLoginResponse> getLastLogin(Pageable pageable) {
         return playerRepository.getLastLogin(pageable)
                 .map(p -> new LastLoginResponse(

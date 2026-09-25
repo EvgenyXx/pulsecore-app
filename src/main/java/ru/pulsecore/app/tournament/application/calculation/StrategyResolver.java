@@ -34,14 +34,18 @@ public class StrategyResolver {
         }
 
 
-
         return strategy;
     }
 
     private StrategyType resolveType(TournamentContext ctx) {
-        if (ctx.getRemovedPlayer() != null && !ctx.getRemovedPlayer().isBlank()) {
-            return StrategyType.REMOVED;
+        boolean removed = ctx.getRemovedPlayer() != null && !ctx.getRemovedPlayer().isBlank();
+
+        if ("4pl_new".equals(ctx.getTypeId())) {
+            if (removed) return StrategyType.FOUR_PL_BRACKET_REMOVED;
+            return StrategyType.FOUR_PL_BRACKET;
         }
+
+        if (removed) return StrategyType.REMOVED;
         return StrategyType.DEFAULT;
     }
 }

@@ -21,10 +21,14 @@ public class ResultBuilder {
 
         List<ResultDto> results = new ArrayList<>();
 
+        boolean isNewFormat = "4pl_new".equals(ctx.getTypeId());
+
         for (String player : matchResult.getPointsMap().keySet()) {
 
             int place = matchResult.getPlaceMap().getOrDefault(player, 0);
-            int bonus = bonusCalculator.getBonus(place);
+
+            // Бонус за место — только для standart. Для 4pl_new очки уже включают место.
+            int bonus = isNewFormat ? 0 : bonusCalculator.getBonus(place);
 
             int base = matchResult.getPointsMap().get(player) + bonus;
             int total = base + (int) ctx.getNightBonus();
