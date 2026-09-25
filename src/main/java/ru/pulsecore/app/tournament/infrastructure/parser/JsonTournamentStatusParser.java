@@ -2,17 +2,18 @@ package ru.pulsecore.app.tournament.infrastructure.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 
 @Slf4j
 @Service
 public class JsonTournamentStatusParser {
 
-    public TournamentStatus parseStatus(Document doc) {
-        JsonNode root = BootstrapJson.parse(doc);
-        if (root == null) return TournamentStatus.NOT_STARTED;
+    public TournamentStatus parseStatus(TournamentPage page) {
+        if (page == null || page.raw() == null) return TournamentStatus.NOT_STARTED;
+
+        JsonNode root = page.raw();
 
         if (isCancelled(root)) return TournamentStatus.CANCELLED;
         if (isFinished(root)) return TournamentStatus.FINISHED;

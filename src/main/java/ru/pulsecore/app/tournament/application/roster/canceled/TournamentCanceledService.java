@@ -8,12 +8,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.AsyncConfig;
 import ru.pulsecore.app.tournament.application.resolution.BrokenUriService;
+import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.exception.PageNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
+import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 public class TournamentCanceledService {
 
     private final TournamentRepository tournamentRepository;
+    private final JsonTournamentParser jsonTournamentParser;
     private final JsonTournamentStatusParser jsonTournamentStatusParser;
     private final TournamentCancellationService tournamentCancellationService;
     private final PlayerNotificationRepository notificationRepository;
@@ -40,6 +43,7 @@ public class TournamentCanceledService {
     private final Map<String, Integer> stats = new ConcurrentHashMap<>();
 
     public TournamentCanceledService(TournamentRepository tournamentRepository,
+                                     JsonTournamentParser jsonTournamentParser,
                                      JsonTournamentStatusParser jsonTournamentStatusParser,
                                      TournamentCancellationService tournamentCancellationService,
                                      PlayerNotificationRepository notificationRepository,
@@ -47,6 +51,7 @@ public class TournamentCanceledService {
                                      @Qualifier(RateLimiterConfig.CANCELED_RATE_LIMITER) Bucket canceledRateLimiter,
                                      BrokenUriService brokenUriService) {
         this.tournamentRepository = tournamentRepository;
+        this.jsonTournamentParser = jsonTournamentParser;
         this.jsonTournamentStatusParser = jsonTournamentStatusParser;
         this.tournamentCancellationService = tournamentCancellationService;
         this.notificationRepository = notificationRepository;
@@ -74,7 +79,6 @@ public class TournamentCanceledService {
             Document doc = documentLoader.load(link);
             processByStatus(t, notifications, doc);
         } catch (PageNotFoundException e) {
-            log.error("Битая ссылка {}", link);
             Set<UUID> playerIds = notifications.stream()
                     .map(PlayerNotification::getPlayerId)
                     .collect(Collectors.toSet());
@@ -86,7 +90,13 @@ public class TournamentCanceledService {
     }
 
     private void processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
-        TournamentStatus status = jsonTournamentStatusParser.parseStatus(doc);
+        TournamentPage page = jsonTournamentParser.parse(doc);   // ← один раз
+        if (page == null) {
+            log.warn("Не удалось распарсить страницу для турнира {} (ID={})", t.getExternalId(), t.getId());
+            return;
+        }
+
+        TournamentStatus status = jsonTournamentStatusParser.parseStatus(page);
 
         if (status == TournamentStatus.CANCELLED) {
             tournamentCancellationService.handleCancelled(t, notifications);

@@ -79,20 +79,11 @@ export const AdminAPI = {
         }),
 
     // ===== РАСЧЁТ РЕЗУЛЬТАТОВ (DTO) =====
-    /**
-     * Рассчитать результаты игрока за период.
-     * @param {{name: string, startDate: string, endDate: string}} request
-     * @returns {Promise<AdminCalculateResponse>}
-     */
     calculatePlayer: ({ name, startDate, endDate }) =>
         apiRequest('/admin/tournaments/calculate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name,
-                startDate,
-                endDate
-            })
+            body: JSON.stringify({ name, startDate, endDate })
         }),
 
     broadcast: (message) =>
@@ -108,13 +99,6 @@ export const AdminAPI = {
     getPlayerStats: (days) =>
         apiRequest(`/admin/stats/page-views/players?days=${days}`),
 
-    // ===== ПОСЛЕДНИЕ ВХОДЫ =====
-    /**
-     * Последние входы игроков (с пагинацией).
-     * @param {number} page — номер страницы (с 0)
-     * @param {number} size — размер страницы
-     * @returns {Promise<{content: Array<{name: string, lastLoginAt: string}>, totalElements: number, totalPages: number, number: number, size: number, first: boolean, last: boolean}>}
-     */
     getLastLogin: (page = 0, size = 20) =>
         apiRequest(`/admin/stats/last-login?page=${page}&size=${size}`),
 
@@ -141,6 +125,13 @@ export const AdminAPI = {
 
     resumeScheduler: () =>
         apiRequest('/admin/scheduler/resume', { method: 'POST' }),
+
+    // ===== ОБЗОР ПОДПИСОК ВСЕХ ИГРОКОВ =====
+    /**
+     * @returns {Promise<Array<PlayerSubscriptionResponse>>}
+     */
+    getAllSubscriptions: () =>
+        apiRequest('/admin/subscriptions/overview'),
 
     logout: () =>
         fetch(`${BASE}/player/logout`, { method: 'POST', credentials: 'same-origin' })

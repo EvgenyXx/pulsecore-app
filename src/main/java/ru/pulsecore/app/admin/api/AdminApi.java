@@ -47,6 +47,8 @@ public final class AdminApi {
     public static final String SUBSCRIBE = "/players/{id}/subscribe";
     public static final String UNSUBSCRIBE = "/players/{id}/unsubscribe";
     public static final String PLAYER_SUBSCRIPTION = "/players/{id}/subscription";
+    public static final String ALL_SUBSCRIPTIONS = "/subscriptions/overview";
+
 
     /**
      * Турниры игрока.

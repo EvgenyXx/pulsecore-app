@@ -3,8 +3,8 @@ package ru.pulsecore.app.tournament.infrastructure.parser;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.model.Match;
 
 import java.util.ArrayList;
@@ -15,11 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JsonMatchParser {
 
-    public List<Match> parseMatches(Document doc) {
+    public List<Match> parseMatches(TournamentPage page) {
         List<Match> result = new ArrayList<>();
-        JsonNode root = BootstrapJson.parse(doc);
-        if (root == null) return result;
+        if (page == null || page.raw() == null) return result;
 
+        JsonNode root = page.raw();
         for (JsonNode g : root.path("games")) {
             Match m = parseGame(g);
             if (m != null) result.add(m);

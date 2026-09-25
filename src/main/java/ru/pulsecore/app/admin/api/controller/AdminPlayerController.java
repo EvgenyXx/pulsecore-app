@@ -13,6 +13,7 @@ import ru.pulsecore.app.admin.client.PlayerClient;
 import ru.pulsecore.app.shared.dto.response.LastLoginResponse;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
+import ru.pulsecore.app.shared.dto.response.PlayerSubscriptionResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +24,12 @@ import java.util.UUID;
 public class AdminPlayerController {
 
     private final PlayerClient playerClient;
+
+    @Operation(summary = "Обзор подписок всех игроков")
+    @GetMapping(AdminApi.ALL_SUBSCRIPTIONS)
+    public ResponseEntity<List<PlayerSubscriptionResponse>> getSubscriptions() {
+        return ResponseEntity.ok(playerClient.getSubscription());
+    }
 
     @Operation(summary = "Последние входы игроков")
     @GetMapping(AdminApi.LAST_LOGIN)

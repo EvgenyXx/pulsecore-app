@@ -6,19 +6,20 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.ResultDto;
 import ru.pulsecore.app.tournament.application.calculation.ResultBuilder;
-import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
-import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
-import ru.pulsecore.app.tournament.domain.model.PointsCalculatorUtils;
-import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
-import ru.pulsecore.app.tournament.domain.MatchCalculationStrategy;
 import ru.pulsecore.app.tournament.application.calculation.StrategyResolver;
+import ru.pulsecore.app.tournament.domain.MatchCalculationStrategy;
+import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
+import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
+import ru.pulsecore.app.tournament.domain.model.PointsCalculatorUtils;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
+import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
+import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
+
 import java.time.LocalDate;
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
@@ -30,27 +31,45 @@ public class ResultService {
     private final StrategyResolver strategyResolver;
     private final ResultBuilder resultBuilder;
 
-
+    /** Загружает страницу по URL и считает результат. */
     public ParsedResult calculateAll(String url) {
         Document doc = loader.load(url);
         return calculate(doc);
     }
 
+    /** Считает результат по уже загруженной странице. */
     public ParsedResult calculateAll(Document doc) {
         return calculate(doc);
     }
 
+    /** Считает результат по уже распарсенной странице (без повторного парсинга). */
+    public ParsedResult calculateAll(TournamentPage page) {
+        return calculate(page);
+    }
+
     private ParsedResult calculate(Document doc) {
         TournamentContext ctx = tournamentExtractor.extract(doc);
+        if (ctx == null) return null;
+        String url = doc != null ? doc.baseUri() : "null";
+        return buildParsedResult(ctx, url);
+    }
 
-        if (ctx == null){
-            return null;
-        }
+    private ParsedResult calculate(TournamentPage page) {
+        if (page == null) return null;
+
+        TournamentContext ctx = tournamentExtractor.extract(page);
+        if (ctx == null) return null;
+
+        String url = page.document() != null ? page.document().baseUri() : "null";
+        return buildParsedResult(ctx, url);
+    }
+
+    private ParsedResult buildParsedResult(TournamentContext ctx, String url) {
         List<ResultDto> results = buildResults(ctx);
         normalizeNames(results);
         applyBonusPoints(ctx, results);
         results.sort((a, b) -> Integer.compare(b.getTotal(), a.getTotal()));
-        logResults(ctx,doc.baseUri());
+        logResults(ctx, url);
 
         return new ParsedResult(
                 ctx.getTournamentId(),
@@ -61,7 +80,8 @@ public class ResultService {
                 isFinalRemoved(ctx),
                 ctx.getLeague().name(),
                 ctx.getTime(),
-                ctx.getDate(),ctx.getMatches()
+                ctx.getDate(),
+                ctx.getMatches()
         );
     }
 
@@ -84,12 +104,15 @@ public class ResultService {
         LocalDate tournamentDate = LocalDate.parse(dateStr);
 
         for (ResultDto result : results) {
-            int total = PointsCalculatorUtils.applyDoubleBonus(result.getTotal(), tournamentDate);
+            int total =
+
+
+PointsCalculatorUtils.applyDoubleBonus(result.getTotal(), tournamentDate);
             result.setTotal(total);
         }
     }
 
-    private void logResults(TournamentContext ctx,String url) {
+    private void logResults(TournamentContext ctx, String url) {
         if (ctx.getTournamentStatus() != TournamentStatus.FINISHED) {
             log.info("{} {} {} {}",
                     ctx.getTournamentStatus(),
@@ -97,7 +120,6 @@ public class ResultService {
                     ctx.getTime() != null ? ctx.getTime() : "?",
                     url);
         }
-
     }
 
     private boolean hasRemoved(TournamentContext ctx) {

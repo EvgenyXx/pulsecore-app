@@ -4,16 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.domain.enums.LeagueType;
-import ru.pulsecore.app.tournament.domain.model.Match;
-import ru.pulsecore.app.tournament.infrastructure.parser.LeagueDetector;
 import ru.pulsecore.app.tournament.application.calculation.league.NightBonusService;
+import ru.pulsecore.app.tournament.domain.TournamentPage;
+import ru.pulsecore.app.tournament.domain.enums.LeagueType;
+import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
+import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.RemovedResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
-import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonMatchParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
+import ru.pulsecore.app.tournament.infrastructure.parser.league.LeagueDetector;
 
 import java.util.List;
 
@@ -22,37 +23,50 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TournamentExtractor {
 
-    // старые — не трогаем, оставлены для обратной совместимости
-    // private final TournamentParser tournamentParser;
-    // private final MatchParser matchParser;
-    // private final TournamentStatusParser tournamentStatusParser;
-
-    // новые — читают JSON из <script id="ml-tour-bootstrap">
     private final JsonTournamentParser jsonTournamentParser;
     private final JsonMatchParser jsonMatchParser;
     private final JsonTournamentStatusParser jsonTournamentStatusParser;
 
-    // не зависят от формата — работают и с HTML, и с JSON
     private final LeagueDetector leagueDetector;
     private final NightBonusService nightBonusService;
     private final RemovedPlayerDetector removedPlayerDetector;
 
+    /**
+     * Обёртка: парсит Document ОДИН раз и делегирует в extract(page).
+     * Используй её, только если у тебя на руках Document и нет TournamentPage.
+     */
     public TournamentContext extract(Document doc) {
+        TournamentPage page = jsonTournamentParser.parse(doc);
+        return extract(page);
+    }
 
-        Long tournamentId = jsonTournamentParser.parseTournamentId(doc);
-        TournamentStatus status = jsonTournamentStatusParser.parseStatus(doc);
-        String date = jsonTournamentParser.parseDate(doc);
+    /**
+     * Основной метод: работает с уже распарсенной страницей.
+     * Никакого повторного парсинга — всё берётся из page.
+     */
+    public TournamentContext extract(TournamentPage page) {
+        if (page == null) {
+            log.warn("Не удалось распарсить страницу");
+            return null;
+        }
 
-        List<Match> matches = jsonMatchParser.parseMatches(doc);
+        Long tournamentId = page.id();
+        String date = page.date();
+        String time = page.time();
+        String removed = page.removedPlayer();
 
-        LeagueType league = leagueDetector.detectLeague(doc);
+        TournamentStatus status = jsonTournamentStatusParser.parseStatus(page);
+        List<Match> matches = jsonMatchParser.parseMatches(page);
 
-        double nightBonus = nightBonusService.calculateBonus(doc, league.name());
+        LeagueType league = leagueDetector.detectLeague(page);
+        if (league == null) {
+            log.warn("Не удалось определить лигу для турнира id={}", tournamentId);
+            return null;
+        }
 
-        String removedPlayer = jsonTournamentParser.findRemovedPlayer(doc);
-        String time = jsonTournamentParser.parseTime(doc);
+        double nightBonus = nightBonusService.calculateBonus(page, league.name());
 
-        RemovedResult playerDetector = removedPlayerDetector.detect(removedPlayer, matches);
+        RemovedResult playerDetector = removedPlayerDetector.detect(removed, matches);
 
         log.debug("Extract: id={}, date={}, time={}, league={}, matches={}, bonus={}, status={}",
                 tournamentId, date, time, league, matches.size(), nightBonus, status);
