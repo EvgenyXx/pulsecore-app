@@ -58,7 +58,7 @@ public class SubscriptionExpiryProcessor {
                             player.playerId(),
                             "⏳ Подписка заканчивается!",
                             PushMessageBuilder.SUBSCRIPTION_EXPIRING_BODY,
-                            "/subscribe"
+                            "/dashboard#/profile"
                     )
             );
             log.info("📲 Push отправлен игроку {}", player.playerId());
