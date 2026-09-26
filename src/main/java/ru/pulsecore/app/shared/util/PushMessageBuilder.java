@@ -1,15 +1,15 @@
 package ru.pulsecore.app.shared.util;
 
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
+import ru.pulsecore.app.tournament.domain.enums.LineupType;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
-
 import java.util.List;
 
 public class PushMessageBuilder {
 
-    private PushMessageBuilder() {}
+    private PushMessageBuilder() {
+    }
 
     public static String buildNewTournamentBody(String playerName, TournamentDto t) {
         String firstName = StringUtils.extractFirstName(playerName);
@@ -17,16 +17,18 @@ public class PushMessageBuilder {
         String timeStr = DateTimeUtils.formatTime(t.getDate() != null ? t.getDate().getDate() : null);
         String hall = t.getHall() != null ? t.getHall() : "—";
         String league = t.getLeague() != null ? t.getLeague() : "—";
+        String format = LineupType.fromApiType(t.getType()).displayName();
 
         StringBuilder body = new StringBuilder();
         body.append(firstName).append(", вы записаны на турнир!\n\n");
-        body.append("📅 ").append(dateStr).append(" в ").append(timeStr).append("\n");
-        body.append("🏛 Зал: ").append(hall).append("\n");
-        body.append("🏆 Лига: ").append(league).append("\n\n");
+        body.append("Дата: ").append(dateStr).append(" в ").append(timeStr).append("\n");
+        body.append("Зал: ").append(hall).append("\n");
+        body.append("Лига: ").append(league).append("\n");
+        body.append("Формат: ").append(format).append("\n\n");
 
         List<String> players = t.getPlayers();
         if (players != null && !players.isEmpty()) {
-            body.append("👥 Состав:\n");
+            body.append("Состав:\n");
             int count = Math.min(players.size(), 10);
             for (int i = 0; i < count; i++) {
                 body.append(i + 1).append(". ").append(players.get(i)).append("\n");
@@ -39,27 +41,28 @@ public class PushMessageBuilder {
     }
 
     public static String buildCancelledBody(String date, String time) {
-        return "Турнир " + date + " в " + time + " был отменён.\n\nPulseCore";
+        return "Турнир отменён\n\n"
+                + "Дата: " + date + "\n"
+                + "Время: " + time + "\n\n"
+                + "PulseCore";
     }
 
 
     public static final String SUBSCRIPTION_EXPIRING_BODY = """
-        Завтра истекает срок действия подписки.
-        
-        🔕 Push-уведомления будут отключены.
-        💳 Продлите подписку, чтобы продолжить получать уведомления о турнирах.
-        
-        PulseCore""";
+            Завтра истекает срок действия подписки.
+            
+             Push-уведомления будут отключены.
+             Продлите подписку, чтобы продолжить получать уведомления о турнирах.
+            
+            PulseCore""";
 
-    public static String buildHourReminderBody(String time, long minutes) {
-        return "Начало в " + time + ". До старта " + minutes + " мин. Проверьте состав!\n\nPulseCore";
+    public static String buildHourReminderBody(String time) {
+        return "Начало в " + time + ".";
     }
 
     public static String buildEveningReminderBody(String time) {
-        return "Завтра в " + (time != null ? time : "?") + ". Проверьте состав и будьте готовы!";
+        return "Начало в " + time + ".";
     }
-
-
 
 
 }

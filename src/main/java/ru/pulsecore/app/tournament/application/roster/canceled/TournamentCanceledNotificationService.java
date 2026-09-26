@@ -47,19 +47,19 @@ public class TournamentCanceledNotificationService {
             String date = tournament.getDate() != null ? tournament.getDate().toString() : "?";
 
             emailSend(player, time, date, tournament.getLink());
-            canSendPush(player, time, date);
+            canSendPush(player, time, date,tournament.getLink());
         }
         log.info("Отмена турнира: уведомления отправлены {} игрокам", notifications.size());
     }
 
-    private void canSendPush(PlayerData playerData, String time, String date) {
+    private void canSendPush(PlayerData playerData, String time, String date,String link) {
         if (playerData.pushEnabled()) {
             eventPublisher.publishEvent(
                     new PushNotificationEvent(
                             playerData.playerId(),
-                            "❌ Турнир отменён!",
+                            "Турнир отменён",
                             PushMessageBuilder.buildCancelledBody(date, time),
-                            "/dashboard"
+                            link
                     )
             );
             log.debug("Отмена: пуш отправлен игроку={}", playerData.playerName());

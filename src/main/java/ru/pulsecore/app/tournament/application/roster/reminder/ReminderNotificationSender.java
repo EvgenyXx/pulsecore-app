@@ -45,9 +45,9 @@ public class ReminderNotificationSender {
                 publisher.publishEvent(
                         new PushNotificationEvent(
                                 player.playerId(),
-                                "🏆 Турнир начинается!",
-                                PushMessageBuilder.buildHourReminderBody(tournamentTime, minutes),
-                                "/dashboard"
+                                "Турнир через час",
+                                PushMessageBuilder.buildHourReminderBody(tournamentTime),
+                                pn.getTournament().getLink()
                         )
                 );
             } catch (Exception e) {
@@ -71,9 +71,9 @@ public class ReminderNotificationSender {
                 publisher.publishEvent(
                         new PushNotificationEvent(
                                 player.playerId(),
-                                "📅 Завтра турнир!",
+                                "Завтра турнир",
                                 PushMessageBuilder.buildEveningReminderBody(time),
-                                "/dashboard"
+                                pn.getTournament().getLink()
                         )
                 );
             } catch (Exception e) {
