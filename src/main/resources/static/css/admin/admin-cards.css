@@ -508,3 +508,21 @@
     font-size: 0.85rem;
     padding: 24px 12px;
 }
+
+.player-badge-earned {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+}
+
+.player-badge-name {
+    font-weight: 500;
+}
+
+.player-badge-earned-value {
+    color: #30d158;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: -0.2px;
+}

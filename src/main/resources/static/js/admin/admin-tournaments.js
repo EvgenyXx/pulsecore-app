@@ -104,11 +104,6 @@ function updateExpandedCard() {
                 statusEl.textContent = '';
             }
         }
-
-        const labelEl = document.querySelector(`#tournament-card-${expandedTournamentId} .status-label`);
-        if (labelEl) {
-            labelEl.classList.toggle('active', t[key]);
-        }
     });
 
     const playersCount = document.querySelector(`#tournament-card-${expandedTournamentId} .tournament-card-meta`);
@@ -118,9 +113,7 @@ function updateExpandedCard() {
 
     const playersList = document.querySelector(`#tournament-card-${expandedTournamentId} .tournament-players-list`);
     if (playersList) {
-        playersList.innerHTML = players.length
-            ? players.map(p => `<span class="player-badge">${p.replace(/"/g, '')}</span>`).join('')
-            : '<span class="text-xs text-zinc-500">Нет данных</span>';
+        playersList.innerHTML = renderPlayersList(players);
     }
 
     const badge = document.querySelector(`#tournament-card-${expandedTournamentId} .badge`);
@@ -185,12 +178,37 @@ function buildExpandedView(t, players, numericId) {
 
             <div class="tournament-card-section-title">Участники (${players.length})</div>
             <div class="tournament-players-list">
-                ${players.length ? players.map(p => `<span class="player-badge">${p.replace(/"/g, '')}</span>`).join('') : '<span class="text-xs text-zinc-500">Нет данных</span>'}
+                ${renderPlayersList(players)}
             </div>
 
             <button class="btn btn-indigo save-btn" onclick="saveTournament('${numericId}')">Сохранить</button>
         </div>
     `;
+}
+
+/**
+ * Игроки + заработок.
+ * players: [{ name, earned }, ...] — новый формат из бэка.
+ * Поддерживает старый формат — массив строк.
+ */
+function renderPlayersList(players) {
+    if (!players || players.length === 0) {
+        return '<span class="text-xs text-zinc-500">Нет данных</span>';
+    }
+
+    return players.map(p => {
+        // Новый формат: объект { name, earned }
+        if (typeof p === 'object' && p !== null) {
+            const name = (p.name || '—').replace(/"/g, '');
+            const earned = Number(p.earned ?? 0);
+            return `<span class="player-badge player-badge-earned">
+                        <span class="player-badge-name">${name}</span>
+                        <span class="player-badge-earned-value">${formatMoney(earned)}</span>
+                    </span>`;
+        }
+        // Старый формат: строка
+        return `<span class="player-badge">${String(p).replace(/"/g, '')}</span>`;
+    }).join('');
 }
 
 function buildStatusBox(key, label, value, id) {
@@ -207,6 +225,14 @@ function buildStatusBox(key, label, value, id) {
 function parsePlayers(playersRaw) {
     if (!playersRaw) return [];
     if (Array.isArray(playersRaw)) return playersRaw;
+    if (typeof playersRaw === 'string') {
+        try {
+            const parsed = JSON.parse(playersRaw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
     return [];
 }
 
@@ -279,6 +305,11 @@ function formatDate(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);
     return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function formatMoney(value) {
+    const n = Number(value) || 0;
+    return n.toLocaleString('ru-RU') + ' ₽';
 }
 
 window.loadTournaments = loadTournaments;
