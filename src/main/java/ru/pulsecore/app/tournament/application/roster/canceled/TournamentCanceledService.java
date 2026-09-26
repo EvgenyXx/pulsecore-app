@@ -113,8 +113,16 @@ public class TournamentCanceledService {
         int total = stats.getOrDefault("всего", 0);
         int cancelled = stats.getOrDefault("отменено", 0);
         int broken = stats.getOrDefault("битые", 0);
-         log.info("❌ CANCELED: итог — всего={}, отменено={}, битые={}",
-            total, cancelled, broken);
+
+        String icon;
+        if (cancelled > 0) {
+            icon = "❌";
+        } else {
+            icon = "✅";
+        }
+
+        log.info("{} CANCELED: итог — всего={}, отменено={}, битые={}",
+                icon, total, cancelled, broken);
     }
 
     public void clearStats() {

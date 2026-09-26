@@ -69,7 +69,7 @@ public class TournamentProcessService {
 
         tournament.setFinished(true);
 
-        log.info("Финиш: турнир={} обработан, игроков={}",
+        log.debug("Финиш: турнир={} обработан, игроков={}",
                 tournament.getExternalId(), rosterData.size());
 
         return resultEntities;

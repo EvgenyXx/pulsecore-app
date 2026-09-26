@@ -69,7 +69,7 @@ public class TournamentAsyncFinishProcessor {
 
         Document doc = documentLoader.load(link);
 
-        TournamentPage page = jsonTournamentParser.parse(doc);   // ← один раз
+        TournamentPage page = jsonTournamentParser.parse(doc);
         if (page == null) {
             log.warn("Турнир {} — не удалось распарсить страницу", link);
             return;
@@ -92,16 +92,28 @@ public class TournamentAsyncFinishProcessor {
             return;
         }
         TournamentEntity t = notifications.get(0).getTournament();
-        finishService.handleFinished(t, notifications, page);   // ← передаём page, не doc
+        finishService.handleFinished(t, notifications, page);
     }
 
     public void logSummary() {
-    int inCache = stats.getOrDefault("В КЭШЕ", 0);
-    int inProgress = stats.getOrDefault("IN_PROGRESS", 0);
-    int finished = stats.getOrDefault("ЗАВЕРШЁН", 0);
-    log.info("🏁 FINISH: итог — в кэше={}, in_progress={}, завершено={}",
-            inCache, inProgress, finished);
-}
+        int inCache = stats.getOrDefault("В КЭШЕ", 0);
+        int inProgress = stats.getOrDefault("IN_PROGRESS", 0);
+        int finished = stats.getOrDefault("ЗАВЕРШЁН", 0);
+
+        int going = inCache + inProgress;
+
+        String icon;
+        if (going > 0) {
+            icon = "⏳";
+        } else if (finished > 0) {
+            icon = "✅";
+        } else {
+            icon = "❔";
+        }
+
+        log.info("{} FINISH: итог — в кэше={}, in_progress={}, завершено={}",
+                icon, inCache, inProgress, finished);
+    }
 
     public void clearStats() {
         stats.clear();

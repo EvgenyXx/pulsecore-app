@@ -49,7 +49,7 @@ public class LineupScheduler implements ApplicationRunner {
     }
 
     @Scheduled(
-            initialDelay = 0,
+            initialDelay = 30,
             fixedDelay = 90,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
