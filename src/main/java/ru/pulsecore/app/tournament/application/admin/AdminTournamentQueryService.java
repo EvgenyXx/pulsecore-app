@@ -24,7 +24,7 @@ public class AdminTournamentQueryService {
 
     @Transactional(readOnly = true)
     public List<AdminTournamentResponse> getTournamentsByDate(LocalDate date) {
-        log.info("Запрос турниров по дате: {}", date);
+        log.debug("Запрос турниров по дате: {}", date);
         return tournamentRepository.findTournamentsWithPlayersByDate(date).stream()
                 .map(this::toResponse)
                 .toList();
@@ -32,7 +32,7 @@ public class AdminTournamentQueryService {
 
     @Transactional(readOnly = true)
     public AdminTournamentResponse getTournamentById(Long id) {
-        log.info("Запрос турнира по ID: {}", id);
+        log.debug("Запрос турнира по ID: {}", id);
         TournamentAdminProjection projection = tournamentRepository.findTournamentWithPlayersById(id);
         if (projection == null) {
             log.warn("Турнир не найден: {}", id);
