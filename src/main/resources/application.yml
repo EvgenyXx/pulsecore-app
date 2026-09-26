@@ -65,6 +65,10 @@ server:
 
 
 
+audit:
+  dir: ${AUDIT_DIR:audit}
+
+
 app:
       security:
             public-urls:
