@@ -2,6 +2,7 @@ package ru.pulsecore.app.tournament.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.pulsecore.app.tournament.domain.enums.LineupType;
 
 import java.time.LocalDate;
 
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 @Table(
         name = "lineup",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"league", "time", "date"})
+                @UniqueConstraint(columnNames = {"league", "time", "date", "hall"})
         },
         indexes = {
                 @Index(name = "idx_lineup_date", columnList = "date")
@@ -43,4 +44,13 @@ public class Lineup {
 
     @Column(length = 500)
     private String streamUrl;
+
+    @Column(length = 500)
+    private String link;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 20)
+    private LineupType type;
+
+
 }
