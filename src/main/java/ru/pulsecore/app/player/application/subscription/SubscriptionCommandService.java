@@ -49,7 +49,7 @@ public class SubscriptionCommandService {
     @Transactional
     @CacheEvict(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
     public void activate(UUID playerId, int days) {
-        System.err.println("ДЕРНУЛИ ПОДПИСКУ ");
+
         Player player = playerSearchService.getById(playerId);
 
         Subscription subscription = player.getSubscription();
