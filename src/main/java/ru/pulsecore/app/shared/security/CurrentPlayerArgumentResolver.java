@@ -8,6 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import ru.pulsecore.app.shared.exception.UnauthorizedException;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class CurrentPlayerArgumentResolver implements HandlerMethodArgumentResol
                                   ModelAndViewContainer mavContainer,
                                   @NonNull NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
-        return extractor.extract();
+        return extractor.extract()
+                .orElseThrow(() -> new UnauthorizedException("Не авторизован"));
     }
 }

@@ -7,4 +7,8 @@ public class UnauthorizedException extends BaseException {
     public UnauthorizedException() {
         super(HttpStatus.UNAUTHORIZED, "Требуется авторизация");
     }
+
+    public UnauthorizedException(String message) {
+        super(HttpStatus.UNAUTHORIZED, message);
+    }
 }

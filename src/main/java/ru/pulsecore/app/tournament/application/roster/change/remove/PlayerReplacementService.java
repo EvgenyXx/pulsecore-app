@@ -32,8 +32,7 @@ public class PlayerReplacementService {
             Long oldTournamentId,
             Map<String, List<TournamentDto>> allTournaments) {
 
-        log.info("ТЕСТ: processReplacement вызвался для {}", newTournament.getLink());
-        auditWriter.write("changes", "ТЕСТ: processReplacement для " + newTournament.getLink());
+
 
         List<String> removedNames = playerRemovalDetector.findRemovedNames(oldPlayers, newTournament);
         if (removedNames.isEmpty()) return false;
