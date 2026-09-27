@@ -43,7 +43,7 @@ public class PlayerReplacementService {
         List<PlayerData> removedPlayers = playerRemovalDetector.findPlayerForReplace(removedNames, oldPlayers);
 
         removedPlayers.forEach(removedPlayer -> {
-            log.debug("Замена: обработка игрока={}", removedPlayer.playerName());
+            log.debug("Замена: обработка игрока={}", removedPlayer.name());
             processRemovedPlayer(removedPlayer, newTournament, oldTournamentId, allTournaments);
         });
 
@@ -61,16 +61,16 @@ public class PlayerReplacementService {
                 removedPlayer, newTournament, allTournaments);
 
         if (transferInfo != null) {
-            log.debug("Замена: перенос игрока={}", removedPlayer.playerName());
+            log.debug("Замена: перенос игрока={}", removedPlayer.name());
             processTransfer(removedPlayer, transferInfo);
         } else {
-            log.debug("Замена: снятие игрока={}", removedPlayer.playerName());
+            log.debug("Замена: снятие игрока={}", removedPlayer.name());
             processRemoval(removedPlayer, newTournament);
         }
 
-        removeNotification(removedPlayer.playerId(), oldTournamentId);
-        log.debug("Замена: связь удалена для playerId={}, tournamentId={}",
-                removedPlayer.playerId(), oldTournamentId);
+        removeNotification(removedPlayer.id(), oldTournamentId);
+        log.debug("Замена: связь удалена для id={}, tournamentId={}",
+                removedPlayer.id(), oldTournamentId);
     }
 
     private void processTransfer(PlayerData player, TransferInfo transferInfo) {
@@ -90,7 +90,7 @@ public class PlayerReplacementService {
         log.info("Замена: турнир={}, ушло={}",
                 newTournament.getId(), removedNames.size());
 
-        List<String> before = oldPlayers.stream().map(PlayerData::playerName).toList();
+        List<String> before = oldPlayers.stream().map(PlayerData::name).toList();
         List<String> after = newTournament.getPlayers();
 
         Set<String> oldNames = new HashSet<>(before);

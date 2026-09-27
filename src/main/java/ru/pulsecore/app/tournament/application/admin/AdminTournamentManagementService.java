@@ -45,6 +45,6 @@ public class AdminTournamentManagementService {
     @Transactional
     public void resyncPeriod(UUID playerId, LocalDate from, LocalDate to) {
         var player = playerClient.getPlayerById(playerId);
-        cascadeSyncService.syncPeriod(player.playerId(), player.playerName(), from, to);
+        cascadeSyncService.syncPeriod(player.id(), player.name(), from, to);
     }
 }

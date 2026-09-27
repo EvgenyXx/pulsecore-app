@@ -23,7 +23,7 @@ public class TournamentFilter {
                 .toList();
 
         if (!newOnes.isEmpty()) {
-            log.debug("Фильтр: playerId={}, всего={}, новых={}",
+            log.debug("Фильтр: id={}, всего={}, новых={}",
                     playerId, tournaments.size(), newOnes.size());
         }
 

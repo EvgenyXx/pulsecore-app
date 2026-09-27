@@ -23,14 +23,14 @@ public class PlayerChangeNotificationPublisher {
 
     public void sendReplacementNotification(PlayerData player, TournamentDto tournament) {
         log.debug("Публикация события замены: player={}, tournament={}",
-                player.playerName(), tournament.getLink());
+                player.name(), tournament.getLink());
 
         eventPublisher.publishEvent(
                 new MailNotificationEvent(
                         MailTypes.PLAYER_REPLACED,
                         new PlayerReplacedContext(
                                 player.email(),
-                                StringUtils.extractFirstName(player.playerName()),
+                                StringUtils.extractFirstName(player.name()),
                                 tournament.getTitle(),
                                 DateTimeUtils.formatDate(tournament.getDate().getDate()),
                                 DateTimeUtils.formatTime(tournament.getDate().getDate()),
@@ -40,12 +40,12 @@ public class PlayerChangeNotificationPublisher {
                 )
         );
 
-        log.info("Событие замены опубликовано: player={}", player.playerName());
+        log.info("Событие замены опубликовано: player={}", player.name());
     }
 
     public void sendTransferNotification(PlayerData player, TransferInfo transferInfo) {
         log.debug("Публикация события переноса: player={}, from={}, to={}",
-                player.playerName(),
+                player.name(),
                 transferInfo.from().getLink(),
                 transferInfo.to().getLink());
 
@@ -54,12 +54,12 @@ public class PlayerChangeNotificationPublisher {
                         MailTypes.PLAYER_TRANSFERRED,
                         new PlayerTransferredContext(
                                 player.email(),
-                                StringUtils.extractFirstName(player.playerName()),
+                                StringUtils.extractFirstName(player.name()),
                                 transferInfo
                         )
                 )
         );
 
-        log.info("Событие переноса опубликовано: player={}", player.playerName());
+        log.info("Событие переноса опубликовано: player={}", player.name());
     }
 }

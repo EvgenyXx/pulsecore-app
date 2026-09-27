@@ -12,7 +12,7 @@ import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.domain.Subscription;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
 
-import java.time.LocalDateTime;
+
 import java.util.UUID;
 
 @Slf4j
@@ -25,8 +25,8 @@ public class SubscriptionCommandService {
 
     @CacheEvict(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
     @Transactional
-    public void deactivate(UUID playerId) {
-        Player player = playerSearchService.getById(playerId);
+    public void deactivate(UUID id) {
+        Player player = playerSearchService.getById(id);
         Subscription subscription = player.getSubscription();
         if (subscription != null) {
             subscription.setActive(false);
@@ -36,8 +36,8 @@ public class SubscriptionCommandService {
     }
 
     @Transactional
-    public void enable(UUID playerId) {
-        Player player = playerSearchService.getById(playerId);
+    public void enable(UUID id) {
+        Player player = playerSearchService.getById(id);
         Subscription subscription = player.getSubscription();
         if (subscription != null) {
             subscription.setActive(true);
@@ -48,9 +48,9 @@ public class SubscriptionCommandService {
 
     @Transactional
     @CacheEvict(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
-    public void activate(UUID playerId, int days) {
+    public void activate(UUID id, int days) {
 
-        Player player = playerSearchService.getById(playerId);
+        Player player = playerSearchService.getById(id);
 
         Subscription subscription = player.getSubscription();
         if (subscription == null) {

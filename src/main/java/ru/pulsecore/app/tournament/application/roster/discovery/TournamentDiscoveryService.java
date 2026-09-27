@@ -42,17 +42,17 @@ public class TournamentDiscoveryService {
 
     private Map<PlayerData, List<TournamentDto>> findNewTournaments(List<PlayerData> players) {
         List<String> playerNames = players.stream()
-                .map(PlayerData::playerName)
+                .map(PlayerData::name)
                 .toList();
 
         Map<String, List<TournamentDto>> allFound = tournamentDataProvider.findPlayerTournaments(playerNames);
 
         Map<PlayerData, List<TournamentDto>> result = new HashMap<>();
         for (PlayerData player : players) {
-            List<TournamentDto> playerTournaments = allFound.getOrDefault(player.playerName(), List.of());
-            List<TournamentDto> newOnes = filter.findNew(player.playerId(), playerTournaments);
+            List<TournamentDto> playerTournaments = allFound.getOrDefault(player.name(), List.of());
+            List<TournamentDto> newOnes = filter.findNew(player.id(), playerTournaments);
             if (!newOnes.isEmpty()) {
-                log.debug("Новые турниры: игрок={}, новых={}", player.playerName(), newOnes.size());
+                log.debug("Новые турниры: игрок={}, новых={}", player.name(), newOnes.size());
                 result.put(player, newOnes);
             }
         }

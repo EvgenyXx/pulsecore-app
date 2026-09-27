@@ -35,7 +35,7 @@ public class ScheduledReportProcessor {
         for (var report : ready) {
             PlayerData player = playerClient.getPlayerById(report.getPlayerId());
             SumResponse sum = sumService.getSum(
-                    player.playerId(),
+                    player.id(),
                     report.getDateFrom(),
                     report.getDateTo(),
                     0, Integer.MAX_VALUE);
@@ -45,7 +45,7 @@ public class ScheduledReportProcessor {
             publishEvent(player.email(), period, sum);
 
             reportService.markAsSent(report.getId());
-            log.info("Отчёт отправлен игроку {}. Почта: {}", player.playerName(),player.email());
+            log.info("Отчёт отправлен игроку {}. Почта: {}", player.name(),player.email());
         }
     }
 

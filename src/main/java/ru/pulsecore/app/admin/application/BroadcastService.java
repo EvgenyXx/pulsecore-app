@@ -39,7 +39,7 @@ public class BroadcastService {
         int emailSent = 0;
 
         for (PlayerData player : players) {
-            if (sendPush(player.playerId(), message)) pushSent++;
+            if (sendPush(player.id(), message)) pushSent++;
             if (sendEmail(player.email(),message)) emailSent++;
         }
 

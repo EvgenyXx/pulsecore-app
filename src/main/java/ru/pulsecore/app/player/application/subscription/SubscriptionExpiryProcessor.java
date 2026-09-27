@@ -55,13 +55,13 @@ public class SubscriptionExpiryProcessor {
 
             eventPublisher.publishEvent(
                     new PushNotificationEvent(
-                            player.playerId(),
+                            player.id(),
                             "Подписка скоро закончится",
                             PushMessageBuilder.SUBSCRIPTION_EXPIRING_BODY,
                             "/dashboard#/profile"
                     )
             );
-            log.info("📲 Push отправлен игроку {}", player.playerId());
+            log.info("📲 Push отправлен игроку {}", player.id());
         }
     }
 }

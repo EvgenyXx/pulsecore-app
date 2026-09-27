@@ -27,16 +27,16 @@ public class NotificationBuilder {
             List<PlayerNotification> allNotifications) {
 
         boolean exists = notificationRepo
-                .findByPlayerIdAndTournamentId(player.playerId(), tournament.getId())
+                .findByPlayerIdAndTournamentId(player.id(), tournament.getId())
                 .isPresent();
 
         if (!exists) {
             log.debug("Сохранение: новая связь player={}, tournament={}",
-                    player.playerName(), tournament.getExternalId());
-            allNotifications.add(notificationFactory.create(player.playerId(), tournament, t));
+                    player.name(), tournament.getExternalId());
+            allNotifications.add(notificationFactory.create(player.id(), tournament, t));
         } else {
             log.debug("Сохранение: связь уже существует player={}, tournament={}",
-                    player.playerName(), tournament.getExternalId());
+                    player.name(), tournament.getExternalId());
         }
     }
 }

@@ -449,7 +449,7 @@ function fmtDate(dateStr) {
 }
 
 function subIsActive(item) {
-    return !!(item.active ?? item.isActive ?? item.hasActiveSubscription);
+    return !!(item.active ?? item.isActive ?? item.activeSubscription);
 }
 
 function subName(item) {

@@ -36,7 +36,7 @@ public class TournamentCanceledNotificationService {
                 .collect(Collectors.toSet());
 
         Map<UUID, PlayerData> playerMap = playerClient.getPlayerDataByIds(playerIds).stream()
-                .collect(Collectors.toMap(PlayerData::playerId, p -> p));
+                .collect(Collectors.toMap(PlayerData::id, p -> p));
 
         for (PlayerNotification pn : notifications) {
             PlayerData player = playerMap.get(pn.getPlayerId());
@@ -56,13 +56,13 @@ public class TournamentCanceledNotificationService {
         if (playerData.pushEnabled()) {
             eventPublisher.publishEvent(
                     new PushNotificationEvent(
-                            playerData.playerId(),
+                            playerData.id(),
                             "Турнир отменён",
                             PushMessageBuilder.buildCancelledBody(date, time),
                             link
                     )
             );
-            log.debug("Отмена: пуш отправлен игроку={}", playerData.playerName());
+            log.debug("Отмена: пуш отправлен игроку={}", playerData.name());
         }
     }
 
@@ -77,7 +77,7 @@ public class TournamentCanceledNotificationService {
                             )
                     )
             );
-            log.debug("Отмена: письмо отправлено игроку={}", playerData.playerName());
+            log.debug("Отмена: письмо отправлено игроку={}", playerData.name());
         }
     }
 }

@@ -39,7 +39,7 @@ public class NewTournamentEventPublisher {
     private void sendEmail(PlayerData player, TournamentDto tournament) {
         if (player.notificationsEnabled()) {
 
-            String firstName = StringUtils.extractFirstName(player.playerName());
+            String firstName = StringUtils.extractFirstName(player.name());
             String rawDate = tournament.getDate() != null ? tournament.getDate().getDate() : null;
             String type = LineupType.fromApiType(tournament.getType()).displayName();
 
@@ -65,9 +65,9 @@ public class NewTournamentEventPublisher {
         if (player.pushEnabled()) {
             publisher.publishEvent(
                     new PushNotificationEvent(
-                            player.playerId(),
+                            player.id(),
                             "Новый турнир",
-                            PushMessageBuilder.buildNewTournamentBody(player.playerName(), tournament),
+                            PushMessageBuilder.buildNewTournamentBody(player.name(), tournament),
                             tournament.getLink()
                     )
             );

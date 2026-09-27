@@ -56,8 +56,8 @@ public class TournamentProcessService {
 
         Map<UUID, String> rosterData = roster.stream()
                 .collect(Collectors.toMap(
-                        PlayerData::playerId,
-                        PlayerData::playerName
+                        PlayerData::id,
+                        PlayerData::name
                 ));
 
         log.debug("Финиш: состав игроков={}", rosterData.values());

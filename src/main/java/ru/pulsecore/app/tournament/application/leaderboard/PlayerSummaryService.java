@@ -34,10 +34,10 @@ public class PlayerSummaryService {
         PlayerData player = playerClient.getPlayerById(id);
 
         return PlayerSummaryResponse.builder()
-                .playerName(StringUtils.capitalize(player.playerName()))
-                .lastResult(getLastResult(player.playerId()))
-                .upcomingLineups(getUpcomingLineups(player.playerName()))
-                .subscription(getSubscriptionInfo(player.playerId()))
+                .playerName(StringUtils.capitalize(player.name()))
+                .lastResult(getLastResult(player.id()))
+                .upcomingLineups(getUpcomingLineups(player.name()))
+                .subscription(getSubscriptionInfo(player.id()))
                 .primaryLeague(player.primaryLeague())
                 .build();
     }

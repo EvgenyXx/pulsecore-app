@@ -1,4 +1,3 @@
-
 package ru.pulsecore.app.tournament.infrastructure.persistence.repository;
 
 import org.springframework.data.domain.Page;
@@ -68,8 +67,6 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
                                                    @Param("year") int year);
 
 
-
-
     @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
             "FROM TournamentResultEntity tr " +
             "WHERE tr.date >= :since " +
@@ -97,16 +94,14 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
     PeriodStatsProjection getStats(@Param("playerId") UUID playerId, @Param("start") LocalDate start, @Param("end") LocalDate end);
 
 
-    Optional<TournamentResultEntity> findTopByPlayerIdOrderByDateDesc(UUID playerId);
-
-  @Query(value = """
-        SELECT tr.date AS date, tr.amount AS amount, tr.id AS resultId
-        FROM tournament_results tr
-        WHERE tr.player_id = :playerId
-        ORDER BY tr.date DESC
-        LIMIT 1
-        """, nativeQuery = true)
-Optional<LastResultProjection> getLastResult(@Param("playerId") UUID playerId);
+    @Query(value = """
+            SELECT tr.date AS date, tr.amount AS amount, tr.id AS resultId
+            FROM tournament_results tr
+            WHERE tr.player_id = :playerId
+            ORDER BY tr.date DESC
+            LIMIT 1
+            """, nativeQuery = true)
+    Optional<LastResultProjection> getLastResult(@Param("playerId") UUID playerId);
 
     @Query("""
                 SELECT p.id AS playerId,

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.api.dto.response.LineupDto;
+import ru.pulsecore.app.tournament.application.mapper.LineupMapper;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
@@ -20,11 +21,12 @@ public class LineupFacade {
 
     private final LineupRepository lineupRepository;
     private final PlayerClient playerClient;
+    private final LineupMapper lineupMapper;
 
 
     public Map<String, List<LineupDto>> getAllGroupedByHall(LocalDate date) {
         List<Lineup> all = lineupRepository.findByDate(date);
-        return groupByHall(all.stream().map(this::toDto).toList());
+        return groupByHall(all.stream().map(lineupMapper::toDto).toList());
     }
 
     public Map<String, List<LineupDto>> getMyGroupedByHall(UUID playerId, LocalDate date) {
@@ -39,8 +41,8 @@ public class LineupFacade {
         List<Lineup> filtered = getLineupsForHalls(date, halls);
 
         List<LineupDto> dtos = filtered.stream()
-                .map(this::toDto)
-                .map(dto -> markPlayer(dto, playerData.playerName()))
+                .map(lineupMapper::toDto)
+                .map(dto -> markPlayer(dto, playerData.name()))
                 .toList();
 
         return groupByHall(dtos);
@@ -62,17 +64,17 @@ public class LineupFacade {
         return dto;
     }
 
-    private LineupDto toDto(Lineup lineup) {
-        return LineupDto.builder()
-                .time(lineup.getTime())
-                .league(lineup.getLeague())
-                .hall(lineup.getHall())
-                .players(lineup.getPlayers())
-                .date(lineup.getDate().toString())
-                .link(lineup.getLink())
-                .type(lineup.getType() != null ? lineup.getType().name() : null)
-                .build();
-    }
+//    private LineupDto toDto(Lineup lineup) {
+//        return LineupDto.builder()
+//                .time(lineup.getTime())
+//                .league(lineup.getLeague())
+//                .hall(lineup.getHall())
+//                .players(lineup.getPlayers())
+//                .date(lineup.getDate().toString())
+//                .link(lineup.getLink())
+//                .type(lineup.getType() != null ? lineup.getType().name() : null)
+//                .build();
+//    }
 
     private Map<String, List<LineupDto>> groupByHall(List<LineupDto> lineups) {
         return lineups.stream()

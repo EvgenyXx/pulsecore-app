@@ -36,7 +36,7 @@ public class PushFacade {
 
     public void subscribe(UUID playerId, PushSubscriptionRequest request) {
         if (repository.findByPlayerIdAndEndpoint(playerId, request.endpoint()).isPresent()) {
-            log.debug("Push-подписка уже существует для playerId={}", playerId);
+            log.debug("Push-подписка уже существует для id={}", playerId);
             return;
         }
         repository.save(PushSubscription.builder()
@@ -45,7 +45,7 @@ public class PushFacade {
                 .p256dh(request.p256dh())
                 .auth(request.auth())
                 .build());
-        log.info("Push-подписка сохранена для playerId={}", playerId);
+        log.info("Push-подписка сохранена для id={}", playerId);
     }
 
     public void unsubscribe(UUID playerId, String endpoint) {
@@ -53,9 +53,9 @@ public class PushFacade {
                 .ifPresentOrElse(
                         sub -> {
                             repository.delete(sub);
-                            log.info("Push-подписка удалена для playerId={}", playerId);
+                            log.info("Push-подписка удалена для id={}", playerId);
                         },
-                        () -> log.debug("Push-подписка не найдена для playerId={}", playerId)
+                        () -> log.debug("Push-подписка не найдена для id={}", playerId)
                 );
     }
 

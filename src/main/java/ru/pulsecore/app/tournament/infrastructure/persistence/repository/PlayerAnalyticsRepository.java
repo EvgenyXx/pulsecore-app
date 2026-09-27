@@ -25,9 +25,9 @@ public class PlayerAnalyticsRepository {
         String sql = sqlReader.read("sql/analytics/best_time.sql");
 
         var params = new MapSqlParameterSource()
-                .addValue("playerId", playerId)
-                .addValue("start", start)
-                .addValue("end", end);
+        .addValue("playerId", playerId)
+        .addValue("start", start)
+        .addValue("end", end);
 
         RowMapper<BestTimeResponse> mapper = (rs, rowNum) -> BestTimeResponse.builder()
                 .time(rs.getString("time"))

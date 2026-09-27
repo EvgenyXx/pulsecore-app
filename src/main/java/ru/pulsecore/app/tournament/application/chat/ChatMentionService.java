@@ -36,8 +36,8 @@ public class ChatMentionService {
         while (matcher.find()) {
             String fullName = matcher.group(1) + " " + matcher.group(2);
             PlayerData player = playerClient.findByName(fullName);
-            if (player != null && !player.playerId().equals(msg.getPlayerId())) {
-                mentionedIds.add(player.playerId());
+            if (player != null && !player.id().equals(msg.getPlayerId())) {
+                mentionedIds.add(player.id());
             }
 
 

@@ -44,14 +44,14 @@ public class ReminderNotificationSender {
             try {
                 publisher.publishEvent(
                         new PushNotificationEvent(
-                                player.playerId(),
+                                player.id(),
                                 "Турнир через час",
                                 PushMessageBuilder.buildHourReminderBody(tournamentTime),
                                 pn.getTournament().getLink()
                         )
                 );
             } catch (Exception e) {
-                log.error("Hour push failed for {}: {}", player.playerId(), e.getMessage());
+                log.error("Hour push failed for {}: {}", player.id(), e.getMessage());
             }
         }
 
@@ -70,14 +70,14 @@ public class ReminderNotificationSender {
             try {
                 publisher.publishEvent(
                         new PushNotificationEvent(
-                                player.playerId(),
+                                player.id(),
                                 "Завтра турнир",
                                 PushMessageBuilder.buildEveningReminderBody(time),
                                 pn.getTournament().getLink()
                         )
                 );
             } catch (Exception e) {
-                log.error("Evening push failed for {}: {}", player.playerId(), e.getMessage());
+                log.error("Evening push failed for {}: {}", player.id(), e.getMessage());
             }
         }
 

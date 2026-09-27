@@ -8,7 +8,6 @@ import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
 import ru.pulsecore.app.shared.config.CacheNames;
-import ru.pulsecore.app.shared.dto.response.PlayerSubscriptionResponse;
 import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
 import ru.pulsecore.app.player.domain.Subscription;
 
@@ -43,8 +42,8 @@ public class SubscriptionQueryService {
 
 
     @Cacheable(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
-    public boolean hasActiveSubscription(UUID playerId) {
-        var sub = subscriptionRepository.findByPlayerId(playerId);
+    public boolean hasActiveSubscription(UUID id) {
+        var sub = subscriptionRepository.findByPlayerId(id);
         boolean active = sub.map(Subscription::isActiveNow).orElse(false);
         if (active) {
             Player player = sub.get().getPlayer();

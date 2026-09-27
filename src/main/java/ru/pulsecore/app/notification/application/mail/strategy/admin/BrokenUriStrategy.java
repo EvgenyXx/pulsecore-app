@@ -33,7 +33,7 @@ public class BrokenUriStrategy implements MailStrategy {
         BrokenUriContext brokenUriContext =  (BrokenUriContext) context;
         String playerData = playerClient.getPlayers(brokenUriContext.playerIds())
                 .stream()
-                .map(PlayerData::playerName)
+                .map(PlayerData::name)
                 .collect(Collectors.joining(","));
 
         String tex = templates.format(

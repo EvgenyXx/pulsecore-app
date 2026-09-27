@@ -19,7 +19,7 @@ public class CacheNames {
     public static final String SCHEDULED_REPORTS = "scheduled_reports";
 
     // Ключи
-    public static final String KEY_PLAYER_ID = "#playerId";
+    public static final String KEY_PLAYER_ID = "#id";
     public static final String KEY_PERIOD = "#period";
     public static final String KEY_PERIOD_LEAGUE = "#period + ':' + #league";
 }

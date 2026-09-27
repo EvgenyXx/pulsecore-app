@@ -22,7 +22,7 @@ public class PaymentEventListener {
     @EventListener
     public void onPaymentSuccess(PaymentSuccessEvent event) {
         subscriptionCommandService.activate(event.playerId(), event.days());
-        log.info("Подписка активирована после платежа: playerId={}, days={}",
+        log.info("Подписка активирована после платежа: id={}, days={}",
                 event.playerId(), event.days());
     }
 }

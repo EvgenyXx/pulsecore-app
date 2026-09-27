@@ -104,11 +104,11 @@ public class TournamentScheduleChangeService {
                         MailTypes.TOURNAMENT_SCHEDULE_CHANGED,
                         new TournamentScheduleChangedContext(
                                 player.email(),
-                                StringUtils.extractFirstName(player.playerName()),
+                                StringUtils.extractFirstName(player.name()),
                                 info
                         )
                 )
         );
-        log.debug("Расписание: уведомление отправлено игроку={}", player.playerName());
+        log.debug("Расписание: уведомление отправлено игроку={}", player.name());
     }
 }

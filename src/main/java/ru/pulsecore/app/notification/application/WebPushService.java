@@ -32,18 +32,18 @@ public class WebPushService {
     public void sendToPlayer(UUID playerId, String title, String body, String url) {
         List<PushSubscription> subscriptions = subscriptionRepository.findByPlayerId(playerId);
         if (subscriptions.isEmpty()) {
-            log.debug("Нет push-подписок для playerId={}", playerId);
+            log.debug("Нет push-подписок для id={}", playerId);
             return;
         }
         for (PushSubscription sub : subscriptions) {
             try {
                 sendPush(sub, title, body, url);
-                log.debug("Push отправлен playerId={}", playerId);
+                log.debug("Push отправлен id={}", playerId);
             } catch (Exception e) {
-                log.error("Ошибка отправки пуша для playerId={}: {}", playerId, e.getMessage());
+                log.error("Ошибка отправки пуша для id={}: {}", playerId, e.getMessage());
                 if (e.getMessage() != null && e.getMessage().contains("410")) {
                     subscriptionRepository.delete(sub);
-                    log.info("Удалена невалидная подписка для playerId={}", playerId);
+                    log.info("Удалена невалидная подписка для id={}", playerId);
                 }
             }
         }

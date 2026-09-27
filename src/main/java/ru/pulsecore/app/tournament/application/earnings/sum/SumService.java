@@ -44,13 +44,13 @@ public class SumService {
         if (end == null) end = start;
 
         PeriodStatsProjection stats =
-                tournamentResultQueryService.getStatsByPeriod(player.playerId(), start, end);
+                tournamentResultQueryService.getStatsByPeriod(player.id(), start, end);
 
         Page<TournamentResultEntity> pageResult = tournamentResultQueryService.getResultsByPeriod(
-                player.playerId(), start, end, PageRequest.of(page, size));
+                player.id(), start, end, PageRequest.of(page, size));
 
         return SumResponse.builder()
-                .playerName(StringUtils.capitalize(player.playerName()))
+                .playerName(StringUtils.capitalize(player.name()))
                 .start(start.toString())
                 .end(end.toString())
                 .sum(stats != null ? stats.getSum() : 0)

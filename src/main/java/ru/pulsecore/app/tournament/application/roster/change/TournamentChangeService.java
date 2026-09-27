@@ -37,7 +37,7 @@ public class TournamentChangeService {
 
         log.debug("Изменения: проверка для {} игроков", activePlayers.size());
 
-        List<String> playerName = activePlayers.stream().map(PlayerData::playerName).toList();
+        List<String> playerName = activePlayers.stream().map(PlayerData::name).toList();
 
         playerTournaments(playerName);
     }

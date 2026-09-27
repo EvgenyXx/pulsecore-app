@@ -73,7 +73,7 @@ public abstract class RegionalReminderService {
         if (!pushed.isEmpty()) {
             log.info("{} — пуш за час отправлен: {}",
                     getRegionName(),
-                    pushed.stream().map(PlayerData::playerName).collect(Collectors.joining(", ")));
+                    pushed.stream().map(PlayerData::name).collect(Collectors.joining(", ")));
         }
     }
 
@@ -103,7 +103,7 @@ public abstract class RegionalReminderService {
         if (!pushed.isEmpty()) {
             log.info("{} — вечерний пуш отправлен: {}",
                     getRegionName(),
-                    pushed.stream().map(PlayerData::playerName).collect(Collectors.joining(", ")));
+                    pushed.stream().map(PlayerData::name).collect(Collectors.joining(", ")));
         }
     }
 
@@ -115,6 +115,6 @@ public abstract class RegionalReminderService {
                 .collect(Collectors.toSet());
 
         return playerClient.getPlayerDataByIds(playerIds).stream()
-                .collect(Collectors.toMap(PlayerData::playerId, p -> p));
+                .collect(Collectors.toMap(PlayerData::id, p -> p));
     }
 }

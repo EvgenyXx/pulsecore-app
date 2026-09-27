@@ -139,7 +139,7 @@ public class TournamentCanceledService {
                 .collect(Collectors.toSet());
 
         List<PlayerData> players = playerClient.getPlayerDataByIds(playerIds);
-        List<String> names = players.stream().map(PlayerData::playerName).toList();
+        List<String> names = players.stream().map(PlayerData::name).toList();
 
         auditWriter.write("cancelled",
                 "турнир=" + t.getExternalId() +

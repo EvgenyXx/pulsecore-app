@@ -32,7 +32,7 @@ public class TournamentIncomeService {
 
     public MonthlyIncomeResponse getMonthlyIncome(UUID playerId, int year) {
         var player = playerClient.getPlayerById(playerId);
-        List<MonthlyIncomeProjection> data = repository.getMonthlyIncome(player.playerId(), EPOCH, year);
+        List<MonthlyIncomeProjection> data = repository.getMonthlyIncome(player.id(), EPOCH, year);
         List<MonthlyIncomeResponse.MonthStat> stats = mapper.toMonthStats(data);
 
 
@@ -42,7 +42,7 @@ public class TournamentIncomeService {
                 .orElse(0);
 
         return MonthlyIncomeResponse.builder()
-                .playerName(player.playerName())
+                .playerName(player.name())
                 .months(stats)
                 .overallAverage(avg)
                 .build();
@@ -53,14 +53,14 @@ public class TournamentIncomeService {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.plusMonths(1).minusDays(1);
 
-        List<DailyIncomeProjection> data = repository.getDailyIncome(player.playerId(), start, end);
+        List<DailyIncomeProjection> data = repository.getDailyIncome(player.id(), start, end);
         List<DailyIncomeResponse.DayStat> stats = buildDayStats(data, end.getDayOfMonth());
 
         double monthTotal = stats.stream().mapToDouble(DailyIncomeResponse.DayStat::getTotal).sum();
         long daysWithEarnings = stats.stream().filter(s -> s.getCount() > 0).count();
 
         return DailyIncomeResponse.builder()
-                .playerName(player.playerName())
+                .playerName(player.name())
                 .year(year)
                 .month(month)
                 .days(stats)
