@@ -38,7 +38,7 @@ public class PlayerReplacedMailStrategy implements MailStrategy {
         mailSender.send(
                 MailFormat.TEXT,
                 c.to(),
-                "📋 Изменение в составе турнира",
+                "Состав турнира изменился",
                 text,
                 null,
                 null);
