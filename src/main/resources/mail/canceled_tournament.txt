@@ -1,3 +1,7 @@
-Дата: 27 сентября
-Время: 11:00
-Источник: https://masters-league.com/tours/liga-s-12755/
+
+
+Дата: %s
+Время: %s
+Турнир: %s
+
+PulseCore

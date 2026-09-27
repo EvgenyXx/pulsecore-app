@@ -30,7 +30,7 @@ public class CanceledTournamentStrategy implements MailStrategy {
                 MailTemplate.CANCELED_TOURNAMENT,ctx.data(),ctx.time(),ctx.link());
         mailSender.send(
                 MailFormat.TEXT,ctx.to(),
-                "Отмена турнира",
+                "Турнир отменён",
                 text,
                 null,
                 null

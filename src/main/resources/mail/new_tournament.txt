@@ -10,5 +10,3 @@
 %s
 
 Турнир: %s
-Результаты: https://pulsecore-app.ru
-Личный кабинет: https://pulsecore-app.ru/dashboard
