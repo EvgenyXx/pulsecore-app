@@ -29,7 +29,7 @@ public class RosterOrchestrationScheduler {
     private final SchedulerPauseService schedulerPauseService;
 
     @Scheduled(
-            initialDelay = 3,
+            initialDelay = 1,
             fixedDelay = 3,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
@@ -53,7 +53,7 @@ public class RosterOrchestrationScheduler {
     }
 
     @Scheduled(
-            initialDelay = 1,
+            initialDelay = 3,
             fixedDelay = 10,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
@@ -67,7 +67,7 @@ public class RosterOrchestrationScheduler {
     }
 
     @Scheduled(
-            initialDelay = 10,
+            initialDelay = 4,
             fixedDelay = 15,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)

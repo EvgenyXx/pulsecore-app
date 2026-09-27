@@ -1,5 +1,5 @@
 import { AdminAPI } from './admin-api.js';
-import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus, giveSub, giveSubCustom, removeSub, loadSubscriptionsOverview, refreshSubscriptionsOverview } from './admin-players.js';
+import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus, giveSub, giveSubCustom, removeSub, enableSub, loadSubscriptionsOverview, refreshSubscriptionsOverview } from './admin-players.js';
 import { loadCurrentPrices, updatePrices } from './admin-prices.js';
 import { adminCalculate } from './admin-calculate.js';
 import { sendBroadcast } from './admin-broadcast.js';
@@ -19,6 +19,7 @@ window.togglePlayerStatus = togglePlayerStatus;
 window.giveSub = giveSub;
 window.giveSubCustom = giveSubCustom;
 window.removeSub = removeSub;
+window.enableSub = enableSub;
 window.loadSubscriptionsOverview = loadSubscriptionsOverview;
 window.refreshSubscriptionsOverview = refreshSubscriptionsOverview;
 window.loadCurrentPrices = loadCurrentPrices;
@@ -129,10 +130,7 @@ function openAccordion(id) {
     const arrow = document.getElementById('arrow-' + id);
     if (arrow) arrow.style.transform = 'rotate(180deg)';
 
-    // При открытии аккордеона "Последние входы" — загружаем данные
     if (id === 'acc-last-login') loadLastLogin(0);
-
-    // При открытии аккордеона "Обзор подписок" — загружаем данные
     if (id === 'acc-subs-overview') loadSubscriptionsOverview();
 }
 
@@ -146,10 +144,7 @@ function toggleAccordion(id) {
     body.style.display = (body.style.display === 'none' || body.style.display === '') ? 'block' : 'none';
     if (arrow) arrow.style.transform = body.style.display === 'block' ? 'rotate(180deg)' : 'rotate(0deg)';
 
-    // При открытии аккордеона "Последние входы" — загружаем данные
     if (id === 'acc-last-login' && body.style.display === 'block') loadLastLogin(0);
-
-    // При открытии аккордеона "Обзор подписок" — загружаем данные
     if (id === 'acc-subs-overview' && body.style.display === 'block') loadSubscriptionsOverview();
 }
 

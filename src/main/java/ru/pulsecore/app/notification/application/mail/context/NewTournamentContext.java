@@ -8,5 +8,6 @@ public record NewTournamentContext(
         String hall,
         String league,
         String players,
-        String link
+        String link,
+        String type
 ) implements MailContext {}

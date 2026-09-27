@@ -32,6 +32,12 @@ public class AdminSubscriptionController {
         return ResponseEntity.ok(playerClient.deactivate(id));
     }
 
+    @Operation(summary = "Включить подписку обратно")
+    @PostMapping(AdminApi.ENABLE_SUBSCRIPTION)
+    public ResponseEntity<MessageResponse> enable(@PathVariable UUID id) {
+        return ResponseEntity.ok(playerClient.enable(id));
+    }
+
     @Operation(summary = "Получить подписку игрока")
     @GetMapping(AdminApi.PLAYER_SUBSCRIPTION)
     public ResponseEntity<SubscriptionStatusResponse> getSubscription(@PathVariable UUID id) {

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriContext;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.shared.infrastructure.audit.AuditWriter;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
 
@@ -23,11 +24,17 @@ public class BrokenUriService {
 
     private final TournamentRepository tournamentRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final AuditWriter auditWriter;
 
     @Transactional
     public void handle(TournamentEntity tournament, Set<UUID> playerIds) {
         log.warn("Пришла битая ссылка: {}", tournament.getLink());
         tournamentRepository.markAsBroken(tournament.getLink());
+
+        auditWriter.write("broken",
+                "турнир=" + tournament.getExternalId() +
+                        " | link=" + tournament.getLink() +
+                        " | игроков=" + playerIds.size());
 
         eventPublisher.publishEvent(new MailNotificationEvent(
                 MailTypes.BROKEN_URI,

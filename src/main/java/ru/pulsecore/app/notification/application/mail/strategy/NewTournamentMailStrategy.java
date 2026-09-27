@@ -33,7 +33,7 @@ public class NewTournamentMailStrategy implements MailStrategy {
         mailSender.send(
                 MailFormat.TEXT,
                 c.to(),
-                "🏓 " + c.firstName() + ", новый турнир",
+                 "Новый турнир",
                 text,
                 null,
                 null);

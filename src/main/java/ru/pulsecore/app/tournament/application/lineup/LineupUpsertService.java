@@ -37,6 +37,7 @@ public class LineupUpsertService {
 
     @Transactional
     public void loadDay(LocalDate date) {
+
         List<TournamentDto> all = apiClient.loadTournaments(date.toString());
         if (all == null || all.isEmpty()) return;
 
@@ -102,9 +103,14 @@ public class LineupUpsertService {
 
     private void saveLineups(List<Lineup> lineups) {
         lineups.forEach(lineup -> lineupRepository.upsertLineup(
-                lineup.getDate(), lineup.getLeague(), lineup.getTime(),
-                lineup.getHall(), lineup.getPlayers(), lineup.getStreamUrl()));
+                lineup.getDate(),
+                lineup.getLeague(),
+                lineup.getTime(),
+                lineup.getHall(),
+                lineup.getPlayers(),
+                lineup.getStreamUrl(),
+                lineup.getLink(),
+                lineup.getType() != null ? lineup.getType().name() : null
+        ));
     }
-
-
 }

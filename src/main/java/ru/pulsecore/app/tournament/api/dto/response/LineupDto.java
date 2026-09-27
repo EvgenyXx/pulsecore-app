@@ -16,4 +16,6 @@ public class LineupDto {
     private String players;
     private String date;
     private boolean isPlayer;
+    private String link;
+    private String type;
 }

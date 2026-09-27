@@ -19,7 +19,7 @@ export async function loadSelectedHalls() {
         if (r) {
             state.selectedHalls = r.halls ? r.halls.split(',').map(h => h.trim()).filter(h => h) : [];
         }
-    } catch(e) {}
+    } catch (e) {}
 }
 
 export async function saveSelectedHalls() {
@@ -29,7 +29,7 @@ export async function saveSelectedHalls() {
     try {
         await API.saveHalls(hallsStr);
         await refreshLineupsOnly();
-    } catch(e) {}
+    } catch (e) {}
 }
 
 export function switchHallsDate(date) {
@@ -61,6 +61,17 @@ function getDates() {
     return dates;
 }
 
+/**
+ * Бейдж формата: New — 4pl_new, Standard — стандарт.
+ */
+function renderTypeBadge(type) {
+    if (!type) return '';
+    const isNew = String(type).toLowerCase().includes('new') || String(type).toLowerCase() === 'four_pl_new';
+    return isNew
+        ? '<span class="lineup-type-badge lineup-type-new">New</span>'
+        : '<span class="lineup-type-badge lineup-type-std">Standard</span>';
+}
+
 function renderLineupRows(lineupsByHall) {
     let allLineups = [];
     for (const [hall, lineups] of Object.entries(lineupsByHall)) {
@@ -79,18 +90,38 @@ function renderLineupRows(lineupsByHall) {
         const isPlayerInLineup = l.player || l.inLineup || l.isPlayer || false;
         const rowClass = isPlayerInLineup ? 'lineup-card is-player' : 'lineup-card';
 
+        const typeBadge = renderTypeBadge(l.type);
+
+        const dateBadge = l.date
+            ? `<span class="lineup-date-badge">${formatDateShort(l.date)}</span>`
+            : '';
+
+        const sourceBtn = l.link
+            ? `<a class="lineup-source-btn" href="${l.link}" target="_blank" rel="noopener">
+                   <span>Открыть на ML</span>
+                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                       <polyline points="15 3 21 3 21 9"/>
+                       <line x1="10" y1="14" x2="21" y2="3"/>
+                   </svg>
+               </a>`
+            : '';
+
         html += `
             <div class="${rowClass}" style="animation-delay: ${i * 40}ms">
                 <div class="lineup-card-header">
                     <div class="lineup-left">
+                        ${dateBadge}
                         <span class="lineup-time-badge">${l.time || '??:??'}</span>
                         <span class="lineup-league-badge">${l.league || '?'}</span>
                         <span class="lineup-hall-badge">${l.hall}</span>
+                        ${typeBadge}
                     </div>
                 </div>
                 <div class="lineup-players-wrapper">
                     ${playersList}
                 </div>
+                ${sourceBtn}
             </div>
         `;
     });
@@ -102,7 +133,7 @@ export async function refreshLineupsOnly() {
     if (state.selectedHalls.length > 0) {
         try {
             lineupsByHall = await API.getMyLineups(state.hallsDate);
-        } catch(e) {}
+        } catch (e) {}
     }
 
     const container = document.getElementById('lineupsContainer');
@@ -138,7 +169,6 @@ export async function loadHallsContent() {
     const c = document.getElementById('actionContent');
     c.innerHTML = '<div class="text-center py-8"></div>';
 
-    // ВАЖНО: загружаем сохранённые залы с базы при каждом заходе
     await loadSelectedHalls();
 
     const uiState = loadHallsUIState();
@@ -147,13 +177,13 @@ export async function loadHallsContent() {
     try {
         const data = await API.getAllLineups(state.hallsDate);
         allHalls = Object.keys(data).sort();
-    } catch(e) {}
+    } catch (e) {}
 
     let lineupsByHall = {};
     if (state.selectedHalls.length > 0) {
         try {
             lineupsByHall = await API.getMyLineups(state.hallsDate);
-        } catch(e) {}
+        } catch (e) {}
     }
 
     let html = '';

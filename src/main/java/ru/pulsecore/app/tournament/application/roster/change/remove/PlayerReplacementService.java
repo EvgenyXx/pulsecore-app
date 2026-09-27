@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
+import ru.pulsecore.app.shared.infrastructure.audit.AuditWriter;
 import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
 import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
 
@@ -22,6 +23,7 @@ public class PlayerReplacementService {
     private final PlayerTransferDetector transferDetector;
     private final PlayerRemovalDetector playerRemovalDetector;
     private final PlayerNotificationCreator playerNotificationCreator;
+    private final AuditWriter auditWriter;
 
     @Transactional
     public boolean processReplacement(
@@ -29,6 +31,9 @@ public class PlayerReplacementService {
             TournamentDto newTournament,
             Long oldTournamentId,
             Map<String, List<TournamentDto>> allTournaments) {
+
+        log.info("ТЕСТ: processReplacement вызвался для {}", newTournament.getLink());
+        auditWriter.write("changes", "ТЕСТ: processReplacement для " + newTournament.getLink());
 
         List<String> removedNames = playerRemovalDetector.findRemovedNames(oldPlayers, newTournament);
         if (removedNames.isEmpty()) return false;
@@ -83,10 +88,28 @@ public class PlayerReplacementService {
     }
 
     private void logReplacement(@NonNull List<PlayerData> oldPlayers, TournamentDto newTournament, List<String> removedNames) {
-        log.info("Player replacement: tournament={}, removedPlayers={}, compositionBefore={}, compositionAfter={}",
-                newTournament.getId(),
-                removedNames,
-                oldPlayers.stream().map(PlayerData::playerName).toList(),
-                newTournament.getPlayers());
+        log.info("Замена: турнир={}, ушло={}",
+                newTournament.getId(), removedNames.size());
+
+        List<String> before = oldPlayers.stream().map(PlayerData::playerName).toList();
+        List<String> after = newTournament.getPlayers();
+
+        Set<String> oldNames = new HashSet<>(before);
+        Set<String> newNames = after == null ? Set.of() : new HashSet<>(after);
+
+        Set<String> removed = new HashSet<>(oldNames);
+        removed.removeAll(newNames);
+
+        Set<String> added = new HashSet<>(newNames);
+        added.removeAll(oldNames);
+
+        String message = "турнир=" + newTournament.getId() +
+                " | link=" + newTournament.getLink() +
+                " | ушёл=" + removed +
+                " | пришёл=" + added +
+                " | было=" + before +
+                " | стало=" + after;
+
+        auditWriter.write("changes", message);
     }
 }

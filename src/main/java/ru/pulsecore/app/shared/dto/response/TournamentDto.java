@@ -12,7 +12,7 @@ public class TournamentDto {
     private Long id;
     private String title;
     private String hall;
-    private String hall2; // ← ДОБАВЬ
+    private String hall2;
     private String league;
     private String link;
 

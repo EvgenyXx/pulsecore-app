@@ -47,19 +47,18 @@ async function init() {
             const premiumBadge = document.getElementById('profilePremiumBadge');
 
             if (sub && sub.active) {
-                // ← ДОБАВЛЕНО: показываем галочку
                 if (premiumBadge) premiumBadge.classList.remove('hidden');
 
                 const until = new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-                subText.innerHTML = '✅ <span class="text-emerald-400">Активна</span> до ' + until;
-                if (subBtn) subBtn.style.display = 'none';
-            } else if (sub && sub.expiresAt) {
-                const until = new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-                subText.innerHTML = '❌ <span class="text-red-400">Истекла</span> ' + until;
-                if (subBtn) { subBtn.style.display = 'block'; subBtn.textContent = 'Оформить подписку'; }
+                subText.textContent = 'Активна до ' + until;
+                subBtn.style.display = 'block';
+                subBtn.textContent = 'Продлить';
             } else {
-                subText.innerHTML = '❌ <span class="text-red-400">Не оформлена</span>';
-                if (subBtn) { subBtn.style.display = 'block'; subBtn.textContent = 'Оформить подписку'; }
+                if (premiumBadge) premiumBadge.classList.add('hidden');
+
+                subText.textContent = 'Не активна';
+                subBtn.style.display = 'block';
+                subBtn.textContent = 'Оформить подписку';
             }
         } catch(e) {
             document.getElementById('subInfoText').textContent = 'Не удалось загрузить';
@@ -69,7 +68,6 @@ async function init() {
     }
 }
 
-// ВАЖНО: экспортируем для роутера
 window.initProfileApp = init;
 
 document.addEventListener('DOMContentLoaded', init);

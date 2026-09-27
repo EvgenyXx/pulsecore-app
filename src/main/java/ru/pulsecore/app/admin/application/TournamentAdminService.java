@@ -18,12 +18,12 @@ public class TournamentAdminService {
     private final TournamentClient tournamentClient;
 
     public List<AdminTournamentResponse> getByDate(LocalDate date) {
-        log.info("Получение турниров по дате: {}", date);
+        log.debug("Получение турниров по дате: {}", date);
         return tournamentClient.getTournamentsByDate(date);
     }
 
     public AdminTournamentResponse getById(Long id) {
-        log.info("Получение турнира по ID: {}", id);
+        log.debug("Получение турнира по ID: {}", id);
         return tournamentClient.getTournamentById(id);
     }
 

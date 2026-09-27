@@ -27,10 +27,21 @@ public interface TournamentRepository extends JpaRepository<TournamentEntity, Lo
                     t.finished AS finished,
                     t.cancelled AS cancelled,
                     t.processed AS processed,
-                    CAST(array_agg(DISTINCT p.name) AS text) AS players
+                    CAST(
+                        COALESCE(
+                            jsonb_agg(
+                                DISTINCT jsonb_build_object(
+                                    'name', p.name,
+                                    'earned', COALESCE(r.amount, 0) + COALESCE(r.bonus, 0)
+                                )
+                            ) FILTER (WHERE p.id IS NOT NULL),
+                            '[]'::jsonb
+                        ) AS text
+                    ) AS players
                 FROM tournament t
                 LEFT JOIN player_notification pn ON t.id = pn.tournament_id
                 LEFT JOIN players p ON p.id = pn.player_id
+                LEFT JOIN tournament_results r ON r.tournament_id = t.id AND r.player_id = p.id
                 WHERE t.date = CAST(:date AS DATE)
                 GROUP BY t.id, t.link, t.date, t.time, t.started, t.finished, t.cancelled, t.processed
                 ORDER BY t.time
