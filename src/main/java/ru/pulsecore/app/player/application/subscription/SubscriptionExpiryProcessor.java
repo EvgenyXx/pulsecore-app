@@ -40,7 +40,7 @@ public class SubscriptionExpiryProcessor {
             log.info("❌ Подписка истекла: {}", sub.getPlayer().getEmail());
         }
         if (!expired.isEmpty()) {
-            log.info("🔧 Деактивировано {} просроченных подписок", expired.size());
+            log.info("Деактивировано {} просроченных подписок", expired.size());
         }
     }
 
@@ -56,9 +56,9 @@ public class SubscriptionExpiryProcessor {
             eventPublisher.publishEvent(
                     new PushNotificationEvent(
                             player.playerId(),
-                            "⏳ Подписка заканчивается!",
+                            "Подписка скоро закончится",
                             PushMessageBuilder.SUBSCRIPTION_EXPIRING_BODY,
-                            "/subscribe"
+                            "/dashboard#/profile"
                     )
             );
             log.info("📲 Push отправлен игроку {}", player.playerId());

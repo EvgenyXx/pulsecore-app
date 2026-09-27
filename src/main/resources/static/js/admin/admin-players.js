@@ -63,6 +63,7 @@ async function refreshPlayerUI(section) {
 
     let badges = '';
     let subActive = false;
+    let subExpired = false;
 
     try {
         const sub = await AdminAPI.getPlayerSubscription(selectedPlayerId);
@@ -75,6 +76,9 @@ async function refreshPlayerUI(section) {
             badges += `<span class="badge badge-admin">${daysLeft} дн.</span>`;
         } else {
             badges += '<span class="badge badge-inactive">Нет подписки</span>';
+            if (sub && sub.expiresAt) {
+                subExpired = new Date(sub.expiresAt) < new Date();
+            }
         }
     } catch (e) {}
 
@@ -87,6 +91,9 @@ async function refreshPlayerUI(section) {
         document.getElementById('playerGiveSub30').classList.toggle('hidden', false);
         document.getElementById('playerGiveSub60').classList.toggle('hidden', false);
         document.getElementById('playerRemoveSub').classList.toggle('hidden', !subActive);
+
+        const showEnable = !subActive && !subExpired && playersCache[selectedPlayerId] && playersCache[selectedPlayerId].expiresAt;
+        document.getElementById('playerEnableSub').classList.toggle('hidden', !showEnable);
 
         try {
             const roles = await AdminAPI.getPlayerRoles(selectedPlayerId);
@@ -231,6 +238,24 @@ export async function removeSub() {
         await refreshPlayerUI('players');
     } catch (e) {
         msg.textContent = 'Ошибка при отключении';
+        msg.className = 'text-xs text-center text-red-400';
+    }
+}
+
+export async function enableSub() {
+    if (!selectedPlayerId) return;
+    const msg = document.getElementById('playerMsg');
+    msg.textContent = 'Включение...';
+    msg.className = 'text-xs text-center text-zinc-400';
+    msg.classList.remove('hidden');
+
+    try {
+        await AdminAPI.enableSubscription(selectedPlayerId);
+        msg.textContent = 'Подписка включена';
+        msg.className = 'text-xs text-center text-emerald-400';
+        await refreshPlayerUI('players');
+    } catch (e) {
+        msg.textContent = 'Ошибка при включении';
         msg.className = 'text-xs text-center text-red-400';
     }
 }

@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.AsyncConfig;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
+import ru.pulsecore.app.shared.infrastructure.audit.AuditWriter;
 import ru.pulsecore.app.tournament.application.resolution.BrokenUriService;
 import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
+import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.exception.PageNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
@@ -40,6 +43,8 @@ public class TournamentCanceledService {
     private final DocumentLoader documentLoader;
     private final Bucket canceledRateLimiter;
     private final BrokenUriService brokenUriService;
+    private final PlayerClient playerClient;
+    private final AuditWriter auditWriter;
     private final Map<String, Integer> stats = new ConcurrentHashMap<>();
 
     public TournamentCanceledService(TournamentRepository tournamentRepository,
@@ -49,7 +54,7 @@ public class TournamentCanceledService {
                                      PlayerNotificationRepository notificationRepository,
                                      DocumentLoader documentLoader,
                                      @Qualifier(RateLimiterConfig.CANCELED_RATE_LIMITER) Bucket canceledRateLimiter,
-                                     BrokenUriService brokenUriService) {
+                                     BrokenUriService brokenUriService, PlayerClient playerClient, AuditWriter auditWriter) {
         this.tournamentRepository = tournamentRepository;
         this.jsonTournamentParser = jsonTournamentParser;
         this.jsonTournamentStatusParser = jsonTournamentStatusParser;
@@ -58,6 +63,8 @@ public class TournamentCanceledService {
         this.documentLoader = documentLoader;
         this.canceledRateLimiter = canceledRateLimiter;
         this.brokenUriService = brokenUriService;
+        this.playerClient = playerClient;
+        this.auditWriter = auditWriter;
     }
 
     @Async(AsyncConfig.CANCELED_EXECUTOR)
@@ -101,6 +108,7 @@ public class TournamentCanceledService {
         if (status == TournamentStatus.CANCELLED) {
             tournamentCancellationService.handleCancelled(t, notifications);
             stats.merge("отменено", 1, Integer::sum);
+             logCancelled(t, notifications);
             return;
         }
 
@@ -113,8 +121,30 @@ public class TournamentCanceledService {
         int total = stats.getOrDefault("всего", 0);
         int cancelled = stats.getOrDefault("отменено", 0);
         int broken = stats.getOrDefault("битые", 0);
-         log.info("❌ CANCELED: итог — всего={}, отменено={}, битые={}",
-            total, cancelled, broken);
+
+        String icon;
+        if (cancelled > 0) {
+            icon = "❌";
+        } else {
+            icon = "✅";
+        }
+
+        log.info("{} CANCELED: итог — всего={}, отменено={}, битые={}",
+                icon, total, cancelled, broken);
+    }
+
+    private void logCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
+        Set<UUID> playerIds = notifications.stream()
+                .map(PlayerNotification::getPlayerId)
+                .collect(Collectors.toSet());
+
+        List<PlayerData> players = playerClient.getPlayerDataByIds(playerIds);
+        List<String> names = players.stream().map(PlayerData::playerName).toList();
+
+        auditWriter.write("cancelled",
+                "турнир=" + t.getExternalId() +
+                        " | link=" + t.getLink() +
+                        " | игроков=" + names);
     }
 
     public void clearStats() {

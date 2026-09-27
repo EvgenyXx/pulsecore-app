@@ -22,15 +22,13 @@ public class LineupFacade {
     private final PlayerClient playerClient;
 
 
-
-
     public Map<String, List<LineupDto>> getAllGroupedByHall(LocalDate date) {
         List<Lineup> all = lineupRepository.findByDate(date);
         return groupByHall(all.stream().map(this::toDto).toList());
     }
 
     public Map<String, List<LineupDto>> getMyGroupedByHall(UUID playerId, LocalDate date) {
-        PlayerData playerData  = playerClient.getPlayerById(playerId);
+        PlayerData playerData = playerClient.getPlayerById(playerId);
 
         if (playerData.selectedHalls() == null || playerData.selectedHalls().isBlank()) {
             return Map.of();
@@ -71,6 +69,8 @@ public class LineupFacade {
                 .hall(lineup.getHall())
                 .players(lineup.getPlayers())
                 .date(lineup.getDate().toString())
+                .link(lineup.getLink())
+                .type(lineup.getType() != null ? lineup.getType().name() : null)
                 .build();
     }
 

@@ -10,8 +10,10 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
 import ru.pulsecore.app.shared.event.PushNotificationEvent;
 import ru.pulsecore.app.shared.util.PushMessageBuilder;
+import ru.pulsecore.app.tournament.domain.enums.LineupType;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,12 +24,12 @@ public class NewTournamentEventPublisher {
 
     private final ApplicationEventPublisher publisher;
 
-    public void publish(Map<PlayerData, List<TournamentDto>>playerDataListMap) {
+    public void publish(Map<PlayerData, List<TournamentDto>> playerDataListMap) {
         playerDataListMap.forEach((player, tournament) -> {
-            if (player.notificationsEnabled()){
+            if (player.notificationsEnabled()) {
                 tournament.forEach(tournamentDto -> sendEmail(player, tournamentDto));
             }
-            if (player.pushEnabled()){
+            if (player.pushEnabled()) {
                 tournament.forEach(tournamentDto -> sendPush(player, tournamentDto));
             }
         });
@@ -39,6 +41,7 @@ public class NewTournamentEventPublisher {
 
             String firstName = StringUtils.extractFirstName(player.playerName());
             String rawDate = tournament.getDate() != null ? tournament.getDate().getDate() : null;
+            String type = LineupType.fromApiType(tournament.getType()).displayName();
 
             publisher.publishEvent(
                     new MailNotificationEvent(
@@ -52,18 +55,20 @@ public class NewTournamentEventPublisher {
                                     tournament.getLeague() != null ? tournament.getLeague() : "—",
                                     tournament.getPlayers() != null && !tournament.getPlayers().isEmpty()
                                             ? String.join("\n", tournament.getPlayers()) : "—",
-                                    tournament.getLink() != null ? tournament.getLink() : "")));
+                                    tournament.getLink() != null ? tournament.getLink() : "",
+                                    type
+                            )));
         }
     }
 
-    private void sendPush(PlayerData player,TournamentDto tournament) {
+    private void sendPush(PlayerData player, TournamentDto tournament) {
         if (player.pushEnabled()) {
             publisher.publishEvent(
                     new PushNotificationEvent(
                             player.playerId(),
-                            "📋 Вы в составе!",
+                            "Новый турнир",
                             PushMessageBuilder.buildNewTournamentBody(player.playerName(), tournament),
-                            "/dashboard"
+                            tournament.getLink()
                     )
             );
         }

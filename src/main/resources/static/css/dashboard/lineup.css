@@ -106,20 +106,24 @@
     flex-wrap: wrap;
 }
 
-.lineup-time-badge {
+/* ===== БЕЙДЖИ ДАТЫ / ВРЕМЕНИ / ЗАЛА / ФОРМАТА — ЕДИНЫЙ СТИЛЬ ===== */
+
+.lineup-date-badge,
+.lineup-time-badge,
+.lineup-hall-badge {
     font-size: 13px;
     font-weight: 700;
     color: #ffffff;
     background: rgba(255, 255, 255, 0.08);
     padding: 4px 10px;
     border-radius: 8px;
-    flex-shrink: 0;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .lineup-league-badge {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: #a5b4fc;
     background: rgba(99, 102, 241, 0.12);
     padding: 4px 10px;
@@ -128,19 +132,34 @@
     flex-shrink: 0;
 }
 
-.lineup-hall-badge {
+/* Бейдж формата турнира: New / Standard */
+.lineup-type-badge {
     font-size: 13px;
-    font-weight: 500;
-    color: #71717a;
-    background: rgba(255, 255, 255, 0.04);
+    font-weight: 700;
     padding: 4px 10px;
     border-radius: 8px;
+    letter-spacing: -0.1px;
     white-space: nowrap;
     flex-shrink: 0;
 }
 
+.lineup-type-new {
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.lineup-type-std {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ===== СОСТАВ ===== */
+
 .lineup-players-wrapper {
     padding-left: 4px;
+    padding-right: 0;
 }
 
 .lineup-players-column {
@@ -169,6 +188,8 @@
     }
 }
 
+/* ===== КНОПКА СОХРАНИТЬ ===== */
+
 .apple-save-btn {
     width: 100%;
     margin-top: 12px;
@@ -190,4 +211,53 @@
 
 .apple-save-btn:active {
     transform: scale(0.98);
+}
+
+/* ===== КНОПКА «ОТКРЫТЬ НА ML» — APPLE STYLE ===== */
+
+.lineup-source-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.1px;
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    text-decoration: none;
+    transition: background 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
+                border-color 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
+                color 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
+                transform 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform;
+}
+
+.lineup-source-btn span {
+    white-space: nowrap;
+}
+
+.lineup-source-btn svg {
+    flex-shrink: 0;
+    transition: transform 0.22s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.lineup-source-btn:hover {
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.42);
+}
+
+.lineup-source-btn:hover svg {
+    transform: translate(1px, -1px);
+}
+
+.lineup-source-btn:active {
+    transform: scale(0.97);
+    background: rgba(99, 102, 241, 0.24);
 }

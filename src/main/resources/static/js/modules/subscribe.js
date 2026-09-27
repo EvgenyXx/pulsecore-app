@@ -79,10 +79,9 @@ export async function loadSubscription() {
         const sub = await SubscribeAPI.getSubscription();
         if (sub && sub.active) {
             document.getElementById('activeSubBlock').classList.remove('hidden');
-            document.getElementById('plansBlock').classList.add('hidden');
             const exp = sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : 'неизвестно';
             document.getElementById('activeSubText').textContent = `Действует до ${exp}`;
-            document.getElementById('pageSubtitle').textContent = 'Активна';
+            document.getElementById('pageSubtitle').textContent = 'Продлите подписку';
         }
     } catch (e) {}
 }

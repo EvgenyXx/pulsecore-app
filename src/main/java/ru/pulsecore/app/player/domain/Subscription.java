@@ -40,8 +40,22 @@ public class Subscription {
     }
 
     public void activate(int days) {
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime base;
+
+        if (expiresAt != null && expiresAt.isAfter(now)) {
+            base = expiresAt;
+        } else {
+            base = now;
+        }
+
         this.active = true;
-        this.startedAt = LocalDateTime.now();
-        this.expiresAt = LocalDateTime.now().plusDays(days);
+
+        if (this.startedAt == null) {
+            this.startedAt = now;
+        }
+
+        this.expiresAt = base.plusDays(days);
     }
 }

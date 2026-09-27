@@ -8,9 +8,10 @@ public interface TournamentAdminProjection {
     String getLink();
     LocalDate getDate();
     String getTime();
-    boolean getStarted();
-    boolean getFinished();
-    boolean getCancelled();
-    boolean getProcessed();
+    Boolean getStarted();
+    Boolean getFinished();
+    Boolean getCancelled();
+    Boolean getProcessed();
     String getPlayers();
+    String getEarnings();   // ← новое
 }

@@ -33,6 +33,8 @@ services:
       - redis
     ports:
       - "8080:8080"
+    volumes:
+      - ./audit:/app/audit
     deploy:
       resources:
         limits:
@@ -67,6 +69,7 @@ services:
       APP_BASE_URL: ${APP_BASE_URL}
       QR_COLOR: "#6366f1"
       SPRING_PROFILES_ACTIVE: prod
+      AUDIT_DIR: /app/audit
 
 volumes:
   pgdata:

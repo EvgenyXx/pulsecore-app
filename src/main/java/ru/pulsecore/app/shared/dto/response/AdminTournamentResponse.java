@@ -12,5 +12,5 @@ public record AdminTournamentResponse(
         boolean finished,
         boolean cancelled,
         boolean processed,
-        List<String> players
+        List<PlayerEarning> players
 ) {}

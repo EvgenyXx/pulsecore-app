@@ -28,13 +28,5 @@ public final class BootstrapJson {
     }
 }
 
-//    public static String str(Document doc, String field) {
-//        JsonNode root = parse(doc);
-//        return root == null ? null : root.path(field).asText(null);
-//    }
-//
-//    public static Long asLong(Document doc, String field) {
-//        JsonNode root = parse(doc);
-//        return root == null ? null : root.path(field).asLong();
-//    }
+
 }

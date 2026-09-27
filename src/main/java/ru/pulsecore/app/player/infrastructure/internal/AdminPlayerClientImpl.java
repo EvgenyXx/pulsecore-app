@@ -109,6 +109,12 @@ public class AdminPlayerClientImpl implements PlayerClient {
     }
 
     @Override
+    public MessageResponse enable(UUID playerId) {
+        subscriptionCommandService.enable(playerId);
+        return new MessageResponse("Подписка включена");
+    }
+
+    @Override
     public SubscriptionStatusResponse getSubscription(UUID playerId) {
         return subscriptionQueryService.getSubscription(playerId);
     }
