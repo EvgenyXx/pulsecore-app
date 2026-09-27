@@ -30,6 +30,7 @@ public interface PlayerClient {
     //subscription
     MessageResponse activate(UUID playerId, int days);
     MessageResponse deactivate(UUID playerId);
+    MessageResponse enable(UUID playerId);
     SubscriptionStatusResponse getSubscription(UUID playerId);
 
 

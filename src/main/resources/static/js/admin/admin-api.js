@@ -61,6 +61,9 @@ export const AdminAPI = {
     removeSubscription: (playerId) =>
         apiRequest(`/admin/players/${playerId}/unsubscribe`, { method: 'DELETE' }),
 
+    enableSubscription: (playerId) =>
+        apiRequest(`/admin/players/${playerId}/subscription/enable`, { method: 'POST' }),
+
     // ===== ОБНОВЛЕНИЕ ИГРОКА =====
     updatePlayer: (playerId, data) =>
         apiRequest(`/admin/players/${playerId}`, {

@@ -12,6 +12,7 @@ import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.domain.Subscription;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Slf4j
@@ -35,8 +36,20 @@ public class SubscriptionCommandService {
     }
 
     @Transactional
+    public void enable(UUID playerId) {
+        Player player = playerSearchService.getById(playerId);
+        Subscription subscription = player.getSubscription();
+        if (subscription != null) {
+            subscription.setActive(true);
+            subscriptionRepository.save(subscription);
+            log.info("Подписка включена для {}", player.getEmail());
+        }
+    }
+
+    @Transactional
     @CacheEvict(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
     public void activate(UUID playerId, int days) {
+        System.err.println("ДЕРНУЛИ ПОДПИСКУ ");
         Player player = playerSearchService.getById(playerId);
 
         Subscription subscription = player.getSubscription();
@@ -55,7 +68,6 @@ public class SubscriptionCommandService {
     public void save(Subscription subscription) {
         subscriptionRepository.save(subscription);
     }
-
 
 
 }
