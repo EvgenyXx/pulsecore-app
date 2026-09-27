@@ -57,7 +57,7 @@ public class TournamentScheduleChangedMailStrategy implements MailStrategy {
         mailSender.send(
                 MailFormat.TEXT,
                 c.to(),
-                "📅 Изменение расписания турнира",
+                "Изменения в турнире",
                 text,
                 null,
                 null);

@@ -29,11 +29,11 @@ public class NewTournamentMailStrategy implements MailStrategy {
         NewTournamentContext c = (NewTournamentContext) ctx;
         String text = templates.format(MailTemplate.NEW_TOURNAMENT,
                 c.firstName(), c.date(), c.time(), c.hall(),
-                c.league(), c.players(), c.link());
+                c.league(), c.type(), c.players(), c.link());
         mailSender.send(
                 MailFormat.TEXT,
                 c.to(),
-                 "Новый турнир",
+                "Новый турнир",
                 text,
                 null,
                 null);
