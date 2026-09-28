@@ -2,21 +2,18 @@ package ru.pulsecore.app.player.infrastructure.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
 import ru.pulsecore.app.player.application.admin.PlayerUpdateAdminService;
-import ru.pulsecore.app.player.application.mapper.PlayerMapper;
+import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
 import ru.pulsecore.app.shared.dto.response.*;
 import ru.pulsecore.app.admin.client.PlayerClient;
 import ru.pulsecore.app.player.application.analytic.PageViewStatsService;
 import ru.pulsecore.app.player.application.admin.PlayerAdminService;
 import ru.pulsecore.app.player.application.role.RoleManagementService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionCommandService;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -33,29 +30,19 @@ public class AdminPlayerClientImpl implements PlayerClient {
     private final RoleManagementService roleManagementService;
     private final SubscriptionCommandService subscriptionCommandService;
     private final PageViewStatsService pageViewStatsService;
-    private final PlayerRepository playerRepository;
     private final SubscriptionQueryService subscriptionQueryService;
     private final PlayerUpdateAdminService updateAdminService;
-    private final PlayerMapper playerMapper;
+    private final PlayerSearchService playerSearchService;
+
 
     @Override
     public List<PlayerSubscriptionResponse> getSubscription() {
-        return playerRepository.getSubscription()
-                .stream()
-                .map(playerSubscriptionExpiryProjection ->
-                        new PlayerSubscriptionResponse(playerSubscriptionExpiryProjection.getName(),
-                                playerSubscriptionExpiryProjection.getActive(),
-                                playerSubscriptionExpiryProjection.getExpiresAt()))
-                .toList();
+       return playerAdminService.getSubscription();
     }
 
     @Override
     public Page<LastLoginResponse> getLastLogin(Pageable pageable) {
-        return playerRepository.getLastLogin(pageable)
-                .map(p -> new LastLoginResponse(
-                        p.getName(),
-                        p.getLastLoginAt()
-                ));
+       return playerAdminService.getLastLogin(pageable);
     }
 
     @Override
@@ -65,9 +52,7 @@ public class AdminPlayerClientImpl implements PlayerClient {
 
     @Override
     public Page<PlayerData> searchByNamePage(String name, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return playerRepository.searchByName(name, pageable)
-                .map(playerMapper::toData);
+        return playerSearchService.searchByNamePage(name, page, size);
     }
 
     @Override

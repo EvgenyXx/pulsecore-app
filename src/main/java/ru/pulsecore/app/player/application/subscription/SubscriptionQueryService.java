@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.application.mapper.SubscriptionMapper;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
+import ru.pulsecore.app.player.infrastructure.repository.SubscriptionRepository;
 import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
 import ru.pulsecore.app.player.domain.Subscription;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +25,7 @@ public class SubscriptionQueryService {
     private final PlayerSearchService  playerSearchService;
     private final SubscriptionRepository  subscriptionRepository;
     private final SubscriptionMapper subscriptionMapper;
+
 
 
 

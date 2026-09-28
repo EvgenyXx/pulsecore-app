@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.client.TournamentClient;
 import ru.pulsecore.app.player.domain.Player;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import ru.pulsecore.app.shared.dto.response.PriorityLeagueResponse;
 
 import java.util.*;

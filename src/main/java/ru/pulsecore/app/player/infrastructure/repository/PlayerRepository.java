@@ -1,4 +1,4 @@
-package ru.pulsecore.app.player.infrastructure.persistence.repository;
+package ru.pulsecore.app.player.infrastructure.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.player.domain.Player;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerLastLoginProjection;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerSubscriptionExpiryProjection;
+import ru.pulsecore.app.player.infrastructure.repository.projection.PlayerDataProjection;
+import ru.pulsecore.app.player.infrastructure.repository.projection.PlayerLastLoginProjection;
+import ru.pulsecore.app.player.infrastructure.repository.projection.PlayerSubscriptionExpiryProjection;
 
 import java.time.LocalDateTime;
 import java.util.List;

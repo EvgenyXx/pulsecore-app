@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -13,5 +14,5 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class SubscriptionInfoDto implements Serializable {
     private boolean active;
-    private String expiresAt;
+    private LocalDateTime expiresAt;
 }

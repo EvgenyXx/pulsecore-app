@@ -1,4 +1,4 @@
-package ru.pulsecore.app.player.infrastructure.persistence.repository.projection;
+package ru.pulsecore.app.player.infrastructure.repository.projection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,11 +1,11 @@
-package ru.pulsecore.app.player.infrastructure.persistence.repository;
+package ru.pulsecore.app.player.infrastructure.repository;
 
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PageViewStatsProjection;
+import ru.pulsecore.app.player.infrastructure.repository.projection.PageViewStatsProjection;
 import ru.pulsecore.app.shared.model.PageView;
 
 import java.time.Instant;

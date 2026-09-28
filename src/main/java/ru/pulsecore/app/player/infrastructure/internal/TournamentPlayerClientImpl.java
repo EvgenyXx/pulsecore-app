@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.SubscriptionInfoDto;
-import ru.pulsecore.app.player.application.mapper.PlayerMapper;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
+import ru.pulsecore.app.player.application.player.PlayerSearchService;
+import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.player.infrastructure.exception.PlayerNotFoundException;
+import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -21,66 +22,48 @@ import java.util.UUID;
 @Slf4j
 public class TournamentPlayerClientImpl implements PlayerClient {
 
-    private final PlayerRepository playerRepository;
-    private final PlayerMapper playerMapper;
+
+    private final SubscriptionQueryService subscriptionQueryService;
+    private final PlayerSearchService playerSearchService;
 
 
     @Override
     public List<PlayerData> getAll() {
-        return playerRepository.findAllPlayers()
-                .stream().map(playerMapper::toData)
-                .toList();
+        return playerSearchService.getAll();
     }
 
     @Override
     public List<PlayerData> getPlayerDataByIds(Set<UUID> playerIds) {
-        return playerRepository.findProjectionsByIds(playerIds)
-                .stream().map(playerMapper::toData)
-                .toList();
+        return playerSearchService.getPlayersIds(playerIds);
     }
 
     @Override
     public SubscriptionInfoDto getSubscriptionInfo(UUID playerId) {
-        var player = playerRepository.findById(playerId).orElseThrow(() ->
-                new PlayerNotFoundException(String.valueOf(playerId)));
-        var sub = player.getSubscription();
-        if (sub != null && sub.isActiveNow()) {
-            return SubscriptionInfoDto.builder()
-                    .active(true)
-                    .expiresAt(sub.getExpiresAt().toString())
-                    .build();
-        }
-        return SubscriptionInfoDto.builder().active(false).build();
+        SubscriptionStatusResponse status = subscriptionQueryService.getSubscription(playerId);
+        return SubscriptionInfoDto.builder()
+                .active(status.activeNow())
+                .expiresAt(status.expiresAt())
+                .build();
     }
 
     @Override
     public PlayerData getPlayerById(UUID playerId) {
-        return playerRepository.findProjectionById(playerId)
-                .map(playerMapper::toData)
-                .orElseThrow(() -> new PlayerNotFoundException(playerId.toString()));
+        return playerSearchService.getPlayerById(playerId);
     }
 
 
     @Override
     public List<PlayerData> searchByName(String query) {
-        return playerRepository.searchByName(query)
-                .stream()
-                .map(playerMapper::toData)
-                .toList();
+        return playerSearchService.searchByName(query);
     }
 
     @Override
     public PlayerData findByName(String fullName) {
-        return playerRepository.findByNameIgnoreCase(fullName)
-                .map(playerMapper::toData)
-                .orElseThrow(() -> new PlayerNotFoundException(fullName));
+        return playerSearchService.findByName(fullName);
     }
 
     @Override
     public List<PlayerData> getAllActivePlayers() {
-        return playerRepository.findActivePlayers()
-                .stream()
-                .map(playerMapper::toData)
-                .toList();
+        return playerSearchService.getAllActivePlayers();
     }
 }

@@ -48,7 +48,7 @@ public class SubscriptionExpiryProcessor {
         Set<UUID> expiringIds = subscriptionQueryService.findExpiringPlayerIds(LocalDate.now().plusDays(1));
         if (expiringIds.isEmpty()) return;
 
-        List<PlayerData> players = playerSearchService.findPlayerByIds(expiringIds);
+        List<PlayerData> players = playerSearchService.getPlayersIds(expiringIds);
 
         for (PlayerData player : players) {
             if (!player.pushEnabled()) continue;

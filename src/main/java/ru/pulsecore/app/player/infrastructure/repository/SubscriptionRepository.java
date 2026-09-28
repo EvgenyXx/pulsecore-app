@@ -1,4 +1,4 @@
-package ru.pulsecore.app.player.infrastructure.persistence.repository;
+package ru.pulsecore.app.player.infrastructure.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

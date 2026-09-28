@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PageViewStats;
 import ru.pulsecore.app.shared.dto.response.PlayerPageViewStats;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerStatsRepository;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PageViewRepository;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerStatsRepository;
+import ru.pulsecore.app.player.infrastructure.repository.PageViewRepository;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

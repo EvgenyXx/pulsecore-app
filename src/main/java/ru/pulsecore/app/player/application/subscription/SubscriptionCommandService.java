@@ -10,7 +10,7 @@ import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.domain.Subscription;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
+import ru.pulsecore.app.player.infrastructure.repository.SubscriptionRepository;
 
 
 import java.util.UUID;

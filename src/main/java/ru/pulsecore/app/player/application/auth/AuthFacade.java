@@ -8,12 +8,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.response.MeResponse;
-import ru.pulsecore.app.player.infrastructure.persistence.mapping.PlayerDtoMapper;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.session.RememberMeService;
 import ru.pulsecore.app.player.application.profile.ThemeService;
@@ -27,14 +27,14 @@ public class AuthFacade {
 
     private final PlayerAuthenticationService authenticationService;
     private final PlayerSearchService playerSearchService;
-    private final PlayerDtoMapper mapper;
+    private final PlayerMapper playerMapper;
     private final ThemeService themeService;
     private final RememberMeService rememberMeService;
     private final PlayerCommandService playerCommandService;
 
     public AuthResponse login(String email, String rawPassword, HttpSession session, HttpServletResponse response) {
         Player player = authenticationService.authenticate(email, rawPassword);
-        AuthResponse authResponse = mapper.toAuthResponse(player);
+        AuthResponse authResponse =playerMapper.toAuthResponse(player);
 
         SecurityUser securityUser = new SecurityUser(player);
         UsernamePasswordAuthenticationToken authToken =
