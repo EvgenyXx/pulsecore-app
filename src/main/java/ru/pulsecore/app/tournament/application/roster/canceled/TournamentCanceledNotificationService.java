@@ -53,7 +53,6 @@ public class TournamentCanceledNotificationService {
     }
 
     private void canSendPush(PlayerData playerData, String time, String date, String link) {
-        if (playerData.pushEnabled()) {
             eventPublisher.publishEvent(
                     new PushNotificationEvent(
                             playerData.id(),
@@ -63,7 +62,7 @@ public class TournamentCanceledNotificationService {
                     )
             );
             log.debug("Отмена: пуш отправлен игроку={}", playerData.name());
-        }
+
     }
 
     private void emailSend(PlayerData playerData, String time, String date, String link) {

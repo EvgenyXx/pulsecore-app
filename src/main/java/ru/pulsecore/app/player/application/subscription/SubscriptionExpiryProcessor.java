@@ -51,7 +51,6 @@ public class SubscriptionExpiryProcessor {
         List<PlayerData> players = playerSearchService.getPlayersIds(expiringIds);
 
         for (PlayerData player : players) {
-            if (!player.pushEnabled()) continue;
 
             eventPublisher.publishEvent(
                     new PushNotificationEvent(
@@ -61,7 +60,7 @@ public class SubscriptionExpiryProcessor {
                             "/dashboard#/profile"
                     )
             );
-            log.info("📲 Push отправлен игроку {}", player.id());
+            log.info("Скоро закончится подписка у {}",player.name());
         }
     }
 }

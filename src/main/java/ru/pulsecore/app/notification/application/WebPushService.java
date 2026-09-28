@@ -53,8 +53,8 @@ public class WebPushService {
         String payload = objectMapper.writeValueAsString(Map.of(
                 "title", title,
                 "body", body,
-                "url", url,
-                "tag", "tournament"
+                "url", url
+//                "tag", "tournament"
         ));
 
         PushService pushService = new PushService()

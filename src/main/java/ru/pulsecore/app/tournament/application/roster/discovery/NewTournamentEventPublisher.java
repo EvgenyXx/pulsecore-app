@@ -29,9 +29,7 @@ public class NewTournamentEventPublisher {
             if (player.notificationsEnabled()) {
                 tournament.forEach(tournamentDto -> sendEmail(player, tournamentDto));
             }
-            if (player.pushEnabled()) {
-                tournament.forEach(tournamentDto -> sendPush(player, tournamentDto));
-            }
+            tournament.forEach(tournamentDto -> sendPush(player, tournamentDto));
         });
     }
 
@@ -62,16 +60,15 @@ public class NewTournamentEventPublisher {
     }
 
     private void sendPush(PlayerData player, TournamentDto tournament) {
-        if (player.pushEnabled()) {
-            publisher.publishEvent(
-                    new PushNotificationEvent(
-                            player.id(),
-                            "Новый турнир",
-                            PushMessageBuilder.buildNewTournamentBody(player.name(), tournament),
-                            tournament.getLink()
-                    )
-            );
-        }
+        publisher.publishEvent(
+                new PushNotificationEvent(
+                        player.id(),
+                        "Новый турнир",
+                        PushMessageBuilder.buildNewTournamentBody(player.name(), tournament),
+                        tournament.getLink()
+                )
+        );
+
     }
 
 }
