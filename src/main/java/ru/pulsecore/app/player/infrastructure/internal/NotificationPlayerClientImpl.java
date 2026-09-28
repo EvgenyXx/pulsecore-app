@@ -1,16 +1,15 @@
 package ru.pulsecore.app.player.infrastructure.internal;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.notification.client.PlayerClient;
+import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 
 import java.util.List;
@@ -22,9 +21,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationPlayerClientImpl implements PlayerClient {
 
-    private final PlayerCommandService  commandService;
-    private final PlayerSearchService  searchService;
-    private final PlayerRepository  repository;
+    private final PlayerCommandService commandService;
+    private final PlayerSearchService searchService;
+    private final PlayerRepository repository;
+    private final PlayerMapper playerMapper;
 
     @Transactional
     @Override
@@ -44,7 +44,7 @@ public class NotificationPlayerClientImpl implements PlayerClient {
     @Override
     public PlayerData getPlayer(UUID playerId) {
         return repository.findProjectionById(playerId)
-                .map(PlayerDataProjection::toPlayerData)
+                .map(playerMapper::toData)
                 .orElse(null);
     }
 
@@ -52,7 +52,7 @@ public class NotificationPlayerClientImpl implements PlayerClient {
     public List<PlayerData> getPlayers(Set<UUID> playerIds) {
         return repository.findProjectionsByIds(playerIds)
                 .stream()
-                .map(PlayerDataProjection::toPlayerData)
+                .map(playerMapper::toData)
                 .toList();
     }
 }

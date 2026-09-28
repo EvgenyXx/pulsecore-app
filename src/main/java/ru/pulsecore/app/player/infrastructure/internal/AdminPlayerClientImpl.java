@@ -7,13 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
 import ru.pulsecore.app.player.application.admin.PlayerUpdateAdminService;
+import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.shared.dto.response.*;
 import ru.pulsecore.app.admin.client.PlayerClient;
 import ru.pulsecore.app.player.application.analytic.PageViewStatsService;
-import ru.pulsecore.app.player.application.player.PlayerAdminService;
+import ru.pulsecore.app.player.application.admin.PlayerAdminService;
 import ru.pulsecore.app.player.application.role.RoleManagementService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionCommandService;
 
@@ -36,6 +36,7 @@ public class AdminPlayerClientImpl implements PlayerClient {
     private final PlayerRepository playerRepository;
     private final SubscriptionQueryService subscriptionQueryService;
     private final PlayerUpdateAdminService updateAdminService;
+    private final PlayerMapper playerMapper;
 
     @Override
     public List<PlayerSubscriptionResponse> getSubscription() {
@@ -66,7 +67,7 @@ public class AdminPlayerClientImpl implements PlayerClient {
     public Page<PlayerData> searchByNamePage(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return playerRepository.searchByName(name, pageable)
-                .map(PlayerDataProjection::toPlayerData);
+                .map(playerMapper::toData);
     }
 
     @Override

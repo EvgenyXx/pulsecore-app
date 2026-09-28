@@ -3,10 +3,10 @@ package ru.pulsecore.app.player.application.player;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.exception.PlayerNotFoundException;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +21,7 @@ import java.util.UUID;
 public class PlayerSearchService {
 
     private final PlayerRepository playerRepository;
+    private final PlayerMapper playerMapper;
 
     public Optional<Player> findByOauthProviderAndOauthId(String provider, String oauthId) {
         return playerRepository.findByOauthProviderAndOauthId(provider, oauthId);
@@ -33,7 +34,7 @@ public class PlayerSearchService {
     public List<PlayerData> findPlayerByIds(Set<UUID> playerIds) {
         return playerRepository.findProjectionsByIds(playerIds)
                 .stream()
-                .map(PlayerDataProjection::toPlayerData)
+                .map(playerMapper::toData)
                 .toList();
     }
 

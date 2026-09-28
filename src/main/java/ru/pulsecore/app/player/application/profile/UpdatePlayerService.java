@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.api.dto.response.PlayerProfileResponse;
+import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
@@ -24,6 +25,7 @@ public class UpdatePlayerService {
 
     private final PlayerCommandService playerCommandService;
     private final PlayerSearchService playerSearchService;
+    private final PlayerMapper playerMapper;
 
 
     @Transactional
@@ -36,12 +38,7 @@ public class UpdatePlayerService {
         player.setEmail(email);
         playerCommandService.save(player);
 
-        return PlayerProfileResponse.builder()
-                .id(player.getId().toString())
-                .name(player.getName())
-                .email(player.getEmail())
-                .createdAt(player.getCreatedAt())
-                .build();
+        return playerMapper.toProfileResponse(player);
     }
 
 

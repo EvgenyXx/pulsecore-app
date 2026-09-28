@@ -30,7 +30,8 @@ public class RegistrationFacade {
     private final RoleService roleService;
     private final RegistrationMailPublisher mailPublisher;
 
-    public record Pending(String name, String email, String password, String code) implements Serializable {}
+    public record Pending(String name, String email, String password, String code) implements Serializable {
+    }
 
     public Pending initiate(String name, String email, String rawPassword) {
         validator.validate(email, name);
@@ -40,13 +41,17 @@ public class RegistrationFacade {
     }
 
     @Transactional
-    public Player complete(Pending pending, String code,String ip, String userAgent) {
+    public Player complete(Pending pending, String code, String ip, String userAgent) {
         if (!pending.code().equals(code)) throw new BadCredentialsException();
 
         var defaultRole = roleService.findRoleUser();
-        Player player = playerCommandService.create(pending.name(), pending.email(), pending.password(), defaultRole);
+        Player player = playerCommandService.create(
+                pending.name(),
+                pending.email(),
+                pending.password(),
+                defaultRole);
         postRegistration.execute(player);
-        mailPublisher.playerCreated(player,ip,userAgent);
+        mailPublisher.playerCreated(player, ip, userAgent);
         return player;
     }
 }

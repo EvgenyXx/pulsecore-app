@@ -1,12 +1,11 @@
 package ru.pulsecore.app.player.infrastructure.internal;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.SubscriptionInfoDto;
+import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.player.infrastructure.exception.PlayerNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
@@ -23,19 +22,20 @@ import java.util.UUID;
 public class TournamentPlayerClientImpl implements PlayerClient {
 
     private final PlayerRepository playerRepository;
+    private final PlayerMapper playerMapper;
 
 
     @Override
     public List<PlayerData> getAll() {
         return playerRepository.findAllPlayers()
-                .stream().map(PlayerDataProjection::toPlayerData)
+                .stream().map(playerMapper::toData)
                 .toList();
     }
 
     @Override
     public List<PlayerData> getPlayerDataByIds(Set<UUID> playerIds) {
         return playerRepository.findProjectionsByIds(playerIds)
-                .stream().map(PlayerDataProjection::toPlayerData)
+                .stream().map(playerMapper::toData)
                 .toList();
     }
 
@@ -56,7 +56,7 @@ public class TournamentPlayerClientImpl implements PlayerClient {
     @Override
     public PlayerData getPlayerById(UUID playerId) {
         return playerRepository.findProjectionById(playerId)
-                .map(PlayerDataProjection::toPlayerData)
+                .map(playerMapper::toData)
                 .orElseThrow(() -> new PlayerNotFoundException(playerId.toString()));
     }
 
@@ -65,14 +65,14 @@ public class TournamentPlayerClientImpl implements PlayerClient {
     public List<PlayerData> searchByName(String query) {
         return playerRepository.searchByName(query)
                 .stream()
-                .map(PlayerDataProjection::toPlayerData)
+                .map(playerMapper::toData)
                 .toList();
     }
 
     @Override
     public PlayerData findByName(String fullName) {
         return playerRepository.findByNameIgnoreCase(fullName)
-                .map(PlayerDataProjection::toPlayerData)
+                .map(playerMapper::toData)
                 .orElseThrow(() -> new PlayerNotFoundException(fullName));
     }
 
@@ -80,7 +80,7 @@ public class TournamentPlayerClientImpl implements PlayerClient {
     public List<PlayerData> getAllActivePlayers() {
         return playerRepository.findActivePlayers()
                 .stream()
-                .map(PlayerDataProjection::toPlayerData)
+                .map(playerMapper::toData)
                 .toList();
     }
 }

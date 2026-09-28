@@ -1,8 +1,5 @@
 package ru.pulsecore.app.player.infrastructure.persistence.repository.projection;
 
-import ru.pulsecore.app.shared.dto.response.PlayerData;
-
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,23 +10,8 @@ public interface PlayerDataProjection {
     String getPrimaryLeague();
     boolean getPushEnabled();
     boolean getNotificationsEnabled();
-    Boolean getHasActiveSubscription();
+    boolean getHasActiveSubscription();
     String getSelectedHalls();
     String getLiveSelectedHalls();
     LocalDateTime getLastLoginAt();
-
-    default PlayerData toPlayerData() {
-        return new PlayerData(
-                getId(),
-                getName(),
-                getEmail(),
-                getPrimaryLeague(),
-                getPushEnabled(),
-                getNotificationsEnabled(),
-                getHasActiveSubscription() != null && getHasActiveSubscription(),
-                getSelectedHalls(),
-                getLiveSelectedHalls(),
-                getLastLoginAt()
-        );
-    }
 }

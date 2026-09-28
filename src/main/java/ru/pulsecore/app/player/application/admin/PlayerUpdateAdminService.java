@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
 import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
-import ru.pulsecore.app.player.infrastructure.persistence.mapping.PlayerMapper;
+import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 
 import java.util.UUID;

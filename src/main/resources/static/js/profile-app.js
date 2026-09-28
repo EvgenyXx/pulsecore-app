@@ -46,7 +46,7 @@ async function init() {
             const subBtn = document.getElementById('subActionBtn');
             const premiumBadge = document.getElementById('profilePremiumBadge');
 
-            if (sub && sub.active) {
+            if (sub && sub.activeNow) {
                 if (premiumBadge) premiumBadge.classList.remove('hidden');
 
                 const until = new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });

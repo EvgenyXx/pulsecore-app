@@ -22,16 +22,16 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
 
     @Query(value = """
-        SELECT
-            p.name::text     AS name,
-            s.active         AS active,
-            s.expires_at     AS expiresAt
-        FROM players p
-        LEFT JOIN subscription s ON s.player_id = p.id
-        ORDER BY s.expires_at DESC NULLS LAST
-        """,
-        nativeQuery = true)
-List<PlayerSubscriptionExpiryProjection> getSubscription();
+            SELECT
+                p.name::text     AS name,
+                s.active         AS active,
+                s.expires_at     AS expiresAt
+            FROM players p
+            LEFT JOIN subscription s ON s.player_id = p.id
+            ORDER BY s.expires_at DESC NULLS LAST
+            """,
+            nativeQuery = true)
+    List<PlayerSubscriptionExpiryProjection> getSubscription();
 
     @Query("""
             SELECT p.name AS name, p.lastLoginAt AS lastLoginAt
@@ -55,7 +55,7 @@ List<PlayerSubscriptionExpiryProjection> getSubscription();
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
             "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
             "p.lastLoginAt as lastLoginAt, " +
-            "CASE WHEN s.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "COALESCE(s.active, false) as hasActiveSubscription " +
             "FROM Player p LEFT JOIN p.subscription s " +
             "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<PlayerDataProjection> searchByName(@Param("query") String query);
@@ -64,7 +64,7 @@ List<PlayerSubscriptionExpiryProjection> getSubscription();
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
             "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
             "p.lastLoginAt as lastLoginAt, " +
-            "CASE WHEN s.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "COALESCE(s.active, false) as hasActiveSubscription " +
             "FROM Player p LEFT JOIN p.subscription s " +
             "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<PlayerDataProjection> searchByName(@Param("query") String query, Pageable pageable);
@@ -73,7 +73,7 @@ List<PlayerSubscriptionExpiryProjection> getSubscription();
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
             "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
             "p.lastLoginAt as lastLoginAt, " +
-            "CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "COALESCE(p.subscription.active, false) as hasActiveSubscription " +
             "FROM Player p WHERE LOWER(p.name) = LOWER(:name)")
     Optional<PlayerDataProjection> findByNameIgnoreCase(@Param("name") String name);
 
@@ -81,7 +81,7 @@ List<PlayerSubscriptionExpiryProjection> getSubscription();
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
             "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
             "p.lastLoginAt as lastLoginAt, " +
-            "CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "COALESCE(p.subscription.active, false) as hasActiveSubscription " +
             "FROM Player p WHERE p.verified = true AND p.isBlocked = false")
     List<PlayerDataProjection> findByVerifiedTrueAndIsBlockedFalse();
 
@@ -89,7 +89,7 @@ List<PlayerSubscriptionExpiryProjection> getSubscription();
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
             "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
             "p.lastLoginAt as lastLoginAt, " +
-            "CASE WHEN p.subscription.active = true THEN true ELSE false END as hasActiveSubscription " +
+            "COALESCE(p.subscription.active, false) as hasActiveSubscription " +
             "FROM Player p WHERE p.id = :id")
     Optional<PlayerDataProjection> findProjectionById(@Param("id") UUID id);
 
@@ -97,7 +97,7 @@ List<PlayerSubscriptionExpiryProjection> getSubscription();
             "p.pushEnabled AS pushEnabled, p.notificationsEnabled AS notificationsEnabled, " +
             "p.selectedHalls AS selectedHalls, p.liveSelectedHalls AS liveSelectedHalls, " +
             "p.lastLoginAt AS lastLoginAt, " +
-            "CASE WHEN p.subscription.active = true THEN true ELSE false END AS hasActiveSubscription " +
+            "COALESCE(p.subscription.active, false) AS hasActiveSubscription " +
             "FROM Player p WHERE p.id IN :ids")
     List<PlayerDataProjection> findProjectionsByIds(@Param("ids") Set<UUID> ids);
 
@@ -113,7 +113,7 @@ List<PlayerSubscriptionExpiryProjection> getSubscription();
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
             "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
             "p.lastLoginAt as lastLoginAt, " +
-            "CASE WHEN s.active = true AND s.expiresAt > CURRENT_TIMESTAMP THEN true ELSE false END as hasActiveSubscription " +
+            "COALESCE(s.active, false) AND s.expiresAt > CURRENT_TIMESTAMP as hasActiveSubscription " +
             "FROM Player p LEFT JOIN p.subscription s")
     List<PlayerDataProjection> findAllPlayers();
 }

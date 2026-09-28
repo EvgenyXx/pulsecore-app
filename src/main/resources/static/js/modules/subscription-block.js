@@ -15,7 +15,7 @@ export async function checkSubscription() {
         if (res.status === 402) return false;
         if (!res.ok) return false;
         const data = await res.json();
-        return data && data.active === true;
+        return data && data.activeNow === true;
     } catch (e) {
         return false;
     }

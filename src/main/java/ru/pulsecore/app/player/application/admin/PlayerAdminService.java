@@ -1,14 +1,14 @@
-package ru.pulsecore.app.player.application.player;
-
+package ru.pulsecore.app.player.application.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.player.application.mapper.PlayerMapper;
+import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.client.TournamentClient;
 import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.projection.PlayerDataProjection;
 import ru.pulsecore.app.player.infrastructure.session.SessionService;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
@@ -26,6 +26,7 @@ public class PlayerAdminService {
     private final RedisIndexedSessionRepository sessionRepository;
     private final SessionService sessionService;
     private final PlayerCommandService playerCommandService;
+    private final PlayerMapper playerMapper;
 
     @Transactional
     public MessageResponse deletePlayer(UUID playerId) {
@@ -42,7 +43,7 @@ public class PlayerAdminService {
     public List<PlayerData> getPlayers() {
         return playerRepository.findByVerifiedTrueAndIsBlockedFalse()
                 .stream()
-                .map(PlayerDataProjection::toPlayerData)
+                .map(playerMapper::toData)
                 .toList();
     }
 }
