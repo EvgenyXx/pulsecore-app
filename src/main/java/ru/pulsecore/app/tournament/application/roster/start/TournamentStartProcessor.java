@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.shared.exception.SiteUnavailableException;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.parser.TournamentStatusParser;

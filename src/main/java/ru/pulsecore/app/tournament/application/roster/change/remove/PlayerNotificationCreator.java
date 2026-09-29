@@ -8,8 +8,8 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentNotFoundException;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.NumberUtils;
 
 @Component

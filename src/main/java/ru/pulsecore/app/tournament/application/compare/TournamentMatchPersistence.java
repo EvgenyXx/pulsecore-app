@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.api.dto.response.TournamentMatchDto;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentMatchRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.TournamentMatchProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentMatchRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.TournamentMatchProjection;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
 import java.util.List;

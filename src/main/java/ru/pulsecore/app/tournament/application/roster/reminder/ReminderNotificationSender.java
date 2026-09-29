@@ -8,7 +8,7 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.PushNotificationEvent;
 import ru.pulsecore.app.shared.util.PushMessageBuilder;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 
 import java.time.LocalTime;

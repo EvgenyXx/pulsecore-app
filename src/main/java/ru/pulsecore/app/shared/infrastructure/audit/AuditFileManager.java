@@ -3,6 +3,7 @@ package ru.pulsecore.app.shared.infrastructure.audit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.shared.exception.AuditFileCreationException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,12 +22,10 @@ public class AuditFileManager {
         try {
             Files.createDirectories(folder);
         } catch (IOException e) {
-            throw new IllegalStateException("Аудит: не удалось создать папку " + folder, e);//todo нормальное исключение
+            throw new AuditFileCreationException(folder.toString());
         }
         return folder.resolve(prefix + "-" + LocalDate.now() + ".log");
     }
 
-    public Path baseDir() {
-        return Path.of(properties.getDir());
-    }
+
 }

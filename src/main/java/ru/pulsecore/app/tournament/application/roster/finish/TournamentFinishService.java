@@ -11,8 +11,8 @@ import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.util.List;
 

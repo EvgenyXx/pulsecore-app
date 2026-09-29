@@ -31,14 +31,14 @@ public class PushNotificationListener {
         webPushService.sendToPlayer(
                 event.playerId(),
                 event.title(),
-                event.body(), event.url()
+                event.body(),
+                event.url()
         );
 
     }
 
     private boolean canSendPush(UUID playerId) {
         PlayerData playerData = playerClient.getPlayer(playerId);
-
         return playerData.pushEnabled() && playerData.hasActiveSubscription();
     }
 }

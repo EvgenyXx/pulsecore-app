@@ -9,7 +9,7 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.infrastructure.audit.AuditWriter;
 import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 
 import java.util.*;
 

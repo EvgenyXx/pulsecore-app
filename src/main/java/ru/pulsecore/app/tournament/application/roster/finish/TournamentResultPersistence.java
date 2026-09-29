@@ -6,10 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PeriodStatsProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.PeriodStatsProjection;
 import ru.pulsecore.app.tournament.infrastructure.cache.CacheEvictionService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

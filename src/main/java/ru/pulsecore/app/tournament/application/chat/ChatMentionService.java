@@ -2,12 +2,12 @@ package ru.pulsecore.app.tournament.application.chat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.notification.application.WebPushService;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
+import ru.pulsecore.app.shared.event.PushNotificationEvent;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,8 +18,11 @@ import java.util.regex.Pattern;
 public class ChatMentionService {
 
     private static final Pattern MENTION_PATTERN = Pattern.compile("@([\\p{L}]+)\\s+([\\p{L}]+)");
+    private static final String PUSH_TITLE = "Вас упомянули в чате";
+
+
     private final PlayerClient playerClient;
-    private final WebPushService webPushService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<PlayerData> searchPlayers(String query) {
         if (query == null || query.isBlank()) {
@@ -43,18 +46,24 @@ public class ChatMentionService {
 
         }
 
-        for (UUID playerId : mentionedIds) {
-            try {
-                webPushService.sendToPlayer(
-                        playerId,
-                        "💬 " + msg.getPlayerName(),
-                        msg.getMessage(),
-                        "/dashboard#/live/" + lineupId
-                );
-                log.info("Push-уведомление отправлено игроку {} за упоминание в чате {}", playerId, lineupId);
-            } catch (Exception e) {
-                log.warn("Не удалось отправить push за упоминание: {}", e.getMessage());
-            }
-        }
+        sendPushForMentions(mentionedIds,msg,lineupId);
+    }
+
+    private void sendPushForMentions(Set<UUID> mentionedIds, ChatMessageDto msg, Long lineupId) {
+        String body = msg.getPlayerName() + ": " + msg.getMessage();
+        String url = "/dashboard#/live/" + lineupId;
+
+        mentionedIds.forEach(playerId ->
+                eventPublisher.publishEvent(
+                        new PushNotificationEvent(
+                                playerId,
+                                PUSH_TITLE,
+                                body,
+                                url
+                        )
+                )
+        );
+        log.debug("Опубликовано push-событий за упоминание: count={}, lineup={}",
+                mentionedIds.size(), lineupId);
     }
 }

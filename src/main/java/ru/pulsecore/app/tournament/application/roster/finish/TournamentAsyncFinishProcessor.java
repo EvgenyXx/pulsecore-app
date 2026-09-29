@@ -16,7 +16,7 @@ import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 
 import java.util.List;
 import java.util.Map;

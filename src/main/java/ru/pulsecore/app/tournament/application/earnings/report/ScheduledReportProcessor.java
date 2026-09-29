@@ -13,10 +13,11 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
 import ru.pulsecore.app.tournament.application.earnings.sum.SumService;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.ScheduledReportProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.ScheduledReportProjection;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @Component
@@ -42,17 +43,18 @@ public class ScheduledReportProcessor {
 
             String period = report.getDateFrom() + " – " + report.getDateTo();
 
-            publishEvent(player.email(), period, sum);
+            publishEvent(player.email(),player.id(), period, sum);
 
             reportService.markAsSent(report.getId());
             log.info("Отчёт отправлен игроку {}. Почта: {}", player.name(),player.email());
         }
     }
 
-    private void publishEvent(String email, String period, SumResponse sum) {
+    private void publishEvent(String email, UUID playerId, String period, SumResponse sum) {
         eventPublisher.publishEvent(
                 new MailNotificationEvent(
                         MailTypes.SCHEDULED_REPORT,
+                        playerId,
                         new ScheduledReportContext(
                                 email,
                                 period,

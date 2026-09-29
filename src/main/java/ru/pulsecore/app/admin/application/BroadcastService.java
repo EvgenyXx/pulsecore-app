@@ -9,8 +9,8 @@ import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.BroadcastContext;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-
 import java.util.List;
+
 
 /**
  * Сервис массовых рассылок.
@@ -31,7 +31,7 @@ public class BroadcastService {
         int emailSent = 0;
 
         for (PlayerData player : players) {
-            sendEmail(player.email(), message);
+            sendEmail(player.email(),message);
             emailSent++;
         }
 
@@ -40,7 +40,7 @@ public class BroadcastService {
         return new BroadcastResult(players.size(), emailSent);
     }
 
-    private void sendEmail(String email, String message) {
+    private void sendEmail(String email,String message) {
         eventPublisher.publishEvent(
                 new MailNotificationEvent(
                         MailTypes.BROADCAST,

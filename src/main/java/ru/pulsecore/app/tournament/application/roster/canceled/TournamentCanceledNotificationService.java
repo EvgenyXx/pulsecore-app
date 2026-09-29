@@ -66,10 +66,10 @@ public class TournamentCanceledNotificationService {
     }
 
     private void emailSend(PlayerData playerData, String time, String date, String link) {
-        if (playerData.notificationsEnabled()) {
             eventPublisher.publishEvent(
                     new MailNotificationEvent(
                             MailTypes.CANCELED_TOURNAMENT,
+                            playerData.id(),
                             new CanceledTournamentContext(
                                     playerData.email(),
                                     time, date, link
@@ -77,6 +77,6 @@ public class TournamentCanceledNotificationService {
                     )
             );
             log.debug("Отмена: письмо отправлено игроку={}", playerData.name());
-        }
+
     }
 }

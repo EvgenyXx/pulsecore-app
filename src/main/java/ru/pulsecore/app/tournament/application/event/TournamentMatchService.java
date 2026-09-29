@@ -9,7 +9,7 @@ import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentMatchEntity;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentMatchRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentMatchRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 
 import java.time.LocalDate;

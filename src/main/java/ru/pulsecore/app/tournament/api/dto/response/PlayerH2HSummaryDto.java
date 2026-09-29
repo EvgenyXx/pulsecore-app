@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.api.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PlayerH2HSummaryProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.PlayerH2HSummaryProjection;
 
 @Data
 @Builder

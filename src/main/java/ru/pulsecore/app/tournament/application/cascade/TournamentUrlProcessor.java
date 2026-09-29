@@ -14,7 +14,7 @@ import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentParseException;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.time.LocalDate;
 import java.util.*;

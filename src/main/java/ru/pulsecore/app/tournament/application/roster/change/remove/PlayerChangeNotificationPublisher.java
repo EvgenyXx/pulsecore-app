@@ -28,6 +28,7 @@ public class PlayerChangeNotificationPublisher {
         eventPublisher.publishEvent(
                 new MailNotificationEvent(
                         MailTypes.PLAYER_REPLACED,
+                        player.id(),
                         new PlayerReplacedContext(
                                 player.email(),
                                 StringUtils.extractFirstName(player.name()),
@@ -52,6 +53,7 @@ public class PlayerChangeNotificationPublisher {
         eventPublisher.publishEvent(
                 new MailNotificationEvent(
                         MailTypes.PLAYER_TRANSFERRED,
+                        player.id(),
                         new PlayerTransferredContext(
                                 player.email(),
                                 StringUtils.extractFirstName(player.name()),

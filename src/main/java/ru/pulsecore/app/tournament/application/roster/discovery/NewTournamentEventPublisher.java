@@ -24,39 +24,41 @@ public class NewTournamentEventPublisher {
 
     private final ApplicationEventPublisher publisher;
 
-    public void publish(Map<PlayerData, List<TournamentDto>> playerDataListMap) {
-        playerDataListMap.forEach((player, tournament) -> {
-            if (player.notificationsEnabled()) {
-                tournament.forEach(tournamentDto -> sendEmail(player, tournamentDto));
-            }
-            tournament.forEach(tournamentDto -> sendPush(player, tournamentDto));
-        });
+    public void publish(Map<PlayerData, List<TournamentDto>> map) {
+        map.forEach((player, tournaments) ->
+                tournaments.forEach(t -> notifyPlayer(player, t))
+        );
+    }
+
+    private void notifyPlayer(PlayerData player, TournamentDto tournament) {
+        sendEmail(player, tournament);
+        sendPush(player, tournament);
     }
 
 
     private void sendEmail(PlayerData player, TournamentDto tournament) {
-        if (player.notificationsEnabled()) {
 
-            String firstName = StringUtils.extractFirstName(player.name());
-            String rawDate = tournament.getDate() != null ? tournament.getDate().getDate() : null;
-            String type = LineupType.fromApiType(tournament.getType()).displayName();
+        String firstName = StringUtils.extractFirstName(player.name());
+        String rawDate = tournament.getDate() != null ? tournament.getDate().getDate() : null;
+        String type = LineupType.fromApiType(tournament.getType()).displayName();
 
-            publisher.publishEvent(
-                    new MailNotificationEvent(
-                            MailTypes.NEW_TOURNAMENT,
-                            new NewTournamentContext(
-                                    player.email(),
-                                    firstName,
-                                    DateTimeUtils.formatDate(rawDate),
-                                    DateTimeUtils.formatTime(rawDate),
-                                    tournament.getHall() != null ? tournament.getHall() : "—",
-                                    tournament.getLeague() != null ? tournament.getLeague() : "—",
-                                    tournament.getPlayers() != null && !tournament.getPlayers().isEmpty()
-                                            ? String.join("\n", tournament.getPlayers()) : "—",
-                                    tournament.getLink() != null ? tournament.getLink() : "",
-                                    type
-                            )));
-        }
+        publisher.publishEvent(
+                new MailNotificationEvent(
+                        MailTypes.NEW_TOURNAMENT,
+                        player.id(),
+                        new NewTournamentContext(
+                                player.email(),
+                                firstName,
+                                DateTimeUtils.formatDate(rawDate),
+                                DateTimeUtils.formatTime(rawDate),
+                                tournament.getHall() != null ? tournament.getHall() : "—",
+                                tournament.getLeague() != null ? tournament.getLeague() : "—",
+                                tournament.getPlayers() != null && !tournament.getPlayers().isEmpty()
+                                        ? String.join("\n", tournament.getPlayers()) : "—",
+                                tournament.getLink() != null ? tournament.getLink() : "",
+                                type
+                        )));
+
     }
 
     private void sendPush(PlayerData player, TournamentDto tournament) {

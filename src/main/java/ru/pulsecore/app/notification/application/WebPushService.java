@@ -1,19 +1,15 @@
 package ru.pulsecore.app.notification.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.martijndwars.webpush.Notification;
-import nl.martijndwars.webpush.PushService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.notification.infrastructure.config.VapidConfig;
+import ru.pulsecore.app.notification.infrastructure.client.PushClient;
 import ru.pulsecore.app.notification.domain.PushSubscription;
 import ru.pulsecore.app.notification.infrastructure.repository.PushSubscriptionRepository;
-
 import java.security.Security;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -22,8 +18,8 @@ import java.util.UUID;
 public class WebPushService {
 
     private final PushSubscriptionRepository subscriptionRepository;
-    private final VapidConfig vapidConfig;
-    private final ObjectMapper objectMapper;
+    private final PushClient pushClient;
+
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -37,7 +33,7 @@ public class WebPushService {
         }
         for (PushSubscription sub : subscriptions) {
             try {
-                sendPush(sub, title, body, url);
+                pushClient.sendPush(sub, title, body, url);
                 log.debug("Push отправлен id={}", playerId);
             } catch (Exception e) {
                 log.error("Ошибка отправки пуша для id={}: {}", playerId, e.getMessage());
@@ -49,19 +45,4 @@ public class WebPushService {
         }
     }
 
-    private void sendPush(PushSubscription sub, String title, String body, String url) throws Exception {
-        String payload = objectMapper.writeValueAsString(Map.of(
-                "title", title,
-                "body", body,
-                "url", url
-//                "tag", "tournament"
-        ));
-
-        PushService pushService = new PushService()
-                .setPublicKey(vapidConfig.getPublicKey())
-                .setPrivateKey(vapidConfig.getPrivateKey())
-                .setSubject("mailto:noreply@pulsecore-app.ru");
-
-        pushService.send(new Notification(sub.getEndpoint(), sub.getP256dh(), sub.getAuth(), payload));
-    }
 }

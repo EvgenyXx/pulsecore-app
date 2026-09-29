@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

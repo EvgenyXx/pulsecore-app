@@ -7,8 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentResultNotFoundException;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PeriodStatsProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.PeriodStatsProjection;
 import ru.pulsecore.app.player.api.dto.response.SumResponse;
 
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;

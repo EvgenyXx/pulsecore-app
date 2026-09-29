@@ -6,12 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
+import ru.pulsecore.app.tournament.application.mapping.TournamentToLineupMapper;
 import ru.pulsecore.app.tournament.infrastructure.cache.LineupHashCache;
 import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
-import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.LineupMapper;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.HallStreamRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.LineupRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.HallStreamRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.LineupRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.TournamentDateUtils;
 import ru.pulsecore.app.tournament.infrastructure.validator.TournamentValidator;
 import java.time.LocalDate;
@@ -28,7 +28,7 @@ public class LineupUpsertService {
 
     private final LineupRepository lineupRepository;
     private final MastersApiClient apiClient;
-    private final LineupMapper mapper;
+    private final TournamentToLineupMapper mapper;
     private final TournamentValidator validator;
     private final HallStreamRepository hallStreamRepository;
     private final LineupHashCache lineupHashCache;

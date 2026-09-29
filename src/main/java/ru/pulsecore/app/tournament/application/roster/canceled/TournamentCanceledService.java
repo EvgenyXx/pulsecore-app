@@ -20,8 +20,8 @@ import ru.pulsecore.app.tournament.infrastructure.exception.PageNotFoundExceptio
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.util.List;
 import java.util.Map;

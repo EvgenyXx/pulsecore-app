@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.util.List;
 
