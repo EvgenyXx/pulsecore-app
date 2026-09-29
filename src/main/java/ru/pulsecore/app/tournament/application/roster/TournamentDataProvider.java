@@ -1,4 +1,4 @@
-package ru.pulsecore.app.tournament.application;
+package ru.pulsecore.app.tournament.application.roster;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +76,7 @@ public class TournamentDataProvider {
             List<TournamentDto> tournaments = apiClient.loadTournaments(date);
             return tournaments != null ? tournaments : List.of();
         } catch (Exception e) {
-            log.error("Failed to load tournaments for date: {}", date, e);
+            log.error("Не удалось загрузить турниры на дату: {}", date, e);
             return List.of();
         }
     }

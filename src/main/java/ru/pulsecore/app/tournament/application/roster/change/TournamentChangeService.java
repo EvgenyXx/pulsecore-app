@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.application.TournamentDataProvider;
+import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
 import ru.pulsecore.app.tournament.application.roster.change.info.TournamentHashChecker;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
