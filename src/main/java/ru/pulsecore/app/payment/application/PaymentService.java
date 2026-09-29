@@ -3,7 +3,7 @@ package ru.pulsecore.app.payment.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.payment.domain.Payment;
-import ru.pulsecore.app.payment.infrastructure.PaymentRepository;
+import ru.pulsecore.app.payment.infrastructure.repository.PaymentRepository;
 
 
 import java.math.BigDecimal;

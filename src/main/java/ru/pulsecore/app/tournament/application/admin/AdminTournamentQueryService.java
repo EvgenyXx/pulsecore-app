@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
 import ru.pulsecore.app.shared.dto.response.PlayerEarning;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.TournamentAdminProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.TournamentAdminProjection;
 import java.time.LocalDate;
 import java.util.List;
 

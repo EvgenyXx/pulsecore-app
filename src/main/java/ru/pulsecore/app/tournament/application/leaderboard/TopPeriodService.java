@@ -9,7 +9,7 @@ import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.domain.entity.TopPlayersView;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TopPlayersViewRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TopPlayersViewRepository;
 
 import java.util.List;
 import java.util.UUID;

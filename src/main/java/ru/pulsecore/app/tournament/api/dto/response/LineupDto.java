@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+
 
 @Data
 @Builder
@@ -14,7 +16,7 @@ public class LineupDto {
     private String league;
     private String hall;
     private String players;
-    private String date;
+    private LocalDate date;
     private boolean isPlayer;
     private String link;
     private String type;

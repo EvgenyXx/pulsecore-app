@@ -47,5 +47,5 @@ public class Payment {
     private record CreatePaymentRequest(Amount amount, Confirmation confirmation, String description, Metadata metadata, boolean capture) {}
     private record Amount(@JsonProperty("value") String value, @JsonProperty("currency") String currency) {}
     private record Confirmation(@JsonProperty("type") String type, @JsonProperty("return_url") String returnUrl) {}
-    private record Metadata(@JsonProperty("playerId") String playerId, @JsonProperty("months") String months) {}
+    private record Metadata(@JsonProperty("id") String playerId, @JsonProperty("months") String months) {}
 }

@@ -29,19 +29,19 @@ public class PaymentSuccessListener {
     public void onPaymentSuccess(PaymentSuccessEvent event) {
         PlayerData player = playerClient.getPlayer(event.playerId());
 
-        log.debug("Оплата: начало отправки писем для playerId={}", event.playerId());
+        log.debug("Оплата: начало отправки писем для id={}", event.playerId());
 
         sendUserPaymentEmail(player, event);
         sendAdminPaymentEmail(player, event);
 
-        log.info("Письма об оплате отправлены: playerId={}, email={}",
+        log.info("Письма об оплате отправлены: id={}, email={}",
                 event.playerId(), player.email());
     }
 
     private void sendUserPaymentEmail(PlayerData player, PaymentSuccessEvent event) {
         String text = templates.format(
                 MailTemplate.PAYMENT_SUCCESS_USER,
-                StringUtils.extractFirstName(player.playerName()), event.days() / 30
+                StringUtils.extractFirstName(player.name()), event.days() / 30
         );
         mailSender.send(
                 MailFormat.TEXT, player.email(),
@@ -54,7 +54,7 @@ public class PaymentSuccessListener {
     private void sendAdminPaymentEmail(PlayerData player, PaymentSuccessEvent event) {
         String text = templates.format(
                 MailTemplate.ADMIN_PAYMENT,
-                player.playerName(), player.email(),
+                player.name(), player.email(),
                 event.days() / 30,
                 event.amount(), event.currency(),
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))

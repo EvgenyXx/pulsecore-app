@@ -1,4 +1,3 @@
-// AnalyticsResponse.java
 package ru.pulsecore.app.player.api.dto.response;
 
 import lombok.AllArgsConstructor;

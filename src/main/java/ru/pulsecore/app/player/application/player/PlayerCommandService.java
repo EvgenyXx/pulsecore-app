@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.domain.Role;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 
 import java.time.LocalDateTime;

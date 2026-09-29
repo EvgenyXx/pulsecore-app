@@ -48,20 +48,19 @@ public class SubscriptionExpiryProcessor {
         Set<UUID> expiringIds = subscriptionQueryService.findExpiringPlayerIds(LocalDate.now().plusDays(1));
         if (expiringIds.isEmpty()) return;
 
-        List<PlayerData> players = playerSearchService.findPlayerByIds(expiringIds);
+        List<PlayerData> players = playerSearchService.getPlayersIds(expiringIds);
 
         for (PlayerData player : players) {
-            if (!player.pushEnabled()) continue;
 
             eventPublisher.publishEvent(
                     new PushNotificationEvent(
-                            player.playerId(),
+                            player.id(),
                             "Подписка скоро закончится",
                             PushMessageBuilder.SUBSCRIPTION_EXPIRING_BODY,
                             "/dashboard#/profile"
                     )
             );
-            log.info("📲 Push отправлен игроку {}", player.playerId());
+            log.info("Скоро закончится подписка у {}",player.name());
         }
     }
 }

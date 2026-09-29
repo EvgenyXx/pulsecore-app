@@ -8,7 +8,7 @@ import ru.pulsecore.app.player.api.dto.response.AnalyticsResponse;
 import ru.pulsecore.app.player.api.dto.response.BestTimeResponse;
 import ru.pulsecore.app.player.api.dto.response.DailyIncomeResponse;
 import ru.pulsecore.app.player.api.dto.response.MonthlyIncomeResponse;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerAnalyticsRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerAnalyticsRepository;
 
 
 import java.time.LocalDate;

@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.api.dto.response;
 import lombok.Builder;
 import lombok.Data;
 import ru.pulsecore.app.tournament.domain.entity.MatchStage;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PlayerH2HProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.PlayerH2HProjection;
 
 @Data
 @Builder

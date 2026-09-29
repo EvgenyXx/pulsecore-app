@@ -2,16 +2,16 @@ package ru.pulsecore.app.tournament.application.chat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.notification.application.WebPushService;
+import ru.pulsecore.app.shared.event.PushNotificationEvent;
 import ru.pulsecore.app.shared.exception.ForbiddenException;
 import ru.pulsecore.app.tournament.infrastructure.exception.MessageNotFoundException;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
-import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.ChatMessageMapper;
+import ru.pulsecore.app.tournament.application.mapping.ChatMessageMapper;
 import ru.pulsecore.app.tournament.domain.entity.ChatMessage;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.ChatMessageRepository;
-
+import ru.pulsecore.app.tournament.infrastructure.repository.ChatMessageRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -23,9 +23,8 @@ public class ChatService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMessageMapper chatMessageMapper;
-    private final WebPushService webPushService;
     private final ChatMentionService chatMentionService;
-
+    private final ApplicationEventPublisher applicationEventPublisher;
 
 
     @Transactional(readOnly = true)
@@ -63,19 +62,17 @@ public class ChatService {
     }
 
     private void sendReplyPush(ChatMessage originalMsg, ChatMessageDto replyMsg) {
-        try {
-            webPushService.sendToPlayer(
-                    originalMsg.getPlayerId(),
-                    "Новый ответ",
-                    replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
-                    "/dashboard#/live/" + originalMsg.getLineupId()
-            );
-        } catch (Exception e) {
-            log.warn("Не удалось отправить push за ответ: {}", e.getMessage());
-        }
+        applicationEventPublisher.publishEvent(
+                new PushNotificationEvent(
+                        originalMsg.getPlayerId(),
+                        "Ответ в чате",
+                        replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
+                        "/dashboard#/live/" + originalMsg.getLineupId()
+
+                )
+        );
     }
 
-  
 
     @Transactional(readOnly = true)
     public List<ChatMessageDto> getMessagesAfter(Long lineupId, Long afterId) {

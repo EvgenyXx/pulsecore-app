@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.tournament.api.TournamentApi;
 import ru.pulsecore.app.tournament.api.dto.response.LineupDto;
-import ru.pulsecore.app.tournament.application.lineup.LineupFacade;
+import ru.pulsecore.app.tournament.application.lineup.LineupService;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
 import java.time.LocalDate;
@@ -21,13 +21,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LineupController {
 
-    private final LineupFacade lineupFacade;
+    private final LineupService lineupService;
 
     @Operation(summary = "Все составы на дату по всем залам")
     @GetMapping(TournamentApi.ALL)
     public ResponseEntity<Map<String, List<LineupDto>>> getAll(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(lineupFacade.getAllGroupedByHall(date));
+        return ResponseEntity.ok(lineupService.getAllGroupedByHall(date));
     }
 
     @Operation(summary = "Составы по выбранным залам игрока на дату")
@@ -35,6 +35,6 @@ public class LineupController {
     public ResponseEntity<Map<String, List<LineupDto>>> getMy(
             @CurrentPlayer PlayerPrincipal principal,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(lineupFacade.getMyGroupedByHall(principal.playerId(), date));
+        return ResponseEntity.ok(lineupService.getMyGroupedByHall(principal.playerId(), date));
     }
 }

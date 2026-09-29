@@ -68,7 +68,7 @@ async function refreshPlayerUI(section) {
     try {
         const sub = await AdminAPI.getPlayerSubscription(selectedPlayerId);
         playersCache[selectedPlayerId] = sub;
-        if (sub && sub.active) {
+        if (sub && sub.activeNow) {
             subActive = true;
             const expiresDate = new Date(sub.expiresAt);
             const daysLeft = Math.ceil((expiresDate - new Date()) / (1000 * 60 * 60 * 24));
@@ -449,7 +449,7 @@ function fmtDate(dateStr) {
 }
 
 function subIsActive(item) {
-    return !!(item.active ?? item.isActive ?? item.hasActiveSubscription);
+    return !!(item.active ?? item.isActive ?? item.activeSubscription);
 }
 
 function subName(item) {

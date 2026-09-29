@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.roster.reminder;
 
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import java.time.ZoneId;
 import java.util.List;
 

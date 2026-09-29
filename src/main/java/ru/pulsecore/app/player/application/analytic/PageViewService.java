@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.model.PageView;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PageViewRepository;
+import ru.pulsecore.app.player.infrastructure.repository.PageViewRepository;
 import ru.pulsecore.app.player.application.player.OnlineService;
 
 import java.time.Instant;

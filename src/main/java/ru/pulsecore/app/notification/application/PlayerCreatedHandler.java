@@ -21,7 +21,7 @@ public class PlayerCreatedHandler {
 
 
     public void process(PlayerCreatedEvent event) {
-        log.info("Player created: playerId={}", event.playerId());
+        log.info("Player created: id={}", event.playerId());
 
         // Welcome
         if (event.email() != null && !event.email().isBlank()) {

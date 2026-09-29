@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.tournament.application.event.TournamentMatchService;
+import ru.pulsecore.app.tournament.application.match.TournamentMatchService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,8 +56,8 @@ public class TournamentProcessService {
 
         Map<UUID, String> rosterData = roster.stream()
                 .collect(Collectors.toMap(
-                        PlayerData::playerId,
-                        PlayerData::playerName
+                        PlayerData::id,
+                        PlayerData::name
                 ));
 
         log.debug("Финиш: состав игроков={}", rosterData.values());

@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.AnalyticsResponse;
-import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.AnalyticsMapper;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.LeagueStatProjection;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
+import ru.pulsecore.app.tournament.application.mapping.AnalyticsMapper;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.LeagueStatProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
 
 import java.time.LocalDate;
 import java.util.List;
