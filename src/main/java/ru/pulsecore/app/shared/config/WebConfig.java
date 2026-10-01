@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.pulsecore.app.player.infrastructure.interceptor.SubscriptionInterceptor;
 import ru.pulsecore.app.shared.security.CurrentPlayerArgumentResolver;
+import ru.pulsecore.app.shop.infrastructure.storage.FileStorageProperties;
 
 import java.util.List;
 
@@ -17,6 +19,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final SubscriptionInterceptor subscriptionInterceptor;
     private final CurrentPlayerArgumentResolver currentPlayerArgumentResolver;
+    private final FileStorageProperties fileStorageProperties;
+
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + fileStorageProperties.getUploadDir() + "/");
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -66,6 +76,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/oauth-finish").setViewName("forward:/oauth-finish.html");
         registry.addViewController("/live/**").setViewName("forward:/live-tournament.html");
         registry.addViewController("/compare").setViewName("forward:/compare.html");
+        registry.addViewController("/seller").setViewName("forward:/seller.html");
+        registry.addViewController("/shop").setViewName("forward:/shop.html");
     }
 
     @Override

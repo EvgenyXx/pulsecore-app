@@ -2,14 +2,11 @@ export async function initSidebar(activePage = null) {
     const container = document.getElementById('sidebarContainer');
     if (!container) return;
 
-    let playerName = '';
     let isAdmin = false;
-
     try {
         const res = await fetch('/api/player/me', { credentials: 'same-origin' });
         if (res.ok) {
             const user = await res.json();
-            playerName = user.name || '';
             isAdmin = user.admin === true;
         }
     } catch(e) {}
@@ -30,7 +27,6 @@ export async function initSidebar(activePage = null) {
                 <img src="/img.png" alt="PulseCore" class="w-11 h-11 rounded-xl shadow-lg object-cover">
                 <div>
                     <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-indigo-300 bg-clip-text text-transparent tracking-tight">PulseCore</h1>
-                   
                 </div>
             </div>
             <nav class="flex flex-col gap-1 flex-1">
@@ -40,8 +36,17 @@ export async function initSidebar(activePage = null) {
                 ${getNavItem('nav-halls', 'halls', 'Расписание', 'Турниры и составы',
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
         "navigate('halls')")}
+                <a href="/shop" class="nav-item" style="text-decoration:none;color:inherit;">
+                    <span class="nav-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </span>
+                    <div>
+                        <div class="font-medium text-sm">Магазин</div>
+                        <div class="text-xs text-zinc-500">Каталог товаров</div>
+                    </div>
+                </a>
                 ${getNavItem('nav-compare', 'compare', 'Сравнение', 'Игроки',
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path d="M21 21l-7-7"/><path d="M3 21l7 7"/></svg>',
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path d="M21 21l-7-7"/><path d="M3 21l7-7"/></svg>',
         "navigate('compare')")}
                 ${getNavItem('nav-sum', 'sum', 'Сумма за период', 'Подсчёт и список',
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',

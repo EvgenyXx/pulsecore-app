@@ -13,4 +13,5 @@ public class YookassaProperties {
     private String returnUrl;
     private String yookassaApiUrl;
     private String currency;
+    private String orderReturnUrl;
 }

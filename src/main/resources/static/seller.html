@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>PulseCore — Панель селлера</title>
+    <link rel="icon" type="image/png" href="/img.png">
+    <link rel="stylesheet" href="/css/seller/theme.css">
+    <link rel="stylesheet" href="/css/seller/base.css">
+    <link rel="stylesheet" href="/css/seller/layout.css">
+    <link rel="stylesheet" href="/css/seller/forms.css">
+    <link rel="stylesheet" href="/css/seller/products.css">
+    <link rel="stylesheet" href="/css/seller/categories.css">
+    <link rel="stylesheet" href="/css/seller/list.css">
+    <link rel="stylesheet" href="/css/seller/orders.css">
+    <link rel="stylesheet" href="/css/seller/seller-nav.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="has-seller-nav">
+
+<header class="header">
+    <div class="header-inner">
+        <a href="/dashboard" class="logo-back" aria-label="Назад">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <a href="/seller" class="logo">PulseCore <span class="logo-badge">SELLER</span></a>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- ===== ТОВАРЫ ===== -->
+    <section id="page-list" class="seller-page">
+        <div class="page-head">
+            <h1 class="page-title">Товары</h1>
+            <a href="#/new" class="btn-new">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Создать
+            </a>
+        </div>
+
+        <div class="seller-search">
+            <span class="seller-search-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input type="text" id="sellerSearch" class="seller-search-input" placeholder="Поиск товаров..." autocomplete="off">
+        </div>
+
+        <div id="sellerProductsGrid" class="seller-products-grid">
+            <p class="muted">Загрузка...</p>
+        </div>
+    </section>
+
+    <!-- ===== СОЗДАНИЕ ===== -->
+    <section id="page-new" class="seller-page hidden">
+        <button type="button" class="seller-back" data-back>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Назад</span>
+        </button>
+        <h1 class="page-title">Новый продукт</h1>
+
+        <form id="productForm" class="card" onsubmit="event.preventDefault(); window.ProductNewPage.createProduct();">
+            <div class="field">
+                <label for="name">Название <span class="req">*</span></label>
+                <input id="name" type="text" maxlength="200" required placeholder="Tenergy 05">
+            </div>
+
+            <div class="field">
+                <label for="brand">Бренд</label>
+                <input id="brand" type="text" maxlength="100" placeholder="Butterfly">
+            </div>
+
+            <div class="field">
+                <label for="description">Описание</label>
+                <textarea id="description" rows="4" maxlength="5000" placeholder="Описание товара..."></textarea>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label for="price">Цена, ₽ <span class="req">*</span></label>
+                    <input id="price" type="number" step="0.01" min="0" required placeholder="5000">
+                </div>
+                <div class="field">
+                    <label for="stock">Количество <span class="req">*</span></label>
+                    <input id="stock" type="number" min="0" required placeholder="10">
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="categoryId">Категория <span class="req">*</span></label>
+                <select id="categoryId" required>
+                    <option value="">Загрузка...</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Фотографии</label>
+                <div class="upload-zone">
+                    <input id="imagesInput" type="file" accept="image/*" multiple hidden>
+                    <div class="upload-inner" onclick="document.getElementById('imagesInput').click()">
+                        <div class="upload-icon">＋</div>
+                        <p>Нажмите, чтобы выбрать фото</p>
+                        <p class="upload-hint">jpg, png, webp — до 5 МБ</p>
+                    </div>
+                </div>
+                <div class="preview-grid" id="previewGrid"></div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">Создать продукт</button>
+            <p id="message" class="message hidden"></p>
+        </form>
+    </section>
+
+    <!-- ===== РЕДАКТИРОВАНИЕ ===== -->
+    <section id="page-edit" class="seller-page hidden">
+        <button type="button" class="seller-back" data-back>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Назад</span>
+        </button>
+        <h1 class="page-title" id="editTitle">Редактирование</h1>
+
+        <form id="editForm" class="card" onsubmit="event.preventDefault(); window.ProductEditPage.save();">
+            <div class="field">
+                <label for="editName">Название <span class="req">*</span></label>
+                <input id="editName" type="text" maxlength="200" required>
+            </div>
+
+            <div class="field">
+                <label for="editBrand">Бренд</label>
+                <input id="editBrand" type="text" maxlength="100">
+            </div>
+
+            <div class="field">
+                <label for="editDescription">Описание</label>
+                <textarea id="editDescription" rows="4" maxlength="5000"></textarea>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label for="editPrice">Цена, ₽ <span class="req">*</span></label>
+                    <input id="editPrice" type="number" step="0.01" min="0" required>
+                </div>
+                <div class="field">
+                    <label for="editStock">Количество <span class="req">*</span></label>
+                    <input id="editStock" type="number" min="0" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="editCategoryId">Категория <span class="req">*</span></label>
+                <select id="editCategoryId" required></select>
+            </div>
+
+            <div class="field">
+                <label>Фотографии</label>
+                <div class="upload-zone">
+                    <input id="editImagesInput" type="file" accept="image/*" multiple hidden>
+                    <div class="upload-inner" onclick="document.getElementById('editImagesInput').click()">
+                        <div class="upload-icon">＋</div>
+                        <p>Добавить фото</p>
+                        <p class="upload-hint">jpg, png, webp — до 5 МБ</p>
+                    </div>
+                </div>
+                <div class="preview-grid" id="editPreviewGrid"></div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="editSubmitBtn">Сохранить</button>
+            <p id="editMessage" class="message hidden"></p>
+            <button type="button" class="btn-danger" id="editDeleteBtn">Удалить товар</button>
+        </form>
+    </section>
+
+    <!-- ===== ЗАКАЗЫ ===== -->
+    <section id="page-orders" class="seller-page hidden">
+        <h1 class="page-title">Заказы</h1>
+
+        <div class="order-filter" id="orderFilter">
+            <button class="order-chip active" data-status="CONFIRMED">Собирать</button>
+            <button class="order-chip" data-status="ASSEMBLED">Собрано</button>
+            <button class="order-chip" data-status="SHIPPED">Отправлено</button>
+            <button class="order-chip" data-status="all">Все</button>
+        </div>
+
+        <div id="sellerOrdersList" class="seller-orders-list">
+            <p class="muted">Загрузка...</p>
+        </div>
+    </section>
+
+    <!-- ===== КАТЕГОРИИ ===== -->
+    <section id="page-categories" class="seller-page hidden">
+        <h1 class="page-title">Категории</h1>
+
+        <form id="categoryForm" class="card" onsubmit="event.preventDefault(); window.CategoriesPage.createCategory();">
+            <div class="field">
+                <label for="categoryName">Название <span class="req">*</span></label>
+                <input id="categoryName" type="text" maxlength="100" required placeholder="Накладки">
+            </div>
+
+            <button type="submit" class="btn-primary" id="categorySubmitBtn">Создать категорию</button>
+            <p id="categoryMessage" class="message hidden"></p>
+        </form>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2 class="section-title">Существующие</h2>
+            <div id="categoriesList" class="categories-list">
+                <p class="muted">Загрузка...</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ===== Модалка подтверждения ===== -->
+<div id="confirmModal" class="confirm-modal hidden">
+    <div class="confirm-modal-overlay" data-confirm-close></div>
+    <div class="confirm-modal-box">
+        <h3 class="confirm-modal-title" id="confirmModalTitle">Удалить товар?</h3>
+        <p class="confirm-modal-text" id="confirmModalText">Это действие нельзя отменить.</p>
+        <div class="confirm-modal-actions">
+            <button type="button" class="confirm-modal-btn cancel" data-confirm-close>Отмена</button>
+            <button type="button" class="confirm-modal-btn danger" id="confirmModalOk">Удалить</button>
+        </div>
+    </div>
+</div>
+
+<nav class="seller-nav" id="sellerNav">
+    <a href="/dashboard" class="seller-nav-item" data-seller-tab="app">
+        <span class="seller-nav-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </span>
+        <span class="seller-nav-label">PulseCore</span>
+    </a>
+    <a href="#/" class="seller-nav-item active" data-seller-tab="list">
+        <span class="seller-nav-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        </span>
+        <span class="seller-nav-label">Товары</span>
+    </a>
+    <a href="#/orders" class="seller-nav-item" data-seller-tab="orders">
+        <span class="seller-nav-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </span>
+        <span class="seller-nav-label">Заказы</span>
+    </a>
+    <a href="#/categories" class="seller-nav-item" data-seller-tab="categories">
+        <span class="seller-nav-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </span>
+        <span class="seller-nav-label">Категории</span>
+    </a>
+</nav>
+
+<script src="/js/seller/api/http.js"></script>
+<script src="/js/seller/api/categories-api.js"></script>
+<script src="/js/seller/api/products-api.js"></script>
+<script src="/js/seller/api/seller-http.js"></script>
+<script src="/js/seller/api/orders-api.js"></script>
+<script src="/js/seller/api/orders-api.js"></script>
+<script src="/js/seller/ui/toast.js"></script>
+<script src="/js/seller/ui/upload.js"></script>
+<script src="/js/seller/pages/list.js"></script>
+<script src="/js/seller/pages/new.js"></script>
+<script src="/js/seller/pages/edit.js"></script>
+<script src="/js/seller/pages/orders.js"></script>
+<script src="/js/seller/pages/categories.js"></script>
+<script src="/js/seller/seller-router.js"></script>
+<script src="/js/seller/seller-app.js"></script>
+</body>
+</html>

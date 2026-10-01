@@ -1,0 +1,23 @@
+:root {
+    --bg: #0a0b0d;
+    --bg-elevated: #141619;
+    --bg-soft: #1a1d21;
+    --bg-hover: #22262b;
+
+    --text: #ffffff;
+    --text-muted: #8b8f96;
+    --text-dim: #5a5e66;
+
+    --accent: #00d9c0;
+    --accent-hover: #00bfa8;
+    --accent-glow: rgba(0, 217, 192, 0.25);
+
+    --border: rgba(255, 255, 255, 0.06);
+    --border-strong: rgba(255, 255, 255, 0.12);
+
+    --danger: #ff4d4d;
+    --success: #34c759;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+}

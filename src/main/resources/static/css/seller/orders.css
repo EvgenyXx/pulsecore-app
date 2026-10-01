@@ -1,0 +1,234 @@
+/* ===== Заказы (селлер) ===== */
+
+.order-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.order-chip {
+    padding: 9px 18px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.order-chip:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-strong);
+}
+
+.order-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0a0b0d;
+    font-weight: 600;
+}
+
+.seller-orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.seller-order-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+}
+
+.seller-order-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+}
+
+.seller-order-number {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.seller-order-date {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.seller-order-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.seller-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.seller-badge.payment-pending    { background: rgba(255, 200, 0, 0.12); color: #ffc800; }
+.seller-badge.payment-paid       { background: rgba(0, 217, 192, 0.14); color: var(--accent); }
+.seller-badge.payment-cancelled  { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; }
+
+.seller-badge.status-confirmed  { background: rgba(0, 217, 192, 0.12); color: var(--accent); }
+.seller-badge.status-assembled  { background: rgba(0, 150, 255, 0.14); color: #4db8ff; }
+.seller-badge.status-shipped    { background: rgba(0, 122, 255, 0.14); color: #007aff; }
+.seller-badge.status-done       { background: rgba(52, 199, 89, 0.14); color: #34c759; }
+.seller-badge.status-cancelled  { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; }
+
+.seller-order-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.seller-order-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.seller-order-item-image {
+    width: 52px;
+    height: 52px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.seller-order-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
+}
+
+.seller-order-item-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.seller-order-item-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.seller-order-item-qty {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.seller-order-customer {
+    background: var(--bg-soft);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+}
+
+.seller-order-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+    padding: 3px 0;
+}
+
+.seller-order-row span:first-child {
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.seller-order-row span:last-child {
+    color: var(--text);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+}
+
+.seller-order-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.seller-order-total {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+}
+
+.seller-order-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 10px 18px;
+    background: var(--accent);
+    color: #0a0b0d;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-action:hover { background: var(--accent-hover); }
+.btn-action:active { transform: scale(0.98); }
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-cancel {
+    padding: 10px 16px;
+    background: transparent;
+    color: #ff4d4d;
+    border: 1px solid rgba(255, 77, 77, 0.3);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-cancel:hover { background: rgba(255, 77, 77, 0.1); border-color: rgba(255, 77, 77, 0.5); }
+.btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 600px) {
+    .seller-order-footer { flex-direction: column; align-items: stretch; }
+    .seller-order-actions { justify-content: stretch; }
+    .btn-action, .btn-cancel { flex: 1; }
+}

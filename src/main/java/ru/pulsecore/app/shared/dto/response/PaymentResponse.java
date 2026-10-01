@@ -1,3 +1,3 @@
-package ru.pulsecore.app.payment.api.dto;
+package ru.pulsecore.app.shared.dto.response;
 
 public record PaymentResponse(String confirmationUrl) {}
