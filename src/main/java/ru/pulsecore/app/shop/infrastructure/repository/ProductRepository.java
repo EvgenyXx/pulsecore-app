@@ -1,0 +1,18 @@
+package ru.pulsecore.app.shop.infrastructure.repository;
+
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.pulsecore.app.shop.domain.Product;
+
+import java.util.List;
+
+
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    List<Product> findByActiveTrue();
+
+    @EntityGraph(attributePaths = {"images", "category"})
+    List<Product> findByCategoryIdAndActiveTrue(Long categoryId);
+}

@@ -1,0 +1,13 @@
+package ru.pulsecore.app.shop.infrastructure.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.pulsecore.app.shop.domain.CartItem;
+
+import java.util.Optional;
+
+@Repository
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+
+    Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId);
+}

@@ -7,7 +7,6 @@ export function initDashboardRouter() {
             if (el) { el.classList.add('hidden'); el.style.display = 'none'; }
         });
 
-        // Прячем HTML-тултип графика при переходе между разделами
         const chartTip = document.getElementById('chartjs-tooltip');
         if (chartTip) chartTip.style.opacity = 0;
     }
@@ -126,6 +125,8 @@ export function initDashboardRouter() {
         morePage.classList.remove('hidden');
         morePage.style.display = 'block';
         morePage.style.opacity = '1';
+
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     }
 
     function handleRoute() {

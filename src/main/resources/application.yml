@@ -1,6 +1,11 @@
 
 spring:
 
+      servlet:
+            multipart:
+                  max-file-size: 5MB
+                  max-request-size: 15MB
+
       profiles:
             active: local
       security:
@@ -96,6 +101,11 @@ app:
                   - /actuator/**
                   - /compare
                   - /compare.html
+                  - /seller
+                  - /seller.html
+                  - /shop
+                  - /shop.html
+                  - /api/seller/**
             authenticated-urls:
                   - /api/player/**
             admin-urls:
@@ -118,6 +128,8 @@ app:
             return-url: ${YOOKASSA_RETURN_URL}
             yookassa-api-url: ${YOOKASSA_API_URL}
             currency: ${YOOKASSA_CURRENCY}
+            order-return-url: ${YOOKASSA_ORDER_RETURN_URL}
+
       masters-api:
             url: ${MASTERS_API_URL}
             method: POST

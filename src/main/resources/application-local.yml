@@ -45,6 +45,14 @@ app:
   base-url: http://localhost:8080
   qr-color: "#14b8a6"
 
+  storage:
+    upload-dir: uploads
+    max-file-size: 5242880
+    allowed-types:
+      - image/jpeg
+      - image/png
+      - image/webp
+
 server:
   address: 0.0.0.0  # ← слушать все интерфейсы
   port: 8080

@@ -1,0 +1,204 @@
+/* ===== Заказы ===== */
+
+.orders-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.order-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    transition: border-color 0.2s;
+}
+
+.order-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.order-header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.order-arrow {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    transition: transform 0.25s ease;
+    margin-left: 4px;
+}
+
+.order-card.expanded .order-arrow {
+    transform: rotate(180deg);
+}
+
+.order-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.order-number {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.order-date {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ===== Бейджи ===== */
+
+.order-status,
+.order-payment {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    letter-spacing: 0.1px;
+}
+
+/* Статус оплаты */
+.order-payment.payment-pending    { background: rgba(255, 200, 0, 0.12); color: #ffc800; }
+.order-payment.payment-paid       { background: rgba(0, 217, 192, 0.14); color: var(--accent); }
+.order-payment.payment-cancelled  { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; }
+
+/* Статус заказа */
+.order-status.confirmed  { background: rgba(0, 217, 192, 0.12); color: var(--accent); }
+.order-status.assembled  { background: rgba(0, 150, 255, 0.14); color: #4db8ff; }
+.order-status.shipped    { background: rgba(0, 122, 255, 0.14); color: #007aff; }
+.order-status.done       { background: rgba(52, 199, 89, 0.14); color: #34c759; }
+.order-status.cancelled  { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; }
+
+.order-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.order-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.order-item-image {
+    width: 56px;
+    height: 56px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.order-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
+}
+
+.order-item-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.order-item-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.order-item-qty {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ===== Детали ===== */
+
+.order-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, margin-top 0.3s ease;
+    margin-top: 0;
+}
+
+.order-card.expanded .order-details {
+    max-height: 400px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.order-detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: 13px;
+}
+
+.order-detail-label {
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.order-detail-value {
+    color: var(--text);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 12px;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.order-total {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+}
+
+@media (max-width: 600px) {
+    .order-card { padding: 14px; }
+    .order-total { font-size: 18px; }
+    .order-status,
+    .order-payment { font-size: 10px; padding: 4px 8px; }
+}

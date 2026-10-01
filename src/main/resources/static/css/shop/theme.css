@@ -1,0 +1,30 @@
+:root {
+    /* фон */
+    --bg: #0a0b0d;
+    --bg-elevated: #141619;
+    --bg-soft: #1a1d21;
+    --bg-hover: #22262b;
+
+    /* текст */
+    --text: #ffffff;
+    --text-muted: #8b8f96;
+    --text-dim: #5a5e66;
+
+    /* акцент */
+    --accent: #00d9c0;
+    --accent-hover: #00bfa8;
+    --accent-glow: rgba(0, 217, 192, 0.25);
+    --accent-soft: rgba(0, 217, 192, 0.12);
+
+    /* границы */
+    --border: rgba(255, 255, 255, 0.06);
+    --border-strong: rgba(255, 255, 255, 0.12);
+
+    /* радиусы */
+    --radius: 16px;
+    --radius-sm: 10px;
+
+    /* тени */
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-hover: 0 16px 48px var(--accent-glow);
+}
