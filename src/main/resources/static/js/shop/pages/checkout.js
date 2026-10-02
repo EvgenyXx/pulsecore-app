@@ -4,6 +4,10 @@ window.CheckoutPage = (function () {
     const toast = window.Toast;
     const SELECTED_KEY = 'pulsecore_cart_selected';
 
+    const PICKUP_CITY = 'Краснодар';
+    const PICKUP_ADDRESS = 'ул. Красная, 100';
+    const PICKUP_PHONE = '+7 918 133-91-88';
+
     let deliveryMethod = 'CDEK';
     let paymentMethod = 'YOOKASSA';
 
@@ -94,8 +98,9 @@ window.CheckoutPage = (function () {
                     <div class="checkout-section" id="pickupAddressSection" style="display:none;">
                         <h2 class="checkout-section-title">Самовывоз</h2>
                         <p class="checkout-pickup-info">
-                            Забрать можно по адресу магазина.<br>
-                            Точный адрес и телефон — селлер свяжется после оформления.
+                            <strong>${PICKUP_CITY}, ${PICKUP_ADDRESS}</strong><br>
+                            Телефон: ${PICKUP_PHONE}<br>
+                            Заберите заказ после подтверждения готовности.
                         </p>
                     </div>
 
@@ -106,13 +111,9 @@ window.CheckoutPage = (function () {
                                 <input type="radio" name="paymentMethod" value="YOOKASSA" checked>
                                 <span>Онлайн (ЮKassa)</span>
                             </label>
-                            <label class="checkout-radio" id="paymentCashOption">
-                                <input type="radio" name="paymentMethod" value="CASH">
-                                <span>Наличными при получении</span>
-                            </label>
-                            <label class="checkout-radio">
-                                <input type="radio" name="paymentMethod" value="TRANSFER">
-                                <span>Перевод по СБП</span>
+                            <label class="checkout-radio" id="paymentOnDeliveryOption">
+                                <input type="radio" name="paymentMethod" value="ON_DELIVERY">
+                                <span>При получении (наличные / перевод СБП)</span>
                             </label>
                         </div>
                     </div>
@@ -174,17 +175,17 @@ window.CheckoutPage = (function () {
                     streetInput.value = '';
                 }
 
-                // Наличные доступны только при самовывозе
-                const cashOption = document.getElementById('paymentCashOption');
-                const cashRadio = cashOption.querySelector('input');
+                // ON_DELIVERY доступен только при самовывозе
+                const onDeliveryOption = document.getElementById('paymentOnDeliveryOption');
+                const onDeliveryRadio = onDeliveryOption.querySelector('input');
                 if (deliveryMethod === 'CDEK') {
-                    cashOption.style.display = 'none';
-                    if (cashRadio.checked) {
+                    onDeliveryOption.style.display = 'none';
+                    if (onDeliveryRadio.checked) {
                         document.querySelector('input[name="paymentMethod"][value="YOOKASSA"]').checked = true;
                         paymentMethod = 'YOOKASSA';
                     }
                 } else {
-                    cashOption.style.display = '';
+                    onDeliveryOption.style.display = '';
                 }
             });
         });

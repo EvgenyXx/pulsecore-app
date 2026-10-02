@@ -1,6 +1,5 @@
 
 spring:
-
       servlet:
             multipart:
                   max-file-size: 5MB
@@ -139,3 +138,10 @@ app:
             timeout: 90000
       mail:
             from: ${MAIL_FROM}
+
+
+shop:
+  pickup:
+    city: "Краснодар"
+    address: "ул. Красная, 100"
+    phone: "+7 918 133-91-88"

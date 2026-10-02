@@ -129,6 +129,7 @@ window.ProductEditPage = (function () {
         try {
             const files = upload.getFiles();
 
+            // Догружаем новые файлы (если есть) — картинки живут отдельно от PATCH
             for (const item of files) {
                 if (item.uploadedUrl) continue;
                 const data = await api.upload(item.file);
@@ -137,18 +138,14 @@ window.ProductEditPage = (function () {
 
             btn.textContent = 'Сохранение...';
 
+            // PATCH — только скалярные поля. images не шлём.
             const body = {
                 name: document.getElementById('editName').value.trim(),
                 brand: document.getElementById('editBrand').value.trim() || null,
                 description: document.getElementById('editDescription').value.trim() || null,
                 price: parseFloat(document.getElementById('editPrice').value),
                 stock: parseInt(document.getElementById('editStock').value),
-                categoryId: parseInt(document.getElementById('editCategoryId').value),
-                images: files.map((item, i) => ({
-                    url: item.uploadedUrl,
-                    sortOrder: i,
-                    main: i === 0
-                }))
+                categoryId: parseInt(document.getElementById('editCategoryId').value)
             };
 
             await api.update(currentId, body);

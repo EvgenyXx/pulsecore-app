@@ -26,14 +26,14 @@ window.CategoryPage = (function () {
             const cat = categories.find(c => String(c.id) === String(categoryId));
             title.textContent = cat ? cat.name : 'Категория';
 
-            allProducts = products;
+            allProducts = products || [];
 
-            if (!products || products.length === 0) {
+            if (!allProducts || allProducts.length === 0) {
                 loader.empty(grid, 'В этой категории пока нет товаров');
                 return;
             }
 
-            grid.innerHTML = products.map(renderCard).join('');
+            grid.innerHTML = allProducts.map(renderCard).join('');
             bindCarouselEvents();
             bindCartButtons(grid);
 
@@ -83,7 +83,8 @@ window.CategoryPage = (function () {
             `;
         }
 
-        const stock = p.stock > 0
+        const inStock = p.inStock === true;
+        const stock = inStock
                 ? `<span class="product-card-stock">В наличии · ${p.stock} шт.</span>`
                 : `<span class="product-card-stock out">Нет в наличии</span>`;
 
@@ -94,7 +95,7 @@ window.CategoryPage = (function () {
         const cartBlock = renderCartBlock(p);
 
         return `
-            <div class="product-card" data-id="${p.id}">
+            <div class="product-card ${inStock ? '' : 'out-of-stock'}" data-id="${p.id}">
                 <div class="product-card-image">${imageBlock}</div>
                 <div class="product-card-body">
                     ${brand}
@@ -108,7 +109,7 @@ window.CategoryPage = (function () {
     }
 
     function renderCartBlock(p) {
-        if (p.stock <= 0) {
+        if (p.inStock !== true) {
             return `<button class="cart-btn out-of-stock" disabled>Нет в наличии</button>`;
         }
 

@@ -4,22 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import ru.pulsecore.app.shared.dto.response.PaymentResponse;
 import ru.pulsecore.app.shop.api.dto.request.CreateOrderRequest;
 import ru.pulsecore.app.shop.api.dto.response.OrderDto;
 import ru.pulsecore.app.shop.api.dto.response.SellerOrderDto;
 import ru.pulsecore.app.shop.application.assembler.OrderAssembler;
 import ru.pulsecore.app.shop.application.assembler.OrderItemAssembler;
 import ru.pulsecore.app.shop.application.mapping.OrderMapper;
+import ru.pulsecore.app.shop.application.payment.OrderPaymentResolver;
 import ru.pulsecore.app.shop.application.product.StockService;
 import ru.pulsecore.app.shop.domain.*;
-import ru.pulsecore.app.shop.infrastructure.client.PaymentShopClient;
 import ru.pulsecore.app.shop.infrastructure.exception.OrderException;
 import ru.pulsecore.app.shop.infrastructure.exception.OrderNotFoundException;
 import ru.pulsecore.app.shop.infrastructure.repository.CartItemRepository;
 import ru.pulsecore.app.shop.infrastructure.repository.OrderRepository;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -33,9 +30,9 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final OrderAssembler orderAssembler;
     private final OrderItemAssembler orderItemAssembler;
-    private final PaymentShopClient paymentShopClient;
     private final OrderValidator orderValidator;
     private final StockService stockService;
+    private final OrderPaymentResolver paymentResolver;
 
     @Transactional
     public void markPaid(Long orderId) {
@@ -67,17 +64,7 @@ public class OrderService {
         log.info("Создан заказ id={}, user={}, total={}, payment={}",
                 saved.getId(), userId, saved.getTotalPrice(), saved.getPaymentMethod());
 
-        // Онлайн — генерим платёж
-        if (saved.getPaymentMethod() == PaymentMethod.YOOKASSA) {
-            PaymentResponse payment = paymentShopClient.createOrderPayment(
-                    saved.getId(),
-                    saved.getTotalPrice()
-            );
-            return orderMapper.toDto(saved, payment.confirmationUrl());
-        }
-
-        // При получении — без платежа
-        return orderMapper.toDto(saved);
+        return paymentResolver.pay(saved);
     }
 
     @Transactional(readOnly = true)
@@ -115,7 +102,23 @@ public class OrderService {
     }
 
     @Transactional
-    public SellerOrderDto updateStatus(Long orderId, OrderStatus newStatus) {
+    public SellerOrderDto updatePaymentStatus(Long orderId,PaymentStatus paymentStatus){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new OrderException("Заказ отменён — статус нельзя менять");
+        }
+        order.setPaymentStatus(paymentStatus);
+        log.info("Статус заказа №{} изменен на {}",order.getId(),paymentStatus);
+
+        Order save = orderRepository.save(order);
+        stockService.decreaseForOrder(order);
+        return orderMapper.toSellerDto(save);
+    }
+
+    @Transactional
+    public SellerOrderDto updateOrderStatus(Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 

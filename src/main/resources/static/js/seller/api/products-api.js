@@ -1,5 +1,5 @@
 window.ProductsApi = (function () {
-    const http = window.Http;
+    const http = window.SellerHttp;
 
     return {
         getAll: (categoryId) => http.request(
@@ -28,7 +28,7 @@ window.ProductsApi = (function () {
             const formData = new FormData();
             formData.append('file', file);
 
-            const res = await fetch('/api/shop/upload', {
+            const res = await fetch('/api/seller/upload', {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin'

@@ -1,4 +1,4 @@
-package ru.pulsecore.app.shop.api.controller;
+package ru.pulsecore.app.shop.api.controller.shop;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,14 +17,14 @@ import java.util.List;
 
 @Tag(name = "Shop — Orders", description = "Заказы")
 @RestController
-@RequestMapping(ShopApi.BASE_PATH + ShopApi.ORDERS)
+@RequestMapping(ShopApi.BASE_PATH)
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
     @Operation(summary = "Создать заказ")
-    @PostMapping
+    @PostMapping(ShopApi.ORDERS)
     public ResponseEntity<OrderDto> createOrder(
             @CurrentPlayer PlayerPrincipal principal,
             @Valid @RequestBody CreateOrderRequest request) {
@@ -32,7 +32,7 @@ public class OrderController {
     }
 
     @Operation(summary = "Мои заказы")
-    @GetMapping
+    @GetMapping(ShopApi.ORDERS)
     public ResponseEntity<List<OrderDto>> getMyOrders(@CurrentPlayer PlayerPrincipal principal) {
         return ResponseEntity.ok(orderService.getUserOrders(principal.playerId()));
     }

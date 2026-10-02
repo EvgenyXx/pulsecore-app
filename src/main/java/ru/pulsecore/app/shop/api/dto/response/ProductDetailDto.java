@@ -12,7 +12,10 @@ public record ProductDetailDto(
         Integer stock,
         Long categoryId,
         String categoryName,
-        List<ImageDto> images
+        List<ImageDto> images,
+        boolean inStock
+
 ) {
-    public record ImageDto(Long id, String url) {}
+    public record ImageDto(Long id, String url) {
+    }
 }

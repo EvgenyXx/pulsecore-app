@@ -1,4 +1,4 @@
-package ru.pulsecore.app.shop.api.controller;
+package ru.pulsecore.app.shop.api.controller.shop;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,14 +16,14 @@ import ru.pulsecore.app.shared.security.PlayerPrincipal;
 
 @Tag(name = "Shop — Cart", description = "Корзина")
 @RestController
-@RequestMapping(ShopApi.BASE_PATH + ShopApi.CART)
+@RequestMapping(ShopApi.BASE_PATH)
 @RequiredArgsConstructor
 public class CartController {
 
     private final CartService cartService;
 
-    @Operation(summary = "Получить корзину текущего игрока")
-    @GetMapping
+    @Operation(summary = "Получить корзину")
+    @GetMapping(ShopApi.CART)
     public ResponseEntity<CartDto> getCart(@CurrentPlayer PlayerPrincipal principal) {
         return ResponseEntity.ok(cartService.getOrCreate(principal.playerId()));
     }
@@ -36,7 +36,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.addItem(principal.playerId(), request));
     }
 
-    @Operation(summary = "Изменить количество товара")
+    @Operation(summary = "Изменить количество")
     @PatchMapping(ShopApi.CART_ITEM)
     public ResponseEntity<CartDto> updateItem(
             @CurrentPlayer PlayerPrincipal principal,
@@ -45,7 +45,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.updateItem(principal.playerId(), itemId, request.quantity()));
     }
 
-    @Operation(summary = "Удалить товар из корзины")
+    @Operation(summary = "Удалить товар")
     @DeleteMapping(ShopApi.CART_ITEM)
     public ResponseEntity<Void> removeItem(
             @CurrentPlayer PlayerPrincipal principal,

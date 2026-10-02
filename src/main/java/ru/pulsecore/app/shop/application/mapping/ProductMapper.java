@@ -2,6 +2,7 @@ package ru.pulsecore.app.shop.application.mapping;
 
 import org.mapstruct.*;
 import ru.pulsecore.app.shop.api.dto.request.CreateProductRequest;
+import ru.pulsecore.app.shop.api.dto.request.ProductUpdateRequest;
 import ru.pulsecore.app.shop.api.dto.response.ProductCardDto;
 import ru.pulsecore.app.shop.api.dto.response.ProductCreateResponse;
 import ru.pulsecore.app.shop.api.dto.response.ProductDetailDto;
@@ -13,21 +14,34 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "images", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    void updateProduct(ProductUpdateRequest request, @MappingTarget Product product);
     // ===== card (список/каталог) =====
 
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "category.name", target = "categoryName")
     @Mapping(target = "mainImageUrl", expression = "java(resolveMainImageUrl(product))")
     @Mapping(target = "images", expression = "java(resolveImageUrls(product))")
+    @Mapping(target = "inStock", expression = "java(isInStock(product))")
     ProductCardDto toCardDto(Product product);
 
-    List<ProductCardDto> toCardDtoList(List<Product> products);
+    default boolean isInStock(Product product) {
+        return product.getStock() != null && product.getStock() > 0;
+    }
+
 
     // ===== detail (детальная/редактирование) =====
 
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "category.name", target = "categoryName")
     @Mapping(target = "images", expression = "java(resolveImageDtos(product))")
+    @Mapping(target = "inStock", expression = "java(isInStock(product))")
     ProductDetailDto toDetailDto(Product product);
 
     // ===== entity → DTO (create response) =====

@@ -11,7 +11,7 @@ window.CatalogPage = (function () {
         loader.show(grid);
 
         try {
-            allProducts = await productsApi.getAll();
+            allProducts = await productsApi.getAll() || [];
             bindSearch();
             renderProducts();
             bindCarouselEvents();
@@ -111,7 +111,8 @@ window.CatalogPage = (function () {
             `;
         }
 
-        const stock = p.stock > 0
+        const inStock = p.inStock === true;
+        const stock = inStock
                 ? `<span class="product-card-stock">В наличии · ${p.stock} шт.</span>`
                 : `<span class="product-card-stock out">Нет в наличии</span>`;
 
@@ -122,7 +123,7 @@ window.CatalogPage = (function () {
         const cartBlock = renderCartBlock(p);
 
         return `
-            <div class="product-card" data-id="${p.id}">
+            <div class="product-card ${inStock ? '' : 'out-of-stock'}" data-id="${p.id}">
                 <div class="product-card-image">${imageBlock}</div>
                 <div class="product-card-body">
                     ${brand}
@@ -136,7 +137,7 @@ window.CatalogPage = (function () {
     }
 
     function renderCartBlock(p) {
-        if (p.stock <= 0) {
+        if (p.inStock !== true) {
             return `<button class="cart-btn out-of-stock" disabled>Нет в наличии</button>`;
         }
 

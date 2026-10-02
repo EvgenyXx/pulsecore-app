@@ -12,6 +12,12 @@ window.OrdersApi = (function () {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status })
+        }),
+
+        updatePaymentStatus: (id, paymentStatus) => http.request('/orders/' + id + '/payment-status', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paymentStatus })
         })
     };
 })();
