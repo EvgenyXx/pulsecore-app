@@ -19,6 +19,7 @@ public final class MailTypes {
     public static final String PLAYER_REPLACED = "player_replaced";
     public static final String PLAYER_TRANSFERRED = "player_transferred";
     public static final String TOURNAMENT_SCHEDULE_CHANGED = "tournament_schedule_changed";
+    public static final String ORDER_PAID = "order_paid";
 
 
     private MailTypes() {}

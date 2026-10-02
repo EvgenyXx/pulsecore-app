@@ -1,0 +1,94 @@
+package ru.pulsecore.app.shop.application.order;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.context.OrderPaidContext;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
+import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.shop.application.product.StockService;
+import ru.pulsecore.app.shop.domain.Order;
+import ru.pulsecore.app.shop.domain.OrderItem;
+import ru.pulsecore.app.shop.domain.OrderStatus;
+import ru.pulsecore.app.shop.domain.PaymentStatus;
+import ru.pulsecore.app.shop.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shop.infrastructure.config.ShopProperties;
+import ru.pulsecore.app.shop.infrastructure.exception.OrderException;
+import ru.pulsecore.app.shop.infrastructure.exception.OrderNotFoundException;
+import ru.pulsecore.app.shop.infrastructure.repository.OrderRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class OrderPaidService {
+
+    private final StockService stockService;
+    private final OrderRepository orderRepository;
+    private final ApplicationEventPublisher eventPublisher;
+    private final PlayerClient playerClient;
+    private final ShopProperties properties;
+
+    @Transactional
+    public Order markPaid(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+
+        if (order.getPaymentStatus() == PaymentStatus.PAID) {
+            log.info("Заказ уже оплачен №: {}", order.getId());
+            return order;
+        }
+
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new OrderException("Заказ отменён — оплату нельзя подтвердить");
+        }
+
+        order.setPaymentStatus(PaymentStatus.PAID);
+        order.setStatus(OrderStatus.CONFIRMED);
+
+        stockService.decreaseForOrder(order);
+        Order saved = orderRepository.save(order);
+
+        sendEvent(saved);
+
+        return saved;
+    }
+
+    private void sendEvent(Order order) {
+        PlayerData playerData = playerClient.getPlayer(order.getUserId());
+        eventPublisher.publishEvent(new MailNotificationEvent(
+                MailTypes.ORDER_PAID,
+                playerData.id(),
+                new OrderPaidContext(
+                        playerData.email(),
+                        order.getCustomerFirstName(),
+                        order.getCustomerLastName(),
+                        order.getId(),
+                        order.getTotalPrice(),
+                        order.getPaymentMethod().name(),
+                        mapItems(order),
+                        order.getDeliveryMethod().name(),
+                        order.getDeliveryCity(),
+                        order.getDeliveryStreet(),
+                        properties.getPickup().getPhone()
+                )
+        ));
+    }
+
+    private List<OrderPaidContext.Item>mapItems(Order order){
+         List<OrderPaidContext.Item> items = new ArrayList<>();
+        for (OrderItem orderItem : order.getItems()) {
+            items.add(new OrderPaidContext.Item(
+                    orderItem.getProductName(),
+                    orderItem.getQuantity(),
+                    orderItem.getProductPrice()
+            ));
+        }
+        return items;
+    }
+}

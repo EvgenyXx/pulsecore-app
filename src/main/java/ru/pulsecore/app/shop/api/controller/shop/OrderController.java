@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.shop.api.ShopApi;
 import ru.pulsecore.app.shop.api.dto.request.CreateOrderRequest;
 import ru.pulsecore.app.shop.api.dto.response.OrderDto;
-import ru.pulsecore.app.shop.application.order.OrderService;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
-
+import ru.pulsecore.app.shop.application.order.OrderUserService;
 import java.util.List;
 
 @Tag(name = "Shop — Orders", description = "Заказы")
@@ -21,20 +20,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+    private final OrderUserService orderUserService;
 
     @Operation(summary = "Создать заказ")
     @PostMapping(ShopApi.ORDERS)
     public ResponseEntity<OrderDto> createOrder(
             @CurrentPlayer PlayerPrincipal principal,
             @Valid @RequestBody CreateOrderRequest request) {
-        return ResponseEntity.ok(orderService.createOrder(principal.playerId(), request));
+        return ResponseEntity.ok(orderUserService.createOrder(principal.playerId(), request));
     }
 
     @Operation(summary = "Мои заказы")
     @GetMapping(ShopApi.ORDERS)
     public ResponseEntity<List<OrderDto>> getMyOrders(@CurrentPlayer PlayerPrincipal principal) {
-        return ResponseEntity.ok(orderService.getUserOrders(principal.playerId()));
+        return ResponseEntity.ok(orderUserService.getUserOrders(principal.playerId()));
     }
 
     @Operation(summary = "Заказ по ID")
@@ -42,6 +41,6 @@ public class OrderController {
     public ResponseEntity<OrderDto> getOrder(
             @CurrentPlayer PlayerPrincipal principal,
             @PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.getUserOrder(principal.playerId(), orderId));
+        return ResponseEntity.ok(orderUserService.getUserOrder(principal.playerId(), orderId));
     }
 }
