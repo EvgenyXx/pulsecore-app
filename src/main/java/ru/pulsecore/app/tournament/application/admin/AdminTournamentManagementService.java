@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.application.cascade.TournamentCascadeSyncService;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentResultRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -45,6 +45,6 @@ public class AdminTournamentManagementService {
     @Transactional
     public void resyncPeriod(UUID playerId, LocalDate from, LocalDate to) {
         var player = playerClient.getPlayerById(playerId);
-        cascadeSyncService.syncPeriod(player.playerId(), player.playerName(), from, to);
+        cascadeSyncService.syncPeriod(player.id(), player.name(), from, to);
     }
 }

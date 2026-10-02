@@ -6,8 +6,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.domain.Player;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.PlayerRepository;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.SubscriptionRepository;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
+import ru.pulsecore.app.player.infrastructure.repository.SubscriptionRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

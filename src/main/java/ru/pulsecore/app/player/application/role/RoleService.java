@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.domain.Role;
-import ru.pulsecore.app.player.infrastructure.persistence.repository.RoleRepository;
+import ru.pulsecore.app.player.infrastructure.repository.RoleRepository;
 
 @Service
 @RequiredArgsConstructor

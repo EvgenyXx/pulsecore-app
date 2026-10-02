@@ -18,7 +18,7 @@ public class PlayerRemovalDetector {
 
     public List<String> findRemovedNames(List<PlayerData> oldPlayers, TournamentDto newTournament) {
         List<String> oldNames = oldPlayers.stream()
-                .map(PlayerData::playerName)
+                .map(PlayerData::name)
                 .map(NameNormalizer::normalizeForSearch)
                 .toList();
 
@@ -45,11 +45,11 @@ public class PlayerRemovalDetector {
 
         List<PlayerData> removedPlayers = allPlayers.stream()
                 .filter(player -> normalizedRemoved.contains(
-                        NameNormalizer.normalizeForSearch(player.playerName())))
+                        NameNormalizer.normalizeForSearch(player.name())))
                 .toList();
 
         log.debug("Удаление: найдены PlayerData для игроков={}",
-                removedPlayers.stream().map(PlayerData::playerName).toList());
+                removedPlayers.stream().map(PlayerData::name).toList());
 
         return removedPlayers;
     }

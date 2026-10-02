@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 
 import java.util.List;
@@ -44,17 +44,17 @@ public class PlayerTransferDetector {
             Map<String, List<TournamentDto>> allTournaments) {
 
         log.debug("Перенос: поиск для игрока={}, из турнира={}",
-                removedPlayer.playerName(), oldTournament.getLink());
+                removedPlayer.name(), oldTournament.getLink());
 
         TournamentDto newTournament = findNewTournament(removedPlayer, oldTournament, allTournaments);
 
         if (newTournament == null) {
-            log.debug("Игрок {} снят, перенос не найден", removedPlayer.playerName());
+            log.debug("Игрок {} снят, перенос не найден", removedPlayer.name());
             return null;
         }
 
         log.info("🔄 Игрок {} перенесён: {} ({}) -> {} ({})",
-                removedPlayer.playerName(),
+                removedPlayer.name(),
                 oldTournament.getTitle(), oldTournament.getId(),
                 newTournament.getTitle(), newTournament.getId());
 
@@ -69,7 +69,7 @@ public class PlayerTransferDetector {
             TournamentDto oldTournament,
             Map<String, List<TournamentDto>> allTournaments) {
 
-        String normalizedName = NameNormalizer.normalizeForSearch(removedPlayer.playerName());
+        String normalizedName = NameNormalizer.normalizeForSearch(removedPlayer.name());
 
         for (List<TournamentDto> dayTournaments : allTournaments.values()) {
             for (TournamentDto tournament : dayTournaments) {
@@ -87,7 +87,7 @@ public class PlayerTransferDetector {
                 boolean alreadyLinked = notificationRepository
                         .findByTournamentLink(tournament.getLink())
                         .stream()
-                        .anyMatch(pn -> pn.getPlayerId().equals(removedPlayer.playerId()));
+                        .anyMatch(pn -> pn.getPlayerId().equals(removedPlayer.id()));
 
                 if (!alreadyLinked) {
                     log.debug("Перенос: найден новый турнир={}", tournament.getLink());

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.application.TournamentDataProvider;
+import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
 import ru.pulsecore.app.tournament.application.roster.change.info.TournamentHashChecker;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
@@ -37,7 +37,7 @@ public class TournamentChangeService {
 
         log.debug("Изменения: проверка для {} игроков", activePlayers.size());
 
-        List<String> playerName = activePlayers.stream().map(PlayerData::playerName).toList();
+        List<String> playerName = activePlayers.stream().map(PlayerData::name).toList();
 
         playerTournaments(playerName);
     }

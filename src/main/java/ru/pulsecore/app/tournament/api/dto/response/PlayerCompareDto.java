@@ -1,6 +1,6 @@
 package ru.pulsecore.app.tournament.api.dto.response;
 
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.PlayerCompareResponse;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.PlayerCompareResponse;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
 import java.util.UUID;

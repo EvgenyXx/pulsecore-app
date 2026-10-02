@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.notification.api.PushApi;
 import ru.pulsecore.app.notification.api.dto.PushSubscriptionRequest;
-import ru.pulsecore.app.notification.application.PushFacade;
+import ru.pulsecore.app.notification.application.PushService;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
 
@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PushController {
 
-    private final PushFacade pushFacade;
+    private final PushService pushFacade;
 
     @Operation(summary = "Статус подписки на push")
     @GetMapping(PushApi.STATUS)

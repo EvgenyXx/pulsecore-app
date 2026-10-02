@@ -11,7 +11,7 @@ import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriCon
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
 import ru.pulsecore.app.shared.infrastructure.audit.AuditWriter;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.util.Set;
 import java.util.UUID;

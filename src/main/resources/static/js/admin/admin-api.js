@@ -17,13 +17,13 @@ export const AdminAPI = {
     searchPlayers: (q, page = 0, size = 5) =>
         apiRequest(`/admin/search?q=${encodeURIComponent(q)}&page=${page}&size=${size}`)
             .then(data => data.content.map(p => ({
-                id: p.playerId,
-                name: p.playerName,
+                id: p.id,
+                name: p.name,
                 email: p.email,
                 primaryLeague: p.primaryLeague,
                 pushEnabled: p.pushEnabled,
                 notificationsEnabled: p.notificationsEnabled,
-                hasActiveSubscription: p.hasActiveSubscription,
+                activeSubscription: p.activeSubscription,
                 selectedHalls: p.selectedHalls,
                 liveSelectedHalls: p.liveSelectedHalls,
                 lastLoginAt: p.lastLoginAt

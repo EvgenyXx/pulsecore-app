@@ -77,7 +77,7 @@ function renderPlans() {
 export async function loadSubscription() {
     try {
         const sub = await SubscribeAPI.getSubscription();
-        if (sub && sub.active) {
+        if (sub && sub.activeNow) {
             document.getElementById('activeSubBlock').classList.remove('hidden');
             const exp = sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : 'неизвестно';
             document.getElementById('activeSubText').textContent = `Действует до ${exp}`;

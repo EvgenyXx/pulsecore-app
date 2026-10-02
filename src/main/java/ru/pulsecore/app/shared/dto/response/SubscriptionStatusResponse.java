@@ -1,6 +1,12 @@
 package ru.pulsecore.app.shared.dto.response;
 
-import lombok.Builder;
 
-@Builder
-public record SubscriptionStatusResponse(boolean active, String expiresAt, String startedAt) {}
+
+import java.time.LocalDateTime;
+
+
+public record SubscriptionStatusResponse(
+        boolean activeNow,
+        LocalDateTime expiresAt,
+        LocalDateTime startedAt) {
+}

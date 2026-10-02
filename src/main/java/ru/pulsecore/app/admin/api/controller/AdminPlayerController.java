@@ -35,7 +35,7 @@ public class AdminPlayerController {
     @GetMapping(AdminApi.LAST_LOGIN)
     public ResponseEntity<Page<LastLoginResponse>> getLastLogin(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "25") int size) {
         return ResponseEntity.ok(playerClient.getLastLogin(PageRequest.of(page, size)));
     }
 

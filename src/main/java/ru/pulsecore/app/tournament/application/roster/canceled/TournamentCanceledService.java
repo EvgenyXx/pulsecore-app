@@ -20,8 +20,8 @@ import ru.pulsecore.app.tournament.infrastructure.exception.PageNotFoundExceptio
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -139,7 +139,7 @@ public class TournamentCanceledService {
                 .collect(Collectors.toSet());
 
         List<PlayerData> players = playerClient.getPlayerDataByIds(playerIds);
-        List<String> names = players.stream().map(PlayerData::playerName).toList();
+        List<String> names = players.stream().map(PlayerData::name).toList();
 
         auditWriter.write("cancelled",
                 "турнир=" + t.getExternalId() +

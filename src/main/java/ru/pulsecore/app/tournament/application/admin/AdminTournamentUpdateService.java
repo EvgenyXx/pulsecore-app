@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
+import ru.pulsecore.app.tournament.application.mapping.TournamentMapper;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentNotFoundException;
-import ru.pulsecore.app.tournament.infrastructure.persistence.mapper.TournamentUpdateMapper;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 @Slf4j
 @Service
@@ -17,7 +17,7 @@ import ru.pulsecore.app.tournament.infrastructure.persistence.repository.Tournam
 public class AdminTournamentUpdateService {
 
     private final TournamentRepository tournamentRepository;
-    private final TournamentUpdateMapper mapper;
+    private final TournamentMapper mapper;
     private final AdminTournamentQueryService queryService;
 
     @Transactional

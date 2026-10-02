@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record PlayerData(
-        UUID playerId,
-        String playerName,
+        UUID id,
+        String name,
         String email,
         String primaryLeague,
         boolean pushEnabled,

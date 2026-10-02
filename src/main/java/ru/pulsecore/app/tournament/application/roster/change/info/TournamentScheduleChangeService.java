@@ -12,9 +12,9 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
 import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.TournamentProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.TournamentProjection;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.NumberUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
@@ -102,13 +102,14 @@ public class TournamentScheduleChangeService {
         eventPublisher.publishEvent(
                 new MailNotificationEvent(
                         MailTypes.TOURNAMENT_SCHEDULE_CHANGED,
+                        player.id(),
                         new TournamentScheduleChangedContext(
                                 player.email(),
-                                StringUtils.extractFirstName(player.playerName()),
+                                StringUtils.extractFirstName(player.name()),
                                 info
                         )
                 )
         );
-        log.debug("Расписание: уведомление отправлено игроку={}", player.playerName());
+        log.debug("Расписание: уведомление отправлено игроку={}", player.name());
     }
 }

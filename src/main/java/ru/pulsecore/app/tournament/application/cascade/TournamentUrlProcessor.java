@@ -5,7 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.application.event.TournamentMatchService;
+import ru.pulsecore.app.tournament.application.match.TournamentMatchService;
 import ru.pulsecore.app.tournament.application.resolution.ResultService;
 import ru.pulsecore.app.tournament.application.roster.finish.TournamentResultProcessor;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
@@ -14,7 +14,7 @@ import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentParseException;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.time.LocalDate;
 import java.util.*;

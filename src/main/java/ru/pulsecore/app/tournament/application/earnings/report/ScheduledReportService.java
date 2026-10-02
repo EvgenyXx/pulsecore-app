@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.domain.ReportStatus;
 import ru.pulsecore.app.tournament.domain.entity.ScheduledReport;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.ScheduledReportRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.projection.ScheduledReportProjection;
+import ru.pulsecore.app.tournament.infrastructure.repository.ScheduledReportRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.projection.ScheduledReportProjection;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

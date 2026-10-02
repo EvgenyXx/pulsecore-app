@@ -19,6 +19,7 @@ public class ProfileFacade {
     private final ThemeService themeService;
     private final QrCodeService qrCodeService;
 
+
     public void verifyPassword(UUID id, String rawPassword) {
         passwordService.verifyPassword(id, rawPassword);
     }

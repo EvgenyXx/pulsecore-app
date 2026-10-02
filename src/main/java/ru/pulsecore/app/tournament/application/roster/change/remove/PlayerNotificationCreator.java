@@ -8,8 +8,8 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentNotFoundException;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.persistence.repository.TournamentRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
+import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.NumberUtils;
 
 @Component
@@ -21,7 +21,7 @@ public class PlayerNotificationCreator {
     private final PlayerNotificationRepository notificationRepository;
 
     public void createNotificationForTransfer(PlayerData player, TournamentDto to) {
-        log.debug("Создание связи: player={}, link={}", player.playerName(), to.getLink());
+        log.debug("Создание связи: player={}, link={}", player.name(), to.getLink());
 
         TournamentEntity newTournamentEntity = tournamentRepository
                 .findByLink(to.getLink())
@@ -30,13 +30,13 @@ public class PlayerNotificationCreator {
 
 
         PlayerNotification pn = PlayerNotification.builder()
-                .playerId(player.playerId())
+                .playerId(player.id())
                 .tournament(newTournamentEntity)
                 .hall(NumberUtils.extractInt(to.getHall()))
                 .build();
 
         notificationRepository.save(pn);
         log.info("Создана новая связь: player={}, tournament={}, hall={}",
-                player.playerName(), newTournamentEntity.getExternalId(), pn.getHall());
+                player.name(), newTournamentEntity.getExternalId(), pn.getHall());
     }
 }

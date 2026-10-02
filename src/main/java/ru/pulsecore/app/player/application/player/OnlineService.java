@@ -20,6 +20,6 @@ public class OnlineService {
 
     public long getOnlineCount() {
         Set<String> keys = redis.keys("online:user:*");
-        return keys != null ? keys.size() : 0;
+        return keys.size();
     }
 }

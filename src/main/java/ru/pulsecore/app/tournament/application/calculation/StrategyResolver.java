@@ -41,7 +41,7 @@ public class StrategyResolver {
         boolean removed = ctx.getRemovedPlayer() != null && !ctx.getRemovedPlayer().isBlank();
 
         if ("4pl_new".equals(ctx.getTypeId())) {
-            if (removed) return StrategyType.FOUR_PL_BRACKET_REMOVED;
+//            if (removed) return StrategyType.FOUR_PL_BRACKET_REMOVED;
             return StrategyType.FOUR_PL_BRACKET;
         }
 

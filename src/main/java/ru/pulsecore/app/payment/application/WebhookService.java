@@ -45,7 +45,7 @@ public class WebhookService {
                 amount.currency()
         ));
 
-        log.info("Платёж сохранён: playerId={}, months={}, amount={}",
+        log.info("Платёж сохранён: id={}, months={}, amount={}",
                 playerId, months, amount.value());
     }
 }
