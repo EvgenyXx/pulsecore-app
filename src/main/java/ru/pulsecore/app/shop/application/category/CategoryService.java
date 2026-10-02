@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shop.api.dto.response.CategoryDto;
 import ru.pulsecore.app.shop.api.dto.request.CreateCategoryRequest;
 import ru.pulsecore.app.shop.application.mapping.CategoryMapper;
@@ -32,6 +33,7 @@ public class CategoryService {
                 .toList();
     }
 
+    @Transactional
     public CategoryDto create(CreateCategoryRequest request) {
         Category category = Category.builder()
                 .name(request.name())
@@ -40,5 +42,12 @@ public class CategoryService {
 
         Category saved = categoryRepository.save(category);
         return categoryMapper.toDto(saved);
+    }
+
+    @Transactional
+    public void delete(Long categoryId) {
+       Category category = getCategoryById(categoryId);
+       categoryRepository.delete(category);
+       log.info("Категория {} удалена",category.getName());
     }
 }

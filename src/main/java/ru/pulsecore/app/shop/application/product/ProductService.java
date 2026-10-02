@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shop.api.dto.request.CreateProductRequest;
+import ru.pulsecore.app.shop.api.dto.request.ProductUpdateRequest;
 import ru.pulsecore.app.shop.api.dto.response.ProductCardDto;
 import ru.pulsecore.app.shop.api.dto.response.ProductCreateResponse;
 import ru.pulsecore.app.shop.api.dto.response.ProductDetailDto;
@@ -31,6 +32,20 @@ public class ProductService {
     private final CategoryService categoryService;
     private final ProductImageService productImageService;
     private final FileStorageService fileStorageService;
+
+
+    @Transactional
+    public ProductDetailDto updateProduct(Long productId, ProductUpdateRequest productUpdateRequest){
+        Product product = getById(productId);
+        productMapper.updateProduct(productUpdateRequest,product);
+        if (productUpdateRequest.categoryId() != null){
+            Category category = categoryService.getCategoryById(productUpdateRequest.categoryId());
+            product.setCategory(category);
+        }
+
+        log.debug("Продукт успешно обновлен {}",product.getId());
+        return productMapper.toDetailDto(productRepository.save(product));
+    }
 
     @Transactional
     public void  deleteProductById(Long productId){
@@ -64,8 +79,8 @@ public class ProductService {
 
 
     public List<ProductCardDto> getAllActive() {
-        return productRepository.findByActiveTrue().stream()
-                .map(productMapper::toCardDto)
+        return productRepository.findAll()
+                .stream().map(productMapper::toCardDto)
                 .toList();
     }
 
@@ -86,4 +101,6 @@ public class ProductService {
 
         return productMapper.toDto(saved);
     }
+
+
 }

@@ -46,6 +46,9 @@ window.SellerOrdersPage = (function () {
     function renderOrder(order) {
         const items = (order.items || []).map(renderItem).join('');
 
+        const isPickup = order.deliveryMethod === 'PICKUP';
+        const streetLabel = isPickup ? 'Адрес самовывоза' : 'ПВЗ';
+
         return `
             <div class="seller-order-card" data-id="${order.id}">
                 <div class="seller-order-header">
@@ -54,7 +57,6 @@ window.SellerOrdersPage = (function () {
                         <div class="seller-order-date">${formatDate(order.createdAt)}</div>
                     </div>
                     <div class="seller-order-badges">
-                        ${badgePayment(order.paymentStatus)}
                         ${badgeStatus(order.status)}
                     </div>
                 </div>
@@ -62,17 +64,32 @@ window.SellerOrdersPage = (function () {
                 <div class="seller-order-items">${items}</div>
 
                 <div class="seller-order-customer">
+                    ${renderCustomerName(order)}
                     <div class="seller-order-row"><span>Телефон</span><span>${escapeHtml(order.deliveryPhone)}</span></div>
-                    ${order.customerName ? `<div class="seller-order-row"><span>Имя</span><span>${escapeHtml(order.customerName)}</span></div>` : ''}
                     <div class="seller-order-row"><span>Город</span><span>${escapeHtml(order.deliveryCity)}</span></div>
-                    <div class="seller-order-row"><span>ПВЗ</span><span>${escapeHtml(order.deliveryStreet)}</span></div>
+                    <div class="seller-order-row"><span>${streetLabel}</span><span>${escapeHtml(order.deliveryStreet)}</span></div>
                     ${order.comment ? `<div class="seller-order-row"><span>Комментарий</span><span>${escapeHtml(order.comment)}</span></div>` : ''}
+                </div>
+
+                <div class="seller-order-info">
+                    <div class="seller-order-row">
+                        <span>Способ получения</span>
+                        <span>${labelDelivery(order.deliveryMethod)}</span>
+                    </div>
+                    <div class="seller-order-row">
+                        <span>Способ оплаты</span>
+                        <span>${labelPaymentMethod(order.paymentMethod)}</span>
+                    </div>
+                    <div class="seller-order-row">
+                        <span>Статус оплаты</span>
+                        <span class="${paymentClass(order.paymentStatus)}">${labelPayment(order.paymentStatus)}</span>
+                    </div>
                 </div>
 
                 <div class="seller-order-footer">
                     <div class="seller-order-total">${formatPrice(order.totalPrice)} ₽</div>
                     <div class="seller-order-actions">
-                        ${renderActions(order.status)}
+                        ${renderActions(order)}
                         <button class="btn-cancel" data-action="cancel" data-id="${order.id}">Отменить</button>
                     </div>
                 </div>
@@ -80,17 +97,58 @@ window.SellerOrdersPage = (function () {
         `;
     }
 
-    function renderActions(status) {
-        if (status === 'CONFIRMED') {
-            return `<button class="btn-action" data-action="advance" data-next="ASSEMBLED">Собран</button>`;
+    function renderCustomerName(order) {
+        const parts = [
+            order.customerLastName,
+            order.customerFirstName,
+            order.customerMiddleName
+        ].filter(Boolean);
+
+        if (parts.length === 0) return '';
+        return `<div class="seller-order-row"><span>Получатель</span><span>${escapeHtml(parts.join(' '))}</span></div>`;
+    }
+
+    function renderActions(order) {
+        const buttons = [];
+
+        const isPickup = order.deliveryMethod === 'PICKUP';
+        const isOnDelivery = order.paymentMethod === 'ON_DELIVERY';
+        const isUnpaid = order.paymentStatus !== 'PAID';
+        const isDone = order.status === 'DONE';
+        const isCancelled = order.status === 'CANCELLED';
+
+        if (isCancelled || isDone) return buttons.join('');
+
+        if (isOnDelivery && isUnpaid) {
+            buttons.push(
+                `<button class="btn-action btn-paid" data-action="mark-paid" data-id="${order.id}">Оплачено</button>`
+            );
         }
-        if (status === 'ASSEMBLED') {
-            return `<button class="btn-action" data-action="advance" data-next="SHIPPED">Отправлен</button>`;
+
+        if (isPickup) {
+            if (order.status === 'CONFIRMED') {
+                buttons.push(
+                    `<button class="btn-action" data-action="advance" data-next="ASSEMBLED">Собран</button>`
+                );
+            } else if (order.status === 'ASSEMBLED') {
+                if (order.paymentStatus === 'PAID' || !isOnDelivery) {
+                    buttons.push(
+                        `<button class="btn-action" data-action="advance" data-next="DONE">Выдан</button>`
+                    );
+                }
+            }
+            return buttons.join('');
         }
-        if (status === 'SHIPPED') {
-            return `<button class="btn-action" data-action="advance" data-next="DONE">Получен</button>`;
+
+        if (order.status === 'CONFIRMED') {
+            buttons.push(`<button class="btn-action" data-action="advance" data-next="ASSEMBLED">Собран</button>`);
+        } else if (order.status === 'ASSEMBLED') {
+            buttons.push(`<button class="btn-action" data-action="advance" data-next="SHIPPED">Отправлен</button>`);
+        } else if (order.status === 'SHIPPED') {
+            buttons.push(`<button class="btn-action" data-action="advance" data-next="DONE">Получен</button>`);
         }
-        return '';
+
+        return buttons.join('');
     }
 
     function renderItem(item) {
@@ -108,10 +166,25 @@ window.SellerOrdersPage = (function () {
         `;
     }
 
-    function badgePayment(s) {
+    function labelDelivery(m) {
+        const labels = { PICKUP: 'Самовывоз', CDEK: 'СДЭК · ПВЗ' };
+        return labels[m] || m || '—';
+    }
+
+    function labelPaymentMethod(m) {
+        const labels = { YOOKASSA: 'Онлайн (ЮKassa)', ON_DELIVERY: 'При получении (нал / СБП)' };
+        return labels[m] || m || '—';
+    }
+
+    function labelPayment(s) {
         const labels = { PENDING: 'Не оплачен', PAID: 'Оплачен', CANCELLED: 'Отменён' };
-        const cls = { PENDING: 'pending', PAID: 'paid', CANCELLED: 'cancelled' };
-        return `<span class="seller-badge payment-${cls[s] || ''}">${labels[s] || s}</span>`;
+        return labels[s] || s || '—';
+    }
+
+    function paymentClass(s) {
+        if (s === 'PAID') return 'order-info-ok';
+        if (s === 'CANCELLED') return 'order-info-bad';
+        return 'order-info-warn';
     }
 
     function badgeStatus(s) {
@@ -140,25 +213,83 @@ window.SellerOrdersPage = (function () {
             });
         });
 
-        container.querySelectorAll('[data-action="cancel"]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                if (!confirm('Отменить заказ?')) return;
+        container.querySelectorAll('[data-action="mark-paid"]').forEach(btn => {
+            btn.addEventListener('click', () => {
                 const card = btn.closest('.seller-order-card');
                 const id = card.dataset.id;
 
-                btn.disabled = true;
-                btn.textContent = '...';
-
-                try {
-                    await api.updateStatus(id, 'CANCELLED');
-                    load();
-                } catch (e) {
-                    alert('Ошибка: ' + e.message);
-                    btn.disabled = false;
-                    btn.textContent = 'Отменить';
-                }
+                openConfirm({
+                    title: 'Подтвердить оплату?',
+                    text: 'Заказ будет помечен как оплаченный. Товар спишется со склада.',
+                    okText: 'Оплачено',
+                    onConfirm: async () => {
+                        btn.disabled = true;
+                        btn.textContent = '...';
+                        try {
+                            await api.updatePaymentStatus(id, 'PAID');
+                            load();
+                        } catch (e) {
+                            alert('Ошибка: ' + e.message);
+                            btn.disabled = false;
+                            btn.textContent = 'Оплачено';
+                        }
+                    }
+                });
             });
         });
+
+        container.querySelectorAll('[data-action="cancel"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const card = btn.closest('.seller-order-card');
+                const id = card.dataset.id;
+
+                openConfirm({
+                    title: 'Отменить заказ?',
+                    text: 'Это действие нельзя отменить.',
+                    okText: 'Отменить',
+                    onConfirm: async () => {
+                        btn.disabled = true;
+                        btn.textContent = '...';
+                        try {
+                            await api.updateStatus(id, 'CANCELLED');
+                            load();
+                        } catch (e) {
+                            alert('Ошибка: ' + e.message);
+                            btn.disabled = false;
+                            btn.textContent = 'Отменить';
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    function openConfirm({ title, text, okText, onConfirm }) {
+        const modal = document.getElementById('confirmModal');
+        const titleEl = document.getElementById('confirmModalTitle');
+        const textEl = document.getElementById('confirmModalText');
+        const okBtn = document.getElementById('confirmModalOk');
+        const closeEls = modal.querySelectorAll('[data-confirm-close]');
+
+        titleEl.textContent = title;
+        textEl.textContent = text;
+        okBtn.textContent = okText;
+
+        modal.classList.remove('hidden');
+
+        function close() {
+            modal.classList.add('hidden');
+            okBtn.removeEventListener('click', handleOk);
+            closeEls.forEach(el => el.removeEventListener('click', close));
+        }
+
+        function handleOk() {
+            close();
+            if (onConfirm) onConfirm();
+        }
+
+        okBtn.addEventListener('click', handleOk);
+        closeEls.forEach(el => el.addEventListener('click', close));
     }
 
     function formatDate(iso) {

@@ -44,7 +44,8 @@ window.ProductPage = (function () {
             ? renderGallery(images, p.name)
             : `<div class="product-detail-gallery-empty">📷</div>`;
 
-        const stock = p.stock > 0
+        const inStock = p.inStock === true;
+        const stock = inStock
             ? `<span class="product-detail-stock">В наличии · ${p.stock} шт.</span>`
             : `<span class="product-detail-stock out">Нет в наличии</span>`;
 
@@ -85,7 +86,7 @@ window.ProductPage = (function () {
     }
 
     function renderCartBlock(p) {
-        if (p.stock <= 0) {
+        if (p.inStock !== true) {
             return `<button class="product-detail-cart out-of-stock" disabled>Нет в наличии</button>`;
         }
 

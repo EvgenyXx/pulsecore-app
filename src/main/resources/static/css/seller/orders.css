@@ -82,10 +82,20 @@
     white-space: nowrap;
 }
 
+/* Доставка */
+.seller-badge.delivery-pickup { background: rgba(255, 149, 0, 0.14); color: #ff9500; }
+.seller-badge.delivery-cdek   { background: rgba(0, 122, 255, 0.14); color: #007aff; }
+
+/* Способ оплаты */
+.seller-badge.method-online     { background: rgba(120, 120, 255, 0.14); color: #7878ff; }
+.seller-badge.method-ondelivery { background: rgba(200, 120, 255, 0.14); color: #c878ff; }
+
+/* Статус оплаты */
 .seller-badge.payment-pending    { background: rgba(255, 200, 0, 0.12); color: #ffc800; }
 .seller-badge.payment-paid       { background: rgba(0, 217, 192, 0.14); color: var(--accent); }
 .seller-badge.payment-cancelled  { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; }
 
+/* Статус заказа */
 .seller-badge.status-confirmed  { background: rgba(0, 217, 192, 0.12); color: var(--accent); }
 .seller-badge.status-assembled  { background: rgba(0, 150, 255, 0.14); color: #4db8ff; }
 .seller-badge.status-shipped    { background: rgba(0, 122, 255, 0.14); color: #007aff; }
@@ -211,6 +221,13 @@
 .btn-action:active { transform: scale(0.98); }
 .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Оплачено — оранжевая кнопка, чтобы выделялась */
+.btn-action.btn-paid {
+    background: #ff9500;
+    color: #1a0e00;
+}
+.btn-action.btn-paid:hover { background: #ffad33; }
+
 .btn-cancel {
     padding: 10px 16px;
     background: transparent;
@@ -232,3 +249,20 @@
     .seller-order-actions { justify-content: stretch; }
     .btn-action, .btn-cancel { flex: 1; }
 }
+
+/* ===== Блок «Детали заказа» ===== */
+
+.seller-order-info {
+    background: var(--bg-soft);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+}
+
+.seller-order-info .seller-order-row span:last-child {
+    font-weight: 600;
+}
+
+.order-info-ok    { color: var(--accent); }
+.order-info-warn  { color: #ffc800; }
+.order-info-bad   { color: #ff4d4d; }

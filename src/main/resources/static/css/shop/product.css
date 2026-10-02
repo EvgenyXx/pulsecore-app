@@ -1,10 +1,32 @@
 /* ===== Детальная товара ===== */
 
+#productContent {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 900px) {
+    #productContent {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 40px;
+        align-items: start;
+    }
+}
+
 .product-detail-gallery {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
+}
+
+@media (min-width: 900px) {
+    .product-detail-gallery {
+        margin-bottom: 0;
+        position: sticky;
+        top: 90px;
+    }
 }
 
 .product-detail-body {
@@ -288,7 +310,7 @@
 
 /* ===== Ограничение высоты галереи на мобиле ===== */
 
-@media (max-width: 900px) {
+@media (max-width: 899px) {
     .product-detail-image-single,
     .product-detail-carousel,
     .product-detail-gallery-empty {

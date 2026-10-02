@@ -12,5 +12,8 @@ public record ProductCardDto(
         List<String> images,
         Long categoryId,
         String categoryName,
-        Integer stock
-) {}
+        Integer stock,
+        boolean inStock
+
+) {
+}

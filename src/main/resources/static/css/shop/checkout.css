@@ -126,7 +126,12 @@
 .checkout-pickup-info {
     font-size: 14px;
     color: var(--text-muted);
-    line-height: 1.5;
+    line-height: 1.6;
+}
+
+.checkout-pickup-info strong {
+    color: var(--text);
+    font-weight: 600;
 }
 
 .checkout-submit {

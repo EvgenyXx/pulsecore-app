@@ -93,9 +93,26 @@ window.OrdersPage = (function () {
     function renderDetails(order) {
         const rows = [];
 
-        rows.push(row('Доставка', 'СДЭК · ПВЗ'));
-        if (order.deliveryCity) rows.push(row('Город', escapeHtml(order.deliveryCity)));
-        if (order.deliveryStreet) rows.push(row('Адрес ПВЗ', escapeHtml(order.deliveryStreet)));
+        const deliveryLabel = order.deliveryMethod === 'PICKUP'
+            ? 'Самовывоз'
+            : 'СДЭК · ПВЗ';
+        rows.push(row('Доставка', deliveryLabel));
+
+        if (order.deliveryMethod === 'PICKUP') {
+            if (order.deliveryCity) rows.push(row('Город', escapeHtml(order.deliveryCity)));
+            if (order.deliveryStreet) rows.push(row('Адрес', escapeHtml(order.deliveryStreet)));
+        } else {
+            if (order.deliveryCity) rows.push(row('Город', escapeHtml(order.deliveryCity)));
+            if (order.deliveryStreet) rows.push(row('Адрес ПВЗ', escapeHtml(order.deliveryStreet)));
+        }
+
+        if (order.paymentMethod) {
+            const payLabel = order.paymentMethod === 'ON_DELIVERY'
+                ? 'При получении (нал / СБП)'
+                : 'Онлайн (ЮKassa)';
+            rows.push(row('Оплата', payLabel));
+        }
+
         if (order.deliveryPhone) rows.push(row('Телефон', escapeHtml(order.deliveryPhone)));
         if (order.customerName) rows.push(row('Получатель', escapeHtml(order.customerName)));
         if (order.comment) rows.push(row('Комментарий', escapeHtml(order.comment)));

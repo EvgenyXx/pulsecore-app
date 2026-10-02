@@ -58,7 +58,8 @@ window.ProductListPage = (function () {
             ? `<img src="${img}" alt="${p.name}">`
             : `<div class="seller-product-placeholder">📷</div>`;
 
-        const badge = p.stock > 0
+        const inStock = p.inStock === true;
+        const badge = inStock
             ? `<span class="seller-product-badge active">В наличии</span>`
             : `<span class="seller-product-badge out">Нет</span>`;
 
