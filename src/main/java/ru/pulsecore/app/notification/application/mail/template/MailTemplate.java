@@ -18,6 +18,9 @@ public enum MailTemplate {
     CANCELED_TOURNAMENT("canceled_tournament"),
     TOURNAMENT_SCHEDULE_CHANGED("tournament_schedule_changed"),
     PAYMENT_SUCCESS_USER("payment_success_user"),
+    ORDER_PAID("order_paid"),
+
+
     PLAYER_TRANSFERRED("player_transferred");
 
 

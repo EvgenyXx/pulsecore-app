@@ -28,6 +28,7 @@ spring:
 logging:
   level:
     root: WARN
+    org.apache.pdfbox.pdmodel.font.PDType1Font: ERROR
     ru.pulsecore.app: info
     org.springframework: WARN
     org.hibernate: WARN
