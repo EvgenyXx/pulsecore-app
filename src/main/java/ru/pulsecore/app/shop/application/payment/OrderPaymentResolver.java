@@ -2,7 +2,7 @@ package ru.pulsecore.app.shop.application.payment;
 
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shop.api.dto.response.OrderDto;
-import ru.pulsecore.app.shop.domain.Order;
+import ru.pulsecore.app.shop.domain.entity.Order;
 import ru.pulsecore.app.shop.domain.PaymentMethod;
 import ru.pulsecore.app.shop.infrastructure.exception.OrderException;
 import java.util.List;

@@ -17,7 +17,8 @@ public class OrderWebhookHandler {
 
     private final ApplicationEventPublisher eventPublisher;
 
-
+    //todo добавить сохранение в систему. возможно в
+    // самом магазине сделать новую таблицу для заказов
     @Transactional
     public void handle(YookassaWebhook webhook) {
         Long orderId = Long.parseLong(webhook.object().metadata().orderId());

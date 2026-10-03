@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shop.api.dto.response.SellerOrderDto;
 import ru.pulsecore.app.shop.application.mapping.OrderMapper;
+import ru.pulsecore.app.shop.application.product.StockService;
 import ru.pulsecore.app.shop.domain.*;
+import ru.pulsecore.app.shop.domain.entity.Order;
 import ru.pulsecore.app.shop.infrastructure.exception.OrderException;
 import ru.pulsecore.app.shop.infrastructure.exception.OrderNotFoundException;
 import ru.pulsecore.app.shop.infrastructure.repository.OrderRepository;
@@ -22,6 +24,7 @@ public class OrderSellerService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final OrderPaidService orderPaidService;
+    private final StockService stockService;
 
 
     @Transactional(readOnly = true)
@@ -59,7 +62,7 @@ public class OrderSellerService {
         order.setPaymentStatus(paymentStatus);
         log.info("Статус заказа №{} изменен на {}", order.getId(), paymentStatus);
 
-         Order saved = orderRepository.save(order);
+        Order saved = orderRepository.save(order);
 
         return orderMapper.toSellerDto(saved);
     }
@@ -75,6 +78,10 @@ public class OrderSellerService {
 
         order.setStatus(newStatus);
         Order saved = orderRepository.save(order);
+
+        if (newStatus == OrderStatus.CANCELLED) {
+            stockService.increaseForOrder(saved);
+        }
 
         log.info("Заказ id={} → статус {}", orderId, newStatus);
 

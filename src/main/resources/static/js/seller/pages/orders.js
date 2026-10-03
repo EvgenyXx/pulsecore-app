@@ -1,12 +1,47 @@
 window.SellerOrdersPage = (function () {
     const api = window.OrdersApi;
-    const loader = window.Loader || { show: (el, t) => el.innerHTML = `<p class="muted">${t || 'Загрузка...'}</p>`, empty: (el, t) => el.innerHTML = `<div class="empty-state">${t || 'Пусто'}</div>` };
+    const loader = window.Loader || {
+        show: (el, t) => el.innerHTML = `<p class="muted">${t || 'Загрузка...'}</p>`,
+        empty: (el, t) => el.innerHTML = `<div class="empty-state">${t || 'Пусто'}</div>`
+    };
+
+    // Статусы заказа (без SHIPPED — скрыт, но остаётся в enum)
+    const ORDER_STATUSES = [
+        { value: 'CONFIRMED', label: 'Новый' },
+        { value: 'ASSEMBLED', label: 'Собран' },
+        { value: 'DONE',      label: 'Выдан' },
+        { value: 'CANCELLED', label: 'Отменён' }
+    ];
+
+    // Статусы оплаты
+    const PAYMENT_STATUSES = [
+        { value: 'PENDING', label: 'Не оплачен' },
+        { value: 'PAID',    label: 'Оплачен' }
+    ];
+
+    const FILTERS = [
+        { value: 'CONFIRMED', label: 'Новые' },
+        { value: 'ASSEMBLED', label: 'Собранные' },
+        { value: 'DONE',      label: 'Выданные' },
+        { value: 'CANCELLED', label: 'Отменённые' },
+        { value: 'all',       label: 'Все' }
+    ];
 
     let activeStatus = 'CONFIRMED';
 
     function init() {
+        renderFilter();
         bindChips();
         load();
+    }
+
+    function renderFilter() {
+        const filter = document.getElementById('orderFilter');
+        if (!filter) return;
+        filter.innerHTML = FILTERS.map(f => `
+            <button class="order-chip ${f.value === activeStatus ? 'active' : ''}"
+                    data-status="${f.value}">${f.label}</button>
+        `).join('');
     }
 
     function bindChips() {
@@ -14,13 +49,14 @@ window.SellerOrdersPage = (function () {
         if (!filter || filter.dataset.bound) return;
         filter.dataset.bound = '1';
 
-        filter.querySelectorAll('.order-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                filter.querySelectorAll('.order-chip').forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                activeStatus = chip.dataset.status;
-                load();
-            });
+        filter.addEventListener('click', (e) => {
+            const chip = e.target.closest('.order-chip');
+            if (!chip) return;
+
+            filter.querySelectorAll('.order-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            activeStatus = chip.dataset.status;
+            load();
         });
     }
 
@@ -46,9 +82,6 @@ window.SellerOrdersPage = (function () {
     function renderOrder(order) {
         const items = (order.items || []).map(renderItem).join('');
 
-        const isPickup = order.deliveryMethod === 'PICKUP';
-        const streetLabel = isPickup ? 'Адрес самовывоза' : 'ПВЗ';
-
         return `
             <div class="seller-order-card" data-id="${order.id}">
                 <div class="seller-order-header">
@@ -56,9 +89,7 @@ window.SellerOrdersPage = (function () {
                         <div class="seller-order-number">Заказ №${order.id}</div>
                         <div class="seller-order-date">${formatDate(order.createdAt)}</div>
                     </div>
-                    <div class="seller-order-badges">
-                        ${badgeStatus(order.status)}
-                    </div>
+                    <div class="seller-order-total">${formatPrice(order.totalPrice)} ₽</div>
                 </div>
 
                 <div class="seller-order-items">${items}</div>
@@ -67,7 +98,7 @@ window.SellerOrdersPage = (function () {
                     ${renderCustomerName(order)}
                     <div class="seller-order-row"><span>Телефон</span><span>${escapeHtml(order.deliveryPhone)}</span></div>
                     <div class="seller-order-row"><span>Город</span><span>${escapeHtml(order.deliveryCity)}</span></div>
-                    <div class="seller-order-row"><span>${streetLabel}</span><span>${escapeHtml(order.deliveryStreet)}</span></div>
+                    <div class="seller-order-row"><span>Адрес</span><span>${escapeHtml(order.deliveryStreet)}</span></div>
                     ${order.comment ? `<div class="seller-order-row"><span>Комментарий</span><span>${escapeHtml(order.comment)}</span></div>` : ''}
                 </div>
 
@@ -80,17 +111,24 @@ window.SellerOrdersPage = (function () {
                         <span>Способ оплаты</span>
                         <span>${labelPaymentMethod(order.paymentMethod)}</span>
                     </div>
-                    <div class="seller-order-row">
-                        <span>Статус оплаты</span>
-                        <span class="${paymentClass(order.paymentStatus)}">${labelPayment(order.paymentStatus)}</span>
-                    </div>
                 </div>
 
-                <div class="seller-order-footer">
-                    <div class="seller-order-total">${formatPrice(order.totalPrice)} ₽</div>
-                    <div class="seller-order-actions">
-                        ${renderActions(order)}
-                        <button class="btn-cancel" data-action="cancel" data-id="${order.id}">Отменить</button>
+                <div class="seller-order-controls">
+                    <div class="seller-order-control">
+                        <label>Статус заказа</label>
+                        <select class="seller-select" data-field="status" data-id="${order.id}">
+                            ${ORDER_STATUSES.map(s => `
+                                <option value="${s.value}" ${order.status === s.value ? 'selected' : ''}>${s.label}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="seller-order-control">
+                        <label>Статус оплаты</label>
+                        <select class="seller-select" data-field="paymentStatus" data-id="${order.id}">
+                            ${PAYMENT_STATUSES.map(s => `
+                                <option value="${s.value}" ${order.paymentStatus === s.value ? 'selected' : ''}>${s.label}</option>
+                            `).join('')}
+                        </select>
                     </div>
                 </div>
             </div>
@@ -106,49 +144,6 @@ window.SellerOrdersPage = (function () {
 
         if (parts.length === 0) return '';
         return `<div class="seller-order-row"><span>Получатель</span><span>${escapeHtml(parts.join(' '))}</span></div>`;
-    }
-
-    function renderActions(order) {
-        const buttons = [];
-
-        const isPickup = order.deliveryMethod === 'PICKUP';
-        const isOnDelivery = order.paymentMethod === 'ON_DELIVERY';
-        const isUnpaid = order.paymentStatus !== 'PAID';
-        const isDone = order.status === 'DONE';
-        const isCancelled = order.status === 'CANCELLED';
-
-        if (isCancelled || isDone) return buttons.join('');
-
-        if (isOnDelivery && isUnpaid) {
-            buttons.push(
-                `<button class="btn-action btn-paid" data-action="mark-paid" data-id="${order.id}">Оплачено</button>`
-            );
-        }
-
-        if (isPickup) {
-            if (order.status === 'CONFIRMED') {
-                buttons.push(
-                    `<button class="btn-action" data-action="advance" data-next="ASSEMBLED">Собран</button>`
-                );
-            } else if (order.status === 'ASSEMBLED') {
-                if (order.paymentStatus === 'PAID' || !isOnDelivery) {
-                    buttons.push(
-                        `<button class="btn-action" data-action="advance" data-next="DONE">Выдан</button>`
-                    );
-                }
-            }
-            return buttons.join('');
-        }
-
-        if (order.status === 'CONFIRMED') {
-            buttons.push(`<button class="btn-action" data-action="advance" data-next="ASSEMBLED">Собран</button>`);
-        } else if (order.status === 'ASSEMBLED') {
-            buttons.push(`<button class="btn-action" data-action="advance" data-next="SHIPPED">Отправлен</button>`);
-        } else if (order.status === 'SHIPPED') {
-            buttons.push(`<button class="btn-action" data-action="advance" data-next="DONE">Получен</button>`);
-        }
-
-        return buttons.join('');
     }
 
     function renderItem(item) {
@@ -167,8 +162,7 @@ window.SellerOrdersPage = (function () {
     }
 
     function labelDelivery(m) {
-        const labels = { PICKUP: 'Самовывоз', CDEK: 'СДЭК · ПВЗ' };
-        return labels[m] || m || '—';
+        return m === 'PICKUP' ? 'Самовывоз' : (m || '—');
     }
 
     function labelPaymentMethod(m) {
@@ -176,95 +170,60 @@ window.SellerOrdersPage = (function () {
         return labels[m] || m || '—';
     }
 
-    function labelPayment(s) {
-        const labels = { PENDING: 'Не оплачен', PAID: 'Оплачен', CANCELLED: 'Отменён' };
-        return labels[s] || s || '—';
-    }
-
-    function paymentClass(s) {
-        if (s === 'PAID') return 'order-info-ok';
-        if (s === 'CANCELLED') return 'order-info-bad';
-        return 'order-info-warn';
-    }
-
-    function badgeStatus(s) {
-        const labels = { CONFIRMED: 'Собирается', ASSEMBLED: 'Собран', SHIPPED: 'Отправлен', DONE: 'Получен', CANCELLED: 'Отменён' };
-        return `<span class="seller-badge status-${(s || '').toLowerCase()}">${labels[s] || s}</span>`;
-    }
-
     function bindActions(container) {
-        container.querySelectorAll('[data-action="advance"]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const card = btn.closest('.seller-order-card');
-                const id = card.dataset.id;
-                const next = btn.dataset.next;
+        container.querySelectorAll('.seller-select').forEach(sel => {
+            sel.addEventListener('change', () => onSelectChange(sel));
+        });
+    }
 
-                btn.disabled = true;
-                btn.textContent = '...';
+    async function onSelectChange(sel) {
+        const id = sel.dataset.id;
+        const field = sel.dataset.field;
+        const value = sel.value;
 
-                try {
-                    await api.updateStatus(id, next);
-                    load();
-                } catch (e) {
-                    alert('Ошибка: ' + e.message);
-                    btn.disabled = false;
-                    btn.textContent = 'Повторить';
+        const previous = sel.dataset.previous || sel.querySelector('option[selected]')?.value;
+        const fieldLabel = field === 'status' ? 'статус заказа' : 'статус оплаты';
+
+        // Подтверждение для отмены
+        if (value === 'CANCELLED' && field === 'status') {
+            sel.disabled = true;
+            openConfirm({
+                title: 'Отменить заказ?',
+                text: 'Это действие нельзя отменить.',
+                okText: 'Отменить',
+                onConfirm: async () => {
+                    await doUpdate(sel, id, field, value, fieldLabel);
+                },
+                onCancel: () => {
+                    // откатить select назад
+                    if (previous) sel.value = previous;
+                    sel.disabled = false;
                 }
             });
-        });
+            return;
+        }
 
-        container.querySelectorAll('[data-action="mark-paid"]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const card = btn.closest('.seller-order-card');
-                const id = card.dataset.id;
-
-                openConfirm({
-                    title: 'Подтвердить оплату?',
-                    text: 'Заказ будет помечен как оплаченный. Товар спишется со склада.',
-                    okText: 'Оплачено',
-                    onConfirm: async () => {
-                        btn.disabled = true;
-                        btn.textContent = '...';
-                        try {
-                            await api.updatePaymentStatus(id, 'PAID');
-                            load();
-                        } catch (e) {
-                            alert('Ошибка: ' + e.message);
-                            btn.disabled = false;
-                            btn.textContent = 'Оплачено';
-                        }
-                    }
-                });
-            });
-        });
-
-        container.querySelectorAll('[data-action="cancel"]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const card = btn.closest('.seller-order-card');
-                const id = card.dataset.id;
-
-                openConfirm({
-                    title: 'Отменить заказ?',
-                    text: 'Это действие нельзя отменить.',
-                    okText: 'Отменить',
-                    onConfirm: async () => {
-                        btn.disabled = true;
-                        btn.textContent = '...';
-                        try {
-                            await api.updateStatus(id, 'CANCELLED');
-                            load();
-                        } catch (e) {
-                            alert('Ошибка: ' + e.message);
-                            btn.disabled = false;
-                            btn.textContent = 'Отменить';
-                        }
-                    }
-                });
-            });
-        });
+        sel.disabled = true;
+        await doUpdate(sel, id, field, value, fieldLabel);
     }
 
-    function openConfirm({ title, text, okText, onConfirm }) {
+    async function doUpdate(sel, id, field, value, fieldLabel) {
+        try {
+            if (field === 'status') {
+                await api.updateStatus(id, value);
+            } else {
+                await api.updatePaymentStatus(id, value);
+            }
+
+            toast(`Заказ №${id}: ${fieldLabel} изменён на «${sel.options[sel.selectedIndex].text}»`, true);
+            load();
+        } catch (e) {
+            alert('Ошибка: ' + e.message);
+            sel.disabled = false;
+        }
+    }
+
+    function openConfirm({ title, text, okText, onConfirm, onCancel }) {
         const modal = document.getElementById('confirmModal');
         const titleEl = document.getElementById('confirmModalTitle');
         const textEl = document.getElementById('confirmModalText');
@@ -288,8 +247,21 @@ window.SellerOrdersPage = (function () {
             if (onConfirm) onConfirm();
         }
 
+        function handleCancel() {
+            close();
+            if (onCancel) onCancel();
+        }
+
         okBtn.addEventListener('click', handleOk);
-        closeEls.forEach(el => el.addEventListener('click', close));
+        closeEls.forEach(el => el.addEventListener('click', handleCancel));
+    }
+
+    function toast(msg, ok) {
+        if (window.Toast && window.Toast.show) {
+            window.Toast.show(document.getElementById('sellerOrdersList'), msg, ok);
+        } else {
+            console.log(msg);
+        }
     }
 
     function formatDate(iso) {

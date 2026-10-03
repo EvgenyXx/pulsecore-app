@@ -7,8 +7,7 @@ window.ShopRouter = (function () {
         product:    'shopPageProduct',
         cart:       'shopPageCart',
         checkout:   'shopPageCheckout',
-        orders:     'shopPageOrders',
-        profile:    'shopPageProfile'
+        orders:     'shopPageOrders'
     };
 
     const TAB_FOR_PAGE = {
@@ -18,8 +17,7 @@ window.ShopRouter = (function () {
         product:    'catalog',
         cart:       'cart',
         checkout:   'cart',
-        orders:     'profile',
-        profile:    'profile'
+        orders:     'orders'
     };
 
     function hideAll() {
@@ -46,7 +44,6 @@ window.ShopRouter = (function () {
         if (page === 'cart'       && window.CartPage)       window.CartPage.init();
         if (page === 'checkout'   && window.CheckoutPage)   window.CheckoutPage.init();
         if (page === 'orders'     && window.OrdersPage)     window.OrdersPage.init();
-        if (page === 'profile'    && window.ProfilePage)    window.ProfilePage.init();
     }
 
     function handleRoute() {

@@ -4,8 +4,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.pulsecore.app.shop.api.dto.response.CartDto;
 import ru.pulsecore.app.shop.api.dto.response.CartItemDto;
-import ru.pulsecore.app.shop.domain.Cart;
-import ru.pulsecore.app.shop.domain.CartItem;
+import ru.pulsecore.app.shop.domain.entity.Cart;
+import ru.pulsecore.app.shop.domain.entity.CartItem;
 
 import java.math.BigDecimal;
 import java.util.List;

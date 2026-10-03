@@ -10,8 +10,8 @@ import ru.pulsecore.app.notification.application.mail.context.OrderPaidContext;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.MailNotificationEvent;
 import ru.pulsecore.app.shop.application.product.StockService;
-import ru.pulsecore.app.shop.domain.Order;
-import ru.pulsecore.app.shop.domain.OrderItem;
+import ru.pulsecore.app.shop.domain.entity.Order;
+import ru.pulsecore.app.shop.domain.entity.OrderItem;
 import ru.pulsecore.app.shop.domain.OrderStatus;
 import ru.pulsecore.app.shop.domain.PaymentStatus;
 import ru.pulsecore.app.shop.infrastructure.client.PlayerClient;
@@ -51,6 +51,8 @@ public class OrderPaidService {
         order.setPaymentStatus(PaymentStatus.PAID);
         order.setStatus(OrderStatus.CONFIRMED);
 
+        //todo добавить поле для сохранение юкасса айди платежа что бы потом можно быдо оформлять отмену заказа
+        //todo что бы пользователю возвращались средства
         stockService.decreaseForOrder(order);
         Order saved = orderRepository.save(order);
 

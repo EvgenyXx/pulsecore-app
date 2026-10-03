@@ -8,7 +8,7 @@ window.CheckoutPage = (function () {
     const PICKUP_ADDRESS = 'ул. Красная, 100';
     const PICKUP_PHONE = '+7 918 133-91-88';
 
-    let deliveryMethod = 'CDEK';
+    const DELIVERY_METHOD = 'PICKUP';
     let paymentMethod = 'YOOKASSA';
 
     function init() {
@@ -70,32 +70,15 @@ window.CheckoutPage = (function () {
 
                     <div class="checkout-section">
                         <h2 class="checkout-section-title">Способ получения</h2>
-                        <div class="checkout-radio-group" id="deliveryGroup">
+                        <div class="checkout-radio-group">
                             <label class="checkout-radio">
-                                <input type="radio" name="deliveryMethod" value="CDEK" checked>
-                                <span>СДЭК · ПВЗ</span>
-                            </label>
-                            <label class="checkout-radio">
-                                <input type="radio" name="deliveryMethod" value="PICKUP">
+                                <input type="radio" name="deliveryMethod" value="PICKUP" checked disabled>
                                 <span>Самовывоз</span>
                             </label>
                         </div>
                     </div>
 
-                    <div class="checkout-section" id="cdekAddressSection">
-                        <h2 class="checkout-section-title">Адрес СДЭК</h2>
-                        <div class="field">
-                            <label for="coCity">Город <span class="req">*</span></label>
-                            <input id="coCity" type="text" maxlength="100" required placeholder="Москва">
-                        </div>
-                        <div class="field">
-                            <label for="coStreet">Адрес ПВЗ <span class="req">*</span></label>
-                            <input id="coStreet" type="text" maxlength="300" required
-                                   placeholder="ул. Ленина 10, ПВЗ СДЭК">
-                        </div>
-                    </div>
-
-                    <div class="checkout-section" id="pickupAddressSection" style="display:none;">
+                    <div class="checkout-section">
                         <h2 class="checkout-section-title">Самовывоз</h2>
                         <p class="checkout-pickup-info">
                             <strong>${PICKUP_CITY}, ${PICKUP_ADDRESS}</strong><br>
@@ -111,7 +94,7 @@ window.CheckoutPage = (function () {
                                 <input type="radio" name="paymentMethod" value="YOOKASSA" checked>
                                 <span>Онлайн (ЮKassa)</span>
                             </label>
-                            <label class="checkout-radio" id="paymentOnDeliveryOption">
+                            <label class="checkout-radio">
                                 <input type="radio" name="paymentMethod" value="ON_DELIVERY">
                                 <span>При получении (наличные / перевод СБП)</span>
                             </label>
@@ -145,50 +128,8 @@ window.CheckoutPage = (function () {
             </div>
         `;
 
-        bindDelivery();
         bindPayment();
         document.getElementById('checkoutForm').addEventListener('submit', onSubmit);
-    }
-
-    function bindDelivery() {
-        const group = document.getElementById('deliveryGroup');
-        const cdekSection = document.getElementById('cdekAddressSection');
-        const pickupSection = document.getElementById('pickupAddressSection');
-        const cityInput = document.getElementById('coCity');
-        const streetInput = document.getElementById('coStreet');
-
-        group.querySelectorAll('input[name="deliveryMethod"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                deliveryMethod = radio.value;
-
-                if (deliveryMethod === 'CDEK') {
-                    cdekSection.style.display = '';
-                    pickupSection.style.display = 'none';
-                    cityInput.required = true;
-                    streetInput.required = true;
-                } else {
-                    cdekSection.style.display = 'none';
-                    pickupSection.style.display = '';
-                    cityInput.required = false;
-                    streetInput.required = false;
-                    cityInput.value = '';
-                    streetInput.value = '';
-                }
-
-                // ON_DELIVERY доступен только при самовывозе
-                const onDeliveryOption = document.getElementById('paymentOnDeliveryOption');
-                const onDeliveryRadio = onDeliveryOption.querySelector('input');
-                if (deliveryMethod === 'CDEK') {
-                    onDeliveryOption.style.display = 'none';
-                    if (onDeliveryRadio.checked) {
-                        document.querySelector('input[name="paymentMethod"][value="YOOKASSA"]').checked = true;
-                        paymentMethod = 'YOOKASSA';
-                    }
-                } else {
-                    onDeliveryOption.style.display = '';
-                }
-            });
-        });
     }
 
     function bindPayment() {
@@ -247,15 +188,6 @@ window.CheckoutPage = (function () {
             return;
         }
 
-        if (deliveryMethod === 'CDEK') {
-            const city = document.getElementById('coCity').value.trim();
-            const street = document.getElementById('coStreet').value.trim();
-            if (!city || !street) {
-                toast.show(msg, 'Заполните город и адрес ПВЗ', false);
-                return;
-            }
-        }
-
         btn.disabled = true;
         btn.textContent = 'Создание заказа...';
 
@@ -268,11 +200,9 @@ window.CheckoutPage = (function () {
                 customerLastName: document.getElementById('coLastName').value.trim() || null,
                 customerMiddleName: document.getElementById('coMiddleName').value.trim() || null,
                 phone,
-                city: document.getElementById('coCity').value.trim() || null,
-                street: document.getElementById('coStreet').value.trim() || null,
                 comment: document.getElementById('coComment').value.trim() || null,
                 paymentMethod,
-                deliveryMethod
+                deliveryMethod: DELIVERY_METHOD
             };
 
             const order = await ordersApi.create(body);

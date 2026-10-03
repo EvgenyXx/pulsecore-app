@@ -1,7 +1,11 @@
-package ru.pulsecore.app.shop.domain;
+package ru.pulsecore.app.shop.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.pulsecore.app.shop.domain.DeliveryMethod;
+import ru.pulsecore.app.shop.domain.OrderStatus;
+import ru.pulsecore.app.shop.domain.PaymentMethod;
+import ru.pulsecore.app.shop.domain.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

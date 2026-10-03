@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shop.api.dto.response.CategoryDto;
 import ru.pulsecore.app.shop.api.dto.request.CreateCategoryRequest;
 import ru.pulsecore.app.shop.application.mapping.CategoryMapper;
-import ru.pulsecore.app.shop.domain.Category;
+import ru.pulsecore.app.shop.domain.entity.Category;
 import ru.pulsecore.app.shop.infrastructure.repository.CategoryRepository;
 import ru.pulsecore.app.shop.infrastructure.exception.CategoryNotFoundException;
 

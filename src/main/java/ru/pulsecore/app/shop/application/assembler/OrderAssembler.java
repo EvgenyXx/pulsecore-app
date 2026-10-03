@@ -3,6 +3,8 @@ package ru.pulsecore.app.shop.application.assembler;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shop.api.dto.request.CreateOrderRequest;
 import ru.pulsecore.app.shop.domain.*;
+import ru.pulsecore.app.shop.domain.entity.Order;
+import ru.pulsecore.app.shop.domain.entity.OrderItem;
 import ru.pulsecore.app.shop.infrastructure.config.ShopProperties;
 
 import java.math.BigDecimal;

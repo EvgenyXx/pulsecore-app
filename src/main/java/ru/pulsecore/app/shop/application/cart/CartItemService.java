@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.shop.domain.Cart;
-import ru.pulsecore.app.shop.domain.CartItem;
-import ru.pulsecore.app.shop.domain.Product;
+import ru.pulsecore.app.shop.domain.entity.Cart;
+import ru.pulsecore.app.shop.domain.entity.CartItem;
+import ru.pulsecore.app.shop.domain.entity.Product;
 import ru.pulsecore.app.shop.infrastructure.exception.CartItemException;
 import ru.pulsecore.app.shop.infrastructure.repository.CartItemRepository;
 

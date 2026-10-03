@@ -6,8 +6,8 @@ import ru.pulsecore.app.shop.api.dto.request.ProductUpdateRequest;
 import ru.pulsecore.app.shop.api.dto.response.ProductCardDto;
 import ru.pulsecore.app.shop.api.dto.response.ProductCreateResponse;
 import ru.pulsecore.app.shop.api.dto.response.ProductDetailDto;
-import ru.pulsecore.app.shop.domain.Product;
-import ru.pulsecore.app.shop.domain.ProductImage;
+import ru.pulsecore.app.shop.domain.entity.Product;
+import ru.pulsecore.app.shop.domain.entity.ProductImage;
 
 import java.util.List;
 
