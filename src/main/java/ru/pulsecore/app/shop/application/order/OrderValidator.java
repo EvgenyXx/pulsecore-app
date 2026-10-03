@@ -2,7 +2,7 @@ package ru.pulsecore.app.shop.application.order;
 
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shop.api.dto.request.CreateOrderRequest;
-import ru.pulsecore.app.shop.domain.CartItem;
+import ru.pulsecore.app.shop.domain.entity.CartItem;
 import ru.pulsecore.app.shop.domain.DeliveryMethod;
 import ru.pulsecore.app.shop.domain.PaymentMethod;
 import ru.pulsecore.app.shop.infrastructure.exception.OrderException;
@@ -19,19 +19,19 @@ public class OrderValidator {
         validateStock(selected);
     }
 
-    public void validateRequest(CreateOrderRequest request) {
-        if (request.deliveryMethod() == DeliveryMethod.CDEK) {
-            if (request.city() == null || request.city().isBlank()) {
-                throw new OrderException("Город обязателен для СДЭК");
-            }
-            if (request.street() == null || request.street().isBlank()) {
-                throw new OrderException("Адрес ПВЗ обязателен для СДЭК");
-            }
-            if (request.paymentMethod() == PaymentMethod.ON_DELIVERY) {
-                throw new OrderException("СДЭК не поддерживает оплату при получении");
-            }
-        }
-    }
+//    public void validateRequest(CreateOrderRequest request) {
+//        if (request.deliveryMethod() == DeliveryMethod.CDEK) {
+//            if (request.city() == null || request.city().isBlank()) {
+//                throw new OrderException("Город обязателен для СДЭК");
+//            }
+//            if (request.street() == null || request.street().isBlank()) {
+//                throw new OrderException("Адрес ПВЗ обязателен для СДЭК");
+//            }
+//            if (request.paymentMethod() == PaymentMethod.ON_DELIVERY) {
+//                throw new OrderException("СДЭК не поддерживает оплату при получении");
+//            }
+//        }
+//    }
 
     private void validateNotEmpty(List<CartItem> selected) {
         if (selected.isEmpty()) {

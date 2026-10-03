@@ -1,4 +1,4 @@
-package ru.pulsecore.app.shop.domain;
+package ru.pulsecore.app.shop.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

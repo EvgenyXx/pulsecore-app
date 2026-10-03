@@ -5,8 +5,8 @@ import org.mapstruct.Mapping;
 import ru.pulsecore.app.shop.api.dto.response.OrderDto;
 import ru.pulsecore.app.shop.api.dto.response.OrderItemDto;
 import ru.pulsecore.app.shop.api.dto.response.SellerOrderDto;
-import ru.pulsecore.app.shop.domain.Order;
-import ru.pulsecore.app.shop.domain.OrderItem;
+import ru.pulsecore.app.shop.domain.entity.Order;
+import ru.pulsecore.app.shop.domain.entity.OrderItem;
 
 import java.util.List;
 

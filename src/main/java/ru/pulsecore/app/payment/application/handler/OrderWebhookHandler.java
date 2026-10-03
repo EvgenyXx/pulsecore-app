@@ -6,7 +6,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.payment.api.dto.YookassaWebhook;
-import ru.pulsecore.app.shared.dto.response.OrderPaidEvent;
+import ru.pulsecore.app.shared.dto.response.OrderYookassaEvent;
+import ru.pulsecore.app.shared.event.YookassaEventType;
 
 
 @Slf4j
@@ -16,10 +17,22 @@ public class OrderWebhookHandler {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    @Transactional //todo добавить сохранение в систему
+    //todo добавить сохранение в систему. возможно в
+    // самом магазине сделать новую таблицу для заказов
+    @Transactional
     public void handle(YookassaWebhook webhook) {
         Long orderId = Long.parseLong(webhook.object().metadata().orderId());
-        eventPublisher.publishEvent(new OrderPaidEvent(orderId));
+        YookassaEventType eventType = YookassaEventType.fromCode(webhook.event());
+        if (eventType == null) {
+            log.warn("Неизвестный event от ЮKassa: {}", webhook.event());
+            return;
+        }
+
+        eventPublisher.publishEvent(new OrderYookassaEvent(
+                orderId,
+                eventType,
+                webhook.object().id()
+        ));
         log.info("Заказ оплачен: id={}", orderId);
     }
 }

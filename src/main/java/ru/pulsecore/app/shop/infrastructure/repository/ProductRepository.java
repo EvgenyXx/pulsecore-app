@@ -3,7 +3,7 @@ package ru.pulsecore.app.shop.infrastructure.repository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.shop.domain.Product;
+import ru.pulsecore.app.shop.domain.entity.Product;
 
 import java.util.List;
 

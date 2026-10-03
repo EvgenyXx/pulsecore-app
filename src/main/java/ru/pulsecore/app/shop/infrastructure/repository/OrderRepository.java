@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.pulsecore.app.shop.domain.Order;
+import ru.pulsecore.app.shop.domain.entity.Order;
 import ru.pulsecore.app.shop.domain.OrderStatus;
 import ru.pulsecore.app.shop.domain.PaymentMethod;
 import ru.pulsecore.app.shop.domain.PaymentStatus;
@@ -32,23 +32,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatusOrderByCreatedAtDesc(OrderStatus status);
 
 
-    @Modifying
-    @Query("""
-                UPDATE Order o
-                SET o.status = :cancelled,
-                    o.updatedAt = :now
-                WHERE o.paymentMethod = :method
-                  AND o.paymentStatus = :payment
-                  AND o.status = :status
-                  AND o.createdAt < :threshold
-            """)
-    int cancelUnpaidBefore(
-            @Param("method") PaymentMethod method,
-            @Param("payment") PaymentStatus payment,
-            @Param("status") OrderStatus status,
-            @Param("threshold") LocalDateTime threshold,
-            @Param("cancelled") OrderStatus cancelled,
-            @Param("now") LocalDateTime now
+    List<Order> findByPaymentMethodAndPaymentStatusAndStatusAndCreatedAtBefore(
+            PaymentMethod paymentMethod,
+            PaymentStatus paymentStatus,
+            OrderStatus status,
+            LocalDateTime threshold
     );
 
 

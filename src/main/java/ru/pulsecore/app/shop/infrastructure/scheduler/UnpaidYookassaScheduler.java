@@ -9,7 +9,7 @@ import ru.pulsecore.app.shop.application.order.OrderCleanupService;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class UnpaidYookassaCleaner {
+public class UnpaidYookassaScheduler {
 
     private final OrderCleanupService orderCleanupService;
 

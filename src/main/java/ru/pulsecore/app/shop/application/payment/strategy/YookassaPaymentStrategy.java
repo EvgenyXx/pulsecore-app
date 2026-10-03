@@ -6,7 +6,7 @@ import ru.pulsecore.app.shared.dto.response.PaymentResponse;
 import ru.pulsecore.app.shop.api.dto.response.OrderDto;
 import ru.pulsecore.app.shop.application.mapping.OrderMapper;
 import ru.pulsecore.app.shop.application.payment.OrderPaymentStrategy;
-import ru.pulsecore.app.shop.domain.Order;
+import ru.pulsecore.app.shop.domain.entity.Order;
 import ru.pulsecore.app.shop.domain.PaymentMethod;
 import ru.pulsecore.app.shop.infrastructure.client.PaymentShopClient;
 

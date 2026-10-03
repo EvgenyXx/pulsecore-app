@@ -1,10 +1,10 @@
 package ru.pulsecore.app.shop.application.assembler;
 
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.shop.domain.CartItem;
-import ru.pulsecore.app.shop.domain.OrderItem;
-import ru.pulsecore.app.shop.domain.Product;
-import ru.pulsecore.app.shop.domain.ProductImage;
+import ru.pulsecore.app.shop.domain.entity.CartItem;
+import ru.pulsecore.app.shop.domain.entity.OrderItem;
+import ru.pulsecore.app.shop.domain.entity.Product;
+import ru.pulsecore.app.shop.domain.entity.ProductImage;
 
 @Component
 public class OrderItemAssembler {
