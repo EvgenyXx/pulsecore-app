@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.application.calculation.league.place.PlacePointsCalculatorFactory;
 import ru.pulsecore.app.tournament.domain.MatchCalculationStrategy;
 import ru.pulsecore.app.tournament.domain.PlacePointsCalculator;
+import ru.pulsecore.app.tournament.domain.enums.GameStage;
 import ru.pulsecore.app.tournament.domain.enums.StrategyType;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
@@ -22,6 +23,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class FourPlayerBracketCalculationStrategy implements MatchCalculationStrategy {
+
+    private static final int MATCH_7_THIRD_PLACE = 7;
+    private static final int MATCH_6_FOURTH_PLACE = 6;
+
+    private static final int PLACE_1 = 1;
+    private static final int PLACE_2 = 2;
+    private static final int PLACE_3 = 3;
+    private static final int PLACE_4 = 4;
 
     private final PlacePointsCalculatorFactory placePointsCalculatorFactory;
 
@@ -60,15 +69,17 @@ public class FourPlayerBracketCalculationStrategy implements MatchCalculationStr
         Map<String, Integer> places = new HashMap<>();
 
         for (Match m : matches) {
-            if ("final".equals(m.getGroupType())) {
-                places.put(StringUtils.normalizeSearch(winnerOf(m)), 1);
-                places.put(StringUtils.normalizeSearch(loserOf(m)), 2);
-            } else if ("lower_mesh_3".equals(m.getGroupType())) {
-                if (m.getSortNumber() == 7) places.put(StringUtils.normalizeSearch(loserOf(m)), 3);
-                if (m.getSortNumber() == 6) places.put(StringUtils.normalizeSearch(loserOf(m)), 4);
+            GameStage stage = GameStage.fromCode(m.getGroupType());
+            if (stage == GameStage.FINAL) {
+                places.put(StringUtils.normalizeSearch(winnerOf(m)), PLACE_1);
+                places.put(StringUtils.normalizeSearch(loserOf(m)), PLACE_2);
+            } else if (stage == GameStage.LOWER_MESH_3) {
+                if (m.getSortNumber() == MATCH_7_THIRD_PLACE)
+                    places.put(StringUtils.normalizeSearch(loserOf(m)), PLACE_3);
+                if (m.getSortNumber() == MATCH_6_FOURTH_PLACE)
+                    places.put(StringUtils.normalizeSearch(loserOf(m)), PLACE_4);
             }
         }
-
         return places;
     }
 

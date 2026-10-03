@@ -1,41 +1,45 @@
 package ru.pulsecore.app.tournament.infrastructure.parser;
 
-import com.fasterxml.jackson.databind.JsonNode;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.tournament.api.dto.TournamentJson;
 import ru.pulsecore.app.tournament.domain.TournamentPage;
+import ru.pulsecore.app.tournament.domain.enums.GameStage;
+import ru.pulsecore.app.tournament.domain.enums.GameStatus;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
+
+import java.util.List;
 
 @Slf4j
 @Service
 public class JsonTournamentStatusParser {
 
     public TournamentStatus parseStatus(TournamentPage page) {
-        if (page == null || page.raw() == null) return TournamentStatus.NOT_STARTED;
+        if (page == null || page.json() == null) return TournamentStatus.NOT_STARTED;
 
-        JsonNode root = page.raw();
+        TournamentJson json = page.json();
 
-        if (isCancelled(root)) return TournamentStatus.CANCELLED;
-        if (isFinished(root)) return TournamentStatus.FINISHED;
-        if (isInProgress(root)) return TournamentStatus.IN_PROGRESS;
+        if (isCancelled(json)) return TournamentStatus.CANCELLED;
+        if (isFinished(json)) return TournamentStatus.FINISHED;
+        if (isInProgress(json)) return TournamentStatus.IN_PROGRESS;
         return TournamentStatus.NOT_STARTED;
     }
 
-    private boolean isCancelled(JsonNode root) {
-        JsonNode games = root.path("games");
-
-        String first = games.path(0).path("statusType").asText("");
-        String second = games.path(1).path("statusType").asText("");
-
-        return "canceled".equals(first) && "canceled".equals(second);
+    private boolean isCancelled(TournamentJson json) {
+        List<TournamentJson.GameJson> gameJsons = json.games();
+        GameStatus first = GameStatus.fromCode(gameJsons.get(0).statusType());
+        GameStatus second = GameStatus.fromCode(gameJsons.get(1).statusType());
+        return first == GameStatus.CANCELED && second == GameStatus.CANCELED;
     }
 
-    private boolean isFinished(JsonNode root) {
-        for (JsonNode g : root.path("games")) {
-            if (!"final".equals(g.path("groupType").asText(""))) continue;
-
-            String status = g.path("statusType").asText("");
-            boolean fin = "completed".equals(status) || "canceled".equals(status);
+    private boolean isFinished(TournamentJson json) {
+        List<TournamentJson.GameJson> gameJsons = json.games();
+        for (TournamentJson.GameJson gameJson : gameJsons) {
+            GameStage stage = GameStage.fromCode(gameJson.groupType());
+            if (stage != GameStage.FINAL) continue;
+            GameStatus status = GameStatus.fromCode(gameJson.statusType());
+            boolean fin = status == GameStatus.COMPLETED || status == GameStatus.CANCELED;
             if (fin) log.debug("FINISHED: финал statusType={}", status);
             return fin;
         }
@@ -45,15 +49,16 @@ public class JsonTournamentStatusParser {
     /**
      * Турнир начался, если есть goes ИЛИ хотя бы один матч с непустым счётом/сетами
      */
-    private boolean isInProgress(JsonNode root) {
-        for (JsonNode g : root.path("games")) {
-            if ("goes".equals(g.path("statusType").asText(""))) {
-                log.debug("IN_PROGRESS: матч идёт — gameId={}", g.path("gameId").asLong());
+    private boolean isInProgress(TournamentJson json) {
+        List<TournamentJson.GameJson> gameJsons = json.games();
+        for (TournamentJson.GameJson gameJson : gameJsons) {
+            GameStatus status = GameStatus.fromCode(gameJson.statusType());
+            if (status == GameStatus.GOES) {
+                log.debug("IN_PROGRESS: матч идёт — gameId={}", gameJson.gameId());
                 return true;
             }
         }
         return false;
     }
-
 
 }

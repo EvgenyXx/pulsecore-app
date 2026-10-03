@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.tournament.api.dto.TournamentJson;
 import ru.pulsecore.app.tournament.application.calculation.league.NightBonusService;
 import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.enums.LeagueType;
@@ -50,11 +51,11 @@ public class TournamentExtractor {
             return null;
         }
 
-        Long tournamentId = page.id();
-        String date = page.date();
-        String time = page.time();
-        String removed = page.removedPlayer();
-        String typeId = page.typeId();
+        Long tournamentId = page.json().tourId();
+        String date = page.json().date();
+        String time = page.json().time();
+        String removed = findRemovedPlayer(page.json());
+        String typeId = page.json().typeId();
 
         TournamentStatus status = jsonTournamentStatusParser.parseStatus(page);
         List<Match> matches = jsonMatchParser.parseMatches(page);
@@ -85,4 +86,12 @@ public class TournamentExtractor {
                 typeId
         );
     }
+
+    private String findRemovedPlayer(TournamentJson json) {
+    return json.players().stream()
+            .filter(p -> Boolean.TRUE.equals(p.removed()))
+            .map(TournamentJson.PlayerJson::name)
+            .findFirst()
+            .orElse(null);
+}
 }

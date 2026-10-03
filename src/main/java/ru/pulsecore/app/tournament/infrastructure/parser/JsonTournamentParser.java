@@ -27,59 +27,15 @@ public class JsonTournamentParser {
         JsonNode root = BootstrapJson.parse(doc);
         if (root == null) return null;
 
-        TournamentJson json = parserJson(root);
-
-
-
-        return new TournamentPage(
-                doc, root,
-                json.tourId(),
-                json.date(),
-                json.time(),
-                json.hallTitle(),
-                json.leagueTitle(),
-                json.typeId(),
-                findRemovedPlayer(json)
-                );
-//        return new TournamentPage(
-//                doc,
-//                root,
-//                root.path("tourId").asLong(),
-//                root.path("date").asText(null),
-//                root.path("time").asText(null),
-//                root.path("hallTitle").asText(null),
-//                root.path("leagueTitle").asText(null),
-//                root.path("typeId").asText(null),
-//                findRemovedPlayer(root)
-//        );
-    }
-
-    private TournamentJson parserJson(JsonNode jsonNode) {
+        TournamentJson json;
         try {
-            return objectMapper.treeToValue(jsonNode, TournamentJson.class);
+            json = objectMapper.treeToValue(root, TournamentJson.class);
         } catch (JsonProcessingException e) {
-            log.warn("Не удалось замапить JSON турнира: {}", e.getMessage());
+            log.warn("Ошибка маппинга: {}", e.getMessage());
             return null;
         }
+
+        return new TournamentPage(doc, json);
     }
 
-    private String findRemovedPlayer(TournamentJson json) {
-        if (json.players() == null) {
-            return null;
-        }
-        return json.players().stream()
-                .filter(p -> Boolean.TRUE.equals(p.removed()))
-                .map(TournamentJson.PlayerJson::name)
-                .findFirst()
-                .orElse(null);
-    }
-
-//    private String findRemovedPlayer(JsonNode root) {
-//        for (JsonNode p : root.path("players")) {
-//            if (p.path("removed").asBoolean(false)) {
-//                return p.path("name").asText(null);
-//            }
-//        }
-//        return null;
-//    }
 }
