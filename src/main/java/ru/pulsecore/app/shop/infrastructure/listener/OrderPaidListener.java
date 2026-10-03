@@ -30,5 +30,3 @@ public class OrderPaidListener {
 }
 
 
-//orderPaidService.markPaid(orderPaidEvent.orderId());
-//        log.info("Shop: заказ {} помечен оплаченным", orderPaidEvent.orderId());
