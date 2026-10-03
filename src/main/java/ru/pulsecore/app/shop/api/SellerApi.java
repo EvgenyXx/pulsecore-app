@@ -13,6 +13,7 @@ public class SellerApi {
     public static final String ORDER_STATUS = "/orders/{orderId}/status";
     public static final String ORDER_PAYMENT_STATUS = "/orders/{orderId}/payment-status";
 
+
     // ----- Products -----
     public static final String PRODUCTS = "/products";
     public static final String PRODUCT = "/products/{productId}";
@@ -27,4 +28,5 @@ public class SellerApi {
     // ----- Upload -----
     public static final String UPLOAD = "/upload";
     public static final String PARAM_FILE = "file";
+
 }

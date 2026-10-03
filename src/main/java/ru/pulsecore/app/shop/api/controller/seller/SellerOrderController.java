@@ -14,6 +14,7 @@ import ru.pulsecore.app.shop.application.order.OrderSellerService;
 import ru.pulsecore.app.shop.domain.OrderStatus;
 
 import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "Seller — Orders", description = "Управление заказами")
 @RestController
@@ -23,6 +24,8 @@ import java.util.List;
 public class SellerOrderController {
 
     private final OrderSellerService orderSellerService;
+
+
 
     @Operation(summary = "Список заказов")
     @GetMapping(SellerApi.ORDERS)

@@ -23,4 +23,5 @@ public class ShopApi {
     // ----- Orders -----
     public static final String ORDERS = "/orders";
     public static final String ORDER = "/orders/{orderId}";
+
 }
