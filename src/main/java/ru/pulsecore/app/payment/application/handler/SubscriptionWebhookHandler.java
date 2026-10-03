@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.payment.api.dto.YookassaWebhook;
 import ru.pulsecore.app.payment.application.PaymentService;
-import ru.pulsecore.app.shared.event.PaymentSuccessEvent;
+import ru.pulsecore.app.shared.event.SubscriptionActivatedEvent;
+import ru.pulsecore.app.shared.event.YookassaEventType;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -22,6 +23,13 @@ public class SubscriptionWebhookHandler {
 
     @Transactional
     public void handle(YookassaWebhook webhook) {
+        YookassaEventType eventType = YookassaEventType.fromCode(webhook.event());
+
+        if (eventType != YookassaEventType.PAYMENT_SUCCEEDED) {
+            log.info("Подписка: пропускаем event {}", webhook.event());
+            return;
+        }
+
         var metadata = webhook.object().metadata();
         var amount = webhook.object().amount();
 
@@ -30,14 +38,14 @@ public class SubscriptionWebhookHandler {
 
         paymentService.save(playerId, new BigDecimal(amount.value()), months);
 
-        publisher.publishEvent(new PaymentSuccessEvent(
+        publisher.publishEvent(new SubscriptionActivatedEvent(
                 playerId,
                 months * 30,
                 amount.value(),
                 amount.currency()
         ));
 
-        log.info("Подписка оплачена: id={}, months={}, amount={}",
+        log.info("Подписка активирована: id={}, months={}, amount={}",
                 playerId, months, amount.value());
     }
 }

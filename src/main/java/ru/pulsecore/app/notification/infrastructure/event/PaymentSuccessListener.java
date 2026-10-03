@@ -10,7 +10,7 @@ import ru.pulsecore.app.notification.application.mail.template.MailFormat;
 import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
 import ru.pulsecore.app.notification.client.PlayerClient;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.shared.event.PaymentSuccessEvent;
+import ru.pulsecore.app.shared.event.SubscriptionActivatedEvent;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class PaymentSuccessListener {
     private final MailTemplateService templates;
 
     @EventListener
-    public void onPaymentSuccess(PaymentSuccessEvent event) {
+    public void onPaymentSuccess(SubscriptionActivatedEvent event) {
         PlayerData player = playerClient.getPlayer(event.playerId());
 
         log.debug("Оплата: начало отправки писем для id={}", event.playerId());
@@ -38,7 +38,7 @@ public class PaymentSuccessListener {
                 event.playerId(), player.email());
     }
 
-    private void sendUserPaymentEmail(PlayerData player, PaymentSuccessEvent event) {
+    private void sendUserPaymentEmail(PlayerData player, SubscriptionActivatedEvent event) {
         String text = templates.format(
                 MailTemplate.PAYMENT_SUCCESS_USER,
                 StringUtils.extractFirstName(player.name()), event.days() / 30
@@ -51,7 +51,7 @@ public class PaymentSuccessListener {
         log.debug("Оплата: письмо пользователю отправлено на {}", player.email());
     }
 
-    private void sendAdminPaymentEmail(PlayerData player, PaymentSuccessEvent event) {
+    private void sendAdminPaymentEmail(PlayerData player, SubscriptionActivatedEvent event) {
         String text = templates.format(
                 MailTemplate.ADMIN_PAYMENT,
                 player.name(), player.email(),
