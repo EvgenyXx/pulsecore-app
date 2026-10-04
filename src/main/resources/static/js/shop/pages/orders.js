@@ -1,10 +1,16 @@
 window.OrdersPage = (function () {
     const ordersApi = window.OrdersApi;
-    const loader = window.Loader;
 
-    let ordersCache = {};
+    let activeOrders = [];
+    let allOrders = null;
+    let currentTab = 'active';
+    let initialized = false;
 
     function init() {
+        activeOrders = [];
+        allOrders = null;
+        currentTab = 'active';
+        initialized = false;
         load();
     }
 
@@ -12,31 +18,90 @@ window.OrdersPage = (function () {
         const container = document.getElementById('ordersContent');
         if (!container) return;
 
-        loader.show(container);
+        if (!initialized) {
+            container.innerHTML = `
+                <div class="orders-tabs">
+                    <div class="orders-tabs-slider pos-0"></div>
+                    <span class="orders-tab active" data-tab="active">Активные</span>
+                    <span class="orders-tab" data-tab="all">Все заказы</span>
+                </div>
+                <div class="orders-body">
+                    <p class="muted">Загрузка...</p>
+                </div>
+            `;
+            bindTabs(container);
+            initialized = true;
+        }
 
         try {
-            const orders = await ordersApi.getMyOrders();
+            activeOrders = await ordersApi.getActive() || [];
+            renderBody();
+        } catch (e) {
+            setBody(`<div class="empty-state">Ошибка загрузки: ${e.message}</div>`);
+        }
+    }
 
-            if (!orders || orders.length === 0) {
-                container.innerHTML = `
-                    <div class="cart-empty">
-                        <div class="cart-empty-icon">📦</div>
-                        <p class="cart-empty-text">Заказов пока нет</p>
-                        <a href="#/" class="cart-empty-link">Перейти в каталог</a>
-                    </div>
-                `;
+    async function switchTab(tab) {
+        if (tab === currentTab) return;
+        currentTab = tab;
+
+        // плавно двигаем слайдер — без перерисовки
+        const slider = document.querySelector('.orders-tabs-slider');
+        if (slider) {
+            slider.classList.remove('pos-0', 'pos-1');
+            slider.classList.add(tab === 'active' ? 'pos-0' : 'pos-1');
+        }
+
+        document.querySelectorAll('.orders-tab').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === currentTab);
+        });
+
+        if (tab === 'all' && allOrders === null) {
+            setBody(`<p class="muted">Загрузка...</p>`);
+            try {
+                allOrders = await ordersApi.getMyOrders() || [];
+            } catch (e) {
+                setBody(`<div class="empty-state">Ошибка загрузки: ${e.message}</div>`);
+                currentTab = 'active';
+                if (slider) {
+                    slider.classList.remove('pos-0', 'pos-1');
+                    slider.classList.add('pos-0');
+                }
+                document.querySelectorAll('.orders-tab').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === 'active');
+                });
                 return;
             }
-
-            ordersCache = {};
-            orders.forEach(o => ordersCache[o.id] = o);
-
-            container.innerHTML = orders.map(renderOrder).join('');
-            bindActions(container);
-
-        } catch (e) {
-            loader.empty(container, 'Ошибка загрузки: ' + e.message);
         }
+
+        renderBody();
+    }
+
+    function setBody(html) {
+        const body = document.querySelector('#ordersContent .orders-body');
+        if (body) body.innerHTML = html;
+    }
+
+    function renderBody() {
+        const list = currentTab === 'active' ? activeOrders : (allOrders || []);
+
+        if (list.length === 0) {
+            setBody(currentTab === 'active'
+                ? `<div class="cart-empty">
+                       <div class="cart-empty-icon">📦</div>
+                       <p class="cart-empty-text">Активных заказов нет</p>
+                       <a href="#/" class="cart-empty-link">Перейти в каталог</a>
+                   </div>`
+                : `<div class="cart-empty">
+                       <div class="cart-empty-icon">📦</div>
+                       <p class="cart-empty-text">Заказов пока нет</p>
+                       <a href="#/" class="cart-empty-link">Перейти в каталог</a>
+                   </div>`);
+            return;
+        }
+
+        setBody(`<div class="orders-list">${list.map(renderOrder).join('')}</div>`);
+        bindActions();
     }
 
     function renderOrder(order) {
@@ -72,16 +137,8 @@ window.OrdersPage = (function () {
 
     function renderPaymentBadge(paymentStatus) {
         if (!paymentStatus) return '';
-        const labels = {
-            PENDING:   'Не оплачен',
-            PAID:      'Оплачен',
-            CANCELLED: 'Отменён'
-        };
-        const cls = {
-            PENDING:   'payment-pending',
-            PAID:      'payment-paid',
-            CANCELLED: 'payment-cancelled'
-        };
+        const labels = { PENDING: 'Не оплачен', PAID: 'Оплачен', CANCELLED: 'Отменён' };
+        const cls = { PENDING: 'payment-pending', PAID: 'payment-paid', CANCELLED: 'payment-cancelled' };
         return `<span class="order-payment ${cls[paymentStatus] || ''}">${labels[paymentStatus] || paymentStatus}</span>`;
     }
 
@@ -92,10 +149,7 @@ window.OrdersPage = (function () {
 
     function renderDetails(order) {
         const rows = [];
-
-        const deliveryLabel = order.deliveryMethod === 'PICKUP'
-            ? 'Самовывоз'
-            : 'СДЭК · ПВЗ';
+        const deliveryLabel = order.deliveryMethod === 'PICKUP' ? 'Самовывоз' : 'СДЭК · ПВЗ';
         rows.push(row('Доставка', deliveryLabel));
 
         if (order.deliveryMethod === 'PICKUP') {
@@ -152,22 +206,16 @@ window.OrdersPage = (function () {
 
     function statusLabel(status) {
         const labels = {
-            CONFIRMED: 'Собирается',
-            ASSEMBLED: 'Собран',
-            SHIPPED:   'Отправлен',
-            DONE:      'Получен',
-            CANCELLED: 'Отменён'
+            CONFIRMED: 'Собирается', ASSEMBLED: 'Собран',
+            SHIPPED: 'Отправлен', DONE: 'Получен', CANCELLED: 'Отменён'
         };
         return labels[status] || status;
     }
 
     function statusClass(status) {
         const map = {
-            CONFIRMED: 'confirmed',
-            ASSEMBLED: 'assembled',
-            SHIPPED:   'shipped',
-            DONE:      'done',
-            CANCELLED: 'cancelled'
+            CONFIRMED: 'confirmed', ASSEMBLED: 'assembled',
+            SHIPPED: 'shipped', DONE: 'done', CANCELLED: 'cancelled'
         };
         return map[status] || '';
     }
@@ -193,8 +241,16 @@ window.OrdersPage = (function () {
         }[ch]));
     }
 
-    function bindActions(container) {
-        container.querySelectorAll('.order-header[data-action="toggle"]').forEach(h => {
+    function bindTabs(container) {
+        container.querySelectorAll('.orders-tab').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+    }
+
+    function bindActions() {
+        document.querySelectorAll('.order-header[data-action="toggle"]').forEach(h => {
+            if (h.dataset.bound === '1') return;
+            h.dataset.bound = '1';
             h.addEventListener('click', () => {
                 const card = h.closest('.order-card');
                 card.classList.toggle('expanded');

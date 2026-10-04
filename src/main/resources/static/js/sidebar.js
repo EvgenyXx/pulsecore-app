@@ -2,15 +2,6 @@ export async function initSidebar(activePage = null) {
     const container = document.getElementById('sidebarContainer');
     if (!container) return;
 
-    let isAdmin = false;
-    try {
-        const res = await fetch('/api/player/me', { credentials: 'same-origin' });
-        if (res.ok) {
-            const user = await res.json();
-            isAdmin = user.admin === true;
-        }
-    } catch(e) {}
-
     const getNavItem = (id, page, label, sublabel, iconSvg, onClick, extraClass = '') => `
         <div class="nav-item ${activePage === page ? 'active' : ''} ${extraClass}" id="${id}" onclick="${onClick}">
             <span class="nav-icon">${iconSvg}</span>
@@ -57,9 +48,6 @@ export async function initSidebar(activePage = null) {
                 ${getNavItem('nav-analytics', 'analytics', 'Аналитика', 'Статистика по лигам',
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
         "navigate('analytics')")}
-                ${isAdmin ? getNavItem('nav-admin', 'admin', 'Админка', '',
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-        "window.location.href='/admin'", 'admin-item') : ''}
                 ${getNavItem('nav-profile', 'profile', 'Настройки', 'Аккаунт и подписка',
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
         "navigate('profile')")}

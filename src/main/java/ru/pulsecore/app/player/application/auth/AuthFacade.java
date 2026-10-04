@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
+import ru.pulsecore.app.player.domain.Role;
 import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.response.MeResponse;
@@ -19,6 +20,7 @@ import ru.pulsecore.app.player.infrastructure.session.RememberMeService;
 import ru.pulsecore.app.player.application.profile.ThemeService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,7 +36,7 @@ public class AuthFacade {
 
     public AuthResponse login(String email, String rawPassword, HttpSession session, HttpServletResponse response) {
         Player player = authenticationService.authenticate(email, rawPassword);
-        AuthResponse authResponse =playerMapper.toAuthResponse(player);
+        AuthResponse authResponse = playerMapper.toAuthResponse(player);
 
         SecurityUser securityUser = new SecurityUser(player);
         UsernamePasswordAuthenticationToken authToken =
@@ -55,6 +57,8 @@ public class AuthFacade {
         player.setLastLoginAt(LocalDateTime.now());
         playerCommandService.save(player);
 
+        List<String> roles = player.getRoles().stream()
+                .map(Role::getName).toList();
         String theme = themeService.getTheme(UUID.fromString(playerId));
 
         return new MeResponse(
@@ -62,7 +66,7 @@ public class AuthFacade {
                 player.getName(),
                 player.getEmail(),
                 player.getCreatedAt(),
-                player.isAdmin(),
+                roles,
                 theme
         );
     }

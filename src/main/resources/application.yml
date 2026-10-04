@@ -76,40 +76,30 @@ audit:
 app:
       security:
             public-urls:
+                  - /api/player/register
+                  - /api/player/login
+                  - /api/player/verify-email
+                  - /api/player/forgot-password
+                  - /api/player/reset-password
+                  - /api/player/oauth-finish
+                  - /api/player/me
                   - /
                   - /index.html
                   - /js/**
                   - /css/**
-                  - /register.html
-                  - /api/players
-                  - /subscribe.html
-                  - /profile.html
                   - /dashboard.html
                   - /img.png
                   - /favicon.ico
-                  - /robots.txt
-                  - /error
-                  - /api/player/**
                   - /api/payment/webhook
-                  - /oauth-finish.html
                   - /manifest.json
-                  - /swagger-ui/**
-                  - /v3/api-docs/**
-                  - /swagger-resources/**
-                  - /swagger-ui.html
-                  - /actuator/**
-                  - /compare
-                  - /compare.html
-                  - /seller
-                  - /seller.html
-                  - /shop
-                  - /shop.html
-                  - /api/seller/**
-            authenticated-urls:
-                  - /api/player/**
             admin-urls:
                   - /admin.html
+                  - /admin
                   - /api/admin/**
+                  - /actuator/**
+            seller-urls:
+                  - /seller.html
+                  - /api/seller/**
             oauth:
                   unknown-email-domain: "@unknown.pulsecore"
       remember-me:

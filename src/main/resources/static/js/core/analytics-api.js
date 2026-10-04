@@ -1,5 +1,3 @@
-import { state } from './state.js';
-
 const BASE = '/api';
 
 async function apiRequest(endpoint, options = {}) {
@@ -9,7 +7,7 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const AnalyticsAPI = {
-    getMe: () => apiRequest('/player/me'),
+    getMe: () => window.Me.load(),
     getSubscription: () => apiRequest('/player/subscription'),
     getLeagueAvg: () => apiRequest('/tournament/analytics'),
     getMonthly: (year) => apiRequest(`/tournament/monthly-income?year=${year}`),

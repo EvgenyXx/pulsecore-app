@@ -1,5 +1,3 @@
-import { state } from './state.js';
-
 const BASE = '/api';
 
 async function apiRequest(endpoint, options = {}) {
@@ -9,7 +7,7 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const SubscribeAPI = {
-    getMe: () => apiRequest('/player/me'),
+    getMe: () => window.Me.load(),
     getPrices: () => apiRequest('/payment/prices'),
     getSubscription: () => apiRequest('/player/subscription'),
     createPayment: (months) => apiRequest(`/payment/pay?months=${months}`, { method: 'POST' }),

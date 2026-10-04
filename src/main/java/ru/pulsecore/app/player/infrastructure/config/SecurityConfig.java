@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,10 +29,15 @@ public class SecurityConfig {
     private final CustomLogoutSuccessHandler logoutSuccessHandler;
     private final SecurityProperties securityProperties;
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
+
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +51,11 @@ public class SecurityConfig {
                         .maxSessionsPreventsLogin(false))
                 .authorizeHttpRequests(auth -> {
                     securityProperties.getPublicUrls().forEach(url -> auth.requestMatchers(url).permitAll());
-                    securityProperties.getAuthenticatedUrls().forEach(url -> auth.requestMatchers(url).authenticated());
+                    securityProperties.getSellerUrls().forEach(url->
+                            auth.requestMatchers(url).hasAnyAuthority(
+                                    securityProperties.getAdminAuthority(),
+                                    securityProperties.getSellerAuthority()
+                            ));
                     securityProperties.getAdminUrls().forEach(url ->
                             auth.requestMatchers(url).hasAuthority(securityProperties.getAdminAuthority()));
                     auth.anyRequest().authenticated();

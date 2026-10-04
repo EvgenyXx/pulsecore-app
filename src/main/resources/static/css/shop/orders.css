@@ -75,12 +75,10 @@
     letter-spacing: 0.1px;
 }
 
-/* Статус оплаты */
 .order-payment.payment-pending    { background: rgba(255, 200, 0, 0.12); color: #ffc800; }
 .order-payment.payment-paid       { background: rgba(0, 217, 192, 0.14); color: var(--accent); }
 .order-payment.payment-cancelled  { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; }
 
-/* Статус заказа */
 .order-status.confirmed  { background: rgba(0, 217, 192, 0.12); color: var(--accent); }
 .order-status.assembled  { background: rgba(0, 150, 255, 0.14); color: #4db8ff; }
 .order-status.shipped    { background: rgba(0, 122, 255, 0.14); color: #007aff; }
@@ -196,9 +194,74 @@
     letter-spacing: -0.5px;
 }
 
+/* ===== Табы Активные / Все со слайдером ===== */
+
+.orders-tabs {
+    position: relative;
+    display: flex;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 2px;
+    gap: 0;
+    overflow: hidden;
+    margin-bottom: 16px;
+    min-height: 38px;
+}
+
+.orders-tabs-slider {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    left: 2px;
+    width: calc(50% - 2px);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    transition: transform 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
+    z-index: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    will-change: transform;
+}
+
+.orders-tabs-slider.pos-0 { transform: translateX(0); }
+.orders-tabs-slider.pos-1 { transform: translateX(100%); }
+
+.orders-tab {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #a1a1aa;
+    cursor: pointer;
+    transition: color 0.35s ease, font-weight 0.2s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.orders-tab:hover { color: #e5e5e5; }
+.orders-tab.active { color: #ffffff; font-weight: 600; }
+
+.orders-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 @media (max-width: 600px) {
     .order-card { padding: 14px; }
     .order-total { font-size: 18px; }
     .order-status,
     .order-payment { font-size: 10px; padding: 4px 8px; }
+
+    .orders-tab { font-size: 12px; padding: 8px 0; }
 }
