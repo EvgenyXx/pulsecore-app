@@ -5,7 +5,7 @@ export async function apiRequest(endpoint, options = {}) {
 }
 
 export const API = {
-    getMe: () => apiRequest('/api/player/me'),
+    getMe: () => window.Me.load(),
     logout: () => fetch('/api/player/logout', { method: 'POST', credentials: 'same-origin' }),
     getDashboard: (playerId) => apiRequest(`/api/tournament/${playerId}/dashboard`),
     getHalls: () => apiRequest('/api/player/halls'),

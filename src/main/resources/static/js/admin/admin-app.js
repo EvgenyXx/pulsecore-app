@@ -1,12 +1,27 @@
-import { AdminAPI } from './admin-api.js';
-import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus, giveSub, giveSubCustom, removeSub, enableSub, loadSubscriptionsOverview, refreshSubscriptionsOverview } from './admin-players.js';
-import { loadCurrentPrices, updatePrices } from './admin-prices.js';
-import { adminCalculate } from './admin-calculate.js';
-import { sendBroadcast } from './admin-broadcast.js';
-import { loadPageStats } from './admin-stats.js';
-import { loadTournaments, toggleTournamentExpand, toggleStatus, saveTournament } from './admin-tournaments.js';
-import { loadSchedulerStatus, toggleScheduler } from './admin-scheduler.js';
-import { loadLastLogin, loadLastLoginPrev, loadLastLoginNext } from './admin-last-login.js';
+import {AdminAPI} from './admin-api.js';
+import {
+    searchPlayers,
+    selectPlayer,
+    togglePlayerRole,
+    deletePlayerTournaments,
+    resyncPlayerTournaments,
+    deletePlayerAccount,
+    updatePlayer,
+    togglePlayerStatus,
+    giveSub,
+    giveSubCustom,
+    removeSub,
+    enableSub,
+    loadSubscriptionsOverview,
+    refreshSubscriptionsOverview
+} from './admin-players.js';
+import {loadCurrentPrices, updatePrices} from './admin-prices.js';
+import {adminCalculate} from './admin-calculate.js';
+import {sendBroadcast} from './admin-broadcast.js';
+import {loadPageStats} from './admin-stats.js';
+import {loadTournaments, toggleTournamentExpand, toggleStatus, saveTournament} from './admin-tournaments.js';
+import {loadSchedulerStatus, toggleScheduler} from './admin-scheduler.js';
+import {loadLastLogin, loadLastLoginPrev, loadLastLoginNext} from './admin-last-login.js';
 
 window.searchPlayers = searchPlayers;
 window.selectPlayer = selectPlayer;
@@ -155,13 +170,15 @@ async function logout() {
 
 async function init() {
     try {
-        const user = await AdminAPI.getMe();
-        if (!user || !user.admin) {
+        const me = await window.Me.load();
+
+        if (!me || !window.Me.isAdmin(me)) {
             window.location.href = '/dashboard';
             return;
         }
     } catch (e) {
         window.location.href = '/';
+        return;
     }
     showSection('players');
 }

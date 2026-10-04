@@ -1,22 +1,17 @@
 export async function initRoleCheck() {
     try {
-        const res = await fetch('/api/player/me', { credentials: 'same-origin' });
-        if (!res.ok) return;
-        const user = await res.json();
-        const isAdmin = user.admin === true;
+        const me = await window.Me.load();
+        if (!me) return;
+
+        const isAdmin = window.Me.isAdmin(me);
+        const isSeller = window.Me.isSeller(me);
 
         if (isAdmin) {
-            // Десктопный сайдбар
-            const desktopAdmin = document.getElementById('nav-admin');
-            if (desktopAdmin) desktopAdmin.classList.remove('hidden');
+            document.getElementById('nav-admin-item')?.classList.remove('hidden');
+        }
 
-            // Бургер-меню (старое, правое)
-            const mobileAdmin = document.getElementById('mobile-nav-admin');
-            if (mobileAdmin) mobileAdmin.classList.remove('hidden');
-
-            // ПРОФИЛЬ — вкладка из нижней панели
-            const profileAdmin = document.getElementById('nav-admin-item');
-            if (profileAdmin) profileAdmin.classList.remove('hidden');
+        if (isAdmin || isSeller) {
+            document.getElementById('nav-seller-item')?.classList.remove('hidden');
         }
     } catch (e) {}
 }

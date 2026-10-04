@@ -12,6 +12,7 @@ import ru.pulsecore.app.shop.application.assembler.OrderItemAssembler;
 import ru.pulsecore.app.shop.application.mapping.OrderMapper;
 import ru.pulsecore.app.shop.application.payment.OrderPaymentResolver;
 import ru.pulsecore.app.shop.application.product.StockService;
+import ru.pulsecore.app.shop.domain.OrderStatus;
 import ru.pulsecore.app.shop.domain.entity.CartItem;
 import ru.pulsecore.app.shop.domain.entity.Order;
 import ru.pulsecore.app.shop.domain.entity.OrderItem;
@@ -35,6 +36,12 @@ public class OrderUserService {
     private final OrderAssembler orderAssembler;
     private final OrderItemAssembler orderItemAssembler;
     private final StockService stockService;
+
+    @Transactional(readOnly = true)
+    public List<OrderDto> getUserActiveOrders(UUID userId){
+        return orderRepository.findByUserIdAndStatusInOrderByCreatedAtDesc(userId, OrderStatus.ACTIVE)
+                .stream().map(orderMapper::toDto).toList();
+    }
 
 
     @Transactional

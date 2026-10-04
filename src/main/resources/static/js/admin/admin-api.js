@@ -12,7 +12,7 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const AdminAPI = {
-    getMe: () => apiRequest('/player/me'),
+       getMe: () => window.Me.load(),
 
     searchPlayers: (q, page = 0, size = 5) =>
         apiRequest(`/admin/search?q=${encodeURIComponent(q)}&page=${page}&size=${size}`)

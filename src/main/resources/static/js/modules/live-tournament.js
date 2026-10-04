@@ -155,7 +155,7 @@ function toggleFullscreen() {
 
 async function loadData() {
     try {
-        const me = await (await fetch('/api/player/me', { credentials: 'same-origin' })).json().catch(() => ({}));
+        const me = await window.Me.load() || {};
         playerName = me.name || 'Аноним';
         playerId = me.id || '00000000-0000-0000-0000-000000000000';
 

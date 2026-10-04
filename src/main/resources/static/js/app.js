@@ -311,21 +311,21 @@ function hideLoader() {
 
 async function init() {
     try {
-        const res = await fetch('/api/player/me', { credentials: 'same-origin' });
-        if (!res.ok) throw new Error('Not authenticated');
-        const data = await res.json();
+        const me = await window.Me.load();
+        if (!me) throw new Error('Not authenticated');
 
-        state.playerId = data.id;
-        state.playerName = data.name || '';
-        state.isAdmin = data.admin || false;
+        state.playerId = me.id;
+        state.playerName = me.name || '';
+        state.isAdmin = window.Me.isAdmin(me);
+        state.isSeller = window.Me.isSeller(me);
 
-        if (data.admin) {
+        if (state.isAdmin) {
             document.getElementById('nav-admin')?.classList.remove('hidden');
             document.getElementById('mobile-nav-admin')?.classList.remove('hidden');
         }
 
-        if (data.theme) {
-            document.documentElement.setAttribute('data-theme', data.theme);
+        if (me.theme) {
+            document.documentElement.setAttribute('data-theme', me.theme);
         }
 
         if ('serviceWorker' in navigator) {

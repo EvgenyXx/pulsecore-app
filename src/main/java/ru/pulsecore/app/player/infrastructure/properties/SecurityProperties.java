@@ -15,7 +15,9 @@ public class SecurityProperties {
     private List<String> publicUrls;
     private List<String> authenticatedUrls;
     private List<String> adminUrls;
+    private List<String>sellerUrls;
     private String adminAuthority = "ROLE_ADMIN";
+    private String sellerAuthority = "ROLE_SELLER";
     private int maximumSessions = 1;
     private String sessionCookieName = "PULSECORE_SESSION";
     private String logoutUrl = "/api/player/logout";

@@ -12,6 +12,7 @@ import ru.pulsecore.app.shop.api.dto.response.OrderDto;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
 import ru.pulsecore.app.shop.application.order.OrderUserService;
+
 import java.util.List;
 
 @Tag(name = "Shop — Orders", description = "Заказы")
@@ -21,6 +22,12 @@ import java.util.List;
 public class OrderController {
 
     private final OrderUserService orderUserService;
+
+    @Operation(summary = "Мои активные заказы (CONFIRMED, ASSEMBLED)")
+    @GetMapping(ShopApi.ORDERS_ACTIVE)
+    public ResponseEntity<List<OrderDto>> getMyActiveOrders(@CurrentPlayer PlayerPrincipal principal) {
+        return ResponseEntity.ok(orderUserService.getUserActiveOrders(principal.playerId()));
+    }
 
     @Operation(summary = "Создать заказ")
     @PostMapping(ShopApi.ORDERS)

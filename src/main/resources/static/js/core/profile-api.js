@@ -10,11 +10,9 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export const ProfileAPI = {
-    getMe: () => apiRequest('/player/me'),
+    getMe: () => window.Me.load(),
     getNotificationStatus: () => apiRequest('/player/notifications/status'),
-    setNotification: (enabled) => apiRequest(`/player/notifications?enabled=${enabled}`, {
-        method: 'PUT'
-    }),
+    setNotification: (enabled) => apiRequest(`/player/notifications?enabled=${enabled}`, { method: 'PUT' }),
     getPushStatus: () => apiRequest('/push/push-status'),
     togglePush: () => apiRequest('/push/toggle', { method: 'POST' }),
     getSubscription: () => apiRequest('/player/subscription'),
