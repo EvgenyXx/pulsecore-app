@@ -386,3 +386,25 @@
 
     .carousel-arrow { display: none; }
 }
+
+.load-more-btn {
+    grid-column: 1 / -1;
+    display: block;
+    width: 100%;
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: rgba(99, 102, 241, 0.10);
+    color: #c7d2fe;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+.load-more-btn:hover { background: rgba(99, 102, 241, 0.18); }
+.load-more-btn:active { transform: scale(0.98); }
+.load-more-btn:disabled { opacity: 0.5; cursor: not-allowed; }

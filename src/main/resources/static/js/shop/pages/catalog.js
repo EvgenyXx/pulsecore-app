@@ -3,7 +3,11 @@ window.CatalogPage = (function () {
     const loader = window.Loader;
     const cart = window.CartStore;
 
+    const PAGE_SIZE = window.innerWidth < 768 ? 10 : 20;
+
     let allProducts = [];
+    let currentPage = 0;
+    let hasMore = false;
     let searchQuery = '';
 
     async function init() {
@@ -11,15 +15,32 @@ window.CatalogPage = (function () {
         loader.show(grid);
 
         try {
-            allProducts = await productsApi.getAll() || [];
+            await loadFirstPage();
             bindSearch();
-            renderProducts();
+            bindLoadMore();
             bindCarouselEvents();
 
             window.addEventListener('cart:change', updateAllSteppers);
         } catch (e) {
             loader.empty(grid, 'Ошибка загрузки: ' + e.message);
         }
+    }
+
+    async function loadFirstPage() {
+        const response = await productsApi.getAll(0, PAGE_SIZE);
+        allProducts = response.content || [];
+        currentPage = 0;
+        hasMore = !response.last;
+        renderProducts();
+    }
+
+    async function loadNextPage() {
+        const response = await productsApi.getAll(currentPage + 1, PAGE_SIZE);
+        const content = response.content || [];
+        allProducts = allProducts.concat(content);
+        currentPage = currentPage + 1;
+        hasMore = !response.last;
+        renderProducts();
     }
 
     function bindSearch() {
@@ -65,7 +86,11 @@ window.CatalogPage = (function () {
             return;
         }
 
-        grid.innerHTML = list.map(renderCard).join('');
+        const loadMoreHtml = (!searchQuery && hasMore)
+            ? `<button type="button" id="catalogLoadMore" class="load-more-btn">Показать ещё</button>`
+            : '';
+
+        grid.innerHTML = list.map(renderCard).join('') + loadMoreHtml;
 
         grid.querySelectorAll('.product-card').forEach(card => {
             card.addEventListener('click', (e) => {
@@ -77,6 +102,23 @@ window.CatalogPage = (function () {
         });
 
         bindCartButtons(grid);
+        bindLoadMore();
+        bindCarouselEvents();
+    }
+
+    function bindLoadMore() {
+        const btn = document.getElementById('catalogLoadMore');
+        if (!btn) return;
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            btn.textContent = 'Загрузка...';
+            try {
+                await loadNextPage();
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = 'Ошибка, попробуйте ещё раз';
+            }
+        });
     }
 
     function renderCard(p) {
@@ -213,6 +255,9 @@ window.CatalogPage = (function () {
     }
 
     function bindCarousel(carousel) {
+        if (carousel.dataset.bound === '1') return;
+        carousel.dataset.bound = '1';
+
         const track = carousel.querySelector('.carousel-track');
         const slides = carousel.querySelectorAll('.carousel-slide');
         const dots = carousel.querySelectorAll('.carousel-dot');

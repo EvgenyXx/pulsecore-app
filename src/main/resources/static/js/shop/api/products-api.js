@@ -2,9 +2,11 @@ window.ProductsApi = (function () {
     const http = window.Http;
 
     return {
-        getAll: () => http.request('/products'),
+        getAll: (page = 0, size = 20) =>
+            http.request('/products?page=' + page + '&size=' + size),
 
-        getByCategory: (categoryId) => http.request('/products/by-category/' + categoryId),
+        getByCategory: (categoryId, page = 0, size = 20) =>
+            http.request('/products/by-category/' + categoryId + '?page=' + page + '&size=' + size),
 
         getById: (id) => http.request('/products/' + id)
     };

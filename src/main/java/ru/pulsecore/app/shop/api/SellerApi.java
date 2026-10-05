@@ -17,6 +17,8 @@ public class SellerApi {
     // ----- Products -----
     public static final String PRODUCTS = "/products";
     public static final String PRODUCT = "/products/{productId}";
+    public static final String PRODUCTS_BY_CATEGORY = "/products/by-category/{categoryId}";
+
 
     // ----- Images -----
     public static final String PRODUCT_IMAGE = "/images/{imageId}";

@@ -181,3 +181,24 @@
     .seller-product-price { font-size: 15px; }
     .page-head { flex-wrap: wrap; }
 }
+.load-more-btn {
+    grid-column: 1 / -1;
+    display: block;
+    width: 100%;
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: rgba(0, 217, 192, 0.10);
+    color: #7eeae0;
+    border: 1px solid rgba(0, 217, 192, 0.25);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+.load-more-btn:hover { background: rgba(0, 217, 192, 0.18); }
+.load-more-btn:active { transform: scale(0.98); }
+.load-more-btn:disabled { opacity: 0.5; cursor: not-allowed; }

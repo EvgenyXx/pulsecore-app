@@ -2,9 +2,11 @@ window.ProductsApi = (function () {
     const http = window.SellerHttp;
 
     return {
-        getAll: (categoryId) => http.request(
-            '/products' + (categoryId ? '?categoryId=' + categoryId : '')
-        ),
+        getAll: (page = 0, size = 20) =>
+            http.request('/products?page=' + page + '&size=' + size),
+
+        getByCategory: (categoryId, page = 0, size = 20) =>
+            http.request('/products/by-category/' + categoryId + '?page=' + page + '&size=' + size),
 
         getById: (id) => http.request('/products/' + id),
 
@@ -24,9 +26,12 @@ window.ProductsApi = (function () {
             method: 'DELETE'
         }),
 
-        upload: async (file) => {
+        upload: async (file, productId) => {
             const formData = new FormData();
             formData.append('file', file);
+            if (productId != null) {
+                formData.append('productId', productId);
+            }
 
             const res = await fetch('/api/seller/upload', {
                 method: 'POST',

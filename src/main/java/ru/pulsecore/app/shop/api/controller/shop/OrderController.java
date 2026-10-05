@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.shop.api.ShopApi;
@@ -39,8 +40,12 @@ public class OrderController {
 
     @Operation(summary = "Мои заказы")
     @GetMapping(ShopApi.ORDERS)
-    public ResponseEntity<List<OrderDto>> getMyOrders(@CurrentPlayer PlayerPrincipal principal) {
-        return ResponseEntity.ok(orderUserService.getUserOrders(principal.playerId()));
+    public ResponseEntity<Page<OrderDto>> getMyOrders(
+            @CurrentPlayer PlayerPrincipal principal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        return ResponseEntity.ok(orderUserService.getUserOrders(principal.playerId(), page, size));
     }
 
     @Operation(summary = "Заказ по ID")

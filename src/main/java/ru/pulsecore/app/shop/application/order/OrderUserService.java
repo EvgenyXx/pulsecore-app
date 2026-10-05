@@ -2,6 +2,10 @@ package ru.pulsecore.app.shop.application.order;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shop.api.dto.request.CreateOrderRequest;
@@ -69,10 +73,12 @@ public class OrderUserService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderDto> getUserOrders(UUID userId) {
-        return orderRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(order -> orderMapper.toDto(order, null, shopProperties))
-                .toList();
+    public Page<OrderDto> getUserOrders(UUID userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return orderRepository
+                .findByUserIdOrderByCreatedAtDesc(userId, pageable)
+                .map(order -> orderMapper.toDto(order, null, shopProperties));
     }
 
     @Transactional(readOnly = true)

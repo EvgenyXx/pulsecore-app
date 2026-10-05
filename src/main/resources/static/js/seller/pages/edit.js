@@ -78,7 +78,6 @@ window.ProductEditPage = (function () {
         const msg = document.getElementById('editMessage');
         toast.hide(msg);
 
-        // Сброс кнопки удаления
         const delBtn = document.getElementById('editDeleteBtn');
         if (delBtn) {
             delBtn.disabled = false;
@@ -129,7 +128,7 @@ window.ProductEditPage = (function () {
         try {
             const files = upload.getFiles();
 
-            // Догружаем новые файлы (если есть) — картинки живут отдельно от PATCH
+            // Догружаем новые файлы (у которых нет uploadedUrl)
             for (const item of files) {
                 if (item.uploadedUrl) continue;
                 const data = await api.upload(item.file);
@@ -138,14 +137,21 @@ window.ProductEditPage = (function () {
 
             btn.textContent = 'Сохранение...';
 
-            // PATCH — только скалярные поля. images не шлём.
+            // Собираем images — все URL + main для первого
+            const images = files.map((item, i) => ({
+                url: item.uploadedUrl,
+                main: i === 0,
+                sortOrder: i
+            }));
+
             const body = {
                 name: document.getElementById('editName').value.trim(),
                 brand: document.getElementById('editBrand').value.trim() || null,
                 description: document.getElementById('editDescription').value.trim() || null,
                 price: parseFloat(document.getElementById('editPrice').value),
                 stock: parseInt(document.getElementById('editStock').value),
-                categoryId: parseInt(document.getElementById('editCategoryId').value)
+                categoryId: parseInt(document.getElementById('editCategoryId').value),
+                images: images
             };
 
             await api.update(currentId, body);
