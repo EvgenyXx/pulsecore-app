@@ -17,12 +17,18 @@ public record YookassaWebhook(
             Amount amount,
             Metadata metadata,
             @JsonProperty("payment_method") PaymentMethod paymentMethod
-
     ) {}
-
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record PaymentMethod(String type) {}
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Amount(String value, String currency) {}
-    public record Metadata(String playerId, String months) {}
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Metadata(
+            @JsonProperty("id") String playerId,
+            @JsonProperty("orderId") String orderId,
+            @JsonProperty("months") String months
+    ) {}
 }
