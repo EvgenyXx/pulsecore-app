@@ -1,29 +1,41 @@
 window.SellerOrdersPage = (function () {
     const api = window.OrdersApi;
-    const loader = window.Loader || {
-        show: (el, t) => el.innerHTML = `<p class="muted">${t || 'Загрузка...'}</p>`,
-        empty: (el, t) => el.innerHTML = `<div class="empty-state">${t || 'Пусто'}</div>`
-    };
 
-    // Статусы заказа (без SHIPPED — скрыт, но остаётся в enum)
+    // ===== Статусы заказа =====
     const ORDER_STATUSES = [
         { value: 'CONFIRMED', label: 'Новый' },
         { value: 'ASSEMBLED', label: 'Собран' },
+        { value: 'SHIPPED',   label: 'Отправлен' },
         { value: 'DONE',      label: 'Выдан' },
         { value: 'CANCELLED', label: 'Отменён' }
     ];
 
-    // Статусы оплаты
+    const STATUS_META = {
+        CONFIRMED: { label: 'Новый',     cls: 'confirmed' },
+        ASSEMBLED: { label: 'Собран',    cls: 'assembled' },
+        SHIPPED:   { label: 'Отправлен', cls: 'shipped' },
+        DONE:      { label: 'Выдан',     cls: 'done' },
+        CANCELLED: { label: 'Отменён',   cls: 'cancelled' }
+    };
+
+    // ===== Статусы оплаты =====
     const PAYMENT_STATUSES = [
-        { value: 'PENDING', label: 'Не оплачен' },
-        { value: 'PAID',    label: 'Оплачен' }
+        { value: 'PENDING',   label: 'Не оплачен' },
+        { value: 'PAID',      label: 'Оплачен' },
+        { value: 'CANCELLED', label: 'Отменён' }
     ];
 
+    const PAYMENT_META = {
+        PENDING:   { label: 'Не оплачен', cls: 'pending' },
+        PAID:      { label: 'Оплачен',    cls: 'paid' },
+        CANCELLED: { label: 'Отменён',    cls: 'cancelled' }
+    };
+
+    // ===== Вкладки =====
     const FILTERS = [
         { value: 'CONFIRMED', label: 'Новые' },
         { value: 'ASSEMBLED', label: 'Собранные' },
         { value: 'DONE',      label: 'Выданные' },
-        { value: 'CANCELLED', label: 'Отменённые' },
         { value: 'all',       label: 'Все' }
     ];
 
@@ -64,53 +76,55 @@ window.SellerOrdersPage = (function () {
         const container = document.getElementById('sellerOrdersList');
         if (!container) return;
 
-        loader.show(container);
+        const isEmpty = !container.querySelector('.seller-order-card');
+        if (isEmpty) {
+            container.innerHTML = `<p class="muted">Загрузка...</p>`;
+        }
 
         try {
             const orders = await api.getAll(activeStatus);
+
             if (!orders || orders.length === 0) {
-                loader.empty(container, 'Заказов нет');
+                container.innerHTML = `<div class="seller-orders-empty">Заказов нет</div>`;
                 return;
             }
+
             container.innerHTML = orders.map(renderOrder).join('');
             bindActions(container);
         } catch (e) {
-            loader.empty(container, 'Ошибка: ' + e.message);
+            container.innerHTML = `<div class="seller-orders-empty">Ошибка: ${escapeHtml(e.message)}</div>`;
         }
     }
 
+    // ===== КАРТОЧКА =====
+
     function renderOrder(order) {
         const items = (order.items || []).map(renderItem).join('');
+        const status  = STATUS_META[order.status]  || { label: order.status,  cls: '' };
+        const payment = PAYMENT_META[order.paymentStatus] || { label: order.paymentStatus, cls: '' };
 
         return `
             <div class="seller-order-card" data-id="${order.id}">
-                <div class="seller-order-header">
-                    <div>
-                        <div class="seller-order-number">Заказ №${order.id}</div>
-                        <div class="seller-order-date">${formatDate(order.createdAt)}</div>
+
+                <div class="seller-order-head">
+                    <div class="seller-order-head-left">
+                        <span class="seller-order-number">Заказ №${order.id}</span>
+                        <span class="seller-order-date">${formatDate(order.createdAt)}</span>
                     </div>
-                    <div class="seller-order-total">${formatPrice(order.totalPrice)} ₽</div>
+                    <div class="seller-order-badges">
+                        <span class="seller-badge status-${status.cls}" data-badge="status">${status.label}</span>
+                        <span class="seller-badge payment-${payment.cls}" data-badge="payment">${payment.label}</span>
+                    </div>
                 </div>
 
                 <div class="seller-order-items">${items}</div>
 
-                <div class="seller-order-customer">
-                    ${renderCustomerName(order)}
-                    <div class="seller-order-row"><span>Телефон</span><span>${escapeHtml(order.deliveryPhone)}</span></div>
-                    <div class="seller-order-row"><span>Город</span><span>${escapeHtml(order.deliveryCity)}</span></div>
-                    <div class="seller-order-row"><span>Адрес</span><span>${escapeHtml(order.deliveryStreet)}</span></div>
-                    ${order.comment ? `<div class="seller-order-row"><span>Комментарий</span><span>${escapeHtml(order.comment)}</span></div>` : ''}
-                </div>
-
-                <div class="seller-order-info">
-                    <div class="seller-order-row">
-                        <span>Способ получения</span>
-                        <span>${labelDelivery(order.deliveryMethod)}</span>
-                    </div>
-                    <div class="seller-order-row">
-                        <span>Способ оплаты</span>
-                        <span>${labelPaymentMethod(order.paymentMethod)}</span>
-                    </div>
+                <div class="seller-order-info-block">
+                    ${renderRow('user',  'Получатель', customerName(order))}
+                    ${renderRow('phone', 'Телефон',    order.deliveryPhone, true)}
+                    ${renderRow('pin',   'Получение',  deliveryLine(order))}
+                    ${renderRow('card',  'Оплата',     paymentMethodLabel(order.paymentMethod))}
+                    ${order.comment ? renderRow('chat', 'Комментарий', order.comment) : ''}
                 </div>
 
                 <div class="seller-order-controls">
@@ -131,25 +145,51 @@ window.SellerOrdersPage = (function () {
                         </select>
                     </div>
                 </div>
+
             </div>
         `;
     }
 
-    function renderCustomerName(order) {
+    function renderRow(icon, label, value, isPhone = false) {
+        if (!value) return '';
+        const inner = isPhone
+            ? `<a href="tel:${String(value).replace(/[^\d+]/g, '')}">${escapeHtml(value)}</a>`
+            : escapeHtml(value);
+        return `
+            <div class="seller-order-row">
+                <span class="seller-order-row-icon">${window.SellerIcons?.[icon] || ''}</span>
+                <span class="seller-order-row-label">${label}</span>
+                <span class="seller-order-row-value">${inner}</span>
+            </div>
+        `;
+    }
+
+    function customerName(order) {
         const parts = [
             order.customerLastName,
             order.customerFirstName,
             order.customerMiddleName
         ].filter(Boolean);
+        return parts.length ? parts.join(' ') : '';
+    }
 
-        if (parts.length === 0) return '';
-        return `<div class="seller-order-row"><span>Получатель</span><span>${escapeHtml(parts.join(' '))}</span></div>`;
+    function deliveryLine(order) {
+        const m = order.deliveryMethod === 'PICKUP' ? 'Самовывоз' : (order.deliveryMethod || '');
+        const parts = [m];
+        if (order.deliveryCity)   parts.push(order.deliveryCity);
+        if (order.deliveryStreet) parts.push(order.deliveryStreet);
+        return parts.filter(Boolean).join(' · ');
+    }
+
+    function paymentMethodLabel(m) {
+        const labels = { YOOKASSA: 'Онлайн ЮKassa', ON_DELIVERY: 'При получении' };
+        return labels[m] || m || '—';
     }
 
     function renderItem(item) {
         const img = item.productImageUrl
-            ? `<img src="${item.productImageUrl}" alt="">`
-            : `<div class="cart-item-placeholder">📷</div>`;
+            ? `<img src="${item.productImageUrl}" alt="" loading="lazy">`
+            : `<div class="seller-order-item-placeholder">${window.SellerIcons?.camera || ''}</div>`;
         return `
             <div class="seller-order-item">
                 <div class="seller-order-item-image">${img}</div>
@@ -161,14 +201,7 @@ window.SellerOrdersPage = (function () {
         `;
     }
 
-    function labelDelivery(m) {
-        return m === 'PICKUP' ? 'Самовывоз' : (m || '—');
-    }
-
-    function labelPaymentMethod(m) {
-        const labels = { YOOKASSA: 'Онлайн (ЮKassa)', ON_DELIVERY: 'При получении (нал / СБП)' };
-        return labels[m] || m || '—';
-    }
+    // ===== ДЕЙСТВИЯ =====
 
     function bindActions(container) {
         container.querySelectorAll('.seller-select').forEach(sel => {
@@ -180,23 +213,20 @@ window.SellerOrdersPage = (function () {
         const id = sel.dataset.id;
         const field = sel.dataset.field;
         const value = sel.value;
+        const card = sel.closest('.seller-order-card');
+        const prevValue = sel.dataset.prev || '';
 
-        const previous = sel.dataset.previous || sel.querySelector('option[selected]')?.value;
-        const fieldLabel = field === 'status' ? 'статус заказа' : 'статус оплаты';
-
-        // Подтверждение для отмены
-        if (value === 'CANCELLED' && field === 'status') {
+        if (field === 'status' && value === 'CANCELLED') {
             sel.disabled = true;
             openConfirm({
                 title: 'Отменить заказ?',
                 text: 'Это действие нельзя отменить.',
                 okText: 'Отменить',
                 onConfirm: async () => {
-                    await doUpdate(sel, id, field, value, fieldLabel);
+                    await doUpdate(id, field, value, card, sel);
                 },
                 onCancel: () => {
-                    // откатить select назад
-                    if (previous) sel.value = previous;
+                    if (prevValue) sel.value = prevValue;
                     sel.disabled = false;
                 }
             });
@@ -204,10 +234,10 @@ window.SellerOrdersPage = (function () {
         }
 
         sel.disabled = true;
-        await doUpdate(sel, id, field, value, fieldLabel);
+        await doUpdate(id, field, value, card, sel);
     }
 
-    async function doUpdate(sel, id, field, value, fieldLabel) {
+    async function doUpdate(id, field, value, card, sel) {
         try {
             if (field === 'status') {
                 await api.updateStatus(id, value);
@@ -215,13 +245,35 @@ window.SellerOrdersPage = (function () {
                 await api.updatePaymentStatus(id, value);
             }
 
-            toast(`Заказ №${id}: ${fieldLabel} изменён на «${sel.options[sel.selectedIndex].text}»`, true);
-            load();
+            updateCardBadges(card, field, value);
+            sel.dataset.prev = value;
+            sel.disabled = false;
         } catch (e) {
             alert('Ошибка: ' + e.message);
+            if (sel.dataset.prev) sel.value = sel.dataset.prev;
             sel.disabled = false;
         }
     }
+
+    function updateCardBadges(card, field, value) {
+        if (field === 'status') {
+            const meta = STATUS_META[value];
+            const badge = card.querySelector('[data-badge="status"]');
+            if (badge && meta) {
+                badge.className = `seller-badge status-${meta.cls}`;
+                badge.textContent = meta.label;
+            }
+        } else {
+            const meta = PAYMENT_META[value];
+            const badge = card.querySelector('[data-badge="payment"]');
+            if (badge && meta) {
+                badge.className = `seller-badge payment-${meta.cls}`;
+                badge.textContent = meta.label;
+            }
+        }
+    }
+
+    // ===== МОДАЛКА =====
 
     function openConfirm({ title, text, okText, onConfirm, onCancel }) {
         const modal = document.getElementById('confirmModal');
@@ -242,37 +294,23 @@ window.SellerOrdersPage = (function () {
             closeEls.forEach(el => el.removeEventListener('click', close));
         }
 
-        function handleOk() {
-            close();
-            if (onConfirm) onConfirm();
-        }
-
-        function handleCancel() {
-            close();
-            if (onCancel) onCancel();
-        }
+        function handleOk()     { close(); if (onConfirm) onConfirm(); }
+        function handleCancel() { close(); if (onCancel)  onCancel(); }
 
         okBtn.addEventListener('click', handleOk);
         closeEls.forEach(el => el.addEventListener('click', handleCancel));
     }
 
-    function toast(msg, ok) {
-        if (window.Toast && window.Toast.show) {
-            window.Toast.show(document.getElementById('sellerOrdersList'), msg, ok);
-        } else {
-            console.log(msg);
-        }
-    }
+    // ===== ФОРМАТ =====
 
     function formatDate(iso) {
         if (!iso) return '';
         const d = new Date(iso);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
+        const months = ['января','февраля','марта','апреля','мая','июня',
+                        'июля','августа','сентября','октября','ноября','декабря'];
         const hh = String(d.getHours()).padStart(2, '0');
         const mm = String(d.getMinutes()).padStart(2, '0');
-        return `${day}.${month}.${year} · ${hh}:${mm}`;
+        return `${d.getDate()} ${months[d.getMonth()]}, ${hh}:${mm}`;
     }
 
     function formatPrice(v) {

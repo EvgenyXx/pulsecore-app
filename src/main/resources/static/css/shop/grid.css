@@ -1,14 +1,14 @@
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 28px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
     min-height: 400px;
 }
 
 @media (max-width: 900px) {
     .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
     }
 }
 
@@ -16,6 +16,6 @@
     .products-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-        align-items: start;   /* ← карточки не растягиваются по высоте ряда */
+        align-items: start;   /* карточки не растягиваются по высоте ряда */
     }
 }

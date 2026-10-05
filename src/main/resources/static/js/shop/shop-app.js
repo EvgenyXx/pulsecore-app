@@ -2,6 +2,9 @@
     document.addEventListener('DOMContentLoaded', async () => {
         await window.CartStore.init();
 
+        // Нижняя панель магазина (рендерится через ShopIcons)
+        window.ShopNav.init();
+
         window.CatalogPage.init();
 
         const updateBadge = () => {

@@ -1,6 +1,5 @@
 package ru.pulsecore.app.shop.application.order;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import ru.pulsecore.app.shop.domain.OrderStatus;
 import ru.pulsecore.app.shop.domain.entity.CartItem;
 import ru.pulsecore.app.shop.domain.entity.Order;
 import ru.pulsecore.app.shop.domain.entity.OrderItem;
+import ru.pulsecore.app.shop.infrastructure.config.ShopProperties;
 import ru.pulsecore.app.shop.infrastructure.exception.OrderNotFoundException;
 import ru.pulsecore.app.shop.infrastructure.repository.CartItemRepository;
 import ru.pulsecore.app.shop.infrastructure.repository.OrderRepository;
@@ -36,17 +36,19 @@ public class OrderUserService {
     private final OrderAssembler orderAssembler;
     private final OrderItemAssembler orderItemAssembler;
     private final StockService stockService;
+    private final ShopProperties shopProperties;
 
     @Transactional(readOnly = true)
-    public List<OrderDto> getUserActiveOrders(UUID userId){
-        return orderRepository.findByUserIdAndStatusInOrderByCreatedAtDesc(userId, OrderStatus.ACTIVE)
-                .stream().map(orderMapper::toDto).toList();
+    public List<OrderDto> getUserActiveOrders(UUID userId) {
+        return orderRepository
+                .findByUserIdAndStatusInOrderByCreatedAtDesc(userId, OrderStatus.ACTIVE)
+                .stream()
+                .map(order -> orderMapper.toDto(order, null, shopProperties))
+                .toList();
     }
-
 
     @Transactional
     public OrderDto createOrder(UUID userId, CreateOrderRequest request) {
-
         List<CartItem> selected = cartItemRepository.findAllById(request.itemIds());
         orderValidator.validate(userId, selected);
 
@@ -69,7 +71,7 @@ public class OrderUserService {
     @Transactional(readOnly = true)
     public List<OrderDto> getUserOrders(UUID userId) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(orderMapper::toDto)
+                .map(order -> orderMapper.toDto(order, null, shopProperties))
                 .toList();
     }
 
@@ -77,6 +79,6 @@ public class OrderUserService {
     public OrderDto getUserOrder(UUID userId, Long orderId) {
         Order order = orderRepository.findByIdAndUserId(orderId, userId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
-        return orderMapper.toDto(order);
+        return orderMapper.toDto(order, null, shopProperties);
     }
 }

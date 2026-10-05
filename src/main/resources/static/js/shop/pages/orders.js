@@ -1,5 +1,6 @@
 window.OrdersPage = (function () {
     const ordersApi = window.OrdersApi;
+    const ICONS = window.ShopIcons;
 
     let activeOrders = [];
     let allOrders = null;
@@ -45,7 +46,6 @@ window.OrdersPage = (function () {
         if (tab === currentTab) return;
         currentTab = tab;
 
-        // плавно двигаем слайдер — без перерисовки
         const slider = document.querySelector('.orders-tabs-slider');
         if (slider) {
             slider.classList.remove('pos-0', 'pos-1');
@@ -88,12 +88,12 @@ window.OrdersPage = (function () {
         if (list.length === 0) {
             setBody(currentTab === 'active'
                 ? `<div class="cart-empty">
-                       <div class="cart-empty-icon">📦</div>
+                       <div class="cart-empty-icon">${ICONS.box}</div>
                        <p class="cart-empty-text">Активных заказов нет</p>
                        <a href="#/" class="cart-empty-link">Перейти в каталог</a>
                    </div>`
                 : `<div class="cart-empty">
-                       <div class="cart-empty-icon">📦</div>
+                       <div class="cart-empty-icon">${ICONS.box}</div>
                        <p class="cart-empty-text">Заказов пока нет</p>
                        <a href="#/" class="cart-empty-link">Перейти в каталог</a>
                    </div>`);
@@ -101,107 +101,153 @@ window.OrdersPage = (function () {
         }
 
         setBody(`<div class="orders-list">${list.map(renderOrder).join('')}</div>`);
-        bindActions();
     }
+
+    // ===== КАРТОЧКА ЗАКАЗА =====
 
     function renderOrder(order) {
         const items = (order.items || []).map(renderItem).join('');
-        const date = formatDate(order.createdAt);
+        const date = formatDateShort(order.createdAt);
+        const time = formatTime(order.createdAt);
 
         return `
             <div class="order-card" data-id="${order.id}">
-                <div class="order-header" data-action="toggle">
-                    <div class="order-header-left">
+
+                <div class="order-head">
+                    <div class="order-head-left">
                         <span class="order-number">Заказ №${order.id}</span>
-                        <span class="order-date">${date}</span>
+                        <span class="order-date">${date}, ${time}</span>
                     </div>
-                    <div class="order-header-right">
-                        ${renderPaymentBadge(order.paymentStatus)}
-                        ${renderStatusBadge(order.status)}
-                        <span class="order-arrow">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </span>
-                    </div>
+                    ${renderStatusBadge(order.status)}
                 </div>
+
                 <div class="order-items">${items}</div>
-                <div class="order-details">
-                    ${renderDetails(order)}
+
+                <div class="order-section">
+                    ${renderPickupRow(order)}
+                    ${renderSellerPhoneRow(order)}
                 </div>
-                <div class="order-footer">
+
+                <div class="order-section">
+                    ${renderPaymentRow(order)}
+                </div>
+
+                ${order.comment ? `
+                <div class="order-section">
+                    <div class="order-row">
+                        <span class="order-row-icon">${ICONS.chat}</span>
+                        <span class="order-row-text">${escapeHtml(order.comment)}</span>
+                    </div>
+                </div>` : ''}
+
+                <div class="order-total-row">
                     <span class="order-total-label">Итого</span>
-                    <span class="order-total">${formatPrice(order.totalPrice)} ₽</span>
+                    <span class="order-total-value">${formatPrice(order.totalPrice)} ₽</span>
                 </div>
+
             </div>
         `;
     }
 
-    function renderPaymentBadge(paymentStatus) {
-        if (!paymentStatus) return '';
-        const labels = { PENDING: 'Не оплачен', PAID: 'Оплачен', CANCELLED: 'Отменён' };
-        const cls = { PENDING: 'payment-pending', PAID: 'payment-paid', CANCELLED: 'payment-cancelled' };
-        return `<span class="order-payment ${cls[paymentStatus] || ''}">${labels[paymentStatus] || paymentStatus}</span>`;
-    }
-
-    function renderStatusBadge(status) {
-        if (!status) return '';
-        return `<span class="order-status ${statusClass(status)}">${statusLabel(status)}</span>`;
-    }
-
-    function renderDetails(order) {
-        const rows = [];
-        const deliveryLabel = order.deliveryMethod === 'PICKUP' ? 'Самовывоз' : 'СДЭК · ПВЗ';
-        rows.push(row('Доставка', deliveryLabel));
-
-        if (order.deliveryMethod === 'PICKUP') {
-            if (order.deliveryCity) rows.push(row('Город', escapeHtml(order.deliveryCity)));
-            if (order.deliveryStreet) rows.push(row('Адрес', escapeHtml(order.deliveryStreet)));
-        } else {
-            if (order.deliveryCity) rows.push(row('Город', escapeHtml(order.deliveryCity)));
-            if (order.deliveryStreet) rows.push(row('Адрес ПВЗ', escapeHtml(order.deliveryStreet)));
-        }
-
-        if (order.paymentMethod) {
-            const payLabel = order.paymentMethod === 'ON_DELIVERY'
-                ? 'При получении (нал / СБП)'
-                : 'Онлайн (ЮKassa)';
-            rows.push(row('Оплата', payLabel));
-        }
-
-        if (order.deliveryPhone) rows.push(row('Телефон', escapeHtml(order.deliveryPhone)));
-        if (order.customerName) rows.push(row('Получатель', escapeHtml(order.customerName)));
-        if (order.comment) rows.push(row('Комментарий', escapeHtml(order.comment)));
-
-        return rows.join('');
-    }
-
-    function row(label, value) {
-        return `
-            <div class="order-detail-row">
-                <span class="order-detail-label">${label}</span>
-                <span class="order-detail-value">${value}</span>
-            </div>
-        `;
-    }
+    // ===== ПОЗИЦИЯ =====
 
     function renderItem(item) {
         const img = item.productImageUrl
             ? `<img src="${item.productImageUrl}" alt="" loading="lazy">`
-            : `<div class="cart-item-placeholder">📷</div>`;
+            : `<div class="order-item-placeholder">${ICONS.camera}</div>`;
 
         const brand = item.productBrand
-            ? `<span class="cart-item-brand">${escapeHtml(item.productBrand)}</span>`
+            ? `<span class="order-item-brand">${escapeHtml(item.productBrand)}</span>`
             : '';
+
+        const sum = formatPrice(Number(item.productPrice) * Number(item.quantity));
 
         return `
             <div class="order-item">
                 <div class="order-item-image">${img}</div>
-                <div class="order-item-body">
+                <div class="order-item-info">
                     ${brand}
                     <span class="order-item-name">${escapeHtml(item.productName)}</span>
-                    <span class="order-item-qty">${item.quantity} × ${formatPrice(item.productPrice)} ₽</span>
+                    <div class="order-item-row">
+                        <span class="order-item-qty">${item.quantity} × ${formatPrice(item.productPrice)} ₽</span>
+                        <span class="order-item-sum">${sum} ₽</span>
+                    </div>
                 </div>
             </div>
         `;
+    }
+
+    // ===== ПОЛУЧЕНИЕ =====
+
+    function renderPickupRow(order) {
+        const method = order.deliveryMethod === 'PICKUP' ? 'Самовывоз'
+                     : order.deliveryMethod === 'CDEK'   ? 'СДЭК · ПВЗ'
+                     : order.deliveryMethod || '';
+
+        const parts = [method];
+        if (order.pickupCity) parts.push(order.pickupCity);
+        if (order.pickupAddress) parts.push(order.pickupAddress);
+
+        const text = parts.filter(Boolean).join(' · ');
+
+        return `
+            <div class="order-row">
+                <span class="order-row-icon">${ICONS.pin}</span>
+                <span class="order-row-text">${escapeHtml(text)}</span>
+            </div>
+        `;
+    }
+
+    function renderSellerPhoneRow(order) {
+        if (!order.sellerPhone) return '';
+        const tel = String(order.sellerPhone).replace(/[^\d+]/g, '');
+        return `
+            <div class="order-row">
+                <span class="order-row-icon">${ICONS.phone}</span>
+                <span class="order-row-text">
+                    <span class="order-row-hint">Телефон магазина:</span>
+                    <a class="order-row-link" href="tel:${tel}">${escapeHtml(order.sellerPhone)}</a>
+                </span>
+            </div>
+        `;
+    }
+
+    // ===== ОПЛАТА =====
+
+    function renderPaymentRow(order) {
+        const methodLabel = order.paymentMethod === 'ON_DELIVERY' ? 'При получении'
+                          : order.paymentMethod === 'YOOKASSA'    ? 'Онлайн ЮKassa'
+                          : order.paymentMethod || '';
+
+        const statusLabel = {
+            PENDING:   'Не оплачен',
+            PAID:      'Оплачен',
+            CANCELLED: 'Отменён'
+        }[order.paymentStatus] || order.paymentStatus || '';
+
+        const statusClass = {
+            PENDING:   'is-pending',
+            PAID:      'is-paid',
+            CANCELLED: 'is-cancelled'
+        }[order.paymentStatus] || '';
+
+        return `
+            <div class="order-row">
+                <span class="order-row-icon">${ICONS.card}</span>
+                <span class="order-row-text">
+                    Оплата: <strong>${escapeHtml(methodLabel)}</strong>
+                    <span class="order-row-sep">·</span>
+                    <span class="order-payment-status ${statusClass}">${escapeHtml(statusLabel)}</span>
+                </span>
+            </div>
+        `;
+    }
+
+    // ===== БЕЙДЖИ =====
+
+    function renderStatusBadge(status) {
+        if (!status) return '';
+        return `<span class="order-status ${statusClass(status)}">${statusLabel(status)}</span>`;
     }
 
     function statusLabel(status) {
@@ -220,15 +266,22 @@ window.OrdersPage = (function () {
         return map[status] || '';
     }
 
-    function formatDate(iso) {
+    // ===== ФОРМАТ =====
+
+    function formatDateShort(iso) {
         if (!iso) return '';
         const d = new Date(iso);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
+        const months = ['января','февраля','марта','апреля','мая','июня',
+                        'июля','августа','сентября','октября','ноября','декабря'];
+        return `${d.getDate()} ${months[d.getMonth()]}`;
+    }
+
+    function formatTime(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
         const hh = String(d.getHours()).padStart(2, '0');
         const mm = String(d.getMinutes()).padStart(2, '0');
-        return `${day}.${month}.${year} · ${hh}:${mm}`;
+        return `${hh}:${mm}`;
     }
 
     function formatPrice(v) {
@@ -244,17 +297,6 @@ window.OrdersPage = (function () {
     function bindTabs(container) {
         container.querySelectorAll('.orders-tab').forEach(btn => {
             btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-        });
-    }
-
-    function bindActions() {
-        document.querySelectorAll('.order-header[data-action="toggle"]').forEach(h => {
-            if (h.dataset.bound === '1') return;
-            h.dataset.bound = '1';
-            h.addEventListener('click', () => {
-                const card = h.closest('.order-card');
-                card.classList.toggle('expanded');
-            });
         });
     }
 

@@ -22,11 +22,11 @@ public class WebConfig implements WebMvcConfigurer {
     private final FileStorageProperties fileStorageProperties;
 
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + fileStorageProperties.getUploadDir() + "/");
-    }
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        registry.addResourceHandler("/uploads/**")
+//                .addResourceLocations("file:" + fileStorageProperties.getUploadDir() + "/");
+//    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

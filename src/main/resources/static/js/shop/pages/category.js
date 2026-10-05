@@ -20,7 +20,7 @@ window.CategoryPage = (function () {
         try {
             const [categories, products] = await Promise.all([
                 categoriesApi.getAll(),
-                productsApi.getAll(categoryId)
+                productsApi.getByCategory(categoryId)
             ]);
 
             const cat = categories.find(c => String(c.id) === String(categoryId));
