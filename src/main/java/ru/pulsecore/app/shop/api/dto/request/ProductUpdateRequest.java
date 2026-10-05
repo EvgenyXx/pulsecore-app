@@ -1,6 +1,7 @@
 package ru.pulsecore.app.shop.api.dto.request;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record ProductUpdateRequest(
 
@@ -10,8 +11,13 @@ public record ProductUpdateRequest(
         BigDecimal price,
         Integer stock,
         Long categoryId,
-        String categoryName
+        String categoryName,
+
+        List<ImageRequest> images
 ) {
-
-
+    public record ImageRequest(
+            String url,
+            Integer sortOrder,
+            boolean main
+    ) {}
 }

@@ -11,8 +11,9 @@ window.OrdersApi = (function () {
         // Активные: CONFIRMED + ASSEMBLED
         getActive: () => http.request('/orders/active'),
 
-        // Все заказы юзера (включая DONE, CANCELLED, SHIPPED)
-        getMyOrders: () => http.request('/orders'),
+        // Все заказы юзера, с пагинацией
+        getMyOrders: (page = 0, size = 20) =>
+            http.request('/orders?page=' + page + '&size=' + size),
 
         getById: (id) => http.request('/orders/' + id)
     };

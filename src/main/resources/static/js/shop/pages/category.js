@@ -4,51 +4,95 @@ window.CategoryPage = (function () {
     const loader = window.Loader;
     const cart = window.CartStore;
 
+    const PAGE_SIZE = window.innerWidth < 768 ? 10 : 20;
+
     let currentId = null;
+    let currentPage = 0;
+    let hasMore = false;
     let allProducts = [];
 
     async function init(categoryId) {
         const title = document.getElementById('categoryTitle');
         const grid = document.getElementById('categoryProductsGrid');
 
-        if (currentId !== categoryId) {
+        const isNew = currentId !== categoryId;
+
+        if (isNew) {
             currentId = categoryId;
+            currentPage = 0;
+            hasMore = false;
+            allProducts = [];
             title.textContent = 'Загрузка...';
             loader.show(grid);
         }
 
         try {
-            const [categories, products] = await Promise.all([
+            const [categories, response] = await Promise.all([
                 categoriesApi.getAll(),
-                productsApi.getByCategory(categoryId)
+                productsApi.getByCategory(categoryId, 0, PAGE_SIZE)
             ]);
 
             const cat = categories.find(c => String(c.id) === String(categoryId));
             title.textContent = cat ? cat.name : 'Категория';
 
-            allProducts = products || [];
+            allProducts = response.content || [];
+            currentPage = 0;
+            hasMore = !response.last;
 
-            if (!allProducts || allProducts.length === 0) {
-                loader.empty(grid, 'В этой категории пока нет товаров');
-                return;
-            }
-
-            grid.innerHTML = allProducts.map(renderCard).join('');
-            bindCarouselEvents();
-            bindCartButtons(grid);
-
-            grid.querySelectorAll('.product-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.closest('.carousel-arrow')
-                        || e.target.closest('.carousel-dot')
-                        || e.target.closest('.product-card-cart')) return;
-                    window.location.hash = '#/product/' + card.dataset.id;
-                });
-            });
-
+            render(grid);
         } catch (e) {
             loader.empty(grid, 'Ошибка загрузки: ' + e.message);
         }
+    }
+
+    async function loadNextPage() {
+        const response = await productsApi.getByCategory(currentId, currentPage + 1, PAGE_SIZE);
+        const content = response.content || [];
+        allProducts = allProducts.concat(content);
+        currentPage = currentPage + 1;
+        hasMore = !response.last;
+        render(document.getElementById('categoryProductsGrid'));
+    }
+
+    function render(grid) {
+        if (allProducts.length === 0) {
+            loader.empty(grid, 'В этой категории пока нет товаров');
+            return;
+        }
+
+        const loadMoreHtml = hasMore
+            ? `<button type="button" id="categoryLoadMore" class="load-more-btn">Показать ещё</button>`
+            : '';
+
+        grid.innerHTML = allProducts.map(renderCard).join('') + loadMoreHtml;
+
+        grid.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.carousel-arrow')
+                    || e.target.closest('.carousel-dot')
+                    || e.target.closest('.product-card-cart')) return;
+                window.location.hash = '#/product/' + card.dataset.id;
+            });
+        });
+
+        bindCartButtons(grid);
+        bindLoadMore();
+        bindCarouselEvents();
+    }
+
+    function bindLoadMore() {
+        const btn = document.getElementById('categoryLoadMore');
+        if (!btn) return;
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            btn.textContent = 'Загрузка...';
+            try {
+                await loadNextPage();
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = 'Ошибка, попробуйте ещё раз';
+            }
+        });
     }
 
     function renderCard(p) {
@@ -161,6 +205,9 @@ window.CategoryPage = (function () {
     }
 
     function bindCarousel(carousel) {
+        if (carousel.dataset.bound === '1') return;
+        carousel.dataset.bound = '1';
+
         const track = carousel.querySelector('.carousel-track');
         const slides = carousel.querySelectorAll('.carousel-slide');
         const dots = carousel.querySelectorAll('.carousel-dot');

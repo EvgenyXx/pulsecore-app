@@ -2,14 +2,21 @@ window.OrdersPage = (function () {
     const ordersApi = window.OrdersApi;
     const ICONS = window.ShopIcons;
 
+    // PWA — 10, десктоп — 20
+    const PAGE_SIZE = window.innerWidth < 768 ? 10 : 20;
+
     let activeOrders = [];
-    let allOrders = null;
+    let allOrders = [];
+    let allOrdersPage = 0;
+    let allOrdersHasMore = false;
     let currentTab = 'active';
     let initialized = false;
 
     function init() {
         activeOrders = [];
-        allOrders = null;
+        allOrders = [];
+        allOrdersPage = 0;
+        allOrdersHasMore = false;
         currentTab = 'active';
         initialized = false;
         load();
@@ -56,10 +63,10 @@ window.OrdersPage = (function () {
             btn.classList.toggle('active', btn.dataset.tab === currentTab);
         });
 
-        if (tab === 'all' && allOrders === null) {
+        if (tab === 'all' && allOrders.length === 0 && allOrdersPage === 0) {
             setBody(`<p class="muted">Загрузка...</p>`);
             try {
-                allOrders = await ordersApi.getMyOrders() || [];
+                await loadAllOrdersPage(0);
             } catch (e) {
                 setBody(`<div class="empty-state">Ошибка загрузки: ${e.message}</div>`);
                 currentTab = 'active';
@@ -77,13 +84,47 @@ window.OrdersPage = (function () {
         renderBody();
     }
 
+    // ===== ПАГИНАЦИЯ =====
+
+    async function loadAllOrdersPage(page) {
+        const response = await ordersApi.getMyOrders(page, PAGE_SIZE);
+        const content = response.content || [];
+        allOrdersPage = page;
+
+        if (page === 0) {
+            allOrders = content;
+        } else {
+            allOrders = allOrders.concat(content);
+        }
+
+        allOrdersHasMore = !response.last;
+    }
+
+    function bindLoadMore(container) {
+        const btn = container.querySelector('#loadMoreOrdersBtn');
+        if (!btn) return;
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            btn.textContent = 'Загрузка...';
+            try {
+                await loadAllOrdersPage(allOrdersPage + 1);
+                renderBody();
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = 'Ошибка, попробуйте ещё раз';
+            }
+        });
+    }
+
+    // ===== РЕНДЕР =====
+
     function setBody(html) {
         const body = document.querySelector('#ordersContent .orders-body');
         if (body) body.innerHTML = html;
     }
 
     function renderBody() {
-        const list = currentTab === 'active' ? activeOrders : (allOrders || []);
+        const list = currentTab === 'active' ? activeOrders : allOrders;
 
         if (list.length === 0) {
             setBody(currentTab === 'active'
@@ -100,7 +141,15 @@ window.OrdersPage = (function () {
             return;
         }
 
-        setBody(`<div class="orders-list">${list.map(renderOrder).join('')}</div>`);
+        const loadMoreHtml = (currentTab === 'all' && allOrdersHasMore)
+            ? `<button type="button" id="loadMoreOrdersBtn" class="orders-load-more">Показать ещё</button>`
+            : '';
+
+        setBody(`<div class="orders-list">${list.map(renderOrder).join('')}</div>${loadMoreHtml}`);
+
+        if (currentTab === 'all' && allOrdersHasMore) {
+            bindLoadMore(document.getElementById('ordersContent'));
+        }
     }
 
     // ===== КАРТОЧКА ЗАКАЗА =====

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.shop.api.SellerApi;
@@ -15,26 +16,34 @@ import ru.pulsecore.app.shop.api.dto.response.ProductDetailDto;
 import ru.pulsecore.app.shop.application.image.ProductImageService;
 import ru.pulsecore.app.shop.application.product.ProductService;
 
-import java.util.List;
+
 
 @Tag(name = "Seller — Products", description = "Управление товарами")
 @RestController
 @RequestMapping(SellerApi.BASE_PATH)
 @RequiredArgsConstructor
-//@PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
+
 public class SellerProductController {
 
     private final ProductService productService;
     private final ProductImageService productImageService;
 
+    @Operation(summary = "Товары по категории (с пагинацией)")
+    @GetMapping(SellerApi.PRODUCTS_BY_CATEGORY)
+    public ResponseEntity<Page<ProductCardDto>> getByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        return ResponseEntity.ok(productService.getByCategory(categoryId, page, size));
+    }
+
     @Operation(summary = "Список всех товаров")
     @GetMapping(SellerApi.PRODUCTS)
-    public ResponseEntity<List<ProductCardDto>> getAll(
-            @RequestParam(required = false) Long categoryId) {
-        if (categoryId != null) {
-            return ResponseEntity.ok(productService.getByCategory(categoryId));
-        }
-        return ResponseEntity.ok(productService.getAllActive());
+    public ResponseEntity<Page<ProductCardDto>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(productService.getAllActive(page, size));
     }
 
     @Operation(summary = "Товар по ID")

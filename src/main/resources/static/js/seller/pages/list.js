@@ -1,6 +1,11 @@
 window.ProductListPage = (function () {
     const api = window.ProductsApi;
+
+    const PAGE_SIZE = window.innerWidth < 768 ? 10 : 20;
+
     let allProducts = [];
+    let currentPage = 0;
+    let hasMore = false;
     let searchQuery = '';
 
     async function init() {
@@ -10,11 +15,23 @@ window.ProductListPage = (function () {
         bindSearch();
 
         try {
-            allProducts = await api.getAll();
+            const response = await api.getAll(0, PAGE_SIZE);
+            allProducts = response.content || [];
+            currentPage = 0;
+            hasMore = !response.last;
             render();
         } catch (e) {
             grid.innerHTML = '<p class="muted">Ошибка: ' + e.message + '</p>';
         }
+    }
+
+    async function loadNextPage() {
+        const response = await api.getAll(currentPage + 1, PAGE_SIZE);
+        const content = response.content || [];
+        allProducts = allProducts.concat(content);
+        currentPage = currentPage + 1;
+        hasMore = !response.last;
+        render();
     }
 
     function bindSearch() {
@@ -43,12 +60,33 @@ window.ProductListPage = (function () {
             return;
         }
 
-        grid.innerHTML = list.map(renderCard).join('');
+        const loadMoreHtml = (!searchQuery && hasMore)
+            ? `<button type="button" id="sellerLoadMore" class="load-more-btn">Показать ещё</button>`
+            : '';
+
+        grid.innerHTML = list.map(renderCard).join('') + loadMoreHtml;
 
         grid.querySelectorAll('.seller-product-card').forEach(card => {
             card.addEventListener('click', () => {
                 window.location.hash = '#/edit/' + card.dataset.id;
             });
+        });
+
+        bindLoadMore();
+    }
+
+    function bindLoadMore() {
+        const btn = document.getElementById('sellerLoadMore');
+        if (!btn) return;
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            btn.textContent = 'Загрузка...';
+            try {
+                await loadNextPage();
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = 'Ошибка, попробуйте ещё раз';
+            }
         });
     }
 
