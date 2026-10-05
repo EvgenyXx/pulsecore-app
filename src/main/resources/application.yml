@@ -128,6 +128,21 @@ app:
             timeout: 90000
       mail:
             from: ${MAIL_FROM}
+      storage:
+            max-file-size: 5242880
+            allowed-types:
+                  - image/jpeg
+                  - image/png
+                  - image/webp
+                  - image/heic
+                  - image/heif
+            s3:
+                  bucket: ${S3_BUCKET:pulsecore-products}
+                  endpoint: ${S3_ENDPOINT:https://storage.yandexcloud.net}
+                  region: ${S3_REGION:ru-central1}
+                  access-key: ${S3_ACCESS_KEY}
+                  secret-key: ${S3_SECRET_KEY}
+                  public-url: ${S3_PUBLIC_URL:https://storage.yandexcloud.net/pulsecore-products}
 
 
 shop:

@@ -11,51 +11,32 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 16px;
-    transition: border-color 0.2s;
-}
-
-.order-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 12px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.order-header-right {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-.order-arrow {
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    transition: transform 0.25s ease;
-    margin-left: 4px;
-}
-
-.order-card.expanded .order-arrow {
-    transform: rotate(180deg);
-}
-
-.order-header-left {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 14px;
+}
+
+/* ===== ШАПКА ===== */
+
+.order-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.order-head-left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
 }
 
 .order-number {
     font-size: 15px;
     font-weight: 700;
     color: var(--text);
+    letter-spacing: -0.2px;
 }
 
 .order-date {
@@ -63,43 +44,42 @@
     color: var(--text-muted);
 }
 
-/* ===== Бейджи ===== */
+/* ===== БЕЙДЖ СТАТУСА ===== */
 
-.order-status,
-.order-payment {
+.order-status {
+    display: inline-block;
     font-size: 11px;
     font-weight: 600;
     padding: 5px 10px;
     border-radius: 8px;
     white-space: nowrap;
     letter-spacing: 0.1px;
+    flex-shrink: 0;
 }
 
-.order-payment.payment-pending    { background: rgba(255, 200, 0, 0.12); color: #ffc800; }
-.order-payment.payment-paid       { background: rgba(0, 217, 192, 0.14); color: var(--accent); }
-.order-payment.payment-cancelled  { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; }
+.order-status.confirmed  { background: rgba(255, 200, 0, 0.12);  color: #ffc800; }
+.order-status.assembled  { background: rgba(0, 150, 255, 0.14);  color: #4db8ff; }
+.order-status.shipped    { background: rgba(0, 122, 255, 0.14);  color: #007aff; }
+.order-status.done       { background: rgba(52, 199, 89, 0.14);  color: #34c759; }
+.order-status.cancelled  { background: rgba(255, 77, 77, 0.12);  color: #ff4d4d; }
 
-.order-status.confirmed  { background: rgba(0, 217, 192, 0.12); color: var(--accent); }
-.order-status.assembled  { background: rgba(0, 150, 255, 0.14); color: #4db8ff; }
-.order-status.shipped    { background: rgba(0, 122, 255, 0.14); color: #007aff; }
-.order-status.done       { background: rgba(52, 199, 89, 0.14); color: #34c759; }
-.order-status.cancelled  { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; }
+/* ===== СОСТАВ ===== */
 
 .order-items {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .order-item {
     display: flex;
-    gap: 10px;
-    align-items: center;
+    gap: 12px;
+    align-items: flex-start;
 }
 
 .order-item-image {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     background: #fff;
     border-radius: 10px;
     overflow: hidden;
@@ -116,12 +96,28 @@
     padding: 4px;
 }
 
-.order-item-body {
+.order-item-placeholder {
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+}
+
+.order-item-info {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    min-width: 0;
+    gap: 3px;
+}
+
+.order-item-brand {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .order-item-name {
@@ -135,66 +131,123 @@
     overflow: hidden;
 }
 
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 4px;
+}
+
 .order-item-qty {
     font-size: 12px;
     color: var(--text-muted);
 }
 
-/* ===== Детали ===== */
-
-.order-details {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, margin-top 0.3s ease;
-    margin-top: 0;
+.order-item-sum {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    letter-spacing: -0.2px;
 }
 
-.order-card.expanded .order-details {
-    max-height: 500px;
-    margin-top: 12px;
+/* ===== БЛОКИ «ПОЛУЧЕНИЕ» / «ОПЛАТА» ===== */
+
+.order-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     padding-top: 12px;
     border-top: 1px solid var(--border);
 }
 
-.order-detail-row {
+.order-row {
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 6px 0;
+    align-items: flex-start;
+    gap: 10px;
     font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
 }
 
-.order-detail-label {
+.order-row-icon {
+    width: 18px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--text-muted);
+    margin-top: 1px;
+}
+
+.order-row-icon svg {
+    display: block;
     flex-shrink: 0;
 }
 
-.order-detail-value {
-    color: var(--text);
-    font-weight: 500;
-    text-align: right;
+.order-row-text {
+    flex: 1;
+    min-width: 0;
     word-break: break-word;
 }
 
-.order-footer {
+.order-row-text strong {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.order-row-hint {
+    color: var(--text-muted);
+    margin-right: 4px;
+}
+
+.order-row-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.15s ease;
+}
+
+.order-row-link:hover {
+    opacity: 0.8;
+}
+
+.order-row-sep {
+    color: var(--text-muted);
+    margin: 0 4px;
+}
+
+.order-payment-status {
+    font-weight: 600;
+}
+.order-payment-status.is-pending   { color: #ffc800; }
+.order-payment-status.is-paid      { color: #34c759; }
+.order-payment-status.is-cancelled { color: var(--text-muted); }
+
+/* ===== ИТОГО ===== */
+
+.order-total-row {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     padding-top: 12px;
-    margin-top: 12px;
     border-top: 1px solid var(--border);
+}
+
+.order-total-label {
     font-size: 14px;
     color: var(--text-muted);
 }
 
-.order-total {
+.order-total-value {
     font-size: 20px;
     font-weight: 800;
     color: var(--text);
     letter-spacing: -0.5px;
 }
 
-/* ===== Табы Активные / Все со слайдером ===== */
+/* ===== ТАБЫ АКТИВНЫЕ / ВСЕ ===== */
 
 .orders-tabs {
     position: relative;
@@ -202,7 +255,6 @@
     background: rgba(255, 255, 255, 0.06);
     border-radius: 12px;
     padding: 2px;
-    gap: 0;
     overflow: hidden;
     margin-bottom: 16px;
     min-height: 38px;
@@ -254,14 +306,43 @@
 .orders-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
-@media (max-width: 600px) {
-    .order-card { padding: 14px; }
-    .order-total { font-size: 18px; }
-    .order-status,
-    .order-payment { font-size: 10px; padding: 4px 8px; }
+/* ===== ПУСТОЕ СОСТОЯНИЕ ===== */
 
-    .orders-tab { font-size: 12px; padding: 8px 0; }
+.cart-empty-icon {
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+/* ===== МОБИЛКА ===== */
+
+@media (max-width: 600px) {
+    .order-card {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .order-number { font-size: 14px; }
+    .order-date   { font-size: 11px; }
+
+    .order-status {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+
+    .order-item-image { width: 56px; height: 56px; }
+    .order-item-name  { font-size: 13px; }
+    .order-item-qty   { font-size: 11px; }
+    .order-item-sum   { font-size: 13px; }
+
+    .order-row        { font-size: 12px; }
+    .order-total-label { font-size: 13px; }
+    .order-total-value { font-size: 18px; }
+
+    .orders-tab { font-size: 12px; }
 }

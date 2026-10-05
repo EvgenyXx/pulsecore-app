@@ -21,9 +21,6 @@
 
 <header class="header">
     <div class="header-inner">
-        <a href="/dashboard" class="logo-back" aria-label="Назад">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </a>
         <a href="/seller" class="logo">PulseCore <span class="logo-badge">SELLER</span></a>
     </div>
 </header>
@@ -175,12 +172,7 @@
     <section id="page-orders" class="seller-page hidden">
         <h1 class="page-title">Заказы</h1>
 
-        <div class="order-filter" id="orderFilter">
-            <button class="order-chip active" data-status="CONFIRMED">Собирать</button>
-            <button class="order-chip" data-status="ASSEMBLED">Собрано</button>
-            <button class="order-chip" data-status="SHIPPED">Отправлено</button>
-            <button class="order-chip" data-status="all">Все</button>
-        </div>
+        <div class="order-filter" id="orderFilter"></div>
 
         <div id="sellerOrdersList" class="seller-orders-list">
             <p class="muted">Загрузка...</p>
@@ -224,32 +216,7 @@
     </div>
 </div>
 
-<nav class="seller-nav" id="sellerNav">
-    <a href="/dashboard" class="seller-nav-item" data-seller-tab="app">
-        <span class="seller-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </span>
-        <span class="seller-nav-label">PulseCore</span>
-    </a>
-    <a href="#/" class="seller-nav-item active" data-seller-tab="list">
-        <span class="seller-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-        </span>
-        <span class="seller-nav-label">Товары</span>
-    </a>
-    <a href="#/orders" class="seller-nav-item" data-seller-tab="orders">
-        <span class="seller-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        </span>
-        <span class="seller-nav-label">Заказы</span>
-    </a>
-    <a href="#/categories" class="seller-nav-item" data-seller-tab="categories">
-        <span class="seller-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        </span>
-        <span class="seller-nav-label">Категории</span>
-    </a>
-</nav>
+<nav class="seller-nav" id="sellerNav"></nav>
 
 <script src="/js/seller/api/seller-http.js"></script>
 <script src="/js/seller/api/orders-api.js"></script>
@@ -257,6 +224,8 @@
 <script src="/js/seller/api/categories-api.js"></script>
 <script src="/js/seller/ui/toast.js"></script>
 <script src="/js/seller/ui/upload.js"></script>
+<script src="/js/seller/ui/icons.js"></script>
+<script src="/js/seller/ui/seller-nav.js"></script>
 <script src="/js/seller/pages/list.js"></script>
 <script src="/js/seller/pages/new.js"></script>
 <script src="/js/seller/pages/edit.js"></script>

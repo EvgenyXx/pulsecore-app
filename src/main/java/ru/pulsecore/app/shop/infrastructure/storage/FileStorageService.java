@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.pulsecore.app.shop.infrastructure.exception.FileStorageException;
-import ru.pulsecore.app.shop.infrastructure.exception.InvalidFileTypeException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,80 +18,70 @@ import java.util.UUID;
 @Slf4j
 public class FileStorageService {
 
+    private final S3Client s3;
     private final FileStorageProperties props;
-
-    public void deleteAll(List<String> urls) {
-        if (urls == null || urls.isEmpty()) return;
-
-        Path base = Path.of(props.getUploadDir()).toAbsolutePath().normalize();
-
-        for (String url : urls) {
-            if (url == null || !url.startsWith("/uploads/")) continue;
-
-            String relative = url.substring("/uploads/".length());
-            Path target = base.resolve(relative).normalize();
-
-            if (!target.startsWith(base)) continue;
-
-            try {
-                Files.deleteIfExists(target);
-            } catch (IOException e) {
-                log.warn("Не удалось удалить файл: {}", url, e);
-            }
-        }
-    }
+    private final FileValidator validator;
+    private final S3UrlHelper urlHelper;
 
     public String save(MultipartFile file, String subdir) {
-        validate(file);
+        validator.validate(file);
 
-        String ext = extractExtension(file.getOriginalFilename());
-        String fileName = UUID.randomUUID() + ext;
-
-        Path dir = Path.of(props.getUploadDir()).resolve(subdir);
-        Path target = dir.resolve(fileName);
+        String key = buildKey(subdir, file);
+        String bucket = props.getS3().getBucket();
 
         try {
-            Files.createDirectories(dir);
-            file.transferTo(target.toAbsolutePath().toFile());
-        } catch (IOException e) {
-            throw new FileStorageException("Не удалось сохранить файл: " + fileName);
+            PutObjectRequest req = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .contentType(file.getContentType())
+                    .contentLength(file.getSize())
+                    .build();
+
+            s3.putObject(req, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+
+            log.info("S3 upload ok: bucket={}, key={}, size={}", bucket, key, file.getSize());
+        } catch (Exception e) {
+            log.error("S3 upload error: bucket={}, key={}", bucket, key, e);
+            throw new FileStorageException("Не удалось загрузить файл: " + key);
         }
 
-        return "/uploads/" + subdir + "/" + fileName;
+        return urlHelper.buildPublicUrl(key);
     }
 
     public void delete(String url) {
-        if (url == null || !url.startsWith("/uploads/")) return;
+        String key = urlHelper.extractKey(url);
+        if (key == null) return;
 
-        String relative = url.substring("/uploads/".length());
+        String bucket = props.getS3().getBucket();
 
-        Path base = Path.of(props.getUploadDir()).toAbsolutePath().normalize();
-        Path target = base.resolve(relative).normalize();
+        s3.deleteObject(DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build());
 
-        if (!target.startsWith(base)) return;
-
-        try {
-            Files.deleteIfExists(target);
-        } catch (IOException e) {
-            throw new FileStorageException("Не удалось удалить файл: " + url);
-        }
+        log.info("S3 delete ok: bucket={}, key={}", bucket, key);
     }
 
-    private void validate(MultipartFile file) {
-        if (file.isEmpty()) {
-            throw new InvalidFileTypeException("Файл пустой");
-        }
-        if (file.getSize() > props.getMaxFileSize()) {
-            throw new InvalidFileTypeException("Файл слишком большой");
-        }
-        if (!props.getAllowedTypes().contains(file.getContentType())) {
-            throw new InvalidFileTypeException("Неверный тип файла: " + file.getContentType());
-        }
+    public void deleteAll(List<String> urls) {
+        if (urls == null || urls.isEmpty()) return;
+        urls.forEach(this::delete);
+    }
+
+    /**
+     * Собирает ключ: <subdir>/<uuid>.<ext>
+     * Пример: products/af4c9371-...webp
+     */
+    private String buildKey(String subdir, MultipartFile file) {
+        String ext = extractExtension(file.getOriginalFilename());
+        return subdir + "/" + UUID.randomUUID() + ext;
     }
 
     private String extractExtension(String name) {
         if (name == null) return ".jpg";
-        int i = name.lastIndexOf('.');
-        return i > 0 ? name.substring(i).toLowerCase() : ".jpg";
+
+        int dotIndex = name.lastIndexOf('.');
+        if (dotIndex <= 0) return ".jpg";
+
+        return name.substring(dotIndex).toLowerCase();
     }
 }

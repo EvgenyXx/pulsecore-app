@@ -9,16 +9,16 @@ import ru.pulsecore.app.shop.application.payment.OrderPaymentStrategy;
 import ru.pulsecore.app.shop.domain.entity.Order;
 import ru.pulsecore.app.shop.domain.PaymentMethod;
 import ru.pulsecore.app.shop.infrastructure.client.PaymentShopClient;
+import ru.pulsecore.app.shop.infrastructure.config.ShopProperties;
 
 
 @Component
 @RequiredArgsConstructor
 public class YookassaPaymentStrategy implements OrderPaymentStrategy {
 
-
     private final PaymentShopClient paymentShopClient;
     private final OrderMapper orderMapper;
-
+    private final ShopProperties shopProperties;
 
     @Override
     public PaymentMethod supportedMethod() {
@@ -28,9 +28,9 @@ public class YookassaPaymentStrategy implements OrderPaymentStrategy {
     @Override
     public OrderDto handlePayment(Order order) {
         PaymentResponse payment = paymentShopClient.createOrderPayment(
-                    order.getId(),
-                    order.getTotalPrice()
-            );
-        return orderMapper.toDto(order, payment.confirmationUrl());
+                order.getId(),
+                order.getTotalPrice()
+        );
+        return orderMapper.toDto(order, payment.confirmationUrl(), shopProperties);
     }
 }

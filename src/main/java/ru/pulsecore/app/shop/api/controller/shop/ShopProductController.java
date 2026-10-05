@@ -20,6 +20,12 @@ public class ShopProductController {
 
     private final ProductService productService;
 
+    @Operation(summary = "Товары по категории")
+    @GetMapping(ShopApi.PRODUCTS_BY_CATEGORY)
+    public ResponseEntity<List<ProductCardDto>> getByCategory(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(productService.getByCategory(categoryId));
+    }
+
     @Operation(summary = "Список товаров (активные)")
     @GetMapping(ShopApi.PRODUCTS)
     public ResponseEntity<List<ProductCardDto>> getAll() {

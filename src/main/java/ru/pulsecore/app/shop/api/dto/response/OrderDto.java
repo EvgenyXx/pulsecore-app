@@ -1,5 +1,9 @@
 package ru.pulsecore.app.shop.api.dto.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.pulsecore.app.shop.domain.DeliveryMethod;
 import ru.pulsecore.app.shop.domain.OrderStatus;
 import ru.pulsecore.app.shop.domain.PaymentMethod;
@@ -9,26 +13,34 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record OrderDto(
-        Long id,
-        OrderStatus status,
-        PaymentMethod paymentMethod,
-        PaymentStatus paymentStatus,
-        DeliveryMethod deliveryMethod,
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderDto {
 
-        String customerFirstName,
-        String customerLastName,
-        String customerMiddleName,
-        String deliveryPhone,
-        String deliveryCity,
-        String deliveryStreet,
-        String comment,
+    // ===== Метаданные заказа =====
+    private Long id;
+    private OrderStatus status;
+    private LocalDateTime createdAt;
 
-        BigDecimal totalPrice,
-        List<OrderItemDto> items,
+    // ===== Состав =====
+    private List<OrderItemDto> items;
+    private BigDecimal totalPrice;
 
-        String paymentConfirmationUrl,
+    // ===== Оплата =====
+    private PaymentMethod paymentMethod;
+    private PaymentStatus paymentStatus;
 
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {}
+    // ===== Получение =====
+    private DeliveryMethod deliveryMethod;
+    private String pickupCity;
+    private String pickupAddress;
+    private String sellerPhone;      // телефон магазина для связи
+
+    // ===== Комментарий покупателя =====
+    private String comment;
+
+    // ===== Служебное (только для редиректа ЮKassa, в JSON не попадёт если null) =====
+    private String paymentConfirmationUrl;
+}
