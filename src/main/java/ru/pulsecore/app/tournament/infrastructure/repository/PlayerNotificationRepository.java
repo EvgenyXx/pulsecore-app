@@ -23,11 +23,11 @@ public interface PlayerNotificationRepository
 
     @Modifying
     @Query("DELETE FROM PlayerNotification p WHERE p.playerId = :playerId")
-    int deleteByPlayerId(@Param("id") UUID playerId);
+    int deleteByPlayerId(@Param("playerId") UUID playerId);
 
     @Modifying
     @Query("DELETE FROM PlayerNotification pn WHERE pn.playerId = :playerId AND pn.tournament.id = :tournamentId")
-    void deleteByPlayerIdAndTournamentId(@Param("id") UUID playerId, @Param("tournamentId") Long tournamentId);
+    void deleteByPlayerIdAndTournamentId(@Param("playerId") UUID playerId, @Param("tournamentId") Long tournamentId);
 
     boolean existsByPlayerIdAndTournament_ExternalId(UUID playerId, Long externalId);
 
