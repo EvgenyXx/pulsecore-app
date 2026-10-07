@@ -2,6 +2,7 @@ package ru.pulsecore.app.tournament.application.earnings.report;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.domain.ReportStatus;
 import ru.pulsecore.app.tournament.domain.entity.ScheduledReport;
 import ru.pulsecore.app.tournament.infrastructure.repository.ScheduledReportRepository;
@@ -25,9 +26,8 @@ public class ScheduledReportService {
                 .dateTo(to)
                 .scheduledAt(scheduledAt)
                 .build();
-         reportRepository.save(report);
+        reportRepository.save(report);
     }
-
 
 
     public List<ScheduledReport> findPendingByPlayer(UUID playerId) {
@@ -44,13 +44,11 @@ public class ScheduledReportService {
     }
 
 
-    public void markAsSent(UUID reportId) {
-        reportRepository.findById(reportId).ifPresent(report -> {
-            report.setStatus(ReportStatus.SENT);
-            reportRepository.save(report);
-        });
+    @Transactional
+    public int markAsSent(List<UUID> reportIds) {
+        if (reportIds == null || reportIds.isEmpty()) return 0;
+        return reportRepository.markAsSent(reportIds, ReportStatus.SENT);
     }
-
 
 
 }

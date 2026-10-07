@@ -2,6 +2,7 @@ package ru.pulsecore.app.shop.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -46,6 +47,7 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC")
     @Builder.Default
+    @BatchSize(size = 20)
     private List<ProductImage> images = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false)

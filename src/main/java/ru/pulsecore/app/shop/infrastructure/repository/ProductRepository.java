@@ -8,14 +8,12 @@ import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.shop.domain.entity.Product;
 
 
-
-
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @EntityGraph(attributePaths = {"images", "category"})
+    @EntityGraph(attributePaths = {"category"})
     Page<Product> findByActiveTrue(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"images", "category"})
-    Page<Product> findByCategoryIdAndActiveTrue(Long categoryId,Pageable pageable);
+    @EntityGraph(attributePaths = {"category"})
+    Page<Product> findByCategoryIdAndActiveTrue(Long categoryId, Pageable pageable);
 }

@@ -7,6 +7,8 @@ import ru.pulsecore.app.notification.application.mail.context.MailContext;
 
 import java.util.UUID;
 
+
+//todo удалить
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

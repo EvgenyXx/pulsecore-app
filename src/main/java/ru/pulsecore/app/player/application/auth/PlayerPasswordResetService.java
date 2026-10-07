@@ -1,7 +1,6 @@
 package ru.pulsecore.app.player.application.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +10,11 @@ import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.exception.BadResetCodeException;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.PasswordResetContext;
-import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
+import ru.pulsecore.app.shared.event.MailContent;
 import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.Map;
 
 /**
  * Сброс пароля игрока.
@@ -28,7 +29,7 @@ public class PlayerPasswordResetService {
     private final PlayerCommandService  commandService;
     private final PlayerSearchService  searchService;
     private final PasswordEncoder passwordEncoder;
-    private final ApplicationEventPublisher  eventPublisher;
+    private final MailDispatcher mailDispatcher;
 
     public record Pending(String email, String code) implements Serializable {
     }
@@ -36,13 +37,16 @@ public class PlayerPasswordResetService {
     public Pending initiate(String email) {
         String normalizedEmail = email.toLowerCase().trim();
         String code = String.format("%06d", RANDOM.nextInt(999999));
-        eventPublisher.publishEvent(
-                new MailNotificationEvent(
-                        MailTypes.PASSWORD_RESET,
-                        new PasswordResetContext(normalizedEmail, code)
-                )
+        mailDispatcher.send(
+                Map.of()
         );
-
+        mailDispatcher.send(
+            normalizedEmail,
+            new MailContent(
+                    MailTypes.PASSWORD_RESET,
+                    new PasswordResetContext(normalizedEmail, code)
+            )
+    );
         return new Pending(normalizedEmail, code);
     }
 

@@ -2,14 +2,14 @@ package ru.pulsecore.app.tournament.application.roster.change.remove;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.PlayerReplacedContext;
 import ru.pulsecore.app.notification.application.mail.context.PlayerTransferredContext;
+import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
@@ -19,16 +19,16 @@ import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 @RequiredArgsConstructor
 public class PlayerChangeNotificationPublisher {
 
-    private final ApplicationEventPublisher eventPublisher;
+    private final MailDispatcher mailDispatcher;
 
     public void sendReplacementNotification(PlayerData player, TournamentDto tournament) {
         log.debug("Публикация события замены: player={}, tournament={}",
                 player.name(), tournament.getLink());
 
-        eventPublisher.publishEvent(
-                new MailNotificationEvent(
+        mailDispatcher.send(
+                player.email(),
+                new MailContent(
                         MailTypes.PLAYER_REPLACED,
-                        player.id(),
                         new PlayerReplacedContext(
                                 player.email(),
                                 StringUtils.extractFirstName(player.name()),
@@ -50,10 +50,10 @@ public class PlayerChangeNotificationPublisher {
                 transferInfo.from().getLink(),
                 transferInfo.to().getLink());
 
-        eventPublisher.publishEvent(
-                new MailNotificationEvent(
+        mailDispatcher.send(
+                player.email(),
+                new MailContent(
                         MailTypes.PLAYER_TRANSFERRED,
-                        player.id(),
                         new PlayerTransferredContext(
                                 player.email(),
                                 StringUtils.extractFirstName(player.name()),

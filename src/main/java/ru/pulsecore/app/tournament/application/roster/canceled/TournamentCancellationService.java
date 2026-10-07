@@ -30,7 +30,7 @@ public class TournamentCancellationService {
         t.setFinished(true);
         tournamentRepository.save(t);
 
-        notificationService.sendCancelled(notifications);
+        notificationService.sendCancelled(notifications,t);
         notificationRepository.saveAll(notifications);
 
         log.info("❌ Tournament cancelled: id={}, players={}", t.getExternalId(), notifications.size());

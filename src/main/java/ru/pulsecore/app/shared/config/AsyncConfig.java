@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class AsyncConfig {
 
     public static final String TASK_EXECUTOR = "taskExecutor";
-    public static final String MAIL_EXECUTOR = "mailExecutor";
+
     public static final String TOURNAMENT_EXECUTOR = "tournamentExecutor";
     public static final String CANCELED_EXECUTOR = "canceledExecutor" ;
 
@@ -34,17 +34,17 @@ public class AsyncConfig {
         return executor;
     }
 
-    @Bean(MAIL_EXECUTOR)
-    public Executor mailExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(4);
-        executor.setQueueCapacity(50);
-        executor.setThreadNamePrefix("mail-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.initialize();
-        return executor;
-    }
+//    @Bean(MAIL_EXECUTOR)
+//    public Executor mailExecutor() {
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        executor.setCorePoolSize(2);
+//        executor.setMaxPoolSize(4);
+//        executor.setQueueCapacity(50);
+//        executor.setThreadNamePrefix("mail-");
+//        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+//        executor.initialize();
+//        return executor;
+//    }
 
     @Bean(TOURNAMENT_EXECUTOR)
     public Executor tournamentExecutor() {

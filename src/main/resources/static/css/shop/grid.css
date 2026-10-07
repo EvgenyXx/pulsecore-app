@@ -3,6 +3,7 @@
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
     min-height: 400px;
+    align-items: start;
 }
 
 @media (max-width: 900px) {
@@ -15,7 +16,9 @@
 @media (max-width: 600px) {
     .products-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        align-items: start;   /* карточки не растягиваются по высоте ряда */
+        gap: 6px;              /* ← как на WB — узкий отступ */
+        align-items: start;
+        padding: 0;
+        margin: 0;
     }
 }

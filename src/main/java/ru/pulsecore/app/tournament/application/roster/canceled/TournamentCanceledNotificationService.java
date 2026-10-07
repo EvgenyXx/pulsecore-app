@@ -2,22 +2,20 @@ package ru.pulsecore.app.tournament.application.roster.canceled;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.CanceledTournamentContext;
+import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
+import ru.pulsecore.app.shared.dispetcher.PushDispatcher;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.shared.event.MailNotificationEvent;
-import ru.pulsecore.app.shared.event.PushNotificationEvent;
+import ru.pulsecore.app.shared.event.MailContent;
+import ru.pulsecore.app.shared.event.PushContent;
+import ru.pulsecore.app.shared.util.PushMessageBuilder;
+import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
-import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.shared.util.PushMessageBuilder;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +23,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TournamentCanceledNotificationService {
 
-    private final ApplicationEventPublisher eventPublisher;
     private final PlayerClient playerClient;
+    private final PushDispatcher pushDispatcher;
+    private final MailDispatcher mailDispatcher;
 
-    public void sendCancelled(List<PlayerNotification> notifications) {
+    public void sendCancelled(List<PlayerNotification> notifications, TournamentEntity tournamentEntity) {
+        if (notifications == null || notifications.isEmpty()) return;
+
         log.debug("Отмена: начало отправки уведомлений для {} игроков", notifications.size());
 
         Set<UUID> playerIds = notifications.stream()
@@ -38,45 +39,68 @@ public class TournamentCanceledNotificationService {
         Map<UUID, PlayerData> playerMap = playerClient.getPlayerDataByIds(playerIds).stream()
                 .collect(Collectors.toMap(PlayerData::id, p -> p));
 
+        pushDispatcher.send(buildPushContent(notifications, playerMap, tournamentEntity));
+        mailDispatcher.send(buildMailContent(notifications, playerMap, tournamentEntity));
+
+        log.info("Отмена турнира: уведомления отправлены {} игрокам", notifications.size());
+    }
+
+    // ==================== PUSH ====================
+
+    private Map<UUID, PushContent> buildPushContent(
+            List<PlayerNotification> notifications,
+            Map<UUID, PlayerData> playerMap,
+            TournamentEntity tournament) {
+
+        String time = tournament.getTime() != null ? tournament.getTime() : "?";
+        String date = tournament.getDate() != null ? tournament.getDate().toString() : "?";
+        String link = tournament.getLink();
+        String body = PushMessageBuilder.buildCancelledBody(date, time);
+
+        Map<UUID, PushContent> result = new HashMap<>();
+
         for (PlayerNotification pn : notifications) {
             PlayerData player = playerMap.get(pn.getPlayerId());
             if (player == null) continue;
 
-            TournamentEntity tournament = pn.getTournament();
-            String time = tournament.getTime() != null ? tournament.getTime() : "?";
-            String date = tournament.getDate() != null ? tournament.getDate().toString() : "?";
-
-            emailSend(player, time, date, tournament.getLink());
-            canSendPush(player, time, date, tournament.getLink());
+            result.put(player.id(), new PushContent(
+                    "Турнир отменён",
+                    body,
+                    link
+            ));
         }
-        log.info("Отмена турнира: уведомления отправлены {} игрокам", notifications.size());
+
+        return result;
     }
 
-    private void canSendPush(PlayerData playerData, String time, String date, String link) {
-            eventPublisher.publishEvent(
-                    new PushNotificationEvent(
-                            playerData.id(),
-                            "Турнир отменён",
-                            PushMessageBuilder.buildCancelledBody(date, time),
+    // ==================== MAIL ====================
+
+    private Map<UUID, MailContent> buildMailContent(
+            List<PlayerNotification> notifications,
+            Map<UUID, PlayerData> playerMap,
+            TournamentEntity tournament) {
+
+        String time = tournament.getTime() != null ? tournament.getTime() : "?";
+        String date = tournament.getDate() != null ? tournament.getDate().toString() : "?";
+        String link = tournament.getLink();
+
+        Map<UUID, MailContent> result = new HashMap<>();
+
+        for (PlayerNotification pn : notifications) {
+            PlayerData player = playerMap.get(pn.getPlayerId());
+            if (player == null) continue;
+
+            result.put(player.id(), new MailContent(
+                    MailTypes.CANCELED_TOURNAMENT,
+                    new CanceledTournamentContext(
+                            player.email(),
+                            time,
+                            date,
                             link
                     )
-            );
-            log.debug("Отмена: пуш отправлен игроку={}", playerData.name());
+            ));
+        }
 
-    }
-
-    private void emailSend(PlayerData playerData, String time, String date, String link) {
-            eventPublisher.publishEvent(
-                    new MailNotificationEvent(
-                            MailTypes.CANCELED_TOURNAMENT,
-                            playerData.id(),
-                            new CanceledTournamentContext(
-                                    playerData.email(),
-                                    time, date, link
-                            )
-                    )
-            );
-            log.debug("Отмена: письмо отправлено игроку={}", playerData.name());
-
+        return result;
     }
 }

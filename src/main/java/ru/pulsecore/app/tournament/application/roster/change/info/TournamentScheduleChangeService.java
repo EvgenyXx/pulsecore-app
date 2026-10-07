@@ -2,15 +2,15 @@ package ru.pulsecore.app.tournament.application.roster.change.info;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.TournamentScheduleChangedContext;
+import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.dto.response.DateDto;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
 import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
@@ -21,15 +21,19 @@ import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TournamentScheduleChangeService {
 
-    private final ApplicationEventPublisher eventPublisher;
+
     private final TournamentRepository tournamentRepository;
     private final PlayerNotificationRepository playerNotificationRepository;
+    private final MailDispatcher mailDispatcher;
 
     @Transactional
     public void processScheduleChange(
@@ -95,21 +99,15 @@ public class TournamentScheduleChangeService {
         log.info("📅 Изменение расписания в турнире {} ({}): уведомлено игроков: {}",
                 newTournament.getTitle(), newTournament.getId(), oldPlayers.size());
 
-        oldPlayers.forEach(player -> sendScheduleChangeNotification(player, info));
+        Map<UUID, MailContent> content = oldPlayers.stream()
+                .collect(Collectors.toMap(PlayerData::id,
+                        p -> new MailContent(
+                                MailTypes.TOURNAMENT_SCHEDULE_CHANGED,
+                                new TournamentScheduleChangedContext(
+                                        p.email(),
+                                        StringUtils.extractFirstName(p.name()), info))));
+        mailDispatcher.send(content);
     }
 
-    private void sendScheduleChangeNotification(PlayerData player, TransferInfo info) {
-        eventPublisher.publishEvent(
-                new MailNotificationEvent(
-                        MailTypes.TOURNAMENT_SCHEDULE_CHANGED,
-                        player.id(),
-                        new TournamentScheduleChangedContext(
-                                player.email(),
-                                StringUtils.extractFirstName(player.name()),
-                                info
-                        )
-                )
-        );
-        log.debug("Расписание: уведомление отправлено игроку={}", player.name());
-    }
+
 }

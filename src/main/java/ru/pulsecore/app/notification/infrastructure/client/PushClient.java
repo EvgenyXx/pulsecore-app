@@ -8,7 +8,7 @@ import nl.martijndwars.webpush.PushService;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.domain.PushSubscription;
 import ru.pulsecore.app.notification.infrastructure.config.VapidConfig;
-import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +20,6 @@ public class PushClient {
 
 
     public void sendPush(PushSubscription sub, String title, String body, String url) throws Exception {
-//        String payload = objectMapper.writeValueAsString(Map.of(
-//                "title", title,
-//                "body", body,
-//                "url", url
-////                "tag", "tournament"
-//        ));
 
         String payload = objectMapper.writeValueAsString(new PushPayload(title, body, url));
 

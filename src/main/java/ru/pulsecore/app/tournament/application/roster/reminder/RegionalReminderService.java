@@ -14,12 +14,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Базовый класс для региональных напоминаний.
- * Содержит общую логику: загрузка уведомлений, расчёт времени,
- * проверка и отправка push-уведомлений.
- * Подклассы переопределяют: getHalls(), getZone(), getRegionName().
- */
 @Slf4j
 @RequiredArgsConstructor
 public abstract class RegionalReminderService {
@@ -28,19 +22,8 @@ public abstract class RegionalReminderService {
     private final PlayerClient playerClient;
     private final ReminderNotificationSender reminderNotificationSender;
 
-    /**
-     * Зал региона. Если null или пусто — все залы (fallback).
-     */
     protected abstract List<Integer> getHalls();
-
-    /**
-     * Таймзона региона.
-     */
     protected abstract ZoneId getZone();
-
-    /**
-     * Название региона для логов.
-     */
     protected abstract String getRegionName();
 
     @Transactional
@@ -49,7 +32,7 @@ public abstract class RegionalReminderService {
         processEveningReminders();
     }
 
-    // ==================== ЧАСОВЫЕ (турнир СЕГОДНЯ) ====================
+    // ==================== ЧАСОВЫЕ ====================
 
     private void processHourReminders() {
         List<Integer> halls = getHalls();
@@ -59,25 +42,14 @@ public abstract class RegionalReminderService {
 
         if (notifications.isEmpty()) return;
 
+        log.debug("{} — часовые: загружено {}", getRegionName(), notifications.size());
+
         Map<UUID, PlayerData> playerMap = loadPlayers(notifications);
-        List<PlayerData> pushed = new ArrayList<>();
 
-        notifications.forEach(pn -> {
-            PlayerData player = playerMap.get(pn.getPlayerId());
-            if (player != null) {
-                reminderNotificationSender.sendHourReminder(
-                        player, pn.getTournament().getTime(), pushed, pn);
-            }
-        });
-
-        if (!pushed.isEmpty()) {
-            log.info("{} — пуш за час отправлен: {}",
-                    getRegionName(),
-                    pushed.stream().map(PlayerData::name).collect(Collectors.joining(", ")));
-        }
+        reminderNotificationSender.sendHourReminders(notifications, playerMap);
     }
 
-    // ==================== ВЕЧЕРНИЕ (турнир ЗАВТРА) ====================
+    // ==================== ВЕЧЕРНИЕ ====================
 
     private void processEveningReminders() {
         List<Integer> halls = getHalls();
@@ -89,22 +61,12 @@ public abstract class RegionalReminderService {
 
         if (notifications.isEmpty()) return;
 
+        log.debug("{} — вечерние: загружено {}", getRegionName(), notifications.size());
+
         Map<UUID, PlayerData> playerMap = loadPlayers(notifications);
         LocalTime now = LocalTime.now(getZone()).withSecond(0).withNano(0);
-        List<PlayerData> pushed = new ArrayList<>();
 
-        notifications.forEach(pn -> {
-            PlayerData player = playerMap.get(pn.getPlayerId());
-            if (player != null) {
-                reminderNotificationSender.sendEveningReminder(player, pn, now, pushed);
-            }
-        });
-
-        if (!pushed.isEmpty()) {
-            log.info("{} — вечерний пуш отправлен: {}",
-                    getRegionName(),
-                    pushed.stream().map(PlayerData::name).collect(Collectors.joining(", ")));
-        }
+        reminderNotificationSender.sendEveningReminders(notifications, playerMap, now);
     }
 
     // ==================== ОБЩЕЕ ====================

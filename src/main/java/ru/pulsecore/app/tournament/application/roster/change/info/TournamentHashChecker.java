@@ -18,6 +18,7 @@ import java.util.Set;
 @Slf4j
 public class TournamentHashChecker {
 
+    //todo венруться исправить n+1
     private final DiscoveryHashCache hashCache;
     private final TournamentChangeAnalyzer analyzer;
 

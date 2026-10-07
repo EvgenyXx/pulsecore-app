@@ -3,14 +3,12 @@ package ru.pulsecore.app.notification.application.mail;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.notification.infrastructure.config.NotificationAsyncConfig;
 import ru.pulsecore.app.notification.infrastructure.properties.AdminProperties;
-import ru.pulsecore.app.shared.config.AsyncConfig;
 import ru.pulsecore.app.notification.application.mail.sender.MailSendStrategy;
 import ru.pulsecore.app.notification.application.mail.sender.PdfMailSender;
 import ru.pulsecore.app.notification.application.mail.sender.TextMailSender;
 import ru.pulsecore.app.notification.application.mail.template.MailFormat;
-
-
 import java.util.Map;
 
 
@@ -31,7 +29,7 @@ public class UniversalMailSender {
         );
     }
 
-    @Async(AsyncConfig.MAIL_EXECUTOR)
+    @Async(NotificationAsyncConfig.MAIL_EXECUTOR)
     public void send(MailFormat format,
                      String to, String subject,
                      String text, String fileName,

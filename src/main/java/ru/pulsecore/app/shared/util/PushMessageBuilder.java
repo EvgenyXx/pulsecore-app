@@ -11,6 +11,25 @@ public class PushMessageBuilder {
     private PushMessageBuilder() {
     }
 
+    public static String buildNewTournamentBody(String playerName, List<TournamentDto> tournaments) {
+    if (tournaments == null || tournaments.isEmpty()) return "";
+    if (tournaments.size() == 1) return buildNewTournamentBody(playerName, tournaments.get(0));
+
+    String firstName = StringUtils.extractFirstName(playerName);
+    StringBuilder body = new StringBuilder();
+    body.append(firstName).append(", вы записаны на ").append(tournaments.size()).append(" турнира:\n\n");
+
+    for (TournamentDto t : tournaments) {
+        String dateStr = DateTimeUtils.formatDate(t.getDate() != null ? t.getDate().getDate() : null);
+        String timeStr = DateTimeUtils.formatTime(t.getDate() != null ? t.getDate().getDate() : null);
+        String hall = t.getHall() != null ? t.getHall() : "—";
+
+        body.append("• ").append(dateStr).append(" ").append(timeStr)
+            .append(" — ").append(hall).append("\n");
+    }
+    return body.toString();
+}
+
     public static String buildNewTournamentBody(String playerName, TournamentDto t) {
         String firstName = StringUtils.extractFirstName(playerName);
         String dateStr = DateTimeUtils.formatDate(t.getDate() != null ? t.getDate().getDate() : null);

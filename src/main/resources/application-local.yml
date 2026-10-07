@@ -31,9 +31,11 @@ logging:
   level:
     root: WARN
     org.apache.pdfbox.pdmodel.font.PDType1Font: ERROR
-    ru.pulsecore.app: DEBUG
+    ru.pulsecore.app: debug
     org.springframework: WARN
     org.hibernate: WARN
+#    org.hibernate.SQL: DEBUG           # ← SQL-запросы
+#    org.hibernate.orm.jdbc.bind: TRACE # ← параметры (product_id = 1)
 
 
 

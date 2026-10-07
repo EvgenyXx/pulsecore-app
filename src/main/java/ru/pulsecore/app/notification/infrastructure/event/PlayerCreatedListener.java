@@ -18,11 +18,6 @@ public class PlayerCreatedListener {
 
     @EventListener
     public void handle(PlayerCreatedEvent event) {
-        log.info("Началась отправка увд при регистрации админ + пользователь");
-        try {
-            playerCreatedHandler.process(event);
-        }catch (Exception e) {
-            log.error("Ошибка обработки PlayerCreatedEvent: {}", e.getMessage(), e);
-        }
+        playerCreatedHandler.process(event);
     }
 }
