@@ -2,13 +2,13 @@ package ru.pulsecore.app.shop.application.order;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.OrderPaidContext;
+import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.shop.application.product.StockService;
 import ru.pulsecore.app.shop.domain.entity.Order;
 import ru.pulsecore.app.shop.domain.entity.OrderItem;
@@ -30,7 +30,7 @@ public class OrderPaidService {
 
     private final StockService stockService;
     private final OrderRepository orderRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final MailDispatcher mailDispatcher;
     private final PlayerClient playerClient;
     private final ShopProperties properties;
 
@@ -63,27 +63,30 @@ public class OrderPaidService {
 
     private void sendEvent(Order order) {
         PlayerData playerData = playerClient.getPlayer(order.getUserId());
-        eventPublisher.publishEvent(new MailNotificationEvent(
-                MailTypes.ORDER_PAID,
-                playerData.id(),
-                new OrderPaidContext(
-                        playerData.email(),
-                        order.getCustomerFirstName(),
-                        order.getCustomerLastName(),
-                        order.getId(),
-                        order.getTotalPrice(),
-                        order.getPaymentMethod().name(),
-                        mapItems(order),
-                        order.getDeliveryMethod().name(),
-                        order.getDeliveryCity(),
-                        order.getDeliveryStreet(),
-                        properties.getPickup().getPhone()
+
+        mailDispatcher.send(
+                playerData.email(),
+                new MailContent(
+                        MailTypes.ORDER_PAID,
+                        new OrderPaidContext(
+                                playerData.email(),
+                                order.getCustomerFirstName(),
+                                order.getCustomerLastName(),
+                                order.getId(),
+                                order.getTotalPrice(),
+                                order.getPaymentMethod().name(),
+                                mapItems(order),
+                                order.getDeliveryMethod().name(),
+                                order.getDeliveryCity(),
+                                order.getDeliveryStreet(),
+                                properties.getPickup().getPhone()
+                        )
                 )
-        ));
+        );
     }
 
-    private List<OrderPaidContext.Item>mapItems(Order order){
-         List<OrderPaidContext.Item> items = new ArrayList<>();
+    private List<OrderPaidContext.Item> mapItems(Order order) {
+        List<OrderPaidContext.Item> items = new ArrayList<>();
         for (OrderItem orderItem : order.getItems()) {
             items.add(new OrderPaidContext.Item(
                     orderItem.getProductName(),

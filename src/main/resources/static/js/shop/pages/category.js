@@ -142,12 +142,12 @@ window.CategoryPage = (function () {
             <div class="product-card ${inStock ? '' : 'out-of-stock'}" data-id="${p.id}">
                 <div class="product-card-image">${imageBlock}</div>
                 <div class="product-card-body">
+                    <span class="product-card-price">${formatPrice(p.price)} ₽</span>
                     ${brand}
                     <span class="product-card-name">${p.name}</span>
-                    <span class="product-card-price">${formatPrice(p.price)} ₽</span>
                     ${stock}
-                    <div class="product-card-cart">${cartBlock}</div>
                 </div>
+                <div class="product-card-cart">${cartBlock}</div>
             </div>
         `;
     }

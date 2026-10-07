@@ -20,3 +20,4 @@ public record PushContent(
         return ids.stream().collect(Collectors.toMap(id -> id, id -> content));
     }
  }
+

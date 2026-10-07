@@ -1,71 +1,78 @@
-
 spring:
-      servlet:
-            multipart:
-                  max-file-size: 5MB
-                  max-request-size: 15MB
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 15MB
 
-      profiles:
-            active: local
-      security:
-            oauth2:
-                  client:
-                        provider:
-                              yandex:
-                                    authorization-uri: https://oauth.yandex.ru/authorize
-                                    token-uri: https://oauth.yandex.ru/token
-                                    user-info-uri: https://login.yandex.ru/info
-                                    user-name-attribute: id
-      datasource:
-            url: ${SPRING_DATASOURCE_URL}
-            username: ${SPRING_DATASOURCE_USERNAME}
-            password: ${SPRING_DATASOURCE_PASSWORD}
-      jpa:
-            hibernate:
-                  ddl-auto: none
-            show-sql: false
-      flyway:
-            enabled: true
-            locations: classpath:db/migration
-            baseline-on-migrate: true
-            baseline-version: 0
+  profiles:
+    active: local
+  security:
+    oauth2:
+      client:
+        provider:
+          yandex:
+            authorization-uri: https://oauth.yandex.ru/authorize
+            token-uri: https://oauth.yandex.ru/token
+            user-info-uri: https://login.yandex.ru/info
+            user-name-attribute: id
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none        # ← Spring property (это ок)
+    show-sql: false         # ← Spring property (это ок)
+    properties:
+      hibernate: # ← здесь Hibernate-специфичные
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
+    protocol: smtps
+    properties:
       mail:
-            host: ${MAIL_HOST}
-            port: ${MAIL_PORT}
-            username: ${MAIL_USER}
-            password: ${MAIL_PASS}
-            protocol: smtps
-            properties:
-                  mail:
-                        smtp:
-                              auth: true
-                              starttls:
-                                    enable: true
-      session:
-            store-type: redis
-            redis:
-                  repository-type: indexed
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  session:
+    store-type: redis
+    redis:
+      repository-type: indexed
 
 
 management:
-      endpoints:
-            web:
-                  exposure:
-                        include: loggers,health,info
-      endpoint:
-            loggers:
-                  enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: loggers,health,info
+  endpoint:
+    loggers:
+      enabled: true
 
 
 
 
 server:
-      servlet:
-            session:
-                  cookie:
-                        name: PULSECORE_SESSION
-                        http-only: true
-                        same-site: Lax
+  servlet:
+    session:
+      cookie:
+        name: PULSECORE_SESSION
+        http-only: true
+        same-site: Lax
 
 
 
@@ -74,75 +81,75 @@ audit:
 
 
 app:
-      security:
-            public-urls:
-                  - /api/player/register
-                  - /api/player/login
-                  - /api/player/verify-email
-                  - /api/player/forgot-password
-                  - /api/player/reset-password
-                  - /api/player/oauth-finish
-                  - /api/player/me
-                  - /
-                  - /index.html
-                  - /js/**
-                  - /css/**
-                  - /dashboard.html
-                  - /img.png
-                  - /favicon.ico
-                  - /api/payment/webhook
-                  - /manifest.json
-            admin-urls:
-                  - /admin.html
-                  - /admin
-                  - /api/admin/**
-                  - /actuator/**
-            seller-urls:
-                  - /seller.html
-                  - /api/seller/**
-            oauth:
-                  unknown-email-domain: "@unknown.pulsecore"
-      remember-me:
-            cookie-name: REMEMBER_ME
-            max-age-seconds: 2592000
-            same-site: Lax
-      vapid:
-            public-key: ${VAPID_PUBLIC_KEY}
-            private-key: ${VAPID_PRIVATE_KEY}
-      admin:
-            email: ${ADMIN_EMAIL}
-      yookassa:
-            shop-id: ${YOOKASSA_SHOP_ID}
-            secret-key: ${YOOKASSA_SECRET_KEY}
-            return-url: ${YOOKASSA_RETURN_URL}
-            yookassa-api-url: ${YOOKASSA_API_URL}
-            currency: ${YOOKASSA_CURRENCY}
-            order-return-url: ${YOOKASSA_ORDER_RETURN_URL}
+  security:
+    public-urls:
+      - /api/player/register
+      - /api/player/login
+      - /api/player/verify-email
+      - /api/player/forgot-password
+      - /api/player/reset-password
+      - /api/player/oauth-finish
+      - /api/player/me
+      - /
+      - /index.html
+      - /js/**
+      - /css/**
+      - /dashboard.html
+      - /img.png
+      - /favicon.ico
+      - /api/payment/webhook
+      - /manifest.json
+    admin-urls:
+      - /admin.html
+      - /admin
+      - /api/admin/**
+      - /actuator/**
+    seller-urls:
+      - /seller.html
+      - /api/seller/**
+    oauth:
+      unknown-email-domain: "@unknown.pulsecore"
+  remember-me:
+    cookie-name: REMEMBER_ME
+    max-age-seconds: 2592000
+    same-site: Lax
+  vapid:
+    public-key: ${VAPID_PUBLIC_KEY}
+    private-key: ${VAPID_PRIVATE_KEY}
+  admin:
+    email: ${ADMIN_EMAIL}
+  yookassa:
+    shop-id: ${YOOKASSA_SHOP_ID}
+    secret-key: ${YOOKASSA_SECRET_KEY}
+    return-url: ${YOOKASSA_RETURN_URL}
+    yookassa-api-url: ${YOOKASSA_API_URL}
+    currency: ${YOOKASSA_CURRENCY}
+    order-return-url: ${YOOKASSA_ORDER_RETURN_URL}
 
-      masters-api:
-            url: ${MASTERS_API_URL}
-            method: POST
-            user-agent: Mozilla/5.0
-            action: tourslist
-            country: RUS
-            timeout: 90000
-      mail:
-            from: ${MAIL_FROM}
-      storage:
-            max-file-size: 5242880
-            allowed-types:
-                  - image/jpeg
-                  - image/png
-                  - image/webp
-                  - image/heic
-                  - image/heif
-            s3:
-                  bucket: ${S3_BUCKET:pulsecore-products}
-                  endpoint: ${S3_ENDPOINT:https://storage.yandexcloud.net}
-                  region: ${S3_REGION:ru-central1}
-                  access-key: ${S3_ACCESS_KEY}
-                  secret-key: ${S3_SECRET_KEY}
-                  public-url: ${S3_PUBLIC_URL:https://storage.yandexcloud.net/pulsecore-products}
+  masters-api:
+    url: ${MASTERS_API_URL}
+    method: POST
+    user-agent: Mozilla/5.0
+    action: tourslist
+    country: RUS
+    timeout: 90000
+  mail:
+    from: ${MAIL_FROM}
+  storage:
+    max-file-size: 5242880
+    allowed-types:
+      - image/jpeg
+      - image/png
+      - image/webp
+      - image/heic
+      - image/heif
+    s3:
+      bucket: ${S3_BUCKET:pulsecore-products}
+      endpoint: ${S3_ENDPOINT:https://storage.yandexcloud.net}
+      region: ${S3_REGION:ru-central1}
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+      public-url: ${S3_PUBLIC_URL:https://storage.yandexcloud.net/pulsecore-products}
 
 
 shop:
