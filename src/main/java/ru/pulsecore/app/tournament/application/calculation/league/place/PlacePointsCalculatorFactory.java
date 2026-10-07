@@ -10,7 +10,7 @@ import ru.pulsecore.app.tournament.domain.enums.LeagueType;
 public class PlacePointsCalculatorFactory {
 
     private final LeagueBPlacePointsCalculator leagueB;
-    //    private final LeagueAPlacePointsCalculator leagueA;
+    private final LeagueAPlacePointsCalculator leagueA;
     private final LeagueCPlacePointsCalculator leagueC;
 //    private final LeagueDPlacePointsCalculator leagueD;
 //    private final SuperLeaguePlacePointsCalculator superLeague;
@@ -18,12 +18,12 @@ public class PlacePointsCalculatorFactory {
     public PlacePointsCalculator getCalculator(LeagueType league) {
         return switch (league) {
             case B -> leagueB;
-//            case A -> leagueA;
+            case A -> leagueA;
             case C -> leagueC;
 //            case D -> leagueD;
 //            case SUPER_LEAGUE -> superLeague;
             default -> throw new IllegalStateException(
-                    "PlacePointsCalculator не реализован для лиги: " + league);
+                    "PlacePointsCalculator NEW не реализован для лиги: " + league);
         };
     }
 }
