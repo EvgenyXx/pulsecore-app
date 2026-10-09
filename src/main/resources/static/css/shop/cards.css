@@ -52,6 +52,35 @@
     font-size: 40px;
 }
 
+/* ===== БЕЙДЖ НАЛИЧИЯ (поверх фото) ===== */
+
+.product-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    line-height: 1.2;
+    z-index: 2;
+    pointer-events: none;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.product-badge.in {
+    background: rgba(34, 197, 94, 0.9);
+    color: #fff;
+}
+
+.product-badge.out {
+    background: rgba(239, 68, 68, 0.9);
+    color: #fff;
+}
+
 /* ===== КАРУСЕЛЬ ===== */
 
 .carousel {
@@ -190,16 +219,6 @@
     letter-spacing: -0.4px;
 }
 
-.product-card-stock {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-muted);
-    letter-spacing: -0.2px;
-    line-height: 1.2;
-}
-
-.product-card-stock.out { color: #ff4d4d; }
-
 .empty-state {
     grid-column: 1 / -1;
     text-align: center;
@@ -311,6 +330,15 @@
         background: var(--bg-soft);
     }
 
+    /* Бейдж на мобилке — чуть компактнее */
+    .product-badge {
+        top: 6px;
+        left: 6px;
+        padding: 3px 8px;
+        font-size: 10px;
+        border-radius: 6px;
+    }
+
     .product-card-body {
         padding: 8px 10px 4px;
         gap: 2px;
@@ -335,12 +363,6 @@
         font-size: 18px;
         margin-top: 4px;
         font-weight: 700;
-    }
-
-    .product-card-stock {
-        font-size: 11px;
-        line-height: 1.2;
-        min-height: 0;
     }
 
     .product-card-cart {

@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "product_image")
+@Table(
+        name = "product_image",
+        indexes = @Index(name = "idx_product_image_color", columnList = "color_id")
+)
 @Getter
 @Setter
 @Builder
@@ -16,9 +19,9 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "color_id", nullable = false)
+    private ProductColor color;
 
     @Column(nullable = false, length = 500)
     private String url;
@@ -26,6 +29,7 @@ public class ProductImage {
     @Column(name = "sort_order")
     private Integer sortOrder;
 
-    @Column(name = "is_main")
-    private boolean main;
+    @Column(name = "is_main", nullable = false)
+    @Builder.Default
+    private boolean main = false;
 }

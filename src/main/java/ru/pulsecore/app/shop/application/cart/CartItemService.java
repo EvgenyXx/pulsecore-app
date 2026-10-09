@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.shop.application.product.StockService;
 import ru.pulsecore.app.shop.domain.entity.Cart;
 import ru.pulsecore.app.shop.domain.entity.CartItem;
-import ru.pulsecore.app.shop.domain.entity.Product;
-import ru.pulsecore.app.shop.infrastructure.exception.CartItemException;
+import ru.pulsecore.app.shop.domain.entity.ProductVariant;
 import ru.pulsecore.app.shop.infrastructure.repository.CartItemRepository;
 
 @Service
@@ -16,27 +16,28 @@ import ru.pulsecore.app.shop.infrastructure.repository.CartItemRepository;
 public class CartItemService {
 
     private final CartItemRepository cartItemRepository;
+    private final StockService stockService;
 
     @Transactional
-    public CartItem addOrIncrement(Cart cart, Product product, int quantity) {
-        validateQuantity(quantity);
-        validateStock(product, quantity);
+    public void addOrIncrement(Cart cart, ProductVariant variant, int quantity) {
+        stockService.validateQuantity(quantity);
+        stockService.validateStock(variant, quantity);
 
-        return cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId())
-                .map(existing -> incrementExisting(existing, product, quantity))
-                .orElseGet(() -> createNew(cart, product, quantity));
+        cartItemRepository.findByCartIdAndVariantId(cart.getId(), variant.getId())
+                .map(existing -> incrementExisting(existing, variant, quantity))
+                .orElseGet(() -> createNew(cart, variant, quantity));
     }
 
     @Transactional
-    public CartItem setQuantity(CartItem item, int quantity) {
+    public void setQuantity(CartItem item, int quantity) {
         if (quantity <= 0) {
             cartItemRepository.delete(item);
-            return null;
+            return;
         }
 
-        validateStock(item.getProduct(), quantity);
+        stockService.validateStock(item.getVariant(), quantity);
         item.setQuantity(quantity);
-        return cartItemRepository.save(item);
+        cartItemRepository.save(item);
     }
 
     @Transactional
@@ -44,33 +45,20 @@ public class CartItemService {
         cartItemRepository.delete(item);
     }
 
-    private CartItem createNew(Cart cart, Product product, int quantity) {
+    private CartItem createNew(Cart cart, ProductVariant variant, int quantity) {
         CartItem item = CartItem.builder()
                 .cart(cart)
-                .product(product)
+                .variant(variant)
                 .quantity(quantity)
                 .build();
         return cartItemRepository.save(item);
     }
 
-    private CartItem incrementExisting(CartItem existing, Product product, int addQuantity) {
+    private CartItem incrementExisting(CartItem existing, ProductVariant variant, int addQuantity) {
         int newQty = existing.getQuantity() + addQuantity;
-        validateStock(product, newQty);
+        stockService.validateStock(variant, newQty);
         existing.setQuantity(newQty);
         return cartItemRepository.save(existing);
     }
 
-    private void validateQuantity(int quantity) {
-        if (quantity <= 0) {
-            throw new CartItemException("Количество должно быть больше 0");
-        }
-    }
-
-    private void validateStock(Product product, int quantity) {
-        if (product.getStock() == null || product.getStock() < quantity) {
-            throw new CartItemException(
-                    "Недостаточно товара на складе: доступно " + product.getStock()
-            );
-        }
-    }
 }

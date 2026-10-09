@@ -5,7 +5,11 @@ import ru.pulsecore.app.shared.exception.BaseException;
 
 public class CartItemException extends BaseException {
 
-    public CartItemException(String message) {
-        super(HttpStatus.BAD_REQUEST, message);
+    public CartItemException(Integer stock) {
+        super(HttpStatus.BAD_REQUEST, "Максимум " + stock);
+    }
+
+    public CartItemException(){
+        super(HttpStatus.BAD_REQUEST,"Минимум 1 шт");
     }
 }

@@ -34,3 +34,109 @@ body::before {
     color: var(--text-muted);
     font-size: 14px;
 }
+
+/* ===== Тосты ===== */
+
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    pointer-events: none;
+    width: calc(100% - 32px);
+    max-width: 440px;
+}
+
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--bg-elevated);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-left: 3px solid;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: auto;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.toast-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-error { border-left-color: #ef4444; }
+.toast-ok    { border-left-color: var(--accent); }
+
+.toast-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+}
+
+.toast-error .toast-icon { color: #ef4444; }
+.toast-ok    .toast-icon { color: var(--accent); }
+
+.toast-text {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+}
+
+/* ===== Тост со списком проблем ===== */
+
+.toast-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.toast-title {
+    font-weight: 600;
+    color: var(--text);
+    display: block;
+}
+
+.toast-problems {
+    margin: 8px 0 0;
+    padding-left: 0;
+    list-style: none;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.toast-problems li {
+    padding: 3px 0;
+    line-height: 1.4;
+}
+
+.toast-problems li + li {
+    border-top: 1px solid var(--border);
+    padding-top: 6px;
+    margin-top: 6px;
+}
+
+@media (max-width: 600px) {
+    .toast-container {
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 12px);
+        width: calc(100% - 24px);
+    }
+}

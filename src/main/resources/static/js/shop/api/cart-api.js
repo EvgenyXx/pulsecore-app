@@ -4,10 +4,10 @@ window.CartApi = (function () {
     return {
         getCart: () => http.request('/cart'),
 
-        addItem: (productId, quantity) => http.request('/cart/items', {
+        addItem: (variantId, quantity) => http.request('/cart/items', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId, quantity })
+            body: JSON.stringify({ variantId, quantity })
         }),
 
         updateItem: (itemId, quantity) => http.request('/cart/items/' + itemId, {

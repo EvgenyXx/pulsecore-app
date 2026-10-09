@@ -23,7 +23,6 @@ public class OrderSellerService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final OrderPaidService orderPaidService;
     private final StockService stockService;
 
 
@@ -47,11 +46,6 @@ public class OrderSellerService {
 
     @Transactional
     public SellerOrderDto updatePaymentStatus(Long orderId, PaymentStatus paymentStatus) {
-
-        if (paymentStatus == PaymentStatus.PAID) {
-            Order paid = orderPaidService.markPaid(orderId);
-            return orderMapper.toSellerDto(paid);
-        }
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));

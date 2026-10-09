@@ -9,13 +9,13 @@ import ru.pulsecore.app.shop.api.dto.response.CartDto;
 import ru.pulsecore.app.shop.application.mapping.CartMapper;
 import ru.pulsecore.app.shop.domain.entity.Cart;
 import ru.pulsecore.app.shop.domain.entity.CartItem;
-import ru.pulsecore.app.shop.domain.entity.Product;
+import ru.pulsecore.app.shop.domain.entity.ProductVariant;
 import ru.pulsecore.app.shop.infrastructure.exception.CartItemNotFoundException;
 import ru.pulsecore.app.shop.infrastructure.exception.CartNotFoundException;
-import ru.pulsecore.app.shop.infrastructure.exception.ProductNotFoundException;
+import ru.pulsecore.app.shop.infrastructure.exception.ProductVariantNotFoundException;
 import ru.pulsecore.app.shop.infrastructure.repository.CartItemRepository;
 import ru.pulsecore.app.shop.infrastructure.repository.CartRepository;
-import ru.pulsecore.app.shop.infrastructure.repository.ProductRepository;
+import ru.pulsecore.app.shop.infrastructure.repository.ProductVariantRepository;
 
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ import java.util.UUID;
 public class CartService {
 
     private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
     private final CartItemRepository cartItemRepository;
     private final CartItemService cartItemService;
     private final CartMapper cartMapper;
@@ -38,20 +38,15 @@ public class CartService {
     }
 
 
-    public Cart getByUserId(UUID userId) {
-        return cartRepository.findByUserId(userId)
-                .orElseThrow(CartNotFoundException::new);
-    }
-
     @Transactional
     public CartDto addItem(UUID userId, AddCartItemRequest request) {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> createCart(userId));
 
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new ProductNotFoundException(request.productId()));
+        ProductVariant variant = productVariantRepository.findById(request.variantId())
+                .orElseThrow(() -> new ProductVariantNotFoundException(request.variantId()));
 
-        cartItemService.addOrIncrement(cart, product, request.quantity());
+        cartItemService.addOrIncrement(cart, variant, request.quantity());
 
         return reloadCartDto(cart.getId());
     }

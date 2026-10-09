@@ -35,13 +35,13 @@ public class OrderPaidService {
     private final ShopProperties properties;
 
     @Transactional
-    public Order markPaid(Long orderId) {
+    public void markPaid(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
         if (order.getPaymentStatus() == PaymentStatus.PAID) {
             log.info("Заказ уже оплачен №: {}", order.getId());
-            return order;
+            return ;
         }
 
         if (order.getStatus() == OrderStatus.CANCELLED) {
@@ -58,7 +58,6 @@ public class OrderPaidService {
 
         sendEvent(saved);
 
-        return saved;
     }
 
     private void sendEvent(Order order) {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import ru.pulsecore.app.shop.infrastructure.exception.OrderException;
 
 import java.time.LocalDateTime;
 
@@ -67,14 +68,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBase(BaseException e) {
-        ErrorResponse response = ErrorResponse.builder()
+        ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
                 .status(e.getStatus().value())
                 .error(e.getStatus().getReasonPhrase())
                 .message(e.getMessage())
-                .type(e.getType())  // ← добавь эту строку
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(e.getStatus()).body(response);
+                .type(e.getType())
+                .timestamp(LocalDateTime.now());
+
+        if (e instanceof OrderException oe && !oe.getProblems().isEmpty()) {
+            builder.problems(oe.getProblems());
+        }
+
+        return ResponseEntity.status(e.getStatus()).body(builder.build());
     }
 
     @ExceptionHandler(Exception.class)

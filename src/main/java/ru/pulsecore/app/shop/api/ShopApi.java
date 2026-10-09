@@ -11,6 +11,7 @@ public class ShopApi {
     public static final String PRODUCTS = "/products";
     public static final String PRODUCT = "/products/{productId}";
     public static final String PRODUCTS_BY_CATEGORY = "/products/by-category/{categoryId}";
+    public static final String PRODUCTS_SEARCH = "/products/search";
 
 
     // ----- Categories -----
@@ -24,6 +25,7 @@ public class ShopApi {
     // ----- Orders -----
     public static final String ORDERS = "/orders";
     public static final String ORDERS_ACTIVE = "/orders/active";
+    public static final String ORDERS_VALIDATE = "/orders/validate";
     public static final String ORDER = "/orders/{orderId}";
 
 }

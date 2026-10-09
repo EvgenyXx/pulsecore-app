@@ -209,6 +209,8 @@ window.OrdersPage = (function () {
             ? `<span class="order-item-brand">${escapeHtml(item.productBrand)}</span>`
             : '';
 
+        const variantLine = buildVariantLine(item);
+
         const sum = formatPrice(Number(item.productPrice) * Number(item.quantity));
 
         return `
@@ -217,6 +219,7 @@ window.OrdersPage = (function () {
                 <div class="order-item-info">
                     ${brand}
                     <span class="order-item-name">${escapeHtml(item.productName)}</span>
+                    ${variantLine}
                     <div class="order-item-row">
                         <span class="order-item-qty">${item.quantity} × ${formatPrice(item.productPrice)} ₽</span>
                         <span class="order-item-sum">${sum} ₽</span>
@@ -224,6 +227,16 @@ window.OrdersPage = (function () {
                 </div>
             </div>
         `;
+    }
+
+    function buildVariantLine(item) {
+        const parts = [];
+        if (item.variantSize) parts.push(item.variantSize);
+        if (item.variantColor) parts.push(item.variantColor);
+
+        if (parts.length === 0) return '';
+
+        return `<span class="order-item-variant">${escapeHtml(parts.join(' · '))}</span>`;
     }
 
     // ===== ПОЛУЧЕНИЕ =====
