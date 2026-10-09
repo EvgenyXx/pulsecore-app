@@ -158,6 +158,16 @@ window.CartPage = (function () {
                 const text = formatPrice(item.price) + ' ₽';
                 if (priceEl.textContent !== text) priceEl.textContent = text;
             }
+
+            el.classList.toggle('out-of-stock', cart.isOutOfStock(item));
+            const badge = el.querySelector('.cart-item-oos');
+            if (cart.isOutOfStock(item) && !badge) {
+                const price = el.querySelector('.cart-item-price');
+                if (price) price.insertAdjacentHTML('afterend',
+                    `<span class="cart-item-oos">Нет в наличии</span>`);
+            } else if (!cart.isOutOfStock(item) && badge) {
+                badge.remove();
+            }
         });
     }
 
@@ -172,9 +182,11 @@ window.CartPage = (function () {
 
         const minusDisabled = item.qty <= 1;
         const plusDisabled = item.qty >= item.stock;
+        const outOfStock = cart.isOutOfStock(item);
 
         return `
-            <div class="cart-item ${isSelected ? 'selected' : ''}" data-id="${item.variantId}">
+            <div class="cart-item ${isSelected ? 'selected' : ''} ${outOfStock ? 'out-of-stock' : ''}"
+                 data-id="${item.variantId}">
                 <div class="cart-item-image">
                     ${img}
                     <label class="cart-item-checkbox">
@@ -187,6 +199,7 @@ window.CartPage = (function () {
                     <span class="cart-item-name">${escapeHtml(item.name)}</span>
                     ${variantLine}
                     <span class="cart-item-price">${formatPrice(item.price)} ₽</span>
+                    ${outOfStock ? `<span class="cart-item-oos">Нет в наличии</span>` : ''}
                     <div class="cart-item-actions">
                         <div class="cart-stepper" data-id="${item.variantId}">
                             <button class="cart-step-btn" type="button" data-action="minus"
@@ -255,6 +268,10 @@ window.CartPage = (function () {
         return Object.values(items).filter(it => selectedIds.has(String(it.variantId)));
     }
 
+    function hasOutOfStockSelected() {
+        return getSelectedItems().some(it => cart.isOutOfStock(it));
+    }
+
     function renderFloatingCheckout() {
         let bar = document.getElementById('floatingCheckout');
         if (!bar) {
@@ -269,9 +286,10 @@ window.CartPage = (function () {
         const selected = getSelectedItems();
         const count = selected.length;
         const total = selected.reduce((sum, i) => sum + i.price * i.qty, 0);
+        const blocked = count === 0 || hasOutOfStockSelected();
 
-        bar.disabled = count === 0;
-        bar.classList.toggle('disabled', count === 0);
+        bar.disabled = blocked;
+        bar.classList.toggle('disabled', blocked);
 
         bar.innerHTML = `
             <span class="floating-checkout-left">
@@ -291,6 +309,11 @@ window.CartPage = (function () {
     }
 
     async function onCheckoutClick() {
+        if (hasOutOfStockSelected()) {
+            toast.showPopup('В заказе есть товар, которого нет в наличии', false);
+            return;
+        }
+
         const selected = getSelectedItems();
         if (selected.length === 0) return;
 
@@ -301,7 +324,6 @@ window.CartPage = (function () {
 
         try {
             await ordersApi.validate(selected.map(it => it.id));
-
             problems = [];
             forceGoToCheckout();
         } catch (err) {
@@ -326,14 +348,12 @@ window.CartPage = (function () {
 
         setTimeout(() => {
             if (window.location.hash !== '#/checkout') {
-                console.warn('Hash reset, forcing again');
                 window.location.hash = '#/checkout';
             }
         }, 80);
 
         setTimeout(() => {
             if (window.location.hash !== '#/checkout') {
-                console.warn('Hash reset AGAIN, forcing again');
                 window.location.hash = '#/checkout';
             }
         }, 300);

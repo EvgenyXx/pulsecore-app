@@ -492,3 +492,34 @@ body.cart-checkout-visible .floating-checkout {
 .cart-toast.hidden {
     display: none;
 }
+
+/* ===== Товар не в наличии ===== */
+
+.cart-item.out-of-stock .cart-item-image img {
+    filter: grayscale(0.7);
+    opacity: 0.55;
+}
+
+.cart-item.out-of-stock .cart-item-name,
+.cart-item.out-of-stock .cart-item-price {
+    opacity: 0.55;
+}
+
+.cart-item-oos {
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 3px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 7px;
+    line-height: 1.4;
+}
+
+.floating-checkout.disabled .floating-checkout-label {
+    font-weight: 700;
+}
