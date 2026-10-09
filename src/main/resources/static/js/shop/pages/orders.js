@@ -34,7 +34,12 @@ window.OrdersPage = (function () {
                     <span class="orders-tab" data-tab="all">Все заказы</span>
                 </div>
                 <div class="orders-body">
-                    <p class="muted">Загрузка...</p>
+                    <div class="orders-pane" data-pane="active">
+                        <p class="muted">Загрузка...</p>
+                    </div>
+                    <div class="orders-pane" data-pane="all" hidden>
+                        <p class="muted">Загрузка...</p>
+                    </div>
                 </div>
             `;
             bindTabs(container);
@@ -43,9 +48,10 @@ window.OrdersPage = (function () {
 
         try {
             activeOrders = await ordersApi.getActive() || [];
-            renderBody();
+            renderActivePane();
+            applyTabVisibility();
         } catch (e) {
-            setBody(`<div class="empty-state">Ошибка загрузки: ${e.message}</div>`);
+            setPane('active', `<div class="empty-state">Ошибка загрузки: ${e.message}</div>`);
         }
     }
 
@@ -64,11 +70,13 @@ window.OrdersPage = (function () {
         });
 
         if (tab === 'all' && allOrders.length === 0 && allOrdersPage === 0) {
-            setBody(`<p class="muted">Загрузка...</p>`);
+            setPane('all', `<p class="muted">Загрузка...</p>`);
+            applyTabVisibility();
             try {
                 await loadAllOrdersPage(0);
+                renderAllPane();
             } catch (e) {
-                setBody(`<div class="empty-state">Ошибка загрузки: ${e.message}</div>`);
+                setPane('all', `<div class="empty-state">Ошибка загрузки: ${e.message}</div>`);
                 currentTab = 'active';
                 if (slider) {
                     slider.classList.remove('pos-0', 'pos-1');
@@ -77,11 +85,12 @@ window.OrdersPage = (function () {
                 document.querySelectorAll('.orders-tab').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.tab === 'active');
                 });
+                applyTabVisibility();
                 return;
             }
         }
 
-        renderBody();
+        applyTabVisibility();
     }
 
     // ===== ПАГИНАЦИЯ =====
@@ -108,7 +117,7 @@ window.OrdersPage = (function () {
             btn.textContent = 'Загрузка...';
             try {
                 await loadAllOrdersPage(allOrdersPage + 1);
-                renderBody();
+                renderAllPane();
             } catch (e) {
                 btn.disabled = false;
                 btn.textContent = 'Ошибка, попробуйте ещё раз';
@@ -116,38 +125,54 @@ window.OrdersPage = (function () {
         });
     }
 
-    // ===== РЕНДЕР =====
+    // ===== РЕНДЕР ПАНЕЛЕЙ =====
 
-    function setBody(html) {
-        const body = document.querySelector('#ordersContent .orders-body');
-        if (body) body.innerHTML = html;
+    function setPane(pane, html) {
+        const el = document.querySelector(`#ordersContent .orders-pane[data-pane="${pane}"]`);
+        if (el) el.innerHTML = html;
     }
 
-    function renderBody() {
-        const list = currentTab === 'active' ? activeOrders : allOrders;
+    function applyTabVisibility() {
+        const panes = document.querySelectorAll('#ordersContent .orders-pane');
+        panes.forEach(p => {
+            p.hidden = p.dataset.pane !== currentTab;
+        });
+    }
 
-        if (list.length === 0) {
-            setBody(currentTab === 'active'
-                ? `<div class="cart-empty">
-                       <div class="cart-empty-icon">${ICONS.box}</div>
-                       <p class="cart-empty-text">Активных заказов нет</p>
-                       <a href="#/" class="cart-empty-link">Перейти в каталог</a>
-                   </div>`
-                : `<div class="cart-empty">
-                       <div class="cart-empty-icon">${ICONS.box}</div>
-                       <p class="cart-empty-text">Заказов пока нет</p>
-                       <a href="#/" class="cart-empty-link">Перейти в каталог</a>
-                   </div>`);
+    function renderActivePane() {
+        if (activeOrders.length === 0) {
+            setPane('active', `
+                <div class="cart-empty">
+                    <div class="cart-empty-icon">${ICONS.box}</div>
+                    <p class="cart-empty-text">Активных заказов нет</p>
+                    <a href="#/" class="cart-empty-link">Перейти в каталог</a>
+                </div>
+            `);
             return;
         }
 
-        const loadMoreHtml = (currentTab === 'all' && allOrdersHasMore)
+        setPane('active', `<div class="orders-list">${activeOrders.map(renderOrder).join('')}</div>`);
+    }
+
+    function renderAllPane() {
+        if (allOrders.length === 0) {
+            setPane('all', `
+                <div class="cart-empty">
+                    <div class="cart-empty-icon">${ICONS.box}</div>
+                    <p class="cart-empty-text">Заказов пока нет</p>
+                    <a href="#/" class="cart-empty-link">Перейти в каталог</a>
+                </div>
+            `);
+            return;
+        }
+
+        const loadMoreHtml = allOrdersHasMore
             ? `<button type="button" id="loadMoreOrdersBtn" class="orders-load-more">Показать ещё</button>`
             : '';
 
-        setBody(`<div class="orders-list">${list.map(renderOrder).join('')}</div>${loadMoreHtml}`);
+        setPane('all', `<div class="orders-list">${allOrders.map(renderOrder).join('')}</div>${loadMoreHtml}`);
 
-        if (currentTab === 'all' && allOrdersHasMore) {
+        if (allOrdersHasMore) {
             bindLoadMore(document.getElementById('ordersContent'));
         }
     }
