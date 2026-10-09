@@ -43,10 +43,19 @@ window.ShopNav = (function () {
         const first = hash.split('/')[0] || '';
 
         let activeTab = 'catalog';
-        if (first === 'categories' || first === 'category') activeTab = 'categories';
-        else if (first === 'cart')    activeTab = 'cart';
-        else if (first === 'orders')  activeTab = 'orders';
-        else if (first === '' || first === 'catalog' || first === 'product') activeTab = 'catalog';
+
+        if (first === 'categories' || first === 'category') {
+            activeTab = 'categories';
+        } else if (first === 'cart' || first === 'checkout') {
+            activeTab = 'cart';
+        } else if (first === 'orders') {
+            activeTab = 'orders';
+        } else if (first === 'product') {
+            const backTo = sessionStorage.getItem('productBackTo') || '#/';
+            activeTab = backTo.startsWith('#/category') ? 'categories' : 'catalog';
+        } else if (first === '' || first === 'catalog') {
+            activeTab = 'catalog';
+        }
 
         document.querySelectorAll('.shop-nav-item').forEach(el => {
             el.classList.toggle('active', el.dataset.shopTab === activeTab);

@@ -8,6 +8,13 @@ window.OrdersApi = (function () {
             body: JSON.stringify(body)
         }),
 
+        // Проверка корзины перед оформлением. 200 — ок, 400 — problems[]
+        validate: (itemIds) => http.request('/orders/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itemIds })
+        }),
+
         // Активные: CONFIRMED + ASSEMBLED
         getActive: () => http.request('/orders/active'),
 

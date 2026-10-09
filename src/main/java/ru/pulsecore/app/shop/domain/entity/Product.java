@@ -38,17 +38,14 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(nullable = false)
-    private Integer stock;
 
     @Column(nullable = false)
     private boolean active = true;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("sortOrder ASC")
     @Builder.Default
     @BatchSize(size = 20)
-    private List<ProductImage> images = new ArrayList<>();
+    private List<ProductVariant> variants = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

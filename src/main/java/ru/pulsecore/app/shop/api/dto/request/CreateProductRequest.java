@@ -21,24 +21,13 @@ public record CreateProductRequest(
         String brand,
 
         @NotNull(message = "Цена обязательна")
-        @DecimalMin(value = "0.00", inclusive = true, message = "Цена не может быть отрицательной")
+        @DecimalMin(value = "0.00", message = "Цена не может быть отрицательной")
         @Digits(integer = 8, fraction = 2, message = "Неверный формат цены")
         BigDecimal price,
 
-        @NotNull(message = "Количество обязательно")
-        @Min(value = 0, message = "Количество не может быть отрицательным")
-        Integer stock,
+        List<ProductColorRequest> colors,
 
-        List<ImageRequest> images
-) {
-    public record ImageRequest(
-            @NotBlank(message = "URL изображения обязателен")
-            @Size(max = 500, message = "URL слишком длинный")
-            String url,
+        List<ProductSizeRequest> sizes,
 
-            @Min(value = 0, message = "Порядок не может быть отрицательным")
-            Integer sortOrder,
-
-            boolean main
-    ) {}
-}
+        List<ProductVariantRequest> variants
+) {}

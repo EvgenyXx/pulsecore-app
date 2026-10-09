@@ -71,6 +71,7 @@ window.CategoryPage = (function () {
                 if (e.target.closest('.carousel-arrow')
                     || e.target.closest('.carousel-dot')
                     || e.target.closest('.product-card-cart')) return;
+                sessionStorage.setItem('productBackTo', '#/category/' + currentId);
                 window.location.hash = '#/product/' + card.dataset.id;
             });
         });
@@ -128,9 +129,9 @@ window.CategoryPage = (function () {
         }
 
         const inStock = p.inStock === true;
-        const stock = inStock
-                ? `<span class="product-card-stock">В наличии · ${p.stock} шт.</span>`
-                : `<span class="product-card-stock out">Нет в наличии</span>`;
+        const badge = inStock
+            ? `<span class="product-badge in">В наличии</span>`
+            : `<span class="product-badge out">Нет в наличии</span>`;
 
         const brand = p.brand
                 ? `<span class="product-card-brand">${capitalize(p.brand)}</span>`
@@ -140,12 +141,14 @@ window.CategoryPage = (function () {
 
         return `
             <div class="product-card ${inStock ? '' : 'out-of-stock'}" data-id="${p.id}">
-                <div class="product-card-image">${imageBlock}</div>
+                <div class="product-card-image">
+                    ${imageBlock}
+                    ${badge}
+                </div>
                 <div class="product-card-body">
                     <span class="product-card-price">${formatPrice(p.price)} ₽</span>
                     ${brand}
                     <span class="product-card-name">${p.name}</span>
-                    ${stock}
                 </div>
                 <div class="product-card-cart">${cartBlock}</div>
             </div>
@@ -157,19 +160,38 @@ window.CategoryPage = (function () {
             return `<button class="cart-btn out-of-stock" disabled>Нет в наличии</button>`;
         }
 
-        const qty = cart.getQty(p.id);
+        const variants = p.variants || [];
 
-        if (qty > 0) {
-            return `
-                <div class="cart-stepper" data-id="${p.id}">
-                    <button class="cart-step-btn" type="button" data-action="minus">−</button>
-                    <span class="cart-step-qty">${qty}</span>
-                    <button class="cart-step-btn" type="button" data-action="plus">+</button>
-                </div>
-            `;
+        if (variants.length === 0) {
+            const qty = cart.getQty(p.id);
+            if (qty > 0) {
+                return `
+                    <div class="cart-stepper" data-id="${p.id}">
+                        <button class="cart-step-btn" type="button" data-action="minus">−</button>
+                        <span class="cart-step-qty">${qty}</span>
+                        <button class="cart-step-btn" type="button" data-action="plus">+</button>
+                    </div>
+                `;
+            }
+            return `<button class="cart-btn" type="button" data-action="add">В корзину</button>`;
         }
 
-        return `<button class="cart-btn" type="button" data-action="add">В корзину</button>`;
+        if (variants.length === 1) {
+            const v = variants[0];
+            const qty = cart.getQty(v.id);
+            if (qty > 0) {
+                return `
+                    <div class="cart-stepper" data-id="${v.id}">
+                        <button class="cart-step-btn" type="button" data-action="minus">−</button>
+                        <span class="cart-step-qty">${qty}</span>
+                        <button class="cart-step-btn" type="button" data-action="plus">+</button>
+                    </div>
+                `;
+            }
+            return `<button class="cart-btn" type="button" data-action="add" data-variant-id="${v.id}">В корзину</button>`;
+        }
+
+        return `<button class="cart-btn" type="button" data-action="choose">Выбрать вариант</button>`;
     }
 
     function bindCartButtons(grid) {
@@ -182,20 +204,56 @@ window.CategoryPage = (function () {
 
             wrap.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const action = e.target.dataset.action;
+                const btn = e.target.closest('[data-action]');
+                if (!btn) return;
+                const action = btn.dataset.action;
+
+                if (action === 'choose') {
+                    sessionStorage.setItem('productBackTo', '#/category/' + currentId);
+                    window.location.hash = '#/product/' + product.id;
+                    return;
+                }
+
+                const variantId = btn.dataset.variantId
+                    ? Number(btn.dataset.variantId)
+                    : null;
+
                 if (action === 'add') {
-                    cart.add(product).then(() => updateCardCart(wrap, product));
+                    if (variantId) {
+                        const variant = (product.variants || []).find(v => Number(v.id) === variantId);
+                        cart.add(variantId, {
+                            productId: product.id,
+                            name: product.name,
+                            description: product.description,
+                            price: variant
+                                ? Number(product.price) + Number(variant.priceDelta || 0)
+                                : product.price,
+                            brand: product.brand,
+                            mainImageUrl: product.mainImageUrl,
+                            images: product.images,
+                            stock: variant ? variant.stock : product.stock,
+                            size: variant ? variant.size : null,
+                            color: variant ? variant.color : null
+                        });
+                    } else {
+                        cart.add(product.id, {
+                            productId: product.id,
+                            name: product.name,
+                            description: product.description,
+                            price: product.price,
+                            brand: product.brand,
+                            mainImageUrl: product.mainImageUrl,
+                            images: product.images,
+                            stock: product.stock
+                        });
+                    }
                 } else if (action === 'plus') {
-                    cart.increment(id).then(() => updateCardCart(wrap, product));
+                    cart.increment(variantId || product.id);
                 } else if (action === 'minus') {
-                    cart.decrement(id).then(() => updateCardCart(wrap, product));
+                    cart.decrement(variantId || product.id);
                 }
             });
         });
-    }
-
-    function updateCardCart(wrap, product) {
-        wrap.innerHTML = renderCartBlock(product);
     }
 
     function bindCarouselEvents() {

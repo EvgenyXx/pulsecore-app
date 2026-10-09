@@ -4,11 +4,14 @@ import java.math.BigDecimal;
 
 public record CartItemDto(
         Long id,
+        Long variantId,
         Long productId,
         String name,
         String brand,
         String image,
         BigDecimal price,
         Integer quantity,
-        Integer stock
+        Integer stock,
+        String size,
+        String color
 ) {}

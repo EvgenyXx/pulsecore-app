@@ -9,13 +9,10 @@ public record ProductDetailDto(
         String description,
         String brand,
         BigDecimal price,
-        Integer stock,
         Long categoryId,
         String categoryName,
-        List<ImageDto> images,
+        List<ProductColorDto> colors,
+        List<ProductSizeDto> sizes,
+        List<ProductVariantDto> variants,
         boolean inStock
-
-) {
-    public record ImageDto(Long id, String url) {
-    }
-}
+) {}

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.shop.api.ShopApi;
 import ru.pulsecore.app.shop.api.dto.request.CreateOrderRequest;
+import ru.pulsecore.app.shop.api.dto.request.ValidateOrderRequest;
 import ru.pulsecore.app.shop.api.dto.response.OrderDto;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
@@ -23,6 +24,15 @@ import java.util.List;
 public class OrderController {
 
     private final OrderUserService orderUserService;
+
+    @Operation(summary = "Проверить корзину перед оформлением")
+    @PostMapping(ShopApi.ORDERS_VALIDATE)
+    public ResponseEntity<Void> validateOrder(
+            @CurrentPlayer PlayerPrincipal principal,
+            @Valid @RequestBody ValidateOrderRequest request) {
+        orderUserService.validateForCheckout(principal.playerId(), request.itemIds());
+        return ResponseEntity.ok().build();
+    }
 
     @Operation(summary = "Мои активные заказы (CONFIRMED, ASSEMBLED)")
     @GetMapping(ShopApi.ORDERS_ACTIVE)

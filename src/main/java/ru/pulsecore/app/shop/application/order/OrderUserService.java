@@ -1,5 +1,6 @@
 package ru.pulsecore.app.shop.application.order;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,6 @@ import ru.pulsecore.app.shop.infrastructure.config.ShopProperties;
 import ru.pulsecore.app.shop.infrastructure.exception.OrderNotFoundException;
 import ru.pulsecore.app.shop.infrastructure.repository.CartItemRepository;
 import ru.pulsecore.app.shop.infrastructure.repository.OrderRepository;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -55,6 +55,7 @@ public class OrderUserService {
     public OrderDto createOrder(UUID userId, CreateOrderRequest request) {
         List<CartItem> selected = cartItemRepository.findAllById(request.itemIds());
         orderValidator.validate(userId, selected);
+        stockService.ensureAvailableForOrder(selected);
 
         List<OrderItem> items = selected.stream()
                 .map(orderItemAssembler::toOrderItem)
@@ -86,5 +87,12 @@ public class OrderUserService {
         Order order = orderRepository.findByIdAndUserId(orderId, userId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
         return orderMapper.toDto(order, null, shopProperties);
+    }
+
+    @Transactional(readOnly = true)
+    public void validateForCheckout(UUID userId, List<Long> itemIds) {
+        List<CartItem> selected = cartItemRepository.findAllById(itemIds);
+        orderValidator.validate(userId, selected);
+        stockService.ensureAvailableForOrder(selected);
     }
 }

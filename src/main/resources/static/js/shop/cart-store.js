@@ -29,8 +29,9 @@ window.CartStore = (function () {
         serverCart = server;
         itemsMap = {};
         (server.items || []).forEach(it => {
-            itemsMap[String(it.productId)] = {
+            itemsMap[String(it.variantId)] = {
                 id: it.id,
+                variantId: it.variantId,
                 productId: it.productId,
                 name: it.name,
                 description: it.description || null,
@@ -38,7 +39,9 @@ window.CartStore = (function () {
                 image: it.image,
                 price: it.price,
                 qty: it.quantity,
-                stock: it.stock
+                stock: it.stock,
+                size: it.size,
+                color: it.color
             };
         });
         emitChange();
@@ -53,7 +56,7 @@ window.CartStore = (function () {
             const local = readLocal();
             itemsMap = {};
             Object.values(local.items || {}).forEach(it => {
-                itemsMap[String(it.id)] = { ...it, productId: it.id };
+                itemsMap[String(it.variantId || it.id)] = { ...it };
             });
             serverCart = null;
             emitChange();
@@ -63,77 +66,79 @@ window.CartStore = (function () {
     function buildLocalSnapshot() {
         const items = {};
         Object.values(itemsMap).forEach(it => {
-            items[String(it.productId)] = {
-                id: it.productId,
+            items[String(it.variantId)] = {
+                id: it.id,
+                variantId: it.variantId,
+                productId: it.productId,
                 name: it.name,
                 description: it.description || null,
                 price: it.price,
                 brand: it.brand || null,
                 image: it.image,
-                qty: it.qty
+                qty: it.qty,
+                size: it.size,
+                color: it.color
             };
         });
         return items;
     }
 
-    function getAll() {
-        return itemsMap;
-    }
+    function getAll() { return itemsMap; }
 
     function getCount() {
         return Object.values(itemsMap).reduce((sum, i) => sum + i.qty, 0);
     }
 
-    function getQty(productId) {
-        const it = itemsMap[String(productId)];
+    function getQty(variantId) {
+        const it = itemsMap[String(variantId)];
         return it ? it.qty : 0;
     }
 
     function getTotalPrice() {
-        return Object.values(itemsMap)
-            .reduce((sum, i) => sum + i.price * i.qty, 0);
+        return Object.values(itemsMap).reduce((sum, i) => sum + i.price * i.qty, 0);
     }
 
-    async function add(product) {
+    async function add(variantId, productInfo, quantity = 1) {
         if (serverCart) {
-            try {
-                const updated = await window.CartApi.addItem(product.id, 1);
-                fromServer(updated);
-                writeLocal({ items: buildLocalSnapshot() });
-                return;
-            } catch (e) { console.warn('cart add failed', e); }
+            const updated = await window.CartApi.addItem(variantId, quantity);
+            fromServer(updated);
+            writeLocal({ items: buildLocalSnapshot() });
+            return;
         }
-        const key = String(product.id);
+
+        const key = String(variantId);
         if (itemsMap[key]) {
-            itemsMap[key].qty += 1;
+            itemsMap[key].qty += quantity;
         } else {
-            const image = product.mainImageUrl
-                || (product.images && product.images[0] && (product.images[0].url || product.images[0]))
+            const image = productInfo.mainImageUrl
+                || (productInfo.images && productInfo.images[0]
+                    && (productInfo.images[0].url || productInfo.images[0]))
                 || null;
             itemsMap[key] = {
-                productId: product.id,
-                name: product.name,
-                description: product.description || null,
-                price: product.price,
-                brand: product.brand || null,
+                variantId: variantId,
+                productId: productInfo.productId || productInfo.id,
+                name: productInfo.name,
+                description: productInfo.description || null,
+                price: productInfo.price,
+                brand: productInfo.brand || null,
                 image: image,
-                qty: 1,
-                stock: product.stock
+                qty: quantity,
+                stock: productInfo.stock,
+                size: productInfo.size || null,
+                color: productInfo.color || null
             };
         }
         writeLocal({ items: buildLocalSnapshot() });
         emitChange();
     }
 
-    async function increment(productId) {
-        const key = String(productId);
+    async function increment(variantId) {
+        const key = String(variantId);
         const it = itemsMap[key];
         if (!it) return;
 
         if (serverCart && it.id) {
-            try {
-                await window.CartApi.updateItem(it.id, it.qty + 1);
-            } catch (e) { console.warn('cart increment failed', e); return; }
+            await window.CartApi.updateItem(it.id, it.qty + 1);
         }
 
         it.qty += 1;
@@ -141,21 +146,19 @@ window.CartStore = (function () {
         emitChange();
     }
 
-    async function decrement(productId) {
-        const key = String(productId);
+    async function decrement(variantId) {
+        const key = String(variantId);
         const it = itemsMap[key];
         if (!it) return;
 
         const nextQty = it.qty - 1;
 
         if (serverCart && it.id) {
-            try {
-                if (nextQty <= 0) {
-                    await window.CartApi.removeItem(it.id);
-                } else {
-                    await window.CartApi.updateItem(it.id, nextQty);
-                }
-            } catch (e) { console.warn('cart decrement failed', e); return; }
+            if (nextQty <= 0) {
+                await window.CartApi.removeItem(it.id);
+            } else {
+                await window.CartApi.updateItem(it.id, nextQty);
+            }
         }
 
         if (nextQty <= 0) delete itemsMap[key];
@@ -164,15 +167,13 @@ window.CartStore = (function () {
         emitChange();
     }
 
-    async function remove(productId) {
-        const key = String(productId);
+    async function remove(variantId) {
+        const key = String(variantId);
         const it = itemsMap[key];
         if (!it) return;
 
         if (serverCart && it.id) {
-            try {
-                await window.CartApi.removeItem(it.id);
-            } catch (e) { console.warn('cart remove failed', e); return; }
+            await window.CartApi.removeItem(it.id);
         }
 
         delete itemsMap[key];
@@ -182,9 +183,7 @@ window.CartStore = (function () {
 
     async function clear() {
         if (serverCart) {
-            try {
-                await window.CartApi.clear();
-            } catch (e) { console.warn('cart clear failed', e); return; }
+            await window.CartApi.clear();
         }
         itemsMap = {};
         clearLocal();

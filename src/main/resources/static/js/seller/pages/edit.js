@@ -5,71 +5,120 @@ window.ProductEditPage = (function () {
     const upload = window.Upload;
 
     let currentId = null;
+    let initialized = false;
+    const sizes = [];
+    const colors = [];
+
+    // groups: { [colorValue]: [ {id, size, stock, priceDelta} ] }
+    let groups = {};
+    let activeKey = '';
+    let rowSeq = 0;
 
     function init() {
-        upload.init('editImagesInput', 'editPreviewGrid');
+        if (initialized) return;
+        initialized = true;
+
         bindDeleteBtn();
+
+        initTags('editSizesTags', 'editSizesInput', sizes, onTagsChange);
+        initTags('editColorsTags', 'editColorsInput', colors, onTagsChange);
+
+        document.querySelectorAll('input[name="editVariantMode"]').forEach(r => {
+            r.addEventListener('change', onModeChange);
+        });
+
+        const genBtn = document.getElementById('editGenerateVariantsBtn');
+        if (genBtn) genBtn.addEventListener('click', generateFromTags);
+
+        const addBtn = document.getElementById('editAddVariantRowBtn');
+        if (addBtn) addBtn.addEventListener('click', addRowToActive);
+
+        const simpleCell = document.getElementById('editSimplePhotoCell');
+        if (simpleCell) upload.attachCell('__default__', simpleCell);
+
+        onModeChange();
     }
 
-    function bindDeleteBtn() {
-        const btn = document.getElementById('editDeleteBtn');
-        if (!btn || btn.dataset.bound) return;
-        btn.dataset.bound = '1';
+    /* ======================= MODE ======================= */
 
-        btn.addEventListener('click', () => {
-            if (!currentId) return;
+    function getMode() {
+        const checked = document.querySelector('input[name="editVariantMode"]:checked');
+        return checked ? checked.value : 'simple';
+    }
 
-            openConfirm({
-                title: 'Удалить товар?',
-                text: 'Это действие нельзя отменить. Все фото и данные будут удалены.',
-                okText: 'Удалить',
-                onConfirm: async () => {
-                    btn.disabled = true;
-                    btn.textContent = 'Удаление...';
+    function onModeChange() {
+        const mode = getMode();
+        const simple = document.getElementById('editSimpleBlock');
+        const variants = document.getElementById('editVariantsBlock');
+        if (simple) simple.classList.toggle('hidden', mode !== 'simple');
+        if (variants) variants.classList.toggle('hidden', mode !== 'variants');
+        renderTabs();
+        renderGallery();
+        renderVariantsTable();
+    }
 
-                    try {
-                        await api.delete(currentId);
-                        toast.show(document.getElementById('editMessage'), 'Товар удалён', true);
-                        setTimeout(() => {
-                            window.location.hash = '#/';
-                        }, 600);
-                    } catch (e) {
-                        toast.show(document.getElementById('editMessage'), e.message, false);
-                        btn.disabled = false;
-                        btn.textContent = 'Удалить товар';
-                    }
+    function onTagsChange() {
+        colors.forEach(c => {
+            if (!(c in groups)) groups[c] = [];
+        });
+        renderTabs();
+        renderGallery();
+        renderVariantsTable();
+    }
+
+    /* ======================= TAGS ======================= */
+
+    function initTags(wrapId, inputId, arr, onChange) {
+        const wrap = document.getElementById(wrapId);
+        const input = document.getElementById(inputId);
+        if (!wrap || !input || !arr) return;
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const value = input.value.trim().replace(/,$/, '');
+                if (value && !arr.includes(value)) {
+                    arr.push(value);
+                    renderTags(wrap, input, arr, onChange);
                 }
+                input.value = '';
+                onChange();
+            } else if (e.key === 'Backspace' && input.value === '' && arr.length > 0) {
+                arr.pop();
+                renderTags(wrap, input, arr, onChange);
+                onChange();
+            }
+        });
+
+        input.addEventListener('blur', () => {
+            const value = input.value.trim().replace(/,$/, '');
+            if (value && !arr.includes(value)) {
+                arr.push(value);
+                renderTags(wrap, input, arr, onChange);
+                input.value = '';
+                onChange();
+            }
+        });
+
+        renderTags(wrap, input, arr, onChange);
+    }
+
+    function renderTags(wrap, input, arr, onChange) {
+        wrap.querySelectorAll('.tag').forEach(t => t.remove());
+        arr.forEach((value, i) => {
+            const tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.innerHTML = `<span>${escapeHtml(value)}</span><button type="button" class="tag-remove">×</button>`;
+            tag.querySelector('.tag-remove').addEventListener('click', () => {
+                arr.splice(i, 1);
+                renderTags(wrap, input, arr, onChange);
+                onChange();
             });
+            wrap.insertBefore(tag, input);
         });
     }
 
-    function openConfirm({ title, text, okText, onConfirm }) {
-        const modal = document.getElementById('confirmModal');
-        const titleEl = document.getElementById('confirmModalTitle');
-        const textEl = document.getElementById('confirmModalText');
-        const okBtn = document.getElementById('confirmModalOk');
-        const closeEls = modal.querySelectorAll('[data-confirm-close]');
-
-        titleEl.textContent = title;
-        textEl.textContent = text;
-        okBtn.textContent = okText;
-
-        modal.classList.remove('hidden');
-
-        function close() {
-            modal.classList.add('hidden');
-            okBtn.removeEventListener('click', handleOk);
-            closeEls.forEach(el => el.removeEventListener('click', close));
-        }
-
-        function handleOk() {
-            close();
-            if (onConfirm) onConfirm();
-        }
-
-        okBtn.addEventListener('click', handleOk);
-        closeEls.forEach(el => el.addEventListener('click', close));
-    }
+    /* ======================= LOAD ======================= */
 
     async function load(id) {
         init();
@@ -79,10 +128,7 @@ window.ProductEditPage = (function () {
         toast.hide(msg);
 
         const delBtn = document.getElementById('editDeleteBtn');
-        if (delBtn) {
-            delBtn.disabled = false;
-            delBtn.textContent = 'Удалить товар';
-        }
+        if (delBtn) { delBtn.disabled = false; delBtn.textContent = 'Удалить товар'; }
 
         try {
             const [product, categories] = await Promise.all([
@@ -95,7 +141,6 @@ window.ProductEditPage = (function () {
             document.getElementById('editBrand').value = product.brand || '';
             document.getElementById('editDescription').value = product.description || '';
             document.getElementById('editPrice').value = product.price || '';
-            document.getElementById('editStock').value = product.stock || 0;
 
             const select = document.getElementById('editCategoryId');
             select.innerHTML = '';
@@ -107,51 +152,425 @@ window.ProductEditPage = (function () {
                 select.appendChild(opt);
             });
 
-            upload.setFiles((product.images || []).map(img => ({
-                id: img.id,
-                url: img.url
-            })));
+            // Новая структура: product.colors[], product.sizes[], product.variants[]
+            const pColors = product.colors || [];
+            const pSizes  = product.sizes  || [];
+            const pVariants = product.variants || [];
+
+            const hasAnyDim = pColors.length > 0 || pSizes.length > 0;
+            const mode = hasAnyDim ? 'variants' : 'simple';
+            document.querySelector(`input[name="editVariantMode"][value="${mode}"]`).checked = true;
+
+            sizes.length = 0;
+            colors.length = 0;
+            groups = {};
+            activeKey = '';
+            rowSeq = 0;
+            upload.reset();
+
+            renderTags(document.getElementById('editSizesTags'), document.getElementById('editSizesInput'), sizes, onTagsChange);
+            renderTags(document.getElementById('editColorsTags'), document.getElementById('editColorsInput'), colors, onTagsChange);
+
+            if (mode === 'simple') {
+                document.getElementById('editStock').value = pVariants[0]?.stock || 0;
+
+                // в simple фото лежат на первом цвете (бэк сам его создал)
+                const firstColor = pColors[0];
+                const firstImages = (firstColor?.images || []).map(img => ({
+                    file: null, previewUrl: img.url, uploadedUrl: img.url, imageId: img.id
+                }));
+                upload.setAll({ '__default__': firstImages });
+            } else {
+                pSizes.forEach(s => sizes.push(s.size));
+                pColors.forEach(c => colors.push(c.color || ''));
+
+                renderTags(document.getElementById('editSizesTags'), document.getElementById('editSizesInput'), sizes, onTagsChange);
+                renderTags(document.getElementById('editColorsTags'), document.getElementById('editColorsInput'), colors, onTagsChange);
+
+                // варианты по группам (группа = цвет)
+                pVariants.forEach(v => {
+                    const gk = v.color || '';
+                    if (!(gk in groups)) groups[gk] = [];
+                    groups[gk].push({
+                        id: ++rowSeq,
+                        size: v.size || null,
+                        stock: Number(v.stock) || 0,
+                        priceDelta: Number(v.priceDelta) || 0
+                    });
+                });
+
+                // фото — по цвету
+                const map = {};
+                pColors.forEach(c => {
+                    const key = c.color || '';
+                    map[key] = (c.images || []).map(img => ({
+                        file: null, previewUrl: img.url, uploadedUrl: img.url, imageId: img.id
+                    }));
+                });
+                upload.setAll(map);
+
+                activeKey = Object.keys(groups)[0] || (colors[0] || '');
+            }
+
+            renderTabs();
+            renderGallery();
+            renderVariantsTable();
+            onModeChange();
 
         } catch (e) {
             toast.show(msg, 'Ошибка загрузки: ' + e.message, false);
         }
     }
 
+    /* ======================= TABS ======================= */
+
+    function visibleColors() {
+        return colors.length > 0 ? colors : [''];
+    }
+
+    function ensureGroups() {
+        const visible = visibleColors();
+        visible.forEach(c => {
+            if (!(c in groups)) groups[c] = [];
+        });
+        if (!visible.includes(activeKey)) {
+            activeKey = visible[0] || '';
+        }
+    }
+
+    function renderTabs() {
+        ensureGroups();
+        const wrap = document.getElementById('editVtTabs');
+        if (!wrap) return;
+
+        const visible = visibleColors();
+
+        wrap.innerHTML = visible.map(c => {
+            const isActive = c === activeKey;
+            const rows = groups[c] || [];
+            const totalStock = rows.reduce((s, r) => s + (Number(r.stock) || 0), 0);
+            const label = c || 'Без цвета';
+            const meta = rows.length === 0
+                ? 'пусто'
+                : `${rows.length} разм. · ${totalStock} шт`;
+            return `
+                <button type="button" class="vt-tab ${isActive ? 'active' : ''}" data-color="${escapeAttr(c)}">
+                    <span class="vt-tab-title">${escapeHtml(label)}</span>
+                    <span class="vt-tab-meta">${meta}</span>
+                    ${c ? `<span class="vt-tab-remove" data-remove-color="${escapeAttr(c)}">×</span>` : ''}
+                </button>
+            `;
+        }).join('');
+
+        wrap.querySelectorAll('.vt-tab').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (e.target.closest('.vt-tab-remove')) return;
+                activeKey = btn.dataset.color;
+                renderTabs();
+                renderGallery();
+                renderVariantsTable();
+            });
+        });
+
+        wrap.querySelectorAll('.vt-tab-remove').forEach(x => {
+            x.addEventListener('click', (e) => {
+                e.stopPropagation();
+                confirmRemoveColor(x.dataset.removeColor);
+            });
+        });
+    }
+
+    /* ======================= GALLERY ======================= */
+
+    function renderGallery() {
+        const cell = document.getElementById('editVtColorGallery');
+        if (!cell) return;
+        upload.attachCell(activeKey || '', cell);
+    }
+
+    function confirmRemoveColor(color) {
+        const rows = groups[color] || [];
+        const message = rows.length > 0
+            ? `Удалить цвет «${color}» и ${rows.length} вариант(ов)?`
+            : `Убрать цвет «${color}» из списка?`;
+
+        if (!window.confirm(message)) return;
+
+        const idx = colors.indexOf(color);
+        if (idx !== -1) colors.splice(idx, 1);
+        renderTags(
+            document.getElementById('editColorsTags'),
+            document.getElementById('editColorsInput'),
+            colors,
+            onTagsChange
+        );
+
+        upload.detachCell(color);
+        const all = upload.getAll();
+        if (all[color]) delete all[color];
+
+        delete groups[color];
+
+        if (activeKey === color) {
+            const visible = visibleColors();
+            activeKey = visible[0] || '';
+        }
+        renderTabs();
+        renderGallery();
+        renderVariantsTable();
+    }
+
+    /* ======================= VARIANTS TABLE ======================= */
+
+    function addRowToActive() {
+        const colorValue = activeKey || null;
+        const gk = colorValue || '';
+        if (!(gk in groups)) groups[gk] = [];
+
+        groups[gk].push({
+            id: ++rowSeq,
+            size: null,
+            stock: 0,
+            priceDelta: 0
+        });
+        renderTabs();
+        renderVariantsTable();
+    }
+
+    function removeRow(id) {
+        const arr = groups[activeKey] || [];
+        const idx = arr.findIndex(v => v.id === id);
+        if (idx === -1) return;
+        arr.splice(idx, 1);
+
+        renderTabs();
+        renderVariantsTable();
+    }
+
+    function generateFromTags() {
+        const msg = document.getElementById('editMessage');
+
+        if (sizes.length === 0 && colors.length === 0) {
+            toast.show(msg, 'Добавь хотя бы один размер или цвет', false);
+            return;
+        }
+
+        const useSizes  = sizes.length  > 0 ? sizes  : [null];
+        const useColors = colors.length > 0 ? colors : [''];
+
+        let added = 0;
+        useColors.forEach(colorKey => {
+            const gk = colorKey || '';
+            if (!(gk in groups)) groups[gk] = [];
+            const existing = new Set(groups[gk].map(v => v.size));
+
+            useSizes.forEach(size => {
+                if (existing.has(size)) return;
+                groups[gk].push({
+                    id: ++rowSeq,
+                    size: size || null,
+                    stock: 0,
+                    priceDelta: 0
+                });
+                added++;
+            });
+        });
+
+        if (!activeKey && Object.keys(groups).length) {
+            activeKey = Object.keys(groups)[0];
+        }
+
+        renderTabs();
+        renderGallery();
+        renderVariantsTable();
+
+        if (added === 0) {
+            toast.show(msg, 'Все комбинации уже есть', false);
+        }
+    }
+
+    function renderVariantsTable() {
+        ensureGroups();
+
+        const tbody = document.getElementById('editVariantsTbody');
+        const empty = document.getElementById('editVariantsEmpty');
+        if (!tbody) return;
+
+        const rows = groups[activeKey] || [];
+
+        if (rows.length === 0) {
+            tbody.innerHTML = '';
+            if (empty) empty.classList.remove('hidden');
+            updateTableColumns();
+            return;
+        }
+        if (empty) empty.classList.add('hidden');
+
+        const sizeCount = {};
+        rows.forEach(v => { if (v.size) sizeCount[v.size] = (sizeCount[v.size] || 0) + 1; });
+
+        tbody.innerHTML = rows.map((v, i) => {
+            const dup = v.size && sizeCount[v.size] > 1;
+            return `
+                <tr data-row-id="${v.id}" class="${dup ? 'dup' : ''}">
+                    <td class="vt-num">${i + 1}</td>
+                    <td class="vt-cell-size">
+                        <input class="vt-input" type="text" data-field="size"
+                               value="${escapeAttr(v.size || '')}" placeholder="—">
+                    </td>
+                    <td class="vt-cell-stock">
+                        <input class="vt-input vt-input-num" type="number" min="0"
+                               data-field="stock" value="${v.stock}">
+                    </td>
+                    <td class="vt-cell-delta">
+                        <input class="vt-input vt-input-num" type="number" step="0.01"
+                               data-field="priceDelta" value="${v.priceDelta}">
+                    </td>
+                    <td class="vt-remove">
+                        <button type="button" class="vt-remove-btn" data-action="remove" aria-label="Удалить">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const id = Number(tr.dataset.rowId);
+
+            tr.querySelectorAll('input[data-field]').forEach(inp => {
+                inp.addEventListener('input', () => {
+                    const row = (groups[activeKey] || []).find(v => v.id === id);
+                    if (!row) return;
+                    const field = inp.dataset.field;
+                    if (field === 'stock' || field === 'priceDelta') {
+                        row[field] = inp.value === '' ? 0 : Number(inp.value);
+                    } else {
+                        row[field] = inp.value.trim() || null;
+                    }
+                });
+            });
+
+            tr.querySelector('[data-action="remove"]').addEventListener('click', () => {
+                removeRow(id);
+            });
+        });
+
+        updateTableColumns();
+    }
+
+    function updateTableColumns() {
+        const table = document.getElementById('editVariantsTable');
+        if (!table) return;
+
+        const allRows = Object.values(groups).flat();
+        const hasSize = sizes.length > 0 || allRows.some(v => v.size);
+
+        table.classList.toggle('vt-hide-size', !hasSize);
+    }
+
+    /* ======================= SAVE ======================= */
+
+    function parseIntOrZero(v) {
+        return v === '' || v == null ? 0 : parseInt(v);
+    }
+
     async function save() {
         const msg = document.getElementById('editMessage');
         const btn = document.getElementById('editSubmitBtn');
-
         toast.hide(msg);
+
+        const mode = getMode();
+        const allRows = Object.values(groups).flat();
+
+        if (mode === 'variants') {
+            if (allRows.length === 0) {
+                toast.show(msg, 'Добавь хотя бы один вариант', false);
+                return;
+            }
+        }
+
         btn.disabled = true;
         btn.textContent = 'Загрузка фото...';
 
         try {
-            const files = upload.getFiles();
-
-            // Догружаем новые файлы (у которых нет uploadedUrl)
-            for (const item of files) {
-                if (item.uploadedUrl) continue;
-                const data = await api.upload(item.file);
-                item.uploadedUrl = data.url;
+            const filesByColor = upload.getAll();
+            for (const key of Object.keys(filesByColor)) {
+                for (const item of filesByColor[key]) {
+                    if (item.uploadedUrl) continue;
+                    const data = await api.upload(item.file, currentId);
+                    item.uploadedUrl = data.url;
+                }
             }
 
             btn.textContent = 'Сохранение...';
 
-            // Собираем images — все URL + main для первого
-            const images = files.map((item, i) => ({
-                url: item.uploadedUrl,
-                main: i === 0,
-                sortOrder: i
-            }));
+            let colorsPayload = null;
+            let sizesPayload = null;
+            let variantsPayload = [];
+
+            if (mode === 'simple') {
+                const vFiles = filesByColor['__default__'] || [];
+                const stock = parseIntOrZero(document.getElementById('editStock').value);
+
+                colorsPayload = [{
+                    color: null,
+                    sortOrder: 0,
+                    images: vFiles.map((f, i) => ({
+                        url: f.uploadedUrl, sortOrder: i, main: i === 0
+                    }))
+                }];
+                sizesPayload = null;
+                variantsPayload = [{
+                    color: null,
+                    size: null,
+                    stock: stock,
+                    priceDelta: 0
+                }];
+            } else {
+                const visible = visibleColors();
+
+                colorsPayload = visible.map((c, idx) => {
+                    const vFiles = filesByColor[c] || [];
+                    return {
+                        color: c || null,
+                        sortOrder: idx,
+                        images: vFiles.map((f, i) => ({
+                            url: f.uploadedUrl, sortOrder: i, main: i === 0
+                        }))
+                    };
+                });
+
+                sizesPayload = sizes.length > 0
+                    ? sizes.map((s, idx) => ({ size: s, sortOrder: idx }))
+                    : null;
+
+                Object.keys(groups).forEach(colorValue => {
+                    (groups[colorValue] || []).forEach(row => {
+                        variantsPayload.push({
+                            color: colorValue || null,
+                            size: row.size,
+                            stock: row.stock,
+                            priceDelta: row.priceDelta || 0
+                        });
+                    });
+                });
+            }
 
             const body = {
                 name: document.getElementById('editName').value.trim(),
                 brand: document.getElementById('editBrand').value.trim() || null,
                 description: document.getElementById('editDescription').value.trim() || null,
                 price: parseFloat(document.getElementById('editPrice').value),
-                stock: parseInt(document.getElementById('editStock').value),
                 categoryId: parseInt(document.getElementById('editCategoryId').value),
-                images: images
+                colors: colorsPayload,
+                sizes: sizesPayload,
+                variants: variantsPayload
             };
 
             await api.update(currentId, body);
@@ -162,6 +581,63 @@ window.ProductEditPage = (function () {
             btn.disabled = false;
             btn.textContent = 'Сохранить';
         }
+    }
+
+    /* ======================= DELETE ======================= */
+
+    function bindDeleteBtn() {
+        const btn = document.getElementById('editDeleteBtn');
+        if (!btn || btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+
+        btn.addEventListener('click', () => {
+            if (!currentId) return;
+            openConfirm({
+                title: 'Удалить товар?',
+                text: 'Это действие нельзя отменить.',
+                okText: 'Удалить',
+                onConfirm: async () => {
+                    btn.disabled = true;
+                    btn.textContent = 'Удаление...';
+                    try {
+                        await api.delete(currentId);
+                        toast.show(document.getElementById('editMessage'), 'Товар удалён', true);
+                        setTimeout(() => { window.location.hash = '#/'; }, 600);
+                    } catch (e) {
+                        toast.show(document.getElementById('editMessage'), e.message, false);
+                        btn.disabled = false;
+                        btn.textContent = 'Удалить товар';
+                    }
+                }
+            });
+        });
+    }
+
+    function openConfirm({ title, text, okText, onConfirm }) {
+        const modal = document.getElementById('confirmModal');
+        document.getElementById('confirmModalTitle').textContent = title;
+        document.getElementById('confirmModalText').textContent = text;
+        const okBtn = document.getElementById('confirmModalOk');
+        okBtn.textContent = okText;
+        modal.classList.remove('hidden');
+
+        const closeEls = modal.querySelectorAll('[data-confirm-close]');
+        function close() { modal.classList.add('hidden'); okBtn.removeEventListener('click', handleOk); }
+        function handleOk() { close(); onConfirm && onConfirm(); }
+        okBtn.addEventListener('click', handleOk);
+        closeEls.forEach(el => el.addEventListener('click', close));
+    }
+
+    /* ======================= UTILS ======================= */
+
+    function escapeHtml(s) {
+        return String(s ?? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[c]);
+    }
+
+    function escapeAttr(s) {
+        return escapeHtml(s);
     }
 
     return { load, save };

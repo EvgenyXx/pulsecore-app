@@ -38,9 +38,7 @@ public interface OrderMapper {
         return dto;
     }
 
-    default OrderDto toDto(Order order, String paymentUrl) {
-        return toDto(order, paymentUrl, null);
-    }
+
 
     default OrderDto toDto(Order order) {
         return toDto(order, null, null);

@@ -75,14 +75,6 @@ window.ShopRouter = (function () {
             });
         }
 
-        const prodBack = document.getElementById('productBackBtn');
-        if (prodBack) {
-            prodBack.addEventListener('click', () => {
-                if (window.history.length > 1) window.history.back();
-                else window.location.hash = '#/';
-            });
-        }
-
         handleRoute();
     }
 

@@ -23,7 +23,7 @@ window.CheckoutPage = (function () {
         } catch (e) {}
 
         const items = cart.getAll();
-        return Object.values(items).filter(it => ids.has(String(it.productId)));
+        return Object.values(items).filter(it => ids.has(String(it.variantId)));
     }
 
     function render() {
@@ -146,24 +146,28 @@ window.CheckoutPage = (function () {
             ? `<img src="${item.image}" alt="">`
             : `<div class="cart-item-placeholder">📷</div>`;
 
+        const variantLine = buildVariantLine(item);
+
         return `
             <div class="checkout-item">
                 <div class="checkout-item-image">${img}</div>
                 <div class="checkout-item-body">
                     <span class="checkout-item-name">${escapeHtml(item.name)}</span>
+                    ${variantLine}
                     <span class="checkout-item-qty">${item.qty} × ${formatPrice(item.price)} ₽</span>
                 </div>
             </div>
         `;
     }
 
-    function validateStock(selected) {
-        for (const it of selected) {
-            if (it.stock != null && it.qty > it.stock) {
-                return `«${it.name}»: в наличии только ${it.stock} шт. Уменьшите количество.`;
-            }
-        }
-        return null;
+    function buildVariantLine(item) {
+        const parts = [];
+        if (item.size) parts.push(item.size);
+        if (item.color) parts.push(item.color);
+
+        if (parts.length === 0) return '';
+
+        return `<span class="checkout-item-variant">${escapeHtml(parts.join(' · '))}</span>`;
     }
 
     async function onSubmit(e) {
@@ -173,14 +177,6 @@ window.CheckoutPage = (function () {
         const btn = document.getElementById('coSubmit');
 
         toast.hide(msg);
-
-        const selected = getSelectedItems();
-
-        const stockError = validateStock(selected);
-        if (stockError) {
-            toast.show(msg, stockError, false);
-            return;
-        }
 
         const phone = document.getElementById('coPhone').value.trim();
         if (!phone) {
@@ -192,6 +188,7 @@ window.CheckoutPage = (function () {
         btn.textContent = 'Создание заказа...';
 
         try {
+            const selected = getSelectedItems();
             const itemIds = selected.map(it => it.id);
 
             const body = {
@@ -214,7 +211,11 @@ window.CheckoutPage = (function () {
                 setTimeout(() => window.location.hash = '#/orders', 800);
             }
         } catch (err) {
-            toast.show(msg, err.message || 'Ошибка', false);
+            if (err.problems && err.problems.length > 0) {
+                toast.showPopupProblems(err.message, err.problems);
+            } else {
+                toast.show(msg, err.message || 'Ошибка', false);
+            }
             btn.disabled = false;
             btn.textContent = 'Попробовать снова';
         }

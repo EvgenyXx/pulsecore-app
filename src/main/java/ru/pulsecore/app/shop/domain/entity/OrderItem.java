@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(
-    name = "order_item",
-    indexes = @Index(name = "idx_order_item_order", columnList = "order_id")
+        name = "order_item",
+        indexes = @Index(name = "idx_order_item_order", columnList = "order_id")
 )
 @Getter
 @Setter
@@ -34,6 +34,15 @@ public class OrderItem {
 
     @Column(name = "product_brand", length = 100)
     private String productBrand;
+
+    @Column(name = "variant_size", length = 50)
+    private String variantSize;
+
+    @Column(name = "variant_color", length = 100)
+    private String variantColor;
+
+    @Column(name = "variant_id")
+    private Long variantId;
 
     @Column(name = "product_image_url", length = 500)
     private String productImageUrl;

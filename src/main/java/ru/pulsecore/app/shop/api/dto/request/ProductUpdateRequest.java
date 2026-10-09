@@ -4,20 +4,12 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record ProductUpdateRequest(
-
         String name,
         String description,
         String brand,
         BigDecimal price,
-        Integer stock,
         Long categoryId,
-        String categoryName,
-
-        List<ImageRequest> images
-) {
-    public record ImageRequest(
-            String url,
-            Integer sortOrder,
-            boolean main
-    ) {}
-}
+        List<ProductColorRequest> colors,
+        List<ProductSizeRequest> sizes,
+        List<ProductVariantRequest> variants
+) {}

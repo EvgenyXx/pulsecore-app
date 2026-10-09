@@ -28,6 +28,16 @@ public class SellerProductController {
     private final ProductService productService;
     private final ProductImageService productImageService;
 
+    @Operation(summary = "Поиск товаров по названию или бренду")
+    @GetMapping(SellerApi.PRODUCTS_SEARCH)
+    public ResponseEntity<Page<ProductCardDto>> search(
+            @RequestParam("q") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        return ResponseEntity.ok(productService.search(query, page, size));
+    }
+
     @Operation(summary = "Товары по категории (с пагинацией)")
     @GetMapping(SellerApi.PRODUCTS_BY_CATEGORY)
     public ResponseEntity<Page<ProductCardDto>> getByCategory(

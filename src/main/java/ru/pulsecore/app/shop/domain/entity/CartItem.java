@@ -8,11 +8,11 @@ import lombok.*;
     name = "cart_item",
     indexes = {
         @Index(name = "idx_cart_item_cart", columnList = "cart_id"),
-        @Index(name = "idx_cart_item_product", columnList = "product_id")
+        @Index(name = "idx_cart_item_variant", columnList = "variant_id")
     },
     uniqueConstraints = @UniqueConstraint(
-        name = "uk_cart_item_cart_product",
-        columnNames = {"cart_id", "product_id"}
+        name = "uk_cart_item_cart_variant",
+        columnNames = {"cart_id", "variant_id"}
     )
 )
 @Getter
@@ -31,8 +31,8 @@ public class CartItem {
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @JoinColumn(name = "variant_id", nullable = false)
+    private ProductVariant variant;
 
     @Column(nullable = false)
     private Integer quantity;

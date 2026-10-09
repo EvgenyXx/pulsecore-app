@@ -8,8 +8,14 @@ window.Http = (function () {
         });
 
         if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.message || `HTTP ${res.status}`);
+            const data = await res.json().catch(() => ({}));
+
+            const err = new Error(data.message || `HTTP ${res.status}`);
+            err.status = res.status;
+            err.problems = data.problems || null;
+            err.type = data.type || null;
+
+            throw err;
         }
 
         if (res.status === 204) return null;
