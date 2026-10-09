@@ -303,6 +303,10 @@
     gap: 16px;
 }
 
+.orders-pane[hidden] {
+    display: none;
+}
+
 .orders-list {
     display: flex;
     flex-direction: column;
