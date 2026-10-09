@@ -76,6 +76,7 @@ window.CartStore = (function () {
                 brand: it.brand || null,
                 image: it.image,
                 qty: it.qty,
+                stock: it.stock,     // ← ВАЖНО: сохраняем stock в локальный снапшот
                 size: it.size,
                 color: it.color
             };
@@ -96,6 +97,10 @@ window.CartStore = (function () {
 
     function getTotalPrice() {
         return Object.values(itemsMap).reduce((sum, i) => sum + i.price * i.qty, 0);
+    }
+
+    function isOutOfStock(item) {
+        return Number(item.stock) <= 0;
     }
 
     async function add(variantId, productInfo, quantity = 1) {
@@ -193,6 +198,7 @@ window.CartStore = (function () {
     return {
         init,
         getAll, getCount, getQty, getTotalPrice,
+        isOutOfStock,
         add, increment, decrement, remove, clear
     };
 })();
