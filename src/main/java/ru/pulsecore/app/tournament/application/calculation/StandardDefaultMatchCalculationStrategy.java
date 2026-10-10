@@ -21,14 +21,14 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DefaultMatchCalculationStrategy implements MatchCalculationStrategy {
+public class StandardDefaultMatchCalculationStrategy implements MatchCalculationStrategy {
 
     private final PlacementCalculator placementCalculator;
     private final PointsCalculatorFactory factory;
 
     @Override
     public StrategyType getType() {
-        return StrategyType.DEFAULT;
+        return StrategyType.STANDARD_DEFAULT;
     }
 
     @Override

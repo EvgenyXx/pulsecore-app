@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.application.calculation.league.place.PlacePointsCalculatorFactory;
 import ru.pulsecore.app.tournament.domain.MatchCalculationStrategy;
 import ru.pulsecore.app.tournament.domain.PlacePointsCalculator;
+import ru.pulsecore.app.tournament.domain.enums.MatchNumber;
+import ru.pulsecore.app.tournament.domain.enums.Place;
 import ru.pulsecore.app.tournament.domain.enums.StrategyType;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
@@ -21,13 +23,14 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class FourPlayerBracketCalculationStrategy implements MatchCalculationStrategy {
+public class FourPlayerBracketDefaultCalculationStrategy implements MatchCalculationStrategy {
+
 
     private final PlacePointsCalculatorFactory placePointsCalculatorFactory;
 
     @Override
     public StrategyType getType() {
-        return StrategyType.FOUR_PL_BRACKET;
+        return StrategyType.FOUR_PL_BRACKET_DEFAULT;
     }
 
     @Override
@@ -60,34 +63,23 @@ public class FourPlayerBracketCalculationStrategy implements MatchCalculationStr
         Map<String, Integer> places = new HashMap<>();
 
         for (Match m : matches) {
-            if ("final".equals(m.getGroupType())) {
-                places.put(StringUtils.normalizeSearch(winnerOf(m)), 1);
-                places.put(StringUtils.normalizeSearch(loserOf(m)), 2);
-            } else if ("lower_mesh_3".equals(m.getGroupType())) {
-                if (m.getSortNumber() == 7) places.put(StringUtils.normalizeSearch(loserOf(m)), 3);
-                if (m.getSortNumber() == 6) places.put(StringUtils.normalizeSearch(loserOf(m)), 4);
+            MatchNumber matchNumber = MatchNumber.fromNumber(m.getSortNumber());
+
+            switch (matchNumber) {
+                case FINAL -> {
+                    places.put(StringUtils.normalizeSearch(m.winnerOf()), Place.FIRST.getValue());
+                    places.put(StringUtils.normalizeSearch(m.loserOf()), Place.SECOND.getValue());
+                }
+                case LOWER_MESH_3_GAME_2 ->
+                        places.put(StringUtils.normalizeSearch(m.loserOf()), Place.THIRD.getValue());
+                case LOWER_MESH_3_GAME_1 ->
+                        places.put(StringUtils.normalizeSearch(m.loserOf()), Place.FOURTH.getValue());
+                default -> {
+                }
             }
         }
-
         return places;
     }
-
-    private String winnerOf(Match m) {
-        if (m.getScore1() > m.getScore2()) {
-            return m.getPlayer1();
-        } else {
-            return m.getPlayer2();
-        }
-    }
-
-    private String loserOf(Match m) {
-        if (m.getScore1() > m.getScore2()) {
-            return m.getPlayer2();
-        } else {
-            return m.getPlayer1();
-        }
-    }
-
 
     private LocalDate parseDate(String date) {
         if (date == null) return null;

@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.calculation.removed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.application.calculation.DefaultMatchCalculationStrategy;
+import ru.pulsecore.app.tournament.application.calculation.StandardDefaultMatchCalculationStrategy;
 
 import ru.pulsecore.app.tournament.domain.*;
 import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
@@ -14,14 +14,14 @@ import ru.pulsecore.app.tournament.domain.model.TournamentContext;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RemovedPlayerMatchCalculationStrategy implements MatchCalculationStrategy {
+public class StandardRemovedMatchCalculationStrategy implements MatchCalculationStrategy {
 
-    private final DefaultMatchCalculationStrategy defaultStrategy;
+    private final StandardDefaultMatchCalculationStrategy defaultStrategy;
     private final RemovedHandlerRegistry registry;
 
     @Override
     public StrategyType getType() {
-        return StrategyType.REMOVED;
+        return StrategyType.STANDARD_REMOVED;
     }
 
     @Override

@@ -1,7 +1,8 @@
 package ru.pulsecore.app.tournament.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
+
 import org.jsoup.nodes.Document;
+import ru.pulsecore.app.tournament.api.dto.TournamentJson;
 
 /**
  * Готовые данные турнира, вытащенные из страницы.
@@ -10,13 +11,5 @@ import org.jsoup.nodes.Document;
  */
 public record TournamentPage(
         Document document,
-        JsonNode raw,
-        Long id,
-        String date,
-        String time,
-        String hall,
-        String leagueTitle,
-        String typeId,
-        String removedPlayer
-) {
-}
+        TournamentJson json
+) {}
