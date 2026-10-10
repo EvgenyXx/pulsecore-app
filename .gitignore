@@ -37,4 +37,6 @@ build/
 
 # 🔴 ВАЖНО
 .env
-tunel
+.env.*
+!.env.example
+tune
