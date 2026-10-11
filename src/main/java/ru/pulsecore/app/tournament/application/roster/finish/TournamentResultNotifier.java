@@ -1,15 +1,17 @@
 package ru.pulsecore.app.tournament.application.roster.finish;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.shared.event.PushNotificationEvent;
+import ru.pulsecore.app.shared.dispetcher.PushDispatcher;
+import ru.pulsecore.app.shared.event.PushContent;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,17 +20,17 @@ public class TournamentResultNotifier {
     private static final DateTimeFormatter DATE_FMT =
             DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    private final ApplicationEventPublisher publisher;
+    private final PushDispatcher pushDispatcher;
+
 
     public void publishLastResultEvent(List<TournamentResultEntity> results) {
         if (results == null) return;
-
-        results.forEach(r -> publisher.publishEvent(new PushNotificationEvent(
-                r.getPlayerId(),
-                "Результат турнира",
-                buildBody(r),
-                buildUrl(r)
-        )));
+        Map<UUID, PushContent> contentByPlayer = results.stream()
+                .collect(Collectors.toMap(
+                        TournamentResultEntity::getPlayerId,
+                        r ->
+                                new PushContent("Результат турнира", buildBody(r), buildUrl(r))));
+        pushDispatcher.send(contentByPlayer);
     }
 
     private String buildBody(TournamentResultEntity r) {

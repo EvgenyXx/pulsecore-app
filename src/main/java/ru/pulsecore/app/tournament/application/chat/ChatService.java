@@ -2,10 +2,10 @@ package ru.pulsecore.app.tournament.application.chat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.shared.event.PushNotificationEvent;
+import ru.pulsecore.app.shared.dispetcher.PushDispatcher;
+import ru.pulsecore.app.shared.event.PushContent;
 import ru.pulsecore.app.shared.exception.ForbiddenException;
 import ru.pulsecore.app.tournament.infrastructure.exception.MessageNotFoundException;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
@@ -14,6 +14,7 @@ import ru.pulsecore.app.tournament.domain.entity.ChatMessage;
 import ru.pulsecore.app.tournament.infrastructure.repository.ChatMessageRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -24,7 +25,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMessageMapper chatMessageMapper;
     private final ChatMentionService chatMentionService;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final PushDispatcher pushDispatcher;
 
 
     @Transactional(readOnly = true)
@@ -62,14 +63,13 @@ public class ChatService {
     }
 
     private void sendReplyPush(ChatMessage originalMsg, ChatMessageDto replyMsg) {
-        applicationEventPublisher.publishEvent(
-                new PushNotificationEvent(
-                        originalMsg.getPlayerId(),
+        pushDispatcher.send(Map.of(
+                originalMsg.getPlayerId(),
+                new PushContent(
                         "Ответ в чате",
                         replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
                         "/dashboard#/live/" + originalMsg.getLineupId()
-
-                )
+                ))
         );
     }
 
