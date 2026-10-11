@@ -8,11 +8,11 @@ import ru.pulsecore.app.tournament.domain.enums.Place;
 import ru.pulsecore.app.tournament.domain.enums.StrategyType;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 @Component
 @Slf4j
