@@ -2,13 +2,12 @@ package ru.pulsecore.app.tournament.application.resolution;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.notification.application.mail.MailTypes;
 import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriContext;
-import ru.pulsecore.app.shared.event.MailNotificationEvent;
+import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
+import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.shared.infrastructure.audit.AuditWriter;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
@@ -16,14 +15,13 @@ import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepositor
 import java.util.Set;
 import java.util.UUID;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BrokenUriService {
 
     private final TournamentRepository tournamentRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final MailDispatcher mailDispatcher;
     private final AuditWriter auditWriter;
 
     @Transactional
@@ -36,7 +34,7 @@ public class BrokenUriService {
                         " | link=" + tournament.getLink() +
                         " | игроков=" + playerIds.size());
 
-        eventPublisher.publishEvent(new MailNotificationEvent(
+        mailDispatcher.send(new MailContent(
                 MailTypes.BROKEN_URI,
                 new BrokenUriContext(
                         tournament.getLink(),
