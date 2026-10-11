@@ -32,8 +32,6 @@ public class PlayerReplacementService {
             Long oldTournamentId,
             Map<String, List<TournamentDto>> allTournaments) {
 
-
-
         List<String> removedNames = playerRemovalDetector.findRemovedNames(oldPlayers, newTournament);
         if (removedNames.isEmpty()) return false;
 

@@ -2,6 +2,7 @@ package ru.pulsecore.app.tournament.infrastructure.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,4 +24,9 @@ public interface ScheduledReportRepository extends JpaRepository<ScheduledReport
 
 
     List<ScheduledReport> findByPlayerIdAndStatus(UUID playerId, ReportStatus status);
+
+    @Modifying
+    @Query("UPDATE ScheduledReport r SET r.status = :status WHERE r.id IN :ids")
+    int markAsSent(@Param("ids") List<UUID> ids, @Param("status") ReportStatus status);
+
 }
