@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.payment.api.PaymentApi;
-import ru.pulsecore.app.payment.application.YookassaService;
-import ru.pulsecore.app.payment.api.dto.PaymentResponse;
+import ru.pulsecore.app.payment.application.SubscriptionPaymentService;
+import ru.pulsecore.app.shared.dto.response.PaymentResponse;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
 import ru.pulsecore.app.shared.security.PlayerPrincipal;
 
@@ -20,7 +20,7 @@ import ru.pulsecore.app.shared.security.PlayerPrincipal;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final YookassaService yookassaService;
+    private final SubscriptionPaymentService subscriptionPaymentService;
 
 
     @Operation(summary = "Создать платеж")
@@ -28,6 +28,6 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> pay(
             @CurrentPlayer PlayerPrincipal principal,
             @RequestParam int months) {
-        return ResponseEntity.ok(yookassaService.createPayment(principal.playerId(), months));
+        return ResponseEntity.ok(subscriptionPaymentService.createPayment(principal.playerId(), months));
     }
 }

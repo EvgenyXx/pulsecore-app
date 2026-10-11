@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+import ru.pulsecore.app.shared.dto.response.PaymentResponse;
 
 import java.util.Map;
 import java.util.UUID;

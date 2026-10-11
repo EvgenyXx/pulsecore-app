@@ -2,50 +2,37 @@ package ru.pulsecore.app.payment.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.payment.api.dto.YookassaWebhook;
-import ru.pulsecore.app.shared.event.PaymentSuccessEvent;
+import ru.pulsecore.app.payment.application.handler.OrderWebhookHandler;
+import ru.pulsecore.app.payment.application.handler.SubscriptionWebhookHandler;
 
-import java.math.BigDecimal;
-import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class WebhookService {
 
-    private final ApplicationEventPublisher publisher;
-    private final PaymentService paymentService;
+    private final OrderWebhookHandler orderWebhookHandler;
+    private final SubscriptionWebhookHandler subscriptionWebhookHandler;
 
-    @Transactional
     public void process(YookassaWebhook webhook) {
         if (!"payment.succeeded".equals(webhook.event())) {
             return;
         }
 
         var metadata = webhook.object().metadata();
-        var amount = webhook.object().amount();
-        var playerId = UUID.fromString(metadata.playerId());
-        var months = Integer.parseInt(metadata.months());
 
+        if (metadata.orderId() != null) {
+            orderWebhookHandler.handle(webhook);
+            return;
+        }
 
-        paymentService.save(
-                playerId,
-                new BigDecimal(amount.value()),
-                months
-        );
+        if (metadata.playerId() != null) {
+            subscriptionWebhookHandler.handle(webhook);
+            return;
+        }
 
-
-        publisher.publishEvent(new PaymentSuccessEvent(
-                playerId,
-                months * 30,
-                amount.value(),
-                amount.currency()
-        ));
-
-        log.info("Платёж сохранён: id={}, months={}, amount={}",
-                playerId, months, amount.value());
+        log.warn("Webhook без orderId/playerId: {}", webhook);
     }
 }

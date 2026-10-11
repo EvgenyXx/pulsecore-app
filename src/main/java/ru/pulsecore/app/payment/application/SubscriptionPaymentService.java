@@ -3,21 +3,20 @@ package ru.pulsecore.app.payment.application;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.pulsecore.app.payment.api.dto.PaymentResponse;
+import ru.pulsecore.app.shared.dto.response.PaymentResponse;
 import ru.pulsecore.app.payment.api.dto.Payment;
 import ru.pulsecore.app.payment.infrastructure.properties.YookassaProperties;
-
 import java.util.UUID;
 
 @Slf4j
 @Service
+public class SubscriptionPaymentService {
 
-public class YookassaService {
     private final YookassaProperties props;
     private final PriceService priceService;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public YookassaService(YookassaProperties props, PriceService priceService) {
+    public SubscriptionPaymentService(YookassaProperties props, PriceService priceService) {
         this.props = props;
         this.priceService = priceService;
     }
@@ -39,4 +38,6 @@ public class YookassaService {
                 .build()
                 .execute();
     }
+
+
 }
