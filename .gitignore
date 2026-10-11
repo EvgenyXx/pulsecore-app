@@ -36,7 +36,6 @@ build/
 .vscode/
 
 # 🔴 ВАЖНО
-.env
-.env.*
-!.env.example
-tune
+env
+env.*
+*.env
