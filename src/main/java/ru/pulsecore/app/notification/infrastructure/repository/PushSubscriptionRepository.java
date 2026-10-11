@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.notification.domain.PushSubscription;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +13,9 @@ import java.util.UUID;
 public interface PushSubscriptionRepository extends JpaRepository<PushSubscription, Long> {
 
     List<PushSubscription> findByPlayerId(UUID playerId);
+
+    List<PushSubscription> findByPlayerIdIn(Collection<UUID> playerIds);
+
 
     Optional<PushSubscription> findByPlayerIdAndEndpoint(UUID playerId, String endpoint);
 
