@@ -43,14 +43,7 @@ public class FourPlayerBracketDefaultCalculationStrategy implements MatchCalcula
 
         Map<String, Integer> placeMap = determinePlaces(ctx.getMatches());
 
-        Map<String, Integer> pointsMap = new HashMap<>();
-        for (Map.Entry<String, Integer> e : placeMap.entrySet()) {
-            String player = e.getKey();
-            int place = e.getValue();
-            int points = calculator.pointsForPlace(place, ctx.getLeague(), tournamentDate);
-            pointsMap.put(player, points);
-            log.debug("🏁 {} — место: {}, очков: {}", player, place, points);
-        }
+        Map<String, Integer> pointsMap = PointsResolver.calculatePoints(placeMap,calculator,ctx.getLeague(),tournamentDate);
 
         log.debug("📊 [4pl_new] Итог: очки={}, места={}", pointsMap, placeMap);
         return new MatchProcessingResult(pointsMap, placeMap);
