@@ -4,34 +4,32 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.payment.api.dto.YookassaWebhook;
-import ru.pulsecore.app.shared.dto.response.OrderYookassaEvent;
+import ru.pulsecore.app.shared.event.OrderWebhookEvent;
 import ru.pulsecore.app.shared.event.YookassaEventType;
-
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OrderWebhookHandler {
+public class OrderWebhookHandler implements WebhookHandler {
 
-    private final ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher publisher;
 
+    @Override
+    public boolean supports(YookassaWebhook webhook) {
+        return webhook.object().metadata().orderId() != null;
+    }
 
-    @Transactional
-    public void handle(YookassaWebhook webhook) {
-        Long orderId = Long.parseLong(webhook.object().metadata().orderId());
-        YookassaEventType eventType = YookassaEventType.fromCode(webhook.event());
-        if (eventType == null) {
-            log.warn("Неизвестный event от ЮKassa: {}", webhook.event());
-            return;
-        }
+    @Override
+    public void handle(YookassaWebhook webhook, YookassaEventType eventType) {
+        var metadata = webhook.object().metadata();
+        var amount = webhook.object().amount();
 
-        eventPublisher.publishEvent(new OrderYookassaEvent(
-                orderId,
+        publisher.publishEvent(new OrderWebhookEvent(
+                Long.parseLong(metadata.orderId()),
                 eventType,
-                webhook.object().id()
+                new java.math.BigDecimal(amount.value()),
+                amount.currency()
         ));
-        log.info("Заказ оплачен: id={}", orderId);
     }
 }

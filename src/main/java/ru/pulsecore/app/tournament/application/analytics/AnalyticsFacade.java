@@ -24,7 +24,7 @@ public class AnalyticsFacade {
     private final TournamentIncomeService tournamentIncomeService;
     private final PlayerAnalyticsRepository playerAnalyticsRepository;
 
-    @Cacheable(value = CacheNames.ANALYTICS, key = CacheNames.KEY_PLAYER_ID + " + ':' + #days")
+    @Cacheable(value = CacheNames.ANALYTICS, key = CacheNames.KEY_PLAYER_ID + " + ':' + #month")
     public AnalyticsResponse getAnalytics(UUID playerId, int days) {
         return leagueAnalyticsService.getAnalytics(playerId, days);
     }

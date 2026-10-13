@@ -15,8 +15,11 @@ public enum SubscriptionPeriod {
     private final String label;
 
     public String getPriceKey() {
-        return "price_" + (months == 1 ? "1month" : months + "months");
-    }
+    return switch (this) {
+        case ONE_MONTH -> "price_1month";
+        case TWO_MONTHS -> "price_2months";
+    };
+}
 
     public static SubscriptionPeriod fromMonths(int months) {
         return Arrays.stream(values())

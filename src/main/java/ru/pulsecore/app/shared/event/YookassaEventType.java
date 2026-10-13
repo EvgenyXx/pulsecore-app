@@ -1,5 +1,10 @@
 package ru.pulsecore.app.shared.event;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum YookassaEventType {
 
     // Платежи
@@ -18,24 +23,24 @@ public enum YookassaEventType {
     DEAL_CLOSED("deal.closed"),
 
     // Способы оплаты
-    PAYMENT_METHOD_ACTIVE("payment_method.active");
+    PAYMENT_METHOD_ACTIVE("payment_method.active"),
+
+    UNKNOWN("");
+
 
     private final String code;
 
-    YookassaEventType(String code) {
-        this.code = code;
-    }
 
-    public String getCode() {
-        return code;
-    }
 
     public static YookassaEventType fromCode(String code) {
+        if (code == null || code.isBlank()) {
+            return UNKNOWN;
+        }
         for (YookassaEventType type : values()) {
             if (type.code.equals(code)) {
                 return type;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 }

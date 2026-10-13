@@ -3,6 +3,8 @@ package ru.pulsecore.app.payment.api.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.OffsetDateTime;
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record YookassaWebhook(
@@ -16,7 +18,8 @@ public record YookassaWebhook(
             String status,
             Amount amount,
             Metadata metadata,
-            @JsonProperty("payment_method") PaymentMethod paymentMethod
+            @JsonProperty("payment_method") PaymentMethod paymentMethod,
+            @JsonProperty("captured_at") OffsetDateTime capturedAt     // ← ДОБАВИТЬ
     ) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -29,6 +32,6 @@ public record YookassaWebhook(
     public record Metadata(
             @JsonProperty("id") String playerId,
             @JsonProperty("orderId") String orderId,
-            @JsonProperty("months") String months
+            @JsonProperty("month") String months
     ) {}
 }

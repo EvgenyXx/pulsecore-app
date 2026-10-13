@@ -10,7 +10,7 @@ import ru.pulsecore.app.notification.application.mail.template.MailFormat;
 import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
 import ru.pulsecore.app.notification.client.PlayerClient;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.shared.event.SubscriptionActivatedEvent;
+import ru.pulsecore.app.shared.event.SubscriptionWebhookEvent;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class PaymentSuccessListener {
     private final MailTemplateService templates;
 
     @EventListener
-    public void onPaymentSuccess(SubscriptionActivatedEvent event) {
+    public void onPaymentSuccess(SubscriptionWebhookEvent event) {
         PlayerData player = playerClient.getPlayer(event.playerId());
 
         log.debug("Оплата: начало отправки писем для id={}", event.playerId());
@@ -38,10 +38,10 @@ public class PaymentSuccessListener {
                 event.playerId(), player.email());
     }
 
-    private void sendUserPaymentEmail(PlayerData player, SubscriptionActivatedEvent event) {
+    private void sendUserPaymentEmail(PlayerData player, SubscriptionWebhookEvent event) {
         String text = templates.format(
                 MailTemplate.PAYMENT_SUCCESS_USER,
-                StringUtils.extractFirstName(player.name()), event.days() / 30
+                StringUtils.extractFirstName(player.name()), event.month() / 30
         );
         mailSender.send(
                 MailFormat.TEXT, player.email(),
@@ -51,11 +51,11 @@ public class PaymentSuccessListener {
         log.debug("Оплата: письмо пользователю отправлено на {}", player.email());
     }
 
-    private void sendAdminPaymentEmail(PlayerData player, SubscriptionActivatedEvent event) {
+    private void sendAdminPaymentEmail(PlayerData player, SubscriptionWebhookEvent event) {
         String text = templates.format(
                 MailTemplate.ADMIN_PAYMENT,
                 player.name(), player.email(),
-                event.days() / 30,
+                event.month() / 30,
                 event.amount(), event.currency(),
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
         );

@@ -1,4 +1,4 @@
-package ru.pulsecore.app.payment.domain;
+package ru.pulsecore.app.player.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,11 +23,20 @@ public class Payment {
     @Column(name = "player_id", nullable = false)
     private UUID playerId;
 
+    @Column(name = "subscription_id")
+    private UUID subscriptionId;
+
+    @Column(name = "payment_id", nullable = false, unique = true, length = 64)
+    private String paymentId;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
     @Column(nullable = false)
     private Integer months;
+
+    @Column(name = "paid_at", nullable = false)
+    private LocalDateTime paidAt;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
