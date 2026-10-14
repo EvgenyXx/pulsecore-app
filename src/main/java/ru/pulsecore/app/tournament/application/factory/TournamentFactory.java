@@ -1,4 +1,4 @@
-package ru.pulsecore.app.notification.infrastructure.factory;
+package ru.pulsecore.app.tournament.application.factory;
 
 
 import lombok.extern.slf4j.Slf4j;

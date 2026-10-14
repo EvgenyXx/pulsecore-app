@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.notification.infrastructure.factory.NotificationFactory;
+import ru.pulsecore.app.tournament.application.factory.NotificationFactory;
 import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 

@@ -37,7 +37,6 @@ public class MailBatchProcessor {
         Map<UUID, MailContent> contentByPlayer = event.contentByPlayer();
         if (contentByPlayer == null || contentByPlayer.isEmpty()) return;
 
-        // 1 HTTP — все игроки
         Map<UUID, PlayerData> playerMap = playerClient.getPlayers(contentByPlayer.keySet()).stream()
                 .collect(Collectors.toMap(PlayerData::id, p -> p));
 
