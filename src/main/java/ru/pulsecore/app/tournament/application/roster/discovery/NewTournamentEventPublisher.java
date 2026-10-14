@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.roster.discovery;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.MailContext;
 import ru.pulsecore.app.notification.application.mail.context.NewTournamentContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
@@ -73,7 +73,7 @@ public class NewTournamentEventPublisher {
             TournamentDto tournament = tournaments.get(0);
 
             MailContext ctx = buildNewTournamentContext(player, tournament);
-            result.put(player.id(), new MailContent(MailTypes.NEW_TOURNAMENT, ctx));
+            result.put(player.id(), new MailContent(MailType.NEW_TOURNAMENT, ctx));
         }
 
         return result;

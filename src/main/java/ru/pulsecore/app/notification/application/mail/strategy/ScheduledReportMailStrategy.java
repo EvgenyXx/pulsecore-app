@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.mail.MailStrategy;
 import ru.pulsecore.app.notification.application.mail.MailTemplateService;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 import ru.pulsecore.app.player.infrastructure.pdf.PdfReportGenerator;
 
@@ -22,8 +22,8 @@ public class ScheduledReportMailStrategy implements MailStrategy {
     private final MailTemplateService templates;
 
     @Override
-    public String getType() {
-        return MailTypes.SCHEDULED_REPORT;
+    public MailType type() {
+        return MailType.SCHEDULED_REPORT;
     }
 
     @Override

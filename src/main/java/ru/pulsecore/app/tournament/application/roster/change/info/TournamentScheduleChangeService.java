@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.TournamentScheduleChangedContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.dto.response.DateDto;
@@ -102,7 +102,7 @@ public class TournamentScheduleChangeService {
         Map<UUID, MailContent> content = oldPlayers.stream()
                 .collect(Collectors.toMap(PlayerData::id,
                         p -> new MailContent(
-                                MailTypes.TOURNAMENT_SCHEDULE_CHANGED,
+                                MailType.TOURNAMENT_SCHEDULE_CHANGED,
                                 new TournamentScheduleChangedContext(
                                         p.email(),
                                         StringUtils.extractFirstName(p.name()), info))));

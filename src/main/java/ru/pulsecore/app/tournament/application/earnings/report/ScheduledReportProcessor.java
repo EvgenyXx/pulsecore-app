@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.earnings.report;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.ScheduledReportContext;
 import ru.pulsecore.app.player.api.dto.response.SumResponse;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
@@ -56,7 +56,7 @@ public class ScheduledReportProcessor {
             String period = report.getDateFrom() + " – " + report.getDateTo();
 
             mailContent.put(player.id(), new MailContent(
-                    MailTypes.SCHEDULED_REPORT,
+                    MailType.SCHEDULED_REPORT,
                     new ScheduledReportContext(
                             player.email(),
                             period,

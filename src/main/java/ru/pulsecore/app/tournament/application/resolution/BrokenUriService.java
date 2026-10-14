@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
@@ -35,7 +35,7 @@ public class BrokenUriService {
                         " | игроков=" + playerIds.size());
 
         mailDispatcher.send(new MailContent(
-                MailTypes.BROKEN_URI,
+                MailType.BROKEN_URI,
                 new BrokenUriContext(
                         tournament.getLink(),
                         tournament.getDate(),

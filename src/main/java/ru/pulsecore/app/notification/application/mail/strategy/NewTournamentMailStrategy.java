@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.mail.MailStrategy;
 import ru.pulsecore.app.notification.application.mail.MailTemplateService;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 
 import ru.pulsecore.app.notification.application.mail.context.MailContext;
@@ -20,8 +20,8 @@ public class NewTournamentMailStrategy implements MailStrategy {
     private final MailTemplateService templates;
 
     @Override
-    public String getType() {
-        return MailTypes.NEW_TOURNAMENT;
+    public MailType type() {
+        return MailType.NEW_TOURNAMENT;
     }
 
     @Override

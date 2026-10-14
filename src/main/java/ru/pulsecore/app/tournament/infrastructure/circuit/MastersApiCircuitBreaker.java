@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.admin.MastersApiUnavailableContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
@@ -62,7 +62,7 @@ public class MastersApiCircuitBreaker {
             log.error("Masters API недоступен, запросы заблокированы на 15 минут");
 
             mailDispatcher.send(new MailContent(
-                    MailTypes.ADMIN_MASTERS_UNAVAILABLE,
+                    MailType.ADMIN_MASTERS_UNAVAILABLE,
                     new MastersApiUnavailableContext("Masters API недоступен")
             ));
         }

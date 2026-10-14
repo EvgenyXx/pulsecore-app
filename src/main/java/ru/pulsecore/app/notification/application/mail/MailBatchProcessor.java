@@ -11,7 +11,6 @@ import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.notification.infrastructure.config.NotificationAsyncConfig;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,15 +21,6 @@ public class MailBatchProcessor {
 
     private final MailStrategyRegistry mailStrategyRegistry;
     private final PlayerClient playerClient;
-
-    private static final Set<String> CHECK_NOTIFICATIONS_TYPES = Set.of(
-            MailTypes.NEW_TOURNAMENT,
-            MailTypes.CANCELED_TOURNAMENT,
-            MailTypes.PLAYER_REPLACED,
-            MailTypes.PLAYER_TRANSFERRED,
-            MailTypes.TOURNAMENT_SCHEDULE_CHANGED,
-            MailTypes.SCHEDULED_REPORT
-    );
 
     @Async(NotificationAsyncConfig.MAIL_EXECUTOR)
     public void process(MailBatchEvent event) {
@@ -51,8 +41,10 @@ public class MailBatchProcessor {
         }
     }
 
-    private boolean canSend(String emailType, PlayerData player) {
-        if (!CHECK_NOTIFICATIONS_TYPES.contains(emailType)) return true;
-        return player.notificationsEnabled() && player.hasActiveSubscription();
+    private boolean canSend(MailType type, PlayerData player) {
+        if (type.requiresNotificationsEnabled() && !player.notificationsEnabled()) {
+            return false;
+        }
+        return !type.requiresActiveSubscription() || player.hasActiveSubscription();
     }
 }
