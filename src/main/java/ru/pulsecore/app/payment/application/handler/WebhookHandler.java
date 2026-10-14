@@ -1,6 +1,6 @@
 package ru.pulsecore.app.payment.application.handler;
 
-import ru.pulsecore.app.payment.api.dto.YookassaWebhook;
+import ru.pulsecore.app.payment.infrastructure.client.YookassaWebhook;
 import ru.pulsecore.app.shared.event.YookassaEventType;
 
 public interface WebhookHandler {

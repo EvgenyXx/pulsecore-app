@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.payment.api.PaymentApi;
-import ru.pulsecore.app.payment.api.dto.YookassaWebhook;
+import ru.pulsecore.app.payment.infrastructure.client.YookassaWebhook;
 import ru.pulsecore.app.payment.application.handler.WebhookDispatcher;
 import static ru.pulsecore.app.payment.api.PaymentApi.WEBHOOK;
 

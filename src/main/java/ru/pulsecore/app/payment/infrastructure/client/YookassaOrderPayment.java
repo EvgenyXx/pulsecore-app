@@ -1,4 +1,4 @@
-package ru.pulsecore.app.payment.api.dto;
+package ru.pulsecore.app.payment.infrastructure.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Builder
-public class OrderPayment {
+public class YookassaOrderPayment {
     private BigDecimal amount;
     private String currency;
     private String returnUrl;

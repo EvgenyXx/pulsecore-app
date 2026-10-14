@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.payment.api.dto.YookassaWebhook;
+import ru.pulsecore.app.payment.infrastructure.client.YookassaWebhook;
 import ru.pulsecore.app.shared.event.OrderWebhookEvent;
 import ru.pulsecore.app.shared.event.YookassaEventType;
 

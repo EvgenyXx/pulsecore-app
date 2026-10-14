@@ -3,9 +3,12 @@ package ru.pulsecore.app.payment.application;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import ru.pulsecore.app.payment.application.price.PriceService;
 import ru.pulsecore.app.shared.dto.response.PaymentResponse;
-import ru.pulsecore.app.payment.api.dto.Payment;
+import ru.pulsecore.app.payment.infrastructure.client.YookassaSubscriptionPayment;
 import ru.pulsecore.app.payment.infrastructure.properties.YookassaProperties;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Slf4j
@@ -22,8 +25,8 @@ public class SubscriptionPaymentService {
     }
 
     public PaymentResponse createPayment(UUID playerId, int months) {
-        int amount = priceService.getPrice(months);
-        return Payment.builder()
+        BigDecimal amount = BigDecimal.valueOf(priceService.getPrice(months));
+        return YookassaSubscriptionPayment.builder()
                 .amount(amount)
                 .currency(props.getCurrency())
                 .returnUrl(props.getReturnUrl())

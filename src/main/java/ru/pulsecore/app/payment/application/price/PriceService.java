@@ -1,4 +1,4 @@
-package ru.pulsecore.app.payment.application;
+package ru.pulsecore.app.payment.application.price;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

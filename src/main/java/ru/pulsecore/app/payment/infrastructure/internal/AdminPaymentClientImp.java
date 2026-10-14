@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.admin.client.PaymentClient;
-import ru.pulsecore.app.payment.application.PriceService;
+import ru.pulsecore.app.payment.application.price.PriceService;
 import ru.pulsecore.app.shared.dto.response.PricesResponse;
 
 @Service

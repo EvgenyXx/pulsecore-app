@@ -1,19 +1,22 @@
-package ru.pulsecore.app.payment.api.dto;
+package ru.pulsecore.app.payment.infrastructure.client;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+import ru.pulsecore.app.payment.infrastructure.client.dto.*;
+import ru.pulsecore.app.payment.infrastructure.exception.PaymentException;
 import ru.pulsecore.app.shared.dto.response.PaymentResponse;
 
-import java.util.Map;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 @Builder
-public class Payment {
-    private int amount;
+public class YookassaSubscriptionPayment {
+
+    private BigDecimal amount;
     private String currency;
     private String returnUrl;
     private String description;
@@ -26,11 +29,12 @@ public class Payment {
     private RestTemplate restTemplate;
 
     public PaymentResponse execute() {
+
         var body = new CreatePaymentRequest(
-                new Amount(amount + ".00", currency),
+                new Amount(amount.setScale(2, RoundingMode.HALF_UP).toPlainString(), currency),
                 new Confirmation("redirect", returnUrl),
                 description,
-                new Metadata(playerId.toString(), String.valueOf(months)),
+                new SubscriptionMetadata(playerId.toString(), String.valueOf(months)),
                 capture
         );
 
@@ -39,14 +43,13 @@ public class Payment {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Idempotence-Key", UUID.randomUUID().toString());
 
-        var response = restTemplate.postForEntity(apiUrl, new HttpEntity<>(body, headers), Map.class);
-        var responseBody = response.getBody();
-        var confirmation = (Map<String, Object>) responseBody.get("confirmation");
-        return new PaymentResponse((String) confirmation.get("confirmation_url"));
-    }
 
-    private record CreatePaymentRequest(Amount amount, Confirmation confirmation, String description, Metadata metadata, boolean capture) {}
-    private record Amount(@JsonProperty("value") String value, @JsonProperty("currency") String currency) {}
-    private record Confirmation(@JsonProperty("type") String type, @JsonProperty("return_url") String returnUrl) {}
-    private record Metadata(@JsonProperty("id") String playerId, @JsonProperty("month") String months) {}
+        var response = restTemplate.postForEntity(apiUrl, new HttpEntity<>(body, headers),
+                CreatePaymentResponse.class);
+        var responseBody = response.getBody();
+        if (responseBody == null) {
+            throw new PaymentException("Юкасса прислала пустой ответ");
+        }
+        return new PaymentResponse(responseBody.confirmation().confirmationUrl());
+    }
 }

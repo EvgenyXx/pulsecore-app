@@ -3,7 +3,7 @@ package ru.pulsecore.app.payment.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.pulsecore.app.payment.api.dto.OrderPayment;
+import ru.pulsecore.app.payment.infrastructure.client.YookassaOrderPayment;
 import ru.pulsecore.app.shared.dto.response.PaymentResponse;
 import ru.pulsecore.app.payment.infrastructure.properties.YookassaProperties;
 
@@ -21,7 +21,7 @@ public class ShopPaymentService {
     public PaymentResponse createOrderPayment(
             Long orderId,
             BigDecimal amount) {
-        return OrderPayment.builder()
+        return YookassaOrderPayment.builder()
                 .amount(amount)
                 .currency(props.getCurrency())
                 .returnUrl(props.getOrderReturnUrl())
