@@ -20,18 +20,22 @@ public record YookassaWebhook(
             Metadata metadata,
             @JsonProperty("payment_method") PaymentMethod paymentMethod,
             @JsonProperty("captured_at") OffsetDateTime capturedAt     // ← ДОБАВИТЬ
-    ) {}
+    ) {
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record PaymentMethod(String type) {}
+    public record PaymentMethod(String type) {
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Amount(String value, String currency) {}
+    public record Amount(String value, String currency) {
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Metadata(
-            @JsonProperty("id") String playerId,
+            @JsonProperty("playerId") String playerId,
             @JsonProperty("orderId") String orderId,
-            @JsonProperty("month") String months
-    ) {}
+            @JsonProperty("months") String months
+    ) {
+    }
 }

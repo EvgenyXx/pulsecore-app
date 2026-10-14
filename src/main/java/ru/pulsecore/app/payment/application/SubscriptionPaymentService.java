@@ -2,8 +2,8 @@ package ru.pulsecore.app.payment.application;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import ru.pulsecore.app.payment.application.price.PriceService;
+import ru.pulsecore.app.payment.infrastructure.client.YookassaClient;
 import ru.pulsecore.app.shared.dto.response.PaymentResponse;
 import ru.pulsecore.app.payment.infrastructure.client.YookassaSubscriptionPayment;
 import ru.pulsecore.app.payment.infrastructure.properties.YookassaProperties;
@@ -17,16 +17,21 @@ public class SubscriptionPaymentService {
 
     private final YookassaProperties props;
     private final PriceService priceService;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final YookassaClient yookassaClient;
 
-    public SubscriptionPaymentService(YookassaProperties props, PriceService priceService) {
+
+    public SubscriptionPaymentService(YookassaProperties props,
+                                      PriceService priceService,
+                                      YookassaClient yookassaClient) {
         this.props = props;
         this.priceService = priceService;
+        this.yookassaClient = yookassaClient;
     }
 
     public PaymentResponse createPayment(UUID playerId, int months) {
         BigDecimal amount = BigDecimal.valueOf(priceService.getPrice(months));
         return YookassaSubscriptionPayment.builder()
+                .client(yookassaClient)
                 .amount(amount)
                 .currency(props.getCurrency())
                 .returnUrl(props.getReturnUrl())
@@ -34,10 +39,6 @@ public class SubscriptionPaymentService {
                 .playerId(playerId)
                 .months(months)
                 .capture(true)
-                .shopId(props.getShopId())
-                .secretKey(props.getSecretKey())
-                .apiUrl(props.getYookassaApiUrl())
-                .restTemplate(restTemplate)
                 .build()
                 .execute();
     }
