@@ -294,9 +294,13 @@ async function init() {
             }
         }
 
-        await loadDashboardWidgets();
-        loadTopWeek(null);
-        loadSelectedHalls();
+        // Параллельная загрузка данных — все запросы одновременно.
+        // Спиннер уйдёт, когда ВСЁ готово → юзер видит заполненный дашборд.
+        await Promise.all([
+            loadDashboardWidgets(),
+            loadTopWeek(null),
+            loadSelectedHalls()
+        ]);
 
         const { initDashboardRouter } = await import('./modules/dashboard-router.js');
         initDashboardRouter();

@@ -3,6 +3,29 @@
 const AUTH_RETRY_DELAYS = [300, 600, 900];
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+// Минимальное время показа заставки — чтобы юзер успел насладиться
+const MIN_BOOT_TIME = 3500;
+
+// Запомним время старта
+const __bootStartedAt = Date.now();
+
+const hint = (text) => {
+    const el = document.getElementById('bootHint');
+    if (el) el.textContent = text;
+};
+
+/**
+ * Ждёт, чтобы общее время показа заставки было >= MIN_BOOT_TIME.
+ * Вызывать перед hideBoot().
+ */
+async function ensureMinBootTime() {
+    const elapsed = Date.now() - __bootStartedAt;
+    const remaining = MIN_BOOT_TIME - elapsed;
+    if (remaining > 0) {
+        await sleep(remaining);
+    }
+}
+
 async function probeMe() {
     try {
         const res = await fetch('/api/player/me', { credentials: 'same-origin' });
@@ -21,12 +44,25 @@ async function fetchMeWithRetry() {
 }
 
 function hideBoot() {
-    document.getElementById('bootOverlay')?.classList.add('hidden');
+    const overlay = document.getElementById('bootOverlay');
+    if (!overlay) return;
+    overlay.classList.add('fade-out');
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 400);
 }
 
 function showAuth() {
-    hideBoot();
-    document.getElementById('authScreen')?.classList.add('visible');
+    const overlay = document.getElementById('bootOverlay');
+    if (overlay) {
+        overlay.classList.add('fade-out');
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 400);
+    }
+    setTimeout(() => {
+        document.getElementById('authScreen')?.classList.add('visible');
+    }, 400);
 }
 
 function showApp() {
@@ -121,14 +157,24 @@ async function startApp() {
         setPeriod: (period) => window.switchPeriod(period)
     });
 
-    // 8. Всё готово — убираем спиннер
+    // 8. Ждём минимальное время показа заставки
+    await ensureMinBootTime();
+    hint('Почти готово…');
+    await sleep(300);
     hideBoot();
 }
 
 async function boot() {
+    // Расписание текстов — независимо от того, как быстро грузится
+    hint('Проверяем сессию…');
+    setTimeout(() => hint('Загружаем данные…'), 1200);
+
     const me = await fetchMeWithRetry();
 
     if (!me) {
+        // Для формы логина — минимальное время не нужно (юзер сам решает)
+        const elapsed = Date.now() - __bootStartedAt;
+        if (elapsed < 800) await sleep(800 - elapsed);
         showAuth();
         const { bindLoginUI } = await import('/js/login.js');
         bindLoginUI();
@@ -139,6 +185,7 @@ async function boot() {
         await startApp();
     } catch (e) {
         console.error('Boot error:', e);
+        await ensureMinBootTime();
         hideBoot();
     }
 }

@@ -86,10 +86,18 @@
 </head>
 <body class="min-h-screen">
 
-<!-- ===== СПИННЕР ===== -->
+<!-- ===== СПИННЕР (пульс + волны + точки) ===== -->
 <div id="bootOverlay">
-    <div class="loading-logo">PulseCore</div>
-    <div class="loading-spinner"></div>
+    <div class="boot-pulse-wrap">
+        <div class="boot-pulse-ring"></div>
+        <div class="boot-pulse-ring"></div>
+        <div class="boot-pulse-ring"></div>
+        <div class="boot-logo">PulseCore</div>
+    </div>
+    <div class="boot-dots">
+        <span></span><span></span><span></span>
+    </div>
+    <p class="boot-hint" id="bootHint">Загрузка данных…</p>
 </div>
 
 <!-- ===== ФОРМА ЛОГИНА ===== -->
