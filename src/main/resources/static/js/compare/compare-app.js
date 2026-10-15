@@ -362,7 +362,11 @@ window.addEventListener('settings-applied', (e) => {
     loadAllPlayers(start, end);
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+// ============ INIT ============
+// Раньше здесь был DOMContentLoaded — при динамическом импорте он не сработает.
+// Экспортируем init, чтобы boot.js мог его вызвать сам.
+
+export function init() {
     initSettingsSheet();
     initTooltips();
-});
+}

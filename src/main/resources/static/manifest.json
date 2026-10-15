@@ -1,7 +1,7 @@
 {
   "name": "PulseCore",
   "short_name": "PulseCore",
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
   "display_override": ["fullscreen", "standalone"],
   "orientation": "portrait",

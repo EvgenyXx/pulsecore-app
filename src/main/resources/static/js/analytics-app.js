@@ -118,6 +118,4 @@ async function init() {
 
 window.initAnalyticsApp = init;
 
-if (document.getElementById('analyticsPage')) {
-    document.addEventListener('DOMContentLoaded', init);
-}
+export { init };

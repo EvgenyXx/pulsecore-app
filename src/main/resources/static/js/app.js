@@ -23,46 +23,6 @@ window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 window.toggleTheme = toggleTheme;
 
-// Красивый лоадер
-document.body.insertAdjacentHTML('afterbegin', `
-    <div id="appLoader" style="
-        position:fixed;inset:0;z-index:9999;
-        background: radial-gradient(ellipse at center, #0c0c18 0%, #060610 100%);
-        display:flex;flex-direction:column;align-items:center;justify-content:center;
-        transition: opacity 0.4s ease;
-        opacity: 1;
-    ">
-        <div style="
-            position:relative;
-            width:64px;height:64px;
-            margin-bottom:22px;
-        ">
-            <div style="
-                position:absolute;inset:0;
-                border:3px solid rgba(99,102,241,0.12);
-                border-radius:50%;
-            "></div>
-            <div style="
-                position:absolute;inset:0;
-                border:3px solid transparent;
-                border-top-color:#818cf8;
-                border-radius:50%;
-                animation: appSpin 0.9s linear infinite;
-                filter: drop-shadow(0 0 8px rgba(129,140,248,0.5));
-            "></div>
-        </div>
-        <div style="
-            font-family:'Inter',sans-serif;
-            font-size:15px;
-            font-weight:600;
-            color:#818cf8;
-            letter-spacing:1.5px;
-            opacity:0.85;
-        ">PULSECORE</div>
-        <style>@keyframes appSpin{to{transform:rotate(360deg)}}</style>
-    </div>
-`);
-
 async function showAction(action) {
     const homePage = document.getElementById('homePage');
     const actionPage = document.getElementById('actionPage');
@@ -302,13 +262,6 @@ function urlB64ToUint8Array(base64String) {
 
 // ============ INIT ============
 
-function hideLoader() {
-    const loader = document.getElementById('appLoader');
-    if (!loader) return;
-    loader.style.opacity = '0';
-    setTimeout(() => loader.remove(), 400);
-}
-
 async function init() {
     try {
         const res = await fetch('/api/player/me', { credentials: 'same-origin' });
@@ -346,8 +299,6 @@ async function init() {
         checkPushStatus();
     } catch (e) {
         console.error('Init error:', e);
-    } finally {
-        hideLoader();
     }
 }
 
@@ -372,7 +323,6 @@ document.addEventListener('touchmove', e => {
     const dy = e.touches[0].clientY - ptrStartY;
     const dx = Math.abs(e.touches[0].clientX - ptrStartX);
 
-    // PTR — только если жест вертикальный (dy > dx)
     if (dy > 60 && dy > dx) {
         ptrTriggered = true;
         ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...';
@@ -394,4 +344,4 @@ document.addEventListener('touchend', () => {
     ptrStartY = 0;
 });
 
-document.addEventListener('DOMContentLoaded', init);
+export { init };
