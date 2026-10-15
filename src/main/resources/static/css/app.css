@@ -1048,56 +1048,87 @@ body {
     }
 }
 
-/* ===== NEBULA THEME — дорогой UI, свечение в деталях ===== */
+/* ===== NEBULA THEME — брендовый космос PulseCore ===== */
 [data-theme="nebula"] {
-    --bg: #0a0612;
-    --accent: #a855f7;
-    --accent-light: #c084fc;
-    --accent-dim: #7e22ce;
+    --bg: #0A0A0F;
+    --accent: #8B5CF6;
+    --accent-light: #A78BFA;
+    --accent-dim: #6366F1;
 }
 [data-theme="nebula"] body {
-    background: #0a0612;
+    background: #0A0A0F;
     color: #d8c8f0;
 }
 
+/* ===== ФОН — глубина + свет, без шума ===== */
+
+/* Слой 1. Глубина (статика): вертикальный градиент */
 [data-theme="nebula"] .bg-mesh {
-    position: fixed; inset: 0; z-index: -5;
+    position: fixed; inset: 0; z-index: -6;
     background:
-            radial-gradient(ellipse 60% 50% at 50% 40%, rgba(124, 58, 237, 0.06) 0%, transparent 70%),
-            linear-gradient(180deg, #08040f 0%, #0a0612 50%, #08040f 100%);
+        /* источник света: violet, 30% слева, 35% сверху */
+        radial-gradient(ellipse 85% 75% at 30% 35%,
+            rgba(139, 92, 246, 0.07) 0%,
+            rgba(139, 92, 246, 0.03) 40%,
+            transparent 75%),
+        /* вторичный источник: indigo, правый-низ */
+        radial-gradient(ellipse 60% 55% at 80% 80%,
+            rgba(99, 102, 241, 0.04) 0%,
+            transparent 65%),
+        /* основа: вертикальный градиент глубины */
+        linear-gradient(180deg,
+            #08070C 0%,
+            #0A0A0F 50%,
+            #0C0B14 100%);
+    animation: nebulaDrift 180s ease-in-out infinite;
+    will-change: transform;
 }
 
+/* Слой 2. Точка-сетка (статика): тонкая структура */
 [data-theme="nebula"] .bg-grid {
-    display: none;
+    position: fixed; inset: 0; z-index: -5;
+    background-image:
+        radial-gradient(circle, rgba(167, 139, 250, 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    background-position: 0 0;
+    opacity: 1;
+    animation: none;
 }
 
+/* Слой 3. Дыхание (микро): вторичный источник света чуть дышит */
 [data-theme="nebula"] .nebula {
-    position: fixed; inset: 0; z-index: -3; pointer-events: none;
-    background: radial-gradient(ellipse 50% 40% at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 75%);
+    position: fixed; inset: 0; z-index: -4; pointer-events: none;
+    background:
+        radial-gradient(ellipse 50% 45% at 30% 35%,
+            rgba(139, 92, 246, 0.03) 0%,
+            transparent 70%);
+    animation: nebulaBreathe 20s ease-in-out infinite;
+    will-change: opacity;
 }
 
+/* Слой 4. Пыль убрана — никаких точек */
 [data-theme="nebula"] .stars { display: none; }
 
-/* Стеклянные карточки — двухслойная граница + внутреннее свечение */
+/* ===== Стеклянные карточки — брендовые цвета ===== */
 [data-theme="nebula"] .widget-card,
 [data-theme="nebula"] .apple-card {
     position: relative;
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.06) 0%, rgba(168, 85, 247, 0.02) 100%);
-    border: 1px solid rgba(168, 85, 247, 0.14);
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.06) 0%, rgba(99, 102, 241, 0.025) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.14);
     box-shadow:
-            inset 0 1px 0 rgba(192, 132, 252, 0.12),
+            inset 0 1px 0 rgba(167, 139, 250, 0.12),
             inset 0 -1px 0 rgba(0, 0, 0, 0.20),
             0 1px 2px rgba(0, 0, 0, 0.15);
     transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 [data-theme="nebula"] .widget-card:hover,
 [data-theme="nebula"] .apple-card:hover {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.09) 0%, rgba(168, 85, 247, 0.03) 100%);
-    border-color: rgba(192, 132, 252, 0.32);
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.09) 0%, rgba(99, 102, 241, 0.035) 100%);
+    border-color: rgba(167, 139, 250, 0.32);
     box-shadow:
-            inset 0 1px 0 rgba(192, 132, 252, 0.20),
+            inset 0 1px 0 rgba(167, 139, 250, 0.20),
             inset 0 -1px 0 rgba(0, 0, 0, 0.20),
-            0 0 20px rgba(168, 85, 247, 0.15),
+            0 0 20px rgba(139, 92, 246, 0.15),
             0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
@@ -1107,151 +1138,162 @@ body {
     position: absolute;
     top: 0; left: 12%; right: 12%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(192, 132, 252, 0.35), transparent);
+    background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.35), transparent);
     pointer-events: none;
 }
 
 [data-theme="nebula"] .glass,
 [data-theme="nebula"] .glass-strong {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.07) 0%, rgba(168, 85, 247, 0.025) 100%);
-    border: 1px solid rgba(168, 85, 247, 0.12);
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.10), inset 0 -1px 0 rgba(0,0,0,0.15);
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.07) 0%, rgba(99, 102, 241, 0.025) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.12);
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.10), inset 0 -1px 0 rgba(0,0,0,0.15);
 }
 [data-theme="nebula"] .glass-sidebar {
-    background: rgba(8, 4, 15, 0.94);
-    border-right: 1px solid rgba(168, 85, 247, 0.10);
-    box-shadow: 1px 0 0 rgba(192, 132, 252, 0.04) inset;
+    background: rgba(10, 10, 15, 0.94);
+    border-right: 1px solid rgba(139, 92, 246, 0.10);
+    box-shadow: 1px 0 0 rgba(167, 139, 250, 0.04) inset;
 }
 
 [data-theme="nebula"] .glass-sidebar h1 {
-    filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.5))
-            drop-shadow(0 0 16px rgba(168, 85, 247, 0.25));
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5))
+            drop-shadow(0 0 16px rgba(99, 102, 241, 0.25));
 }
 
 [data-theme="nebula"] .nav-item { color: #a99bc4; }
 [data-theme="nebula"] .nav-item:hover {
-    background: rgba(168, 85, 247, 0.07);
-    color: #d8b4fe;
+    background: rgba(139, 92, 246, 0.07);
+    color: #c4b5fd;
 }
 [data-theme="nebula"] .nav-item.active {
-    background: linear-gradient(90deg, rgba(168, 85, 247, 0.18) 0%, rgba(168, 85, 247, 0.04) 100%);
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.18) 0%, rgba(99, 102, 241, 0.04) 100%);
     color: #e9d5ff;
-    border-left-color: #c084fc;
+    border-left-color: #A78BFA;
     box-shadow:
-            inset 0 1px 0 rgba(192, 132, 252, 0.15),
-            0 0 12px rgba(168, 85, 247, 0.15);
-    text-shadow: 0 0 8px rgba(192, 132, 252, 0.4);
+            inset 0 1px 0 rgba(167, 139, 250, 0.15),
+            0 0 12px rgba(139, 92, 246, 0.15);
+    text-shadow: 0 0 8px rgba(167, 139, 250, 0.4);
 }
 
 [data-theme="nebula"] .btn-gold {
-    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
     box-shadow:
             inset 0 1px 0 rgba(255, 255, 255, 0.20),
-            0 4px 14px rgba(168, 85, 247, 0.35);
+            0 4px 14px rgba(139, 92, 246, 0.35);
 }
 [data-theme="nebula"] .btn-gold:hover {
     box-shadow:
             inset 0 1px 0 rgba(255, 255, 255, 0.25),
-            0 6px 20px rgba(168, 85, 247, 0.55);
+            0 6px 20px rgba(139, 92, 246, 0.55);
 }
 
 [data-theme="nebula"] .btn-send {
-    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20), 0 4px 12px rgba(168, 85, 247, 0.3);
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20), 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-[data-theme="nebula"] .pro-badge { background: linear-gradient(135deg, #a855f7, #7c3aed); }
-[data-theme="nebula"] .amount-gold { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
+[data-theme="nebula"] .pro-badge { background: linear-gradient(135deg, #8B5CF6, #6366F1); }
+[data-theme="nebula"] .amount-gold { color: #A78BFA; text-shadow: 0 0 10px rgba(167, 139, 250, 0.4); }
 
 [data-theme="nebula"] .chat-message {
-    background: rgba(168, 85, 247, 0.05);
-    border: 1px solid rgba(168, 85, 247, 0.08);
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.06);
+    background: rgba(139, 92, 246, 0.05);
+    border: 1px solid rgba(139, 92, 246, 0.08);
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.06);
 }
-[data-theme="nebula"] .chat-name { color: #c084fc; text-shadow: 0 0 8px rgba(192, 132, 252, 0.3); }
+[data-theme="nebula"] .chat-name { color: #A78BFA; text-shadow: 0 0 8px rgba(167, 139, 250, 0.3); }
 [data-theme="nebula"] .chat-input {
-    background: rgba(168, 85, 247, 0.06);
-    border-color: rgba(168, 85, 247, 0.12);
+    background: rgba(139, 92, 246, 0.06);
+    border-color: rgba(139, 92, 246, 0.12);
     color: #e8dcff;
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.06);
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.06);
 }
 [data-theme="nebula"] .chat-input:focus {
-    border-color: #a855f7;
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.1), 0 0 0 3px rgba(168, 85, 247, 0.12);
+    border-color: #8B5CF6;
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.1), 0 0 0 3px rgba(139, 92, 246, 0.12);
 }
 
-[data-theme="nebula"] .live-badge { background: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.5); }
+[data-theme="nebula"] .live-badge { background: #8B5CF6; box-shadow: 0 0 12px rgba(139, 92, 246, 0.5); }
 [data-theme="nebula"] .player-tag {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.08) 0%, rgba(168, 85, 247, 0.025) 100%);
-    border-color: rgba(168, 85, 247, 0.15);
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.025) 100%);
+    border-color: rgba(139, 92, 246, 0.15);
     color: #e8dcff;
 }
 
 [data-theme="nebula"] .hall-checkbox-card {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.06) 0%, rgba(168, 85, 247, 0.02) 100%) !important;
-    border-color: rgba(168, 85, 247, 0.12) !important;
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.08);
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.06) 0%, rgba(99, 102, 241, 0.02) 100%) !important;
+    border-color: rgba(139, 92, 246, 0.12) !important;
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.08);
 }
-[data-theme="nebula"] .hall-checkbox-card:hover { background: rgba(168, 85, 247, 0.10) !important; }
+[data-theme="nebula"] .hall-checkbox-card:hover { background: rgba(139, 92, 246, 0.10) !important; }
 [data-theme="nebula"] .hall-checkbox-card.selected {
-    background: rgba(168, 85, 247, 0.15) !important;
-    border-color: rgba(192, 132, 252, 0.35) !important;
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.15), 0 0 10px rgba(168, 85, 247, 0.15);
+    background: rgba(139, 92, 246, 0.15) !important;
+    border-color: rgba(167, 139, 250, 0.35) !important;
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.15), 0 0 10px rgba(139, 92, 246, 0.15);
 }
-[data-theme="nebula"] .hall-checkbox-card input[type="checkbox"] { accent-color: #a855f7; }
+[data-theme="nebula"] .hall-checkbox-card input[type="checkbox"] { accent-color: #8B5CF6; }
 
 [data-theme="nebula"] .date-tab {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.05) 0%, rgba(168, 85, 247, 0.015) 100%);
-    border-color: rgba(168, 85, 247, 0.12);
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(99, 102, 241, 0.015) 100%);
+    border-color: rgba(139, 92, 246, 0.12);
     color: #a99bc4;
 }
 [data-theme="nebula"] .date-tab.active {
-    background: rgba(168, 85, 247, 0.15);
-    color: #c084fc;
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.15), 0 0 10px rgba(168, 85, 247, 0.15);
+    background: rgba(139, 92, 246, 0.15);
+    color: #A78BFA;
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.15), 0 0 10px rgba(139, 92, 246, 0.15);
 }
 
 [data-theme="nebula"] .lineup-row {
-    background: rgba(168, 85, 247, 0.025);
-    border-color: rgba(168, 85, 247, 0.06);
+    background: rgba(139, 92, 246, 0.025);
+    border-color: rgba(139, 92, 246, 0.06);
 }
 [data-theme="nebula"] .player-row {
-    background: rgba(168, 85, 247, 0.08)!important;
-    border-color: rgba(192, 132, 252, 0.20)!important;
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.10);
+    background: rgba(139, 92, 246, 0.08)!important;
+    border-color: rgba(167, 139, 250, 0.20)!important;
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.10);
 }
-[data-theme="nebula"] .lineup-row .time-badge { color: #c084fc; background: rgba(168, 85, 247, 0.12); }
-[data-theme="nebula"] .lineup-row .league-badge { color: #d8b4fe; background: rgba(168, 85, 247, 0.10); }
+[data-theme="nebula"] .lineup-row .time-badge { color: #A78BFA; background: rgba(139, 92, 246, 0.12); }
+[data-theme="nebula"] .lineup-row .league-badge { color: #c4b5fd; background: rgba(139, 92, 246, 0.10); }
 
 [data-theme="nebula"] .league-tab {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.05) 0%, rgba(168, 85, 247, 0.015) 100%);
-    border-color: rgba(168, 85, 247, 0.12);
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(99, 102, 241, 0.015) 100%);
+    border-color: rgba(139, 92, 246, 0.12);
     color: #a99bc4;
 }
-[data-theme="nebula"] .league-tab:hover { color: #d8b4fe; background: rgba(168, 85, 247, 0.08); }
+[data-theme="nebula"] .league-tab:hover { color: #c4b5fd; background: rgba(139, 92, 246, 0.08); }
 [data-theme="nebula"] .league-tab.active {
-    color: #c084fc;
-    background: rgba(168, 85, 247, 0.15);
-    border-color: rgba(192, 132, 252, 0.35);
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.15), 0 0 8px rgba(168, 85, 247, 0.12);
+    color: #A78BFA;
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(167, 139, 250, 0.35);
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.15), 0 0 8px rgba(139, 92, 246, 0.12);
 }
-[data-theme="nebula"] .league-tab.my-league { border-color: rgba(192, 132, 252, 0.45); }
+[data-theme="nebula"] .league-tab.my-league { border-color: rgba(167, 139, 250, 0.45); }
 
 [data-theme="nebula"] .ptr-indicator {
-    background: rgba(8, 4, 15, 0.95);
-    color: #c084fc;
-    box-shadow: 0 1px 0 rgba(168, 85, 247, 0.15) inset;
+    background: rgba(10, 10, 15, 0.95);
+    color: #A78BFA;
+    box-shadow: 0 1px 0 rgba(139, 92, 246, 0.15) inset;
 }
-[data-theme="nebula"] .spinner { border-color: rgba(168, 85, 247, 0.12); border-top-color: #a855f7; }
-[data-theme="nebula"] .spinner-sm { border-color: rgba(168, 85, 247, 0.12); border-top-color: #a855f7; }
-[data-theme="nebula"] ::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.14); }
+[data-theme="nebula"] .spinner { border-color: rgba(139, 92, 246, 0.12); border-top-color: #8B5CF6; }
+[data-theme="nebula"] .spinner-sm { border-color: rgba(139, 92, 246, 0.12); border-top-color: #8B5CF6; }
+[data-theme="nebula"] ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.14); }
 [data-theme="nebula"] .flatpickr-input {
-    background: rgba(168, 85, 247, 0.06)!important;
-    border-color: rgba(168, 85, 247, 0.12)!important;
+    background: rgba(139, 92, 246, 0.06)!important;
+    border-color: rgba(139, 92, 246, 0.12)!important;
 }
-[data-theme="nebula"] .flatpickr-input:focus { border-color: #a855f7!important; }
+[data-theme="nebula"] .flatpickr-input:focus { border-color: #8B5CF6!important; }
 [data-theme="nebula"] .modal-box {
-    background: #150a22;
-    border-color: rgba(192, 132, 252, 0.20);
-    box-shadow: inset 0 1px 0 rgba(192, 132, 252, 0.10), 0 20px 40px rgba(0, 0, 0, 0.5);
+    background: #12121F;
+    border-color: rgba(167, 139, 250, 0.20);
+    box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.10), 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== Анимации nebula — только микро-дыхание, без шума ===== */
+@keyframes nebulaDrift {
+    /* почти незаметно: ±0.5% за 180s */
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(-0.5%, 0.3%); }
+}
+@keyframes nebulaBreathe {
+    0%, 100% { opacity: 0.7; }
+    50%      { opacity: 1; }
 }

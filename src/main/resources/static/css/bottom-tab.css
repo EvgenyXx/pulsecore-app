@@ -89,7 +89,7 @@ body.has-bottom-tab {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(129, 140, 248, 0.35);
+    background: color-mix(in srgb, var(--accent-light, #818cf8) 35%, transparent);
     transform: translate(-50%, -50%) scale(0);
     animation: tabRipple 0.5s ease-out;
     pointer-events: none;
@@ -102,13 +102,16 @@ body.has-bottom-tab {
     }
 }
 
+/* ===== Темы ===== */
+
+/* Dark (Deep Space) */
 [data-theme="dark"] .bottom-tab {
     background: rgba(12, 12, 24, 0.92);
 }
-[data-theme="dark"] .bottom-tab-item.active {
-    color: #818cf8;
-}
+[data-theme="dark"] .bottom-tab-item.active { color: #818cf8; }
+[data-theme="dark"] .bottom-tab-ripple { background: rgba(129, 140, 248, 0.35); }
 
+/* Ocean */
 [data-theme="ocean"] .bottom-tab {
     background: rgba(6, 13, 26, 0.92);
     border-top-color: rgba(6, 182, 212, 0.1);
@@ -117,6 +120,7 @@ body.has-bottom-tab {
 [data-theme="ocean"] .bottom-tab-item.active { color: #22d3ee; }
 [data-theme="ocean"] .bottom-tab-ripple { background: rgba(34, 211, 238, 0.3); }
 
+/* Mars */
 [data-theme="mars"] .bottom-tab {
     background: rgba(26, 15, 10, 0.92);
     border-top-color: rgba(245, 158, 11, 0.1);
@@ -125,27 +129,11 @@ body.has-bottom-tab {
 [data-theme="mars"] .bottom-tab-item.active { color: #fbbf24; }
 [data-theme="mars"] .bottom-tab-ripple { background: rgba(251, 191, 36, 0.3); }
 
-[data-theme="aurora"] .bottom-tab {
-    background: rgba(4, 20, 15, 0.92);
-    border-top-color: rgba(16, 185, 129, 0.1);
-}
-[data-theme="aurora"] .bottom-tab-item { color: #6ee7b7; }
-[data-theme="aurora"] .bottom-tab-item.active { color: #34d399; }
-[data-theme="aurora"] .bottom-tab-ripple { background: rgba(52, 211, 153, 0.3); }
-
-[data-theme="neon"] .bottom-tab {
-    background: rgba(10, 0, 20, 0.92);
-    border-top-color: rgba(240, 171, 252, 0.12);
-}
-[data-theme="neon"] .bottom-tab-item { color: #e9d5ff; }
-[data-theme="neon"] .bottom-tab-item.active { color: #f0abfc; }
-[data-theme="neon"] .bottom-tab-ripple { background: rgba(240, 171, 252, 0.3); }
-
-/* Nebula */
+/* Nebula — брендовые цвета лого */
 [data-theme="nebula"] .bottom-tab {
-    background: rgba(10, 6, 18, 0.92);
-    border-top-color: rgba(168, 85, 247, 0.15);
+    background: rgba(10, 10, 15, 0.92);
+    border-top-color: rgba(139, 92, 246, 0.15);
 }
 [data-theme="nebula"] .bottom-tab-item { color: #a99bc4; }
-[data-theme="nebula"] .bottom-tab-item.active { color: #c084fc; }
-[data-theme="nebula"] .bottom-tab-ripple { background: rgba(168, 85, 247, 0.35); }
+[data-theme="nebula"] .bottom-tab-item.active { color: #A78BFA; }
+[data-theme="nebula"] .bottom-tab-ripple { background: rgba(139, 92, 246, 0.35); }
