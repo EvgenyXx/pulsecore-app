@@ -6,20 +6,249 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PulseCore">
+    <meta name="theme-color" content="#06060f">
     <title>PulseCore</title>
-    <link rel="icon" type="image/png" href="/img.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/index.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==== Reset / viewport ==== */
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* ==== Контейнер — по центру ==== */
+        .auth-shell {
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+        }
+
+        /* ==== Лого ==== */
+        .auth-logo {
+            text-align: center;
+        }
+        .auth-logo h1 {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            filter: drop-shadow(0 0 26px rgba(139, 92, 246, 0.35));
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        /* ==== Форма ==== */
+        .auth-card {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .auth-title {
+            font-size: 12px;
+            letter-spacing: 0.12em;
+            color: #52525b;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-align: center;
+            margin: 0 0 24px 0;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 16px 18px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            color: #ffffff;
+            transition: all 0.18s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .auth-input::placeholder {
+            color: #52525b;
+        }
+        .auth-input:focus {
+            outline: none;
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(99, 102, 241, 0.05);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        .auth-password {
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .auth-password .auth-input {
+            margin-bottom: 0;
+            padding-right: 92px;
+        }
+        .auth-eye {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #818cf8;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: all 0.18s ease;
+            font-family: inherit;
+        }
+        .auth-eye:hover {
+            color: #c7d2fe;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 17px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 14px;
+            transition: all 0.18s ease;
+            box-sizing: border-box;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: -0.1px;
+        }
+        .auth-btn-primary {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 6px 22px rgba(99, 102, 241, 0.28);
+        }
+        .auth-btn-primary:hover {
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.42);
+            transform: translateY(-1px);
+        }
+        .auth-btn-primary:active {
+            transform: translateY(0);
+        }
+        .auth-btn-yandex {
+            background: #FC3F1D;
+            color: #ffffff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 22px rgba(252, 63, 29, 0.22);
+            text-decoration: none;
+        }
+        .auth-btn-yandex:hover {
+            box-shadow: 0 10px 30px rgba(252, 63, 29, 0.38);
+            transform: translateY(-1px);
+        }
+        .auth-btn-ghost {
+            background: transparent;
+            color: #a1a1aa;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 10px;
+        }
+        .auth-btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: #e4e4e7;
+        }
+        .auth-divider {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #52525b;
+            font-size: 12.5px;
+        }
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .auth-links {
+            margin-top: 22px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13.5px;
+        }
+        .auth-links span {
+            color: #818cf8;
+            cursor: pointer;
+            transition: color 0.18s ease;
+        }
+        .auth-links span:hover {
+            color: #c7d2fe;
+        }
+
+        /* ==== ИНН — прижат к самому низу экрана ==== */
+        .auth-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 11px;
+            color: #3f3f46;
+            text-align: center;
+            padding: 14px 16px;
+            box-sizing: border-box;
+        }
+        .auth-footer a {
+            color: #6366F1;
+            text-decoration: none;
+        }
+        .auth-footer .dot {
+            color: #27272a;
+            margin: 0 6px;
+        }
+
+        /* ==== Мобильные ==== */
+        @media (max-height: 700px) {
+            .auth-shell { gap: 22px; }
+            .auth-logo h1 { font-size: 32px; }
+            .auth-title { margin-bottom: 18px; }
+            .auth-input { padding: 14px 16px; font-size: 15px; margin-bottom: 10px; }
+            .auth-btn { padding: 15px 18px; font-size: 15px; }
+            .auth-divider { margin: 16px 0; }
+            .auth-links { margin-top: 18px; font-size: 12.5px; }
+        }
+    </style>
 </head>
 <body>
 <div class="auth-bg"></div>
 
-<div class="auth-container">
+<div class="auth-shell">
+    <!-- ЛОГО -->
     <div class="auth-logo">
-        <img src="/img.png" alt="PulseCore">
         <h1>PulseCore</h1>
     </div>
 
+    <!-- ФОРМА -->
     <div class="auth-card">
         <p class="auth-title">Вход в систему</p>
 
@@ -100,33 +329,11 @@
             <button onclick="showForgot()" class="auth-btn auth-btn-ghost">Назад</button>
         </div>
     </div>
+</div>
 
-    <div class="auth-features">
-        <div class="auth-feature">
-            <div class="auth-feature-icon auth-icon-green">1</div>
-            <h3>Уведомления о составе</h3>
-            <p>Мгновенное оповещение о добавлении в состав</p>
-        </div>
-        <div class="auth-feature">
-            <div class="auth-feature-icon auth-icon-blue">2</div>
-            <h3>Подсчёт заработка</h3>
-            <p>Автоматический расчёт дохода</p>
-        </div>
-        <div class="auth-feature">
-            <div class="auth-feature-icon auth-icon-purple">3</div>
-            <h3>Статистика и история</h3>
-            <p>Полная аналитика по турнирам</p>
-        </div>
-        <div class="auth-feature">
-            <div class="auth-feature-icon auth-icon-amber">4</div>
-            <h3>Составы на ближайшие дни</h3>
-            <p>Все матчи в одном списке</p>
-        </div>
-    </div>
-
-    <div class="auth-footer">
-        ИНН 234999508765 | На основании 422-ФЗ | <a href="https://pulsecore-app.ru">pulsecore-app.ru</a>
-    </div>
+<!-- ИНН — прижат к низу экрана -->
+<div class="auth-footer">
+    ИНН 234999508765 <span class="dot">·</span> 422-ФЗ <span class="dot">·</span> <a href="https://pulsecore-app.ru">pulsecore-app.ru</a>
 </div>
 
 <script src="/js/index.js"></script>
