@@ -888,3 +888,74 @@ body {
 #profilePage #settings-share {
     /* убираем .hidden влияния — showSettingsPage ставит display: block/none */
 }
+
+/* ===== SPA layout: #appRoot как flex-child на десктопе ===== */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+@media (min-width: 768px) {
+    body {
+        flex-direction: row;
+    }
+}
+
+#appRoot {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* main внутри #appRoot — скроллер */
+#appRoot > main {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ===== SPA layout — принудительно ===== */
+#appRoot {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+#appRoot > #sidebarContainer {
+    flex-shrink: 0;
+    width: auto;
+}
+
+#appRoot > #sidebarContainer > aside {
+    height: 100vh;
+    min-height: 100vh;
+}
+
+#appRoot > main {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+    #appRoot {
+        display: flex !important;
+        flex-direction: row !important;
+    }
+}
+
+@media (max-width: 767px) {
+    #appRoot {
+        display: flex;
+        flex-direction: column;
+    }
+    #appRoot > #sidebarContainer {
+        width: 100%;
+    }
+}

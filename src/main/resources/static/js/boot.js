@@ -35,7 +35,7 @@ function showApp() {
 }
 
 async function startApp() {
-    // 1. Разметка уже в DOM — показываем
+    // 1. Показываем разметку
     showApp();
 
     // 2. Каркас
@@ -47,27 +47,22 @@ async function startApp() {
     await initSidebar('home');
     initBottomTab('home');
 
-    // 3. app.js — грузит данные и рендерит дашборд
+    // 3. ВСЕ модули, которые вешают window.load* — ДО app.init()
+    await import('/js/modules/top.js');                 // window.loadTopWeek
+    await import('/js/modules/subscription-block.js');  // window.checkSubscription
+    await import('/js/modules/live.js');                // window.loadLive
+    await import('/js/modules/live-tournament.js');     // window.loadTournamentData
+    await import('/js/compare/compare-app.js');         // window.initCompareApp
+    await import('/js/profile-app.js');                 // window.initProfileApp
+    await import('/js/analytics-app.js');               // window.initAnalyticsApp
+    await import('/js/modules/scheduled-report.js');    // window.openScheduledReports и т.д.
+    await import('/js/show-settings-page.js');          // window.showSettingsPage
+
+    // 4. app.js — определяет window.loadDashboardWidgets, showAction и т.д.
+    //    Внутри app.init() вызывается initDashboardRouter → showHome() → window.loadTopWeek()
+    //    Поэтому app.init() — ПОСЛЕДНИМ после всех window.load*
     const app = await import('/js/app.js');
     await app.init();
-
-    // 4. Остальные модули — импорт + явный init
-    await import('/js/modules/top.js');
-    await import('/js/modules/subscription-block.js');
-    await import('/js/modules/live.js');
-
-    const liveTournament = await import('/js/modules/live-tournament.js');
-    if (liveTournament.init) liveTournament.init();
-
-    await import('/js/compare/compare-app.js');
-    const compareApp = await import('/js/compare/compare-app.js');
-    if (compareApp.init) compareApp.init();
-
-    const profileApp = await import('/js/profile-app.js');
-    if (profileApp.init) await profileApp.init();
-
-    const analyticsApp = await import('/js/analytics-app.js');
-    if (analyticsApp.init) await analyticsApp.init();
 
     // 5. Звёзды
     const { initStars } = await import('/js/modules/stars.js');
@@ -79,13 +74,7 @@ async function startApp() {
     window.toggleThemeSheet = toggleThemeSheet;
     window.setTheme = setTheme;
 
-    // 7. Отчёты
-    await import('/js/modules/scheduled-report.js');
-
-    // 8. showSettingsPage — глобально (нужно для inline onclick в профиле)
-    await import('/js/show-settings-page.js');
-
-    // 9. Свайпы + тапы
+    // 7. Свайпы + тапы
     const { initSwipeTabs } = await import('/js/modules/swipe-tabs.js');
     const { initTapPeriod } = await import('/js/modules/tap-period.js');
     const { state }         = await import('/js/core/state.js');
@@ -132,7 +121,7 @@ async function startApp() {
         setPeriod: (period) => window.switchPeriod(period)
     });
 
-    // 10. Всё готово — убираем спиннер
+    // 8. Всё готово — убираем спиннер
     hideBoot();
 }
 

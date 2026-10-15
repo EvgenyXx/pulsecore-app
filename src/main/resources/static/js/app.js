@@ -23,6 +23,11 @@ window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 window.toggleTheme = toggleTheme;
 
+// SPA fix: dashboard-router и PTR вызывают эти функции через window
+window.loadDashboardWidgets = loadDashboardWidgets;
+window.loadTopWeek = loadTopWeek;
+window.loadSelectedHalls = loadSelectedHalls;
+
 async function showAction(action) {
     const homePage = document.getElementById('homePage');
     const actionPage = document.getElementById('actionPage');

@@ -25,7 +25,7 @@ export async function initSidebar(activePage = null) {
     `;
 
     container.innerHTML = `
-        <aside class="hidden md:flex glass-sidebar w-72 min-h-screen p-6 flex-col relative z-10 shrink-0">
+        <aside class="hidden md:flex glass-sidebar w-72 h-screen p-6 flex-col relative z-10 shrink-0">
             <div class="flex items-center gap-3 mb-10 px-1">
                 <img src="/img.png" alt="PulseCore" class="w-11 h-11 rounded-xl shadow-lg object-cover">
                 <div>
