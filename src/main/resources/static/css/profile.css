@@ -1,5 +1,6 @@
-/* ===== PROFILE — APPLE STYLE ===== */
+/* ===== PROFILE — стекло ===== */
 
+/* Тумблер */
 .toggle-wrapper {
     position: relative;
     display: inline-flex;
@@ -16,14 +17,24 @@
     border-radius: 31px;
     position: relative;
     transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    border: 1px solid transparent;
+    box-sizing: border-box;
 }
 
 .toggle-track.on {
-    background: #34c759;
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent, #6366f1) 85%, white 15%) 0%,
+        color-mix(in srgb, var(--accent, #6366f1) 95%, black 5%) 100%);
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        0 0 12px color-mix(in srgb, var(--accent, #6366f1) 35%, transparent);
 }
 
 .toggle-track.off {
-    background: rgba(120, 120, 128, 0.32);
+    background: rgba(120, 120, 128, 0.28);
+    border-color: rgba(255,255,255,0.06);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
 .toggle-thumb {
@@ -34,7 +45,10 @@
     height: 27px;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,0.10),
+        0 3px 8px rgba(0, 0, 0, 0.25),
+        0 1px 1px rgba(0, 0, 0, 0.10);
     transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
@@ -42,8 +56,9 @@
     left: 22px;
 }
 
+/* Поле ввода — стеклянное */
 .input-field {
-    background: rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.02) 100%);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     color: #f5f5f7;
@@ -55,31 +70,44 @@
     transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    box-sizing: border-box;
 }
 
 .input-field:focus {
-    border-color: rgba(99, 102, 241, 0.6);
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 0 0 4px color-mix(in srgb, var(--accent, #6366f1) 14%, transparent);
+    background: linear-gradient(180deg, rgba(255,255,255,0.075) 0%, rgba(255,255,255,0.03) 100%);
 }
 
+/* Главная кнопка — стеклянная в цвет темы */
 .btn-indigo {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent, #6366f1) 90%, white 10%) 0%,
+        color-mix(in srgb, var(--accent, #6366f1) 95%, black 5%) 100%);
     color: #fff;
     font-weight: 600;
-    border: none;
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
     border-radius: 14px;
     padding: 14px 20px;
     cursor: pointer;
     font-size: 0.9rem;
     transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        inset 0 -1px 0 rgba(0,0,0,0.15),
+        0 4px 14px color-mix(in srgb, var(--accent, #6366f1) 35%, transparent);
     letter-spacing: -0.2px;
 }
 
 .btn-indigo:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.25),
+        inset 0 -1px 0 rgba(0,0,0,0.15),
+        0 6px 20px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
 }
 
 .btn-indigo:active {
@@ -93,11 +121,12 @@
     box-shadow: none;
 }
 
+/* Второстепенная кнопка — стекло */
 .btn-outline {
-    background: rgba(255, 255, 255, 0.04);
+    background: linear-gradient(180deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.02) 100%);
     color: #f5f5f7;
     font-weight: 500;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: 14px;
     padding: 12px 18px;
     cursor: pointer;
@@ -105,18 +134,24 @@
     transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
 .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.18);
+    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 40%, rgba(255,255,255,0.14));
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 0 12px color-mix(in srgb, var(--accent, #6366f1) 18%, transparent);
 }
 
 .btn-outline:active {
     transform: scale(0.97);
 }
 
+/* ===== Пункты настроек — стеклянные ===== */
 .settings-item {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -126,46 +161,86 @@
     transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
     color: #f5f5f7;
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.03);
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--accent, #6366f1) 4%, rgba(255,255,255,0.05)) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 2%, rgba(255,255,255,0.02)) 100%);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 12%, rgba(255,255,255,0.08));
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.07),
+        inset 0 -1px 0 rgba(0,0,0,0.15);
     margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.settings-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 14%; right: 14%;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        color-mix(in srgb, var(--accent, #6366f1) 35%, rgba(255,255,255,0.18)),
+        transparent);
+    pointer-events: none;
 }
 
 .settings-item:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--accent, #6366f1) 10%, rgba(255,255,255,0.06)) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 4%, rgba(255,255,255,0.025)) 100%);
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 35%, transparent);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        inset 0 -1px 0 rgba(0,0,0,0.15),
+        0 0 18px color-mix(in srgb, var(--accent, #6366f1) 18%, transparent),
+        0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .settings-item:active {
     transform: scale(0.98);
 }
 
+/* Иконка пункта — стеклянная плашка цветом темы */
 .settings-item-icon {
     width: 42px;
     height: 42px;
     border-radius: 12px;
-    background: rgba(99, 102, 241, 0.12);
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--accent, #6366f1) 22%, transparent) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 10%, transparent) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 0 10px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent);
+}
+
+/* Иконки внутри наследуют цвет темы */
+.settings-item-icon svg {
+    stroke: var(--accent-light, #818cf8);
 }
 
 .settings-item-arrow {
     color: #52525b;
     flex-shrink: 0;
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, color 0.25s ease;
 }
 
 .settings-item:hover .settings-item-arrow {
     transform: translateX(3px);
-    color: #a1a1aa;
+    color: var(--accent-light, #a1a1aa);
 }
 
+/* Back-кнопка */
 .back-btn {
     display: flex;
     align-items: center;
@@ -181,6 +256,7 @@
 
 .back-btn:hover {
     color: #fff;
+    text-shadow: 0 0 8px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
 }
 
 .back-btn svg {
@@ -192,4 +268,16 @@
     max-width: 512px;
     margin: 0 auto;
     width: 100%;
+}
+
+/* ===== PROFILE — PWA ===== */
+@media (max-width: 640px) {
+    #profilePage {
+        height: 100dvh;
+        height: 100svh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px 12px 20px;
+        max-width: 100%;
+    }
 }

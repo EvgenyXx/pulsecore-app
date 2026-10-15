@@ -30,6 +30,14 @@ export function initThemePicker() {
             </div>
             <span class="theme-check" style="color:#22d3ee;font-size:1.2rem;display:none;">✓</span>
         </button>
+        <button class="theme-sheet-btn" data-theme="nebula" onclick="window.setTheme('nebula');window.toggleThemeSheet()">
+            <span style="width:40px;height:24px;border-radius:6px;background:#a855f7;flex-shrink:0;"></span>
+            <div style="flex:1;">
+                <div class="theme-name">Туманность</div>
+                <div class="theme-desc">Пурпурные газовые облака, глубокая фиолетовая бездна</div>
+            </div>
+            <span class="theme-check" style="color:#c084fc;font-size:1.2rem;display:none;">✓</span>
+        </button>
         <button class="theme-sheet-btn" data-theme="mars" onclick="window.setTheme('mars');window.toggleThemeSheet()">
             <span style="width:40px;height:24px;border-radius:6px;background:#f59e0b;flex-shrink:0;"></span>
             <div style="flex:1;">
@@ -86,6 +94,7 @@ function renderThemeListInline() {
     const themes = [
         { id: 'dark', name: 'Deep Space', desc: 'Тёмно-синие звёзды, фиолетовые туманности', color: '#6366f1', checkColor: '#818cf8' },
         { id: 'ocean', name: 'Северное сияние', desc: 'Бирюзовые переливы, ледяное свечение', color: '#06b6d4', checkColor: '#22d3ee' },
+        { id: 'nebula', name: 'Туманность', desc: 'Пурпурные газовые облака, глубокая фиолетовая бездна', color: '#a855f7', checkColor: '#c084fc' },
         { id: 'mars', name: 'Марсианская пустыня', desc: 'Тёплый песок, оранжевые дюны', color: '#f59e0b', checkColor: '#fbbf24' }
     ];
 
