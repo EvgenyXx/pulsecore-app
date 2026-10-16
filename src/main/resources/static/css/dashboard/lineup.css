@@ -137,7 +137,7 @@
     text-decoration: none;
     transition: background 0.22s ease, border-color 0.22s ease,
                 color 0.22s ease, transform 0.15s ease, box-shadow 0.22s ease;
-    z-index: 2;
+    z-index: 3;
 }
 
 .lineup-ml-icon:hover {
@@ -167,6 +167,7 @@
         transparent);
     pointer-events: none;
     border-radius: 14px 14px 0 0;
+    z-index: 2;
 }
 
 .lineup-card::after {
@@ -179,6 +180,7 @@
         transparent 100%);
     border-radius: 14px 14px 0 0;
     pointer-events: none;
+    z-index: 1;
 }
 
 .lineup-card.is-player {
@@ -215,7 +217,7 @@
     margin-bottom: 8px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
     position: relative;
-    z-index: 1;
+    z-index: 2;
     padding-right: 40px;
 }
 
@@ -235,13 +237,13 @@
     white-space: nowrap;
 }
 
-/* === Основная часть карточки: метаданные слева, состав справа === */
+/* === Основная часть карточки === */
 .lineup-body {
     display: flex;
     align-items: flex-start;
     gap: 12px;
     position: relative;
-    z-index: 1;
+    z-index: 2;
     min-width: 0;
 }
 
@@ -447,5 +449,85 @@
     }
     .lineup-date-row {
         padding-right: 36px;
+    }
+}
+
+/* ===================================================== */
+/* ★ БЕГУЩАЯ ПОЛОСА ПО КРАЮ — широкая и яркая ★          */
+/* ===================================================== */
+
+@property --lineup-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.lineup-card.is-player .lineup-beam {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    padding: 4px;
+    pointer-events: none;
+    z-index: 1;
+
+    /*
+      Широкая полоса света ~45°:
+      - 0–270°   — пусто
+      - 270–300° — плавный разгон (accent 20% → 60%)
+      - 300–330° — основной свет (accent 90% → light 100%)
+      - 330–345° — ядро (чистый белый)
+      - 345–360° — затухание
+    */
+    background: conic-gradient(
+        from var(--lineup-angle),
+        transparent 0deg,
+        transparent 270deg,
+        color-mix(in srgb, var(--accent, #8B5CF6) 20%, transparent) 290deg,
+        color-mix(in srgb, var(--accent, #8B5CF6) 70%, transparent) 310deg,
+        color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 325deg,
+        #ffffff 335deg,
+        #ffffff 340deg,
+        color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 348deg,
+        color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent) 354deg,
+        color-mix(in srgb, var(--accent, #8B5CF6) 20%, transparent) 358deg,
+        transparent 360deg
+    );
+
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+            mask-composite: exclude;
+
+    filter:
+        drop-shadow(0 0 4px #ffffff)
+        drop-shadow(0 0 10px color-mix(in srgb, var(--accent-light, #A78BFA) 100%, transparent))
+        drop-shadow(0 0 20px color-mix(in srgb, var(--accent, #8B5CF6) 90%, transparent))
+        drop-shadow(0 0 32px color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent));
+    animation: lineupOrbit 4s linear infinite;
+}
+
+@keyframes lineupOrbit {
+    from { --lineup-angle: 0deg; }
+    to   { --lineup-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lineup-card.is-player .lineup-beam {
+        animation: none;
+        background: conic-gradient(
+            from 0deg,
+            transparent 0deg,
+            transparent 270deg,
+            color-mix(in srgb, var(--accent, #8B5CF6) 70%, transparent) 300deg,
+            color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 325deg,
+            #ffffff 338deg,
+            color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 348deg,
+            color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent) 356deg,
+            transparent 360deg
+        );
     }
 }

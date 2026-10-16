@@ -90,6 +90,8 @@ function renderLineupRows(lineupsByHall) {
         const isPlayerInLineup = l.player || l.inLineup || l.isPlayer || false;
         const rowClass = isPlayerInLineup ? 'lineup-card is-player' : 'lineup-card';
 
+        const beam = isPlayerInLineup ? '<span class="lineup-beam" aria-hidden="true"></span>' : '';
+
         const typeBadge = renderTypeBadge(l.type);
         const dateValue = l.date ? formatDateShort(l.date) : '—';
 
@@ -105,6 +107,7 @@ function renderLineupRows(lineupsByHall) {
 
         html += `
             <div class="${rowClass}" style="animation-delay: ${i * 40}ms">
+                ${beam}
                 ${mlIcon}
 
                 <div class="lineup-date-row">
