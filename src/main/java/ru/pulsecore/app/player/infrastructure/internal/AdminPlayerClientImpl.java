@@ -84,7 +84,7 @@ public class AdminPlayerClientImpl implements PlayerClient {
 
     @Override
     public MessageResponse activate(UUID playerId, int days) {
-        subscriptionCommandService.activate(playerId, days);
+        subscriptionCommandService.adminActivate(playerId, days);
         return new MessageResponse("Подписка активирована на " + days + " дней");
     }
 

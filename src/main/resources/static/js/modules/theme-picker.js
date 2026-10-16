@@ -18,23 +18,27 @@ export function initThemePicker() {
             <span style="width:40px;height:24px;border-radius:6px;background:#6366f1;flex-shrink:0;"></span>
             <div style="flex:1;">
                 <div class="theme-name">Deep Space</div>
-                <div class="theme-desc">Тёмно-синие звёзды, фиолетовые туманности</div>
             </div>
             <span class="theme-check" style="color:#818cf8;font-size:1.2rem;display:none;">✓</span>
         </button>
         <button class="theme-sheet-btn" data-theme="ocean" onclick="window.setTheme('ocean');window.toggleThemeSheet()">
             <span style="width:40px;height:24px;border-radius:6px;background:#06b6d4;flex-shrink:0;"></span>
             <div style="flex:1;">
-                <div class="theme-name">Северное сияние</div>
-                <div class="theme-desc">Бирюзовые переливы, ледяное свечение</div>
+                <div class="theme-name">Aurora</div>
             </div>
             <span class="theme-check" style="color:#22d3ee;font-size:1.2rem;display:none;">✓</span>
+        </button>
+        <button class="theme-sheet-btn" data-theme="nebula" onclick="window.setTheme('nebula');window.toggleThemeSheet()">
+            <span style="width:40px;height:24px;border-radius:6px;background:#8B5CF6;flex-shrink:0;"></span>
+            <div style="flex:1;">
+                <div class="theme-name">Nebula</div>
+            </div>
+            <span class="theme-check" style="color:#A78BFA;font-size:1.2rem;display:none;">✓</span>
         </button>
         <button class="theme-sheet-btn" data-theme="mars" onclick="window.setTheme('mars');window.toggleThemeSheet()">
             <span style="width:40px;height:24px;border-radius:6px;background:#f59e0b;flex-shrink:0;"></span>
             <div style="flex:1;">
-                <div class="theme-name">Марсианская пустыня</div>
-                <div class="theme-desc">Тёплый песок, оранжевые дюны</div>
+                <div class="theme-name">Mars</div>
             </div>
             <span class="theme-check" style="color:#fbbf24;font-size:1.2rem;display:none;">✓</span>
         </button>
@@ -84,9 +88,10 @@ function renderThemeListInline() {
     if (!container) return;
 
     const themes = [
-        { id: 'dark', name: 'Deep Space', desc: 'Тёмно-синие звёзды, фиолетовые туманности', color: '#6366f1', checkColor: '#818cf8' },
-        { id: 'ocean', name: 'Северное сияние', desc: 'Бирюзовые переливы, ледяное свечение', color: '#06b6d4', checkColor: '#22d3ee' },
-        { id: 'mars', name: 'Марсианская пустыня', desc: 'Тёплый песок, оранжевые дюны', color: '#f59e0b', checkColor: '#fbbf24' }
+        { id: 'dark',   name: 'Deep Space', color: '#6366f1', checkColor: '#818cf8' },
+        { id: 'ocean',  name: 'Aurora',     color: '#06b6d4', checkColor: '#22d3ee' },
+        { id: 'nebula', name: 'Nebula',     color: '#8B5CF6', checkColor: '#A78BFA' },
+        { id: 'mars',   name: 'Mars',       color: '#f59e0b', checkColor: '#fbbf24' }
     ];
 
     const current = document.documentElement.getAttribute('data-theme');
@@ -96,7 +101,6 @@ function renderThemeListInline() {
             <span style="width:40px;height:24px;border-radius:6px;background:${t.color};flex-shrink:0;"></span>
             <div style="flex:1;">
                 <div class="theme-name">${t.name}</div>
-                <div class="theme-desc">${t.desc}</div>
             </div>
             <span class="theme-check" style="color:${t.checkColor};font-size:1.2rem;display:${t.id === current ? 'inline' : 'none'};">✓</span>
         </button>

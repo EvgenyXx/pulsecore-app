@@ -1,4 +1,4 @@
-package ru.pulsecore.app.notification.infrastructure.factory;
+package ru.pulsecore.app.tournament.application.factory;
 
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;

@@ -3,7 +3,7 @@ package ru.pulsecore.app.player.application.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.VerificationContext;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
@@ -23,7 +23,7 @@ public class RegistrationMailPublisher {
         mailDispatcher.send(
                 email,
                 new MailContent(
-                        MailTypes.VERIFICATION,
+                        MailType.VERIFICATION,
                         new VerificationContext(email, code)
                 )
         );

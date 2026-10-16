@@ -11,7 +11,7 @@ export function initStars() {
     let h = 0;
     const dpr = window.devicePixelRatio || 1;
     let stars = [];
-    let bgRgb = '12,12,24'; // fallback
+    let bgRgb = '12,12,24';
 
     const STAR_COUNT = 400;
     const MAX_DEPTH = 1000;
@@ -20,15 +20,14 @@ export function initStars() {
 
     const cosmicThemes = ['dark', 'ocean', 'aurora', 'neon'];
 
-    // Фоны тем (совпадают с --bg в app.css)
     const themeBg = {
-        dark:  '12,12,24',    // #0c0c18
-        ocean: '6,13,26',     // #060d1a
+        dark:  '12,12,24',
+        ocean: '6,13,26',
         aurora:'12,12,24',
         neon:  '12,12,24',
     };
 
-    // ===== МАРС (DOM, как было) =====
+    // ===== МАРС (DOM) =====
     function renderMars() {
         let html = '';
 
@@ -105,7 +104,6 @@ export function initStars() {
         canvas.width = w * dpr;
         canvas.height = h * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        // Первый кадр — сразу фон темы, без чёрного
         ctx.fillStyle = `rgb(${bgRgb})`;
         ctx.fillRect(0, 0, w, h);
     }
@@ -116,7 +114,6 @@ export function initStars() {
     }
 
     function drawFrame() {
-        // Хвост — затухание в цвет фона темы, а не в чёрный
         ctx.fillStyle = `rgba(${bgRgb},0.35)`;
         ctx.fillRect(0, 0, w, h);
 
@@ -172,6 +169,7 @@ export function initStars() {
 
     function render() {
         const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+
         if (cosmicThemes.includes(theme)) {
             bgRgb = themeBg[theme] || themeBg.dark;
             startCosmos();

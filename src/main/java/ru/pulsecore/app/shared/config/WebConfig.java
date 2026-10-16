@@ -56,16 +56,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/dashboard").setViewName("forward:/dashboard.html");
-        registry.addViewController("/profile").setViewName("forward:/profile.html");
+//        registry.addViewController("/dashboard").setViewName("forward:/dashboard.html");
+//        registry.addViewController("/profile").setViewName("forward:/profile.html");
         registry.addViewController("/admin").setViewName("forward:/admin.html");
-        registry.addViewController("/register").setViewName("forward:/register.html");
+//        registry.addViewController("/register").setViewName("forward:/register.html");
         registry.addViewController("/subscribe").setViewName("forward:/subscribe.html");
-        registry.addViewController("/analytics").setViewName("forward:/analytics.html");
-        registry.addViewController("/live").setViewName("forward:/live.html");
+//        registry.addViewController("/analytics").setViewName("forward:/analytics.html");
+//        registry.addViewController("/live").setViewName("forward:/live.html");
         registry.addViewController("/oauth-finish").setViewName("forward:/oauth-finish.html");
-        registry.addViewController("/live/**").setViewName("forward:/live-tournament.html");
-        registry.addViewController("/compare").setViewName("forward:/compare.html");
+//        registry.addViewController("/live/**").setViewName("forward:/live-tournament.html");
+//        registry.addViewController("/compare").setViewName("forward:/compare.html");
     }
 
     @Override

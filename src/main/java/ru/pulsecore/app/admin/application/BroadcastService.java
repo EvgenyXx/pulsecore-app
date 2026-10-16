@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.admin.client.PlayerClient;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.BroadcastContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
@@ -36,7 +36,7 @@ public class BroadcastService {
         Map<UUID, MailContent>content = new HashMap<>();
         for (PlayerData player : players) {
             content.put(player.id(),new MailContent(
-                    MailTypes.BROADCAST,
+                    MailType.BROADCAST,
                     new BroadcastContext(player.email(),message)
             ));
 

@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.roster.change.remove;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.PlayerReplacedContext;
 import ru.pulsecore.app.notification.application.mail.context.PlayerTransferredContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
@@ -28,7 +28,7 @@ public class PlayerChangeNotificationPublisher {
         mailDispatcher.send(
                 player.email(),
                 new MailContent(
-                        MailTypes.PLAYER_REPLACED,
+                        MailType.PLAYER_REPLACED,
                         new PlayerReplacedContext(
                                 player.email(),
                                 StringUtils.extractFirstName(player.name()),
@@ -53,7 +53,7 @@ public class PlayerChangeNotificationPublisher {
         mailDispatcher.send(
                 player.email(),
                 new MailContent(
-                        MailTypes.PLAYER_TRANSFERRED,
+                        MailType.PLAYER_TRANSFERRED,
                         new PlayerTransferredContext(
                                 player.email(),
                                 StringUtils.extractFirstName(player.name()),

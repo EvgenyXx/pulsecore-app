@@ -13,22 +13,88 @@ body {
     overscroll-behavior: none;
 }
 
+/* ===== COMPARE PAGE — фикс-верх + скролл-низ ===== */
+
+#comparePage {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+#comparePage .max-w-5xl {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    padding: 12px 16px 0;
+    box-sizing: border-box;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.compare-sticky {
+    flex-shrink: 0;
+}
+
+.compare-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+    .compare-scroll {
+        padding-bottom: 24px;
+    }
+}
+
 /* ===== ШАПКА ===== */
 
 .compare-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 4px;
     padding: 0 4px;
 }
 
 .compare-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #ffffff;
+    font-size: 22px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, var(--accent, #6366f1) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     letter-spacing: -0.5px;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    text-shadow: none;
+    position: relative;
+    display: inline-block;
+    line-height: 1.1;
+}
+
+.compare-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent, #6366f1), #a5b4fc, transparent);
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+@media (min-width: 768px) {
+    .compare-title {
+        font-size: 28px;
+        letter-spacing: -1px;
+    }
 }
 
 .compare-actions {
@@ -41,20 +107,32 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 16px;
+    padding: 8px 12px;
     border-radius: 12px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 18%, rgba(255, 255, 255, 0.10));
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--accent, #6366f1) 6%, rgba(255,255,255,0.05)) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 2%, rgba(255,255,255,0.02)) 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        inset 0 -1px 0 rgba(0,0,0,0.15);
     color: #ffffff;
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .period-toggle:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--accent, #6366f1) 12%, rgba(255,255,255,0.06)) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 4%, rgba(255,255,255,0.025)) 100%);
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 35%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 0 12px color-mix(in srgb, var(--accent, #6366f1) 18%, transparent);
     transform: translateY(-1px);
 }
 
@@ -62,92 +140,43 @@ body {
     transform: scale(0.97);
 }
 
-.burger-btn {
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    cursor: pointer;
-    color: #ffffff;
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+/* ===== КНОПКА СРАВНИТЬ ===== */
+
+#h2hCompareBtnWrapper {
+    margin: 14px 0 16px;
 }
-
-.burger-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.burger-btn:active {
-    transform: scale(0.95);
-}
-
-/* ===== ЕДИНЫЙ СТИЛЬ ЗАГОЛОВКОВ ===== */
-
-.compare-title,
-.action-title-3d {
-    font-size: 24px;
-    font-weight: 900;
-    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #6366f1 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -1px;
-    text-shadow: none;
-    position: relative;
-    display: inline-block;
-    line-height: 1.1;
-}
-
-.compare-title::after,
-.action-title-3d::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #6366f1, #a5b4fc, transparent);
-    border-radius: 2px;
-    opacity: 0.7;
-}
-
-@media (min-width: 768px) {
-    .compare-title,
-    .action-title-3d {
-        font-size: 32px;
-        letter-spacing: -1.5px;
-    }
-}
-
-/* ===== H2H КАРТОЧКА — APPLE STYLE ===== */
 
 .h2h-compare-btn {
-    background: linear-gradient(135deg, #0a84ff, #0066cc);
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--accent, #6366f1) 90%, white 10%) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 95%, black 5%) 100%);
     color: #fff;
     font-weight: 700;
-    border: none;
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
     border-radius: 14px;
-    padding: 16px 36px;
+    padding: 12px 36px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.95rem;
     letter-spacing: -0.2px;
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-    box-shadow: 0 4px 16px rgba(10, 132, 255, 0.35);
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        inset 0 -1px 0 rgba(0,0,0,0.15),
+        0 4px 14px color-mix(in srgb, var(--accent, #6366f1) 35%, transparent);
     text-transform: none;
 }
 
 .h2h-compare-btn:hover {
-    background: linear-gradient(135deg, #409cff, #0077e6);
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(10, 132, 255, 0.45);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.25),
+        inset 0 -1px 0 rgba(0,0,0,0.15),
+        0 6px 20px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
 }
 
 .h2h-compare-btn:active {
     transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
 }
 
 .h2h-compare-btn:disabled {
@@ -157,44 +186,75 @@ body {
     box-shadow: none;
 }
 
+/* ===== H2H КАРТОЧКА ===== */
+
 .h2h-card {
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 20px;
-    padding: 28px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--accent, #6366f1) 5%, rgba(255,255,255,0.055)) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 2%, rgba(255,255,255,0.02)) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.08));
+    border-radius: 18px;
+    padding: 16px 14px;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.09),
+        inset 0 -1px 0 rgba(0,0,0,0.18),
+        0 1px 2px rgba(0,0,0,0.12);
+    overflow: hidden;
+    margin-top: 4px;
+
+    /* Растягиваем карточку на доступную высоту */
+    height: calc(100dvh - 340px);
+    min-height: 420px;
+    max-height: 780px;
+}
+
+.h2h-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 12%; right: 12%;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        color-mix(in srgb, var(--accent, #6366f1) 40%, rgba(255,255,255,0.20)),
+        transparent);
+    pointer-events: none;
 }
 
 .h2h-title {
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: #98989d;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 24px;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
 }
 
+/* ===== Противостояние ===== */
+
 .h2h-players {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
 }
 
 .h2h-player {
-    flex: 1;
     text-align: center;
     min-width: 0;
 }
 
 .h2h-player-name {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    color: #f5f5f7;
+    color: #d4d4d8;
     margin-bottom: 6px;
     white-space: nowrap;
     overflow: hidden;
@@ -202,176 +262,368 @@ body {
 }
 
 .h2h-player-wins {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
     font-weight: 800;
     color: #fff;
     line-height: 1;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
+    text-shadow: 0 0 20px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
 }
 
 .h2h-player-label {
-    font-size: 0.7rem;
+    font-size: 0.62rem;
     color: #6e6e73;
     margin-top: 4px;
+    font-weight: 600;
+}
+
+.h2h-player.is-leader .h2h-player-name {
+    color: #fff;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
+}
+
+.h2h-player.is-leader .h2h-player-wins {
+    text-shadow:
+        0 0 20px color-mix(in srgb, var(--accent, #6366f1) 60%, transparent),
+        0 0 40px color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
 }
 
 .h2h-vs {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    justify-content: center;
+    gap: 4px;
     flex-shrink: 0;
     padding: 0 4px;
 }
 
-.h2h-total {
-    font-size: 0.75rem;
-    color: #6e6e73;
-    font-weight: 600;
-}
-
 .h2h-vs-text {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: 900;
     font-style: italic;
-    color: #c7d2fe;
-    text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+    color: var(--accent-light, #c7d2fe);
+    text-shadow: 0 0 16px color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
+    letter-spacing: -1px;
 }
 
+/* ===== Полоса прогресса — стеклянная ===== */
+
 .h2h-bar {
+    position: relative;
     display: flex;
-    height: 6px;
-    border-radius: 3px;
+    height: 22px;
+    border-radius: 11px;
     overflow: hidden;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.06);
+    margin-bottom: 10px;
+    flex-shrink: 0;
+    background:
+        linear-gradient(180deg,
+            rgba(0, 0, 0, 0.28) 0%,
+            rgba(0, 0, 0, 0.18) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 1px 0 rgba(255,255,255,0.04);
+}
+
+.h2h-bar-left,
+.h2h-bar-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+    overflow: hidden;
 }
 
 .h2h-bar-left {
-    background: linear-gradient(90deg, #0a84ff, #409cff);
-    border-radius: 3px 0 0 3px;
-    transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+    background:
+        linear-gradient(180deg,
+            #4ba3ff 0%,
+            #0a84ff 55%,
+            #0064cc 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.35),
+        inset 0 -1px 0 rgba(0,0,0,0.3);
 }
 
 .h2h-bar-right {
-    background: linear-gradient(90deg, #ff9f0a, #ffab2e);
-    border-radius: 0 3px 3px 0;
-    transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+    background:
+        linear-gradient(180deg,
+            #ffb84d 0%,
+            #ff9f0a 55%,
+            #cc7a00 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.35),
+        inset 0 -1px 0 rgba(0,0,0,0.3);
 }
 
-.h2h-date-range {
-    text-align: center;
-    font-size: 0.75rem;
-    color: #6e6e73;
-    margin-bottom: 16px;
+.h2h-bar-left::before,
+.h2h-bar-right::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 45%;
+    background: linear-gradient(180deg,
+        rgba(255,255,255,0.28) 0%,
+        rgba(255,255,255,0.05) 100%);
+    pointer-events: none;
+    border-radius: 10px 10px 0 0;
 }
 
-.h2h-stages {
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    padding-top: 16px;
+.h2h-bar-left::after,
+.h2h-bar-right::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 12px rgba(255,255,255,0.15);
+    pointer-events: none;
 }
 
-.h2h-stages-title {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #98989d;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 16px;
-    text-align: center;
-}
-
-/* Таблица по стадиям — GRID */
-.h2h-stage-header {
-    display: grid;
-    grid-template-columns: 1fr 70px 70px 70px 70px;
-    align-items: center;
-    gap: 8px;
-    padding: 0 0 10px;
-    margin-bottom: 6px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.h2h-header-stage {
-    font-size: 0.65rem;
-    color: #6e6e73;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-align: left;
-}
-
-.h2h-stage-header-score {
-    display: contents;
-}
-
-.h2h-header-col {
-    font-size: 0.6rem;
-    color: #6e6e73;
-    font-weight: 700;
-    text-transform: uppercase;
+.h2h-bar-value {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 800;
     letter-spacing: 0.3px;
-    text-align: center;
+    text-shadow:
+        0 1px 2px rgba(0,0,0,0.5),
+        0 0 8px rgba(255,255,255,0.25);
 }
 
-.h2h-stage-row {
+/* ===== Список матчей — растягивается на всё оставшееся место ===== */
+
+.h2h-matches-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    padding-right: 4px;
+    margin-right: -4px;
+    margin-top: 4px;
+}
+
+.h2h-matches-scroll::-webkit-scrollbar {
+    width: 3px;
+}
+
+.h2h-matches-scroll::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
+    border-radius: 3px;
+}
+
+.h2h-matches-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.h2h-match-row {
     display: grid;
-    grid-template-columns: 1fr 70px 70px 70px 70px;
+    grid-template-columns: 92px 1fr auto;
     align-items: center;
     gap: 8px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 8px 10px;
+    border-radius: 10px;
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--accent, #6366f1) 4%, rgba(255,255,255,0.04)) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 2%, rgba(255,255,255,0.015)) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    font-size: 0.72rem;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.h2h-stage-row:last-child {
-    border-bottom: none;
+.h2h-match-row:hover {
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 25%, transparent);
 }
 
-.h2h-stage-label {
-    font-size: 0.85rem;
-    color: #f5f5f7;
+.h2h-match-date {
+    color: #98989d;
+    font-size: 0.68rem;
+    white-space: nowrap;
     font-weight: 500;
-    text-align: left;
 }
 
-.h2h-stage-score {
-    display: contents;
-}
-
-.h2h-stage-col {
+.h2h-match-score {
+    color: #fff;
+    font-weight: 700;
     text-align: center;
-    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.2px;
 }
 
-.h2h-wins-left {
+.h2h-match-winner {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #a1a1aa;
+    font-size: 0.7rem;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
+.h2h-match-crown {
+    flex-shrink: 0;
+    display: none;
+}
+
+.h2h-match-row.is-p1 {
+    border-color: rgba(64, 156, 255, 0.22);
+    background:
+        linear-gradient(180deg,
+            rgba(10, 132, 255, 0.08) 0%,
+            rgba(10, 132, 255, 0.02) 100%);
+}
+.h2h-match-row.is-p1 .h2h-match-winner {
     color: #409cff;
     font-weight: 700;
 }
-
-.h2h-stage-total {
-    color: #98989d;
-    font-weight: 500;
+.h2h-match-row.is-p1 .h2h-match-score {
+    color: #409cff;
+}
+.h2h-match-row.is-p1 .h2h-match-crown {
+    display: block;
+    color: #409cff;
+    filter: drop-shadow(0 0 4px rgba(64,156,255,0.6));
 }
 
-.h2h-wins-right {
+.h2h-match-row.is-p2 {
+    border-color: rgba(255, 159, 10, 0.22);
+    background:
+        linear-gradient(180deg,
+            rgba(255, 159, 10, 0.08) 0%,
+            rgba(255, 159, 10, 0.02) 100%);
+}
+.h2h-match-row.is-p2 .h2h-match-winner {
     color: #ffab2e;
     font-weight: 700;
 }
-
-.h2h-diff {
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-align: center;
+.h2h-match-row.is-p2 .h2h-match-score {
+    color: #ffab2e;
+}
+.h2h-match-row.is-p2 .h2h-match-crown {
+    display: block;
+    color: #ffab2e;
+    filter: drop-shadow(0 0 4px rgba(255,159,10,0.6));
 }
 
-.h2h-diff-left {
-    color: #30d158;
-}
-
-.h2h-diff-right {
-    color: #ff9f0a;
-}
-
-.h2h-diff-zero {
+.h2h-matches-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
     color: #6e6e73;
+    font-size: 0.7rem;
+}
+
+.h2h-matches-empty {
+    text-align: center;
+    padding: 12px;
+    color: #6e6e73;
+    font-size: 0.72rem;
+}
+
+.h2h-matches-empty.hidden {
+    display: none;
+}
+
+/* ===== Мобилка ===== */
+
+@media (max-width: 400px) {
+    .h2h-player-wins {
+        font-size: 2.2rem;
+    }
+
+    .h2h-vs-text {
+        font-size: 1.2rem;
+    }
+
+    .h2h-card {
+        padding: 14px 12px;
+        height: calc(100dvh - 320px);
+        min-height: 400px;
+    }
+
+    .h2h-match-row {
+        grid-template-columns: 72px 1fr auto;
+        gap: 6px;
+        padding: 7px 8px;
+        font-size: 0.68rem;
+    }
+
+    .h2h-match-date {
+        font-size: 0.6rem;
+    }
+}
+
+/* ===== КАРТОЧКИ (DESKTOP) ===== */
+
+.cards-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.result-card {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: left;
+}
+
+.result-card .player-name {
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    margin-bottom: 2px;
+}
+
+.result-card .player-league {
+    color: var(--accent-light, #a5b4fc);
+    font-size: 0.6rem;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    margin-bottom: 3px;
+}
+
+.stat-label {
+    color: #a1a1aa;
+    font-size: 0.6rem;
+}
+
+.stat-value {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.65rem;
+}
+
+.card-spacer {
+    width: 52px;
+    flex-shrink: 0;
 }

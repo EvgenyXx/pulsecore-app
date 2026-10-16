@@ -8,7 +8,7 @@ import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.exception.BadResetCodeException;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.PasswordResetContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
@@ -43,7 +43,7 @@ public class PlayerPasswordResetService {
         mailDispatcher.send(
             normalizedEmail,
             new MailContent(
-                    MailTypes.PASSWORD_RESET,
+                    MailType.PASSWORD_RESET,
                     new PasswordResetContext(normalizedEmail, code)
             )
     );

@@ -1,61 +1,59 @@
-package ru.pulsecore.app.notification.infrastructure.event;
+package ru.pulsecore.app.notification.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.application.mail.MailTemplateService;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 import ru.pulsecore.app.notification.application.mail.template.MailFormat;
 import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
 import ru.pulsecore.app.notification.client.PlayerClient;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.shared.event.SubscriptionActivatedEvent;
+import ru.pulsecore.app.shared.event.SubscriptionWebhookEvent;
 import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Component
-@RequiredArgsConstructor
 @Slf4j
-public class PaymentSuccessListener {
+@Service
+@RequiredArgsConstructor
+public class PaymentNotificationService {
 
     private final PlayerClient playerClient;
     private final UniversalMailSender mailSender;
     private final MailTemplateService templates;
 
-    @EventListener
-    public void onPaymentSuccess(SubscriptionActivatedEvent event) {
+    public void sendSuccess(SubscriptionWebhookEvent event) {
         PlayerData player = playerClient.getPlayer(event.playerId());
 
-        log.debug("Оплата: начало отправки писем для id={}", event.playerId());
-
-        sendUserPaymentEmail(player, event);
-        sendAdminPaymentEmail(player, event);
+        sendUserSuccessEmail(player, event);
+        sendAdminSuccessEmail(player, event);
 
         log.info("Письма об оплате отправлены: id={}, email={}",
                 event.playerId(), player.email());
     }
 
-    private void sendUserPaymentEmail(PlayerData player, SubscriptionActivatedEvent event) {
+
+    private void sendUserSuccessEmail(PlayerData player, SubscriptionWebhookEvent event) {
         String text = templates.format(
                 MailTemplate.PAYMENT_SUCCESS_USER,
-                StringUtils.extractFirstName(player.name()), event.days() / 30
+                StringUtils.extractFirstName(player.name()),
+                event.month()
         );
         mailSender.send(
                 MailFormat.TEXT, player.email(),
                 "Успешная оплата",
                 text, null, null
         );
-        log.debug("Оплата: письмо пользователю отправлено на {}", player.email());
+        log.debug("Письмо пользователю отправлено на {}", player.email());
     }
 
-    private void sendAdminPaymentEmail(PlayerData player, SubscriptionActivatedEvent event) {
+    private void sendAdminSuccessEmail(PlayerData player, SubscriptionWebhookEvent event) {
         String text = templates.format(
                 MailTemplate.ADMIN_PAYMENT,
                 player.name(), player.email(),
-                event.days() / 30,
+                event.month(),
                 event.amount(), event.currency(),
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
         );
@@ -64,6 +62,6 @@ public class PaymentSuccessListener {
                 "Продление подписки",
                 text, null, null
         );
-        log.debug("Оплата: письмо админу отправлено");
+        log.debug("Письмо админу отправлено");
     }
 }

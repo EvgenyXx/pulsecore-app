@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.roster.canceled;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.CanceledTournamentContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.dispetcher.PushDispatcher;
@@ -91,7 +91,7 @@ public class TournamentCanceledNotificationService {
             if (player == null) continue;
 
             result.put(player.id(), new MailContent(
-                    MailTypes.CANCELED_TOURNAMENT,
+                    MailType.CANCELED_TOURNAMENT,
                     new CanceledTournamentContext(
                             player.email(),
                             time,

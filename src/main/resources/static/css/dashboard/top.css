@@ -29,14 +29,26 @@
                 transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+/* === МОЙ аккаунт — лёгкий градиент + обводка + glow, нежно === */
 .rank-card.mine {
-    background: rgba(99, 102, 241, 0.12);
-    border: 1px solid rgba(99, 102, 241, 0.35);
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent, #6366f1) 8%, transparent) 0%,
+        color-mix(in srgb, var(--accent, #6366f1) 3%, transparent) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 2px 12px color-mix(in srgb, var(--accent, #6366f1) 15%, transparent);
     transition: background 0.4s ease,
                 border-color 0.4s ease,
                 box-shadow 0.4s ease,
                 transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.rank-card.mine:hover {
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 18px color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
 }
 
 .rank-number {
@@ -59,9 +71,13 @@
     color: #fbbf24;
 }
 
+/* === МОЙ номер — обводка цветом темы + текст + лёгкий glow === */
 .rank-card.mine .rank-number {
-    background: rgba(99, 102, 241, 0.3);
-    color: #c7d2fe;
+    background: transparent;
+    color: var(--accent-light, #818cf8);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 55%, transparent);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent, #6366f1) 25%, transparent);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
 }
 
 /* Apple карточки */

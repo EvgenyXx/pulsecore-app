@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.mail.MailStrategy;
 import ru.pulsecore.app.notification.application.mail.MailTemplateService;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 
 import ru.pulsecore.app.notification.application.mail.context.admin.AdminPaymentContext;
@@ -20,8 +20,8 @@ public class AdminPaymentMailStrategy implements MailStrategy {
     private final MailTemplateService templates;
 
     @Override
-    public String getType() {
-        return MailTypes.ADMIN_PAYMENT_RECEIVED;
+    public MailType type() {
+        return MailType.ADMIN_PAYMENT_RECEIVED;
     }
 
     @Override

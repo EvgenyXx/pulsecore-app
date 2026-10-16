@@ -11,9 +11,9 @@ public record SetThemeRequest(
                 description = "Название темы",
                 example = "dark",
                 requiredMode = Schema.RequiredMode.REQUIRED,
-                allowableValues = {"dark", "ocean", "light"}
+                allowableValues = {"dark", "ocean", "mars", "nebula", "light"}
         )
         @NotBlank(message = "Тема обязательна")
-        @Pattern(regexp = "^(dark|ocean|light)$", message = "Недопустимая тема")
+        @Pattern(regexp = "^(dark|ocean|mars|nebula|light)$", message = "Недопустимая тема")
         String theme
 ) {}

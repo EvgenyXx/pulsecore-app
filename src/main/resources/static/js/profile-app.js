@@ -26,20 +26,28 @@ window.logout = logout;
 async function init() {
     try {
         const user = await ProfileAPI.getMe();
-        if (!user || !user.id) { window.location.href = '/'; return; }
+        if (!user || !user.id) {
+            console.warn('[profile] user is empty');
+            return;
+        }
 
         state.playerId = user.id;
 
-        document.getElementById('profileName').textContent = capitalizeName(user.name) || 'Игрок';
-        document.getElementById('emailInput').value = user.email || '';
+        const profileNameEl = document.getElementById('profileName');
+        const emailInputEl = document.querySelector('#settings-account #settingsEmailInput');
+        const createdAtEl = document.getElementById('createdAt');
 
-        if (user.createdAt) {
-            document.getElementById('createdAt').textContent = new Date(user.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        if (profileNameEl) profileNameEl.textContent = capitalizeName(user.name) || 'Игрок';
+        if (emailInputEl) emailInputEl.value = user.email || '';
+
+        if (user.createdAt && createdAtEl) {
+            createdAtEl.textContent = new Date(user.createdAt).toLocaleDateString('ru-RU', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
         }
 
         await Promise.all([loadNotificationState(), loadPushState()]);
 
-        // Загрузка статуса подписки
         try {
             const sub = await ProfileAPI.getSubscription();
             const subText = document.getElementById('subInfoText');
@@ -49,25 +57,32 @@ async function init() {
             if (sub && sub.activeNow) {
                 if (premiumBadge) premiumBadge.classList.remove('hidden');
 
-                const until = new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-                subText.textContent = 'Активна до ' + until;
-                subBtn.style.display = 'block';
-                subBtn.textContent = 'Продлить';
+                const until = new Date(sub.expiresAt).toLocaleDateString('ru-RU', {
+                    day: 'numeric', month: 'long', year: 'numeric'
+                });
+                if (subText) subText.textContent = 'Активна до ' + until;
+                if (subBtn) {
+                    subBtn.style.display = 'block';
+                    subBtn.textContent = 'Продлить';
+                }
             } else {
                 if (premiumBadge) premiumBadge.classList.add('hidden');
-
-                subText.textContent = 'Не активна';
-                subBtn.style.display = 'block';
-                subBtn.textContent = 'Оформить подписку';
+                if (subText) subText.textContent = 'Не активна';
+                if (subBtn) {
+                    subBtn.style.display = 'block';
+                    subBtn.textContent = 'Оформить подписку';
+                }
             }
-        } catch(e) {
-            document.getElementById('subInfoText').textContent = 'Не удалось загрузить';
+        } catch (e) {
+            console.warn('[profile] subscription error:', e);
+            const subText = document.getElementById('subInfoText');
+            if (subText) subText.textContent = 'Не удалось загрузить';
         }
-    } catch(e) {
-        window.location.href = '/';
+    } catch (e) {
+        console.error('[profile] init error:', e);
     }
 }
 
 window.initProfileApp = init;
 
-document.addEventListener('DOMContentLoaded', init);
+export { init };
