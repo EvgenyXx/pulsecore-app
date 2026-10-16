@@ -45,12 +45,12 @@ body {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
-    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 768px) {
     .compare-scroll {
-        padding-bottom: 40px;
+        padding-bottom: 24px;
     }
 }
 
@@ -186,23 +186,30 @@ body {
     box-shadow: none;
 }
 
-/* ===== H2H КАРТОЧКА — НОВЫЙ ДИЗАЙН ===== */
+/* ===== H2H КАРТОЧКА ===== */
 
 .h2h-card {
     position: relative;
+    display: flex;
+    flex-direction: column;
     background:
         linear-gradient(180deg,
             color-mix(in srgb, var(--accent, #6366f1) 5%, rgba(255,255,255,0.055)) 0%,
             color-mix(in srgb, var(--accent, #6366f1) 2%, rgba(255,255,255,0.02)) 100%);
     border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.08));
     border-radius: 18px;
-    padding: 18px 16px;
+    padding: 16px 14px;
     box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.09),
         inset 0 -1px 0 rgba(0,0,0,0.18),
         0 1px 2px rgba(0,0,0,0.12);
     overflow: hidden;
     margin-top: 4px;
+
+    /* Растягиваем карточку на доступную высоту */
+    height: calc(100dvh - 340px);
+    min-height: 420px;
+    max-height: 780px;
 }
 
 .h2h-card::before {
@@ -224,17 +231,19 @@ body {
     color: #98989d;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
 }
 
-/* ===== Верхний блок — противостояние ===== */
+/* ===== Противостояние ===== */
 
 .h2h-players {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 6px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
 }
 
 .h2h-player {
@@ -268,20 +277,25 @@ body {
     font-weight: 600;
 }
 
-/* VS-колонка */
+.h2h-player.is-leader .h2h-player-name {
+    color: #fff;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
+}
+
+.h2h-player.is-leader .h2h-player-wins {
+    text-shadow:
+        0 0 20px color-mix(in srgb, var(--accent, #6366f1) 60%, transparent),
+        0 0 40px color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
+}
+
 .h2h-vs {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 4px;
     flex-shrink: 0;
     padding: 0 4px;
-}
-
-.h2h-total {
-    font-size: 0.7rem;
-    color: #98989d;
-    font-weight: 700;
 }
 
 .h2h-vs-text {
@@ -293,155 +307,241 @@ body {
     letter-spacing: -1px;
 }
 
-/* ===== Полоса прогресса ===== */
+/* ===== Полоса прогресса — стеклянная ===== */
 
 .h2h-bar {
+    position: relative;
     display: flex;
-    height: 6px;
-    border-radius: 3px;
+    height: 22px;
+    border-radius: 11px;
     overflow: hidden;
     margin-bottom: 10px;
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: inset 0 1px 0 rgba(0,0,0,0.3);
+    flex-shrink: 0;
+    background:
+        linear-gradient(180deg,
+            rgba(0, 0, 0, 0.28) 0%,
+            rgba(0, 0, 0, 0.18) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 1px 0 rgba(255,255,255,0.04);
+}
+
+.h2h-bar-left,
+.h2h-bar-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+    overflow: hidden;
 }
 
 .h2h-bar-left {
-    background: linear-gradient(90deg, #0a84ff, #409cff);
-    transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+    background:
+        linear-gradient(180deg,
+            #4ba3ff 0%,
+            #0a84ff 55%,
+            #0064cc 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.35),
+        inset 0 -1px 0 rgba(0,0,0,0.3);
 }
 
 .h2h-bar-right {
-    background: linear-gradient(90deg, #ff9f0a, #ffab2e);
-    transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+    background:
+        linear-gradient(180deg,
+            #ffb84d 0%,
+            #ff9f0a 55%,
+            #cc7a00 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.35),
+        inset 0 -1px 0 rgba(0,0,0,0.3);
 }
 
-.h2h-date-range {
-    text-align: center;
+.h2h-bar-left::before,
+.h2h-bar-right::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 45%;
+    background: linear-gradient(180deg,
+        rgba(255,255,255,0.28) 0%,
+        rgba(255,255,255,0.05) 100%);
+    pointer-events: none;
+    border-radius: 10px 10px 0 0;
+}
+
+.h2h-bar-left::after,
+.h2h-bar-right::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 12px rgba(255,255,255,0.15);
+    pointer-events: none;
+}
+
+.h2h-bar-value {
+    position: relative;
+    z-index: 2;
+    color: #fff;
     font-size: 0.68rem;
-    color: #6e6e73;
-    margin-bottom: 14px;
-    letter-spacing: 0.2px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    text-shadow:
+        0 1px 2px rgba(0,0,0,0.5),
+        0 0 8px rgba(255,255,255,0.25);
 }
 
-/* ===== Плитки стадий — 2×2 ===== */
+/* ===== Список матчей — растягивается на всё оставшееся место ===== */
 
-.h2h-stages {
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    padding-top: 14px;
+.h2h-matches-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    padding-right: 4px;
+    margin-right: -4px;
     margin-top: 4px;
 }
 
-.h2h-stages-title {
-    font-size: 0.62rem;
-    font-weight: 700;
-    color: #98989d;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    text-align: center;
+.h2h-matches-scroll::-webkit-scrollbar {
+    width: 3px;
 }
 
-.h2h-stages-grid {
+.h2h-matches-scroll::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
+    border-radius: 3px;
+}
+
+.h2h-matches-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.h2h-match-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 92px 1fr auto;
+    align-items: center;
     gap: 8px;
-}
-
-.h2h-stage-tile {
-    position: relative;
+    padding: 8px 10px;
+    border-radius: 10px;
     background:
         linear-gradient(180deg,
             color-mix(in srgb, var(--accent, #6366f1) 4%, rgba(255,255,255,0.04)) 0%,
             color-mix(in srgb, var(--accent, #6366f1) 2%, rgba(255,255,255,0.015)) 100%);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    padding: 10px 12px;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-    overflow: hidden;
+    font-size: 0.72rem;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.h2h-tile-label {
-    font-size: 0.6rem;
+.h2h-match-row:hover {
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 25%, transparent);
+}
+
+.h2h-match-date {
     color: #98989d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 0.68rem;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.h2h-match-score {
+    color: #fff;
     font-weight: 700;
-    margin-bottom: 6px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.2px;
 }
 
-.h2h-tile-scores {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 6px;
-}
-
-.h2h-tile-p1 {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #409cff;
-    letter-spacing: -0.5px;
-}
-
-.h2h-tile-p2 {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #ffab2e;
-    letter-spacing: -0.5px;
-}
-
-.h2h-tile-vs {
-    font-size: 0.55rem;
-    color: #6e6e73;
-    font-weight: 700;
-    text-transform: uppercase;
-    align-self: center;
-}
-
-.h2h-tile-bottom {
-    display: flex;
-    justify-content: space-between;
+.h2h-match-winner {
+    display: inline-flex;
     align-items: center;
-    margin-top: 6px;
-    font-size: 0.58rem;
+    gap: 5px;
+    color: #a1a1aa;
+    font-size: 0.7rem;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    justify-content: flex-end;
+    min-width: 0;
 }
 
-.h2h-tile-total {
-    color: #6e6e73;
+.h2h-match-crown {
+    flex-shrink: 0;
+    display: none;
 }
 
-.h2h-tile-diff {
+.h2h-match-row.is-p1 {
+    border-color: rgba(64, 156, 255, 0.22);
+    background:
+        linear-gradient(180deg,
+            rgba(10, 132, 255, 0.08) 0%,
+            rgba(10, 132, 255, 0.02) 100%);
+}
+.h2h-match-row.is-p1 .h2h-match-winner {
+    color: #409cff;
     font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 4px;
+}
+.h2h-match-row.is-p1 .h2h-match-score {
+    color: #409cff;
+}
+.h2h-match-row.is-p1 .h2h-match-crown {
+    display: block;
+    color: #409cff;
+    filter: drop-shadow(0 0 4px rgba(64,156,255,0.6));
 }
 
-.h2h-diff-left {
-    color: #30d158;
-    background: rgba(48, 209, 88, 0.12);
+.h2h-match-row.is-p2 {
+    border-color: rgba(255, 159, 10, 0.22);
+    background:
+        linear-gradient(180deg,
+            rgba(255, 159, 10, 0.08) 0%,
+            rgba(255, 159, 10, 0.02) 100%);
+}
+.h2h-match-row.is-p2 .h2h-match-winner {
+    color: #ffab2e;
+    font-weight: 700;
+}
+.h2h-match-row.is-p2 .h2h-match-score {
+    color: #ffab2e;
+}
+.h2h-match-row.is-p2 .h2h-match-crown {
+    display: block;
+    color: #ffab2e;
+    filter: drop-shadow(0 0 4px rgba(255,159,10,0.6));
 }
 
-.h2h-diff-right {
-    color: #ff9f0a;
-    background: rgba(255, 159, 10, 0.12);
-}
-
-.h2h-diff-zero {
+.h2h-matches-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
     color: #6e6e73;
-    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.7rem;
 }
 
-/* Цветная полоса сверху плитки — цветом того, кто ведёт */
-.h2h-stage-tile::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #0a84ff, #ff9f0a);
-    opacity: 0.5;
+.h2h-matches-empty {
+    text-align: center;
+    padding: 12px;
+    color: #6e6e73;
+    font-size: 0.72rem;
 }
 
-/* ===== Мобилка — компактнее ===== */
+.h2h-matches-empty.hidden {
+    display: none;
+}
+
+/* ===== Мобилка ===== */
 
 @media (max-width: 400px) {
     .h2h-player-wins {
@@ -452,13 +552,21 @@ body {
         font-size: 1.2rem;
     }
 
-    .h2h-tile-p1,
-    .h2h-tile-p2 {
-        font-size: 0.95rem;
-    }
-
     .h2h-card {
         padding: 14px 12px;
+        height: calc(100dvh - 320px);
+        min-height: 400px;
+    }
+
+    .h2h-match-row {
+        grid-template-columns: 72px 1fr auto;
+        gap: 6px;
+        padding: 7px 8px;
+        font-size: 0.68rem;
+    }
+
+    .h2h-match-date {
+        font-size: 0.6rem;
     }
 }
 
