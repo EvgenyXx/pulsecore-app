@@ -88,7 +88,11 @@ async function startApp() {
     await import('/js/modules/subscription-block.js');  // window.checkSubscription
     await import('/js/modules/live.js');                // window.loadLive
     await import('/js/modules/live-tournament.js');     // window.loadTournamentData
-    await import('/js/compare/compare-app.js');         // window.initCompareApp
+
+    // compare-app: init() → initSettingsSheet() + initTooltips()
+    const { init: initCompare } = await import('/js/compare/compare-app.js');
+    initCompare();                                       // ← фикс: шестерёнка H2H
+
     await import('/js/profile-app.js');                 // window.initProfileApp
     await import('/js/analytics-app.js');               // window.initAnalyticsApp
     await import('/js/modules/scheduled-report.js');    // window.openScheduledReports и т.д.

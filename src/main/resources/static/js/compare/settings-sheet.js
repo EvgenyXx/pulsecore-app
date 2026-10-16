@@ -5,7 +5,7 @@ import { getPeriodDates } from './period.js';
 import { initTooltips } from './tooltip.js';
 
 let currentMode = 'versus';
-let currentMetricId = 'money';
+let currentMetricId = 'h2h';
 let currentPeriod = 'all';
 let metricAccordionOpen = false;
 
@@ -15,14 +15,15 @@ export function initSettingsSheet() {
 }
 
 function initSegments() {
-    const modeRow = document.querySelector('.sheet-segment-row:has(#modeVersus)');
-    const periodRow = document.querySelector('.sheet-segment-row:has(#periodAll)');
+    // Режим (modeRow) убран из HTML — слайдер только для периода
+    // const modeRow = document.getElementById('modeSegmentRow');
+    const periodRow = document.getElementById('periodSegmentRow');
 
-    if (modeRow && !modeRow.querySelector('.segment-slider')) {
-        const slider = document.createElement('div');
-        slider.className = 'segment-slider mode-2 pos-0';
-        modeRow.insertBefore(slider, modeRow.firstChild);
-    }
+    // if (modeRow && !modeRow.querySelector('.segment-slider')) {
+    //     const slider = document.createElement('div');
+    //     slider.className = 'segment-slider mode-2 pos-0';
+    //     modeRow.insertBefore(slider, modeRow.firstChild);
+    // }
 
     if (periodRow && !periodRow.querySelector('.segment-slider')) {
         const slider = document.createElement('div');
@@ -30,20 +31,20 @@ function initSegments() {
         periodRow.insertBefore(slider, periodRow.firstChild);
     }
 
-    updateModeSlider();
+    // updateModeSlider();
     updatePeriodSlider();
 }
 
-function updateModeSlider() {
-    const row = document.querySelector('.sheet-segment-row:has(#modeVersus)');
-    const slider = row?.querySelector('.segment-slider');
-    if (slider) {
-        slider.className = `segment-slider mode-2 ${currentMode === 'versus' ? 'pos-0' : 'pos-1'}`;
-    }
-}
+// function updateModeSlider() {
+//     const row = document.getElementById('modeSegmentRow');
+//     const slider = row?.querySelector('.segment-slider');
+//     if (slider) {
+//         slider.className = `segment-slider mode-2 ${currentMode === 'versus' ? 'pos-0' : 'pos-1'}`;
+//     }
+// }
 
 function updatePeriodSlider() {
-    const row = document.querySelector('.sheet-segment-row:has(#periodAll)');
+    const row = document.getElementById('periodSegmentRow');
     const slider = row?.querySelector('.segment-slider');
     if (slider) {
         const positions = { 'week': 0, 'month': 1, 'year': 2, 'all': 3 };
@@ -99,19 +100,9 @@ export function toggleSettingsSheet() {
     if (overlay) overlay.classList.toggle('open');
 }
 
+// setMode оставлен как заглушка — UI режима убран
 export function setMode(mode) {
     currentMode = mode;
-
-    document.getElementById('modeVersus')?.classList.remove('active');
-    document.getElementById('modeSingle')?.classList.remove('active');
-
-    if (mode === 'versus') {
-        document.getElementById('modeVersus')?.classList.add('active');
-    } else {
-        document.getElementById('modeSingle')?.classList.add('active');
-    }
-
-    updateModeSlider();
 }
 
 export function setMetric(metricId) {
@@ -119,16 +110,13 @@ export function setMetric(metricId) {
     renderMetricAccordion();
 }
 
-// Единая функция для установки периода
 export function setPeriod(period) {
     currentPeriod = period;
 
-    // Снимаем active со всех кнопок периодов
     document.querySelectorAll('[onclick*="setPeriod"]').forEach(btn => {
         btn.classList.remove('active');
     });
 
-    // Активируем нужную кнопку
     const activeBtn = document.querySelector(`[onclick="setPeriod('${period}')"]`);
     if (activeBtn) {
         activeBtn.classList.add('active');
@@ -137,7 +125,6 @@ export function setPeriod(period) {
     updatePeriodSlider();
 }
 
-// Для обратной совместимости
 export function setPeriodFromSheet(period) {
     setPeriod(period);
 }
@@ -161,7 +148,6 @@ export function applySettings() {
     }));
 }
 
-// Экспортируем для window
 window.toggleSettingsSheet = toggleSettingsSheet;
 window.toggleMetricAccordion = toggleMetricAccordion;
 window.setMode = setMode;

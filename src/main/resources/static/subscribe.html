@@ -39,34 +39,33 @@
 </aside>
 
 <main class="flex-1 p-4 md:p-8 relative z-10 overflow-y-auto">
-    <div class="max-w-xl">
-        <div class="flex items-center justify-between gap-3 mb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                </div>
-                <div>
-                    <h2 class="text-lg font-bold text-white">Подписка <span class="pro-badge align-middle ml-1">PRO</span></h2>
-                    <p class="text-xs text-zinc-400" id="pageSubtitle">Загрузка...</p>
-                </div>
+    <div class="max-w-xl mx-auto">
+
+        <div class="sub-header">
+            <div class="sub-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="sub-header-title">
+                    Подписка <span class="pro-badge">PRO</span>
+                </h1>
+                <p class="sub-header-subtitle" id="pageSubtitle">Загрузка...</p>
             </div>
         </div>
 
-        <div id="activeSubBlock" class="hidden">
-            <div class="widget-card rounded-2xl p-8 text-center">
-                <div class="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Подписка активна</h3>
-                <p class="text-zinc-400" id="activeSubText"></p>
-            </div>
-        </div>
+        <div class="sub-status" id="subStatus"></div>
 
         <div id="plansBlock" class="hidden">
-            <p class="text-sm text-zinc-400 mb-3" id="plansTitle">Выберите тарифный план</p>
-            <div class="plans-scroll mb-5" id="plansContainer"></div>
+            <p class="sub-section-title" id="plansTitle">Выберите тариф</p>
+            <div class="plans-grid" id="plansContainer"></div>
             <div id="messageBox" class="text-sm text-center mb-4 hidden"></div>
-            <button onclick="handlePay()" id="payBtn" class="btn-pay" disabled>Оплатить</button>
+
+            <div id="payBtnWrapper" class="pay-btn-wrapper hidden">
+                <button onclick="handlePay()" id="payBtn" class="btn-pay">Оплатить</button>
+            </div>
         </div>
     </div>
 </main>

@@ -3,7 +3,7 @@
 import { compareMetrics } from './metrics.js';
 import { renderPlayerCard } from './player-card.js';
 import { renderH2HCard } from './h2h-card.js';
-import { WheelPicker } from './wheel.js';
+// import { WheelPicker } from './wheel.js';                       // ← колёса убраны
 import { PlayerSearch } from './player-search.js';
 import { getPeriodDates } from './period.js';
 import { loadPlayers as fetchPlayers, loadStatsPlayers } from './data-loader.js';
@@ -24,8 +24,8 @@ let allPlayers = [];
 let allStatsPlayers = [];
 let selectedLeft = null;
 let selectedRight = null;
-let leftWheel = null;
-let rightWheel = null;
+// let leftWheel = null;                                            // ← колёса убраны
+// let rightWheel = null;                                           // ← колёса убраны
 let leftSearch = null;
 let rightSearch = null;
 let currentMode = 'versus';
@@ -84,19 +84,20 @@ function hideSearchRow() {
     if (searchRow) searchRow.style.display = 'none';
 }
 
-function renderVersusMode() {
-    document.getElementById('pickerRight').closest('.wheel-container').style.display = '';
-    document.querySelector('.vs-badge').style.display = '';
-    document.getElementById('rightCard').style.display = '';
-    document.querySelector('.card-spacer').style.display = '';
-}
-
-function renderSingleMode() {
-    document.getElementById('pickerRight').closest('.wheel-container').style.display = 'none';
-    document.querySelector('.vs-badge').style.display = 'none';
-    document.getElementById('rightCard').style.display = 'none';
-    document.querySelector('.card-spacer').style.display = 'none';
-}
+// ===== Режим «Версус / Одиночный» убран, т.к. колёса убраны
+// function renderVersusMode() {
+//     document.getElementById('pickerRight').closest('.wheel-container').style.display = '';
+//     document.querySelector('.vs-badge').style.display = '';
+//     document.getElementById('rightCard').style.display = '';
+//     document.querySelector('.card-spacer').style.display = '';
+// }
+//
+// function renderSingleMode() {
+//     document.getElementById('pickerRight').closest('.wheel-container').style.display = 'none';
+//     document.querySelector('.vs-badge').style.display = 'none';
+//     document.getElementById('rightCard').style.display = 'none';
+//     document.querySelector('.card-spacer').style.display = 'none';
+// }
 
 function toggleCardsVisibility(metricId) {
     const cardsRow = document.getElementById('cardsRow');
@@ -209,11 +210,11 @@ function handleSearchSelect(side, playerName) {
 
     if (side === 'left') {
         selectedLeft = player;
-        if (found && leftWheel) leftWheel.scrollToPlayer(found.playerId);
+        // if (found && leftWheel) leftWheel.scrollToPlayer(found.playerId);   // ← колёса убраны
         updateCard('leftCard', player);
     } else {
         selectedRight = player;
-        if (found && rightWheel) rightWheel.scrollToPlayer(found.playerId);
+        // if (found && rightWheel) rightWheel.scrollToPlayer(found.playerId); // ← колёса убраны
         updateCard('rightCard', player);
     }
 
@@ -246,31 +247,35 @@ async function loadAllPlayers(start, end) {
         selectedLeft = random[0] || null;
         selectedRight = random[1] || null;
 
-        if (leftWheel) leftWheel.destroy();
-        if (rightWheel) rightWheel.destroy();
+        // ===== Колёса убраны — вместо них только поиск =====
+        // if (leftWheel) leftWheel.destroy();
+        // if (rightWheel) rightWheel.destroy();
+        //
+        // leftWheel = new WheelPicker('pickerLeft', allPlayers, (player) => {
+        //     selectedLeft = player;
+        //     updateCard('leftCard', player);
+        //     if (leftSearch) leftSearch.setValue(player.playerName);
+        //     hideH2HResult();
+        // });
+        // rightWheel = new WheelPicker('pickerRight', allPlayers, (player) => {
+        //     selectedRight = player;
+        //     updateCard('rightCard', player);
+        //     if (rightSearch) rightSearch.setValue(player.playerName);
+        //     hideH2HResult();
+        // });
+        //
+        // leftWheel.render(selectedLeft?.playerId);
+        // rightWheel.render(selectedRight?.playerId);
+        //
+        // setTimeout(() => {
+        //     if (selectedLeft) leftWheel.scrollToPlayer(selectedLeft.playerId);
+        //     if (selectedRight) rightWheel.scrollToPlayer(selectedRight.playerId);
+        // }, 50);
 
-        leftWheel = new WheelPicker('pickerLeft', allPlayers, (player) => {
-            selectedLeft = player;
-            updateCard('leftCard', player);
-            if (leftSearch) leftSearch.setValue(player.playerName);
-            hideH2HResult();
-        });
-        rightWheel = new WheelPicker('pickerRight', allPlayers, (player) => {
-            selectedRight = player;
-            updateCard('rightCard', player);
-            if (rightSearch) rightSearch.setValue(player.playerName);
-            hideH2HResult();
-        });
-
-        leftWheel.render(selectedLeft?.playerId);
-        rightWheel.render(selectedRight?.playerId);
+        if (selectedLeft && leftSearch) leftSearch.setValue(selectedLeft.playerName);
+        if (selectedRight && rightSearch) rightSearch.setValue(selectedRight.playerName);
 
         updateBothCards();
-
-        setTimeout(() => {
-            if (selectedLeft) leftWheel.scrollToPlayer(selectedLeft.playerId);
-            if (selectedRight) rightWheel.scrollToPlayer(selectedRight.playerId);
-        }, 50);
 
     } catch (e) {
         console.error('Ошибка загрузки игроков:', e);
@@ -282,7 +287,7 @@ async function loadCompare() {
         const hasSub = await checkSubscription();
 
         if (!hasSub) {
-            document.querySelector('.wheels-row').style.display = 'none';
+            // document.querySelector('.wheels-row').style.display = 'none';   // ← колёса убраны
             document.querySelector('.cards-row').style.display = 'none';
             document.querySelector('.compare-header').style.display = 'none';
             document.getElementById('playerSearchRow')?.style.setProperty('display', 'none');
@@ -295,27 +300,31 @@ async function loadCompare() {
             return;
         }
 
-        document.querySelector('.wheels-row').style.display = '';
+        // document.querySelector('.wheels-row').style.display = '';            // ← колёса убраны
         document.querySelector('.cards-row').style.display = '';
         document.querySelector('.compare-header').style.display = '';
         document.getElementById('compareNoSub')?.remove();
 
         initSearch();
 
-        if (currentMode === 'versus') {
-            renderVersusMode();
-        } else {
-            renderSingleMode();
-        }
+        // ===== Режим убран — всегда показываем поиск и H2H =====
+        // if (currentMode === 'versus') {
+        //     renderVersusMode();
+        // } else {
+        //     renderSingleMode();
+        // }
+        //
+        // const metric = getCurrentMetric();
+        // if (metric.id === 'h2h') {
+        //     showSearchRow();
+        //     showH2HButton();
+        // } else {
+        //     hideSearchRow();
+        //     hideH2HButton();
+        // }
 
-        const metric = getCurrentMetric();
-        if (metric.id === 'h2h') {
-            showSearchRow();
-            showH2HButton();
-        } else {
-            hideSearchRow();
-            hideH2HButton();
-        }
+        showSearchRow();
+        showH2HButton();
 
         await loadAllPlayers(null, null);
     } catch (e) {
@@ -345,27 +354,28 @@ window.addEventListener('settings-applied', (e) => {
     customStartDate = customStartInput?.value || null;
     customEndDate = customEndInput?.value || null;
 
-    if (mode === 'versus') {
-        renderVersusMode();
-    } else {
-        renderSingleMode();
-    }
+    // ===== Режим убран — всегда показываем поиск и H2H =====
+    // if (mode === 'versus') {
+    //     renderVersusMode();
+    // } else {
+    //     renderSingleMode();
+    // }
+    //
+    // if (metricId === 'h2h') {
+    //     showSearchRow();
+    //     showH2HButton();
+    // } else {
+    //     hideSearchRow();
+    //     hideH2HButton();
+    // }
 
-    if (metricId === 'h2h') {
-        showSearchRow();
-        showH2HButton();
-    } else {
-        hideSearchRow();
-        hideH2HButton();
-    }
+    showSearchRow();
+    showH2HButton();
 
     loadAllPlayers(start, end);
 });
 
 // ============ INIT ============
-// Раньше здесь был DOMContentLoaded — при динамическом импорте он не сработает.
-// Экспортируем init, чтобы boot.js мог его вызвать сам.
-
 export function init() {
     initSettingsSheet();
     initTooltips();
