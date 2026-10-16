@@ -90,146 +90,231 @@
     cursor: pointer;
 }
 
-/* ===== Карточки составов — псевдо-стекло с оттенком темы ===== */
+/* ===== Карточки составов ===== */
 .lineup-card {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 14px 14px 12px;
+    margin-bottom: 10px;
+    border-radius: 14px;
     background:
         linear-gradient(180deg,
-            color-mix(in srgb, var(--accent, #6366f1) 4%, rgba(255,255,255,0.055)) 0%,
-            color-mix(in srgb, var(--accent, #6366f1) 2%, rgba(255,255,255,0.02)) 100%);
-    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.08));
+            color-mix(in srgb, var(--accent, #6366f1) 8%, rgba(255,255,255,0.10)) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 3%, rgba(255,255,255,0.03)) 55%,
+            color-mix(in srgb, var(--accent, #6366f1) 5%, rgba(255,255,255,0.04)) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 20%, rgba(255,255,255,0.12));
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.09),
-        inset 0 -1px 0 rgba(0,0,0,0.18),
-        0 1px 2px rgba(0,0,0,0.12);
-    border-radius: 12px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        inset 0 -1px 0 rgba(0,0,0,0.22),
+        inset 0 0 0 1px rgba(255,255,255,0.03),
+        0 2px 6px rgba(0,0,0,0.18),
+        0 8px 24px rgba(0,0,0,0.12);
     animation: lineupSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     opacity: 0;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, transform 0.3s ease;
 }
 
-/* Тонкая световая кромка сверху — как у Linear */
+/* Иконка ML — правый верхний угол */
+.lineup-ml-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--accent-light, #a5b4fc);
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent, #6366f1) 16%, rgba(255,255,255,0.06)) 0%,
+        color-mix(in srgb, var(--accent, #6366f1) 8%, rgba(255,255,255,0.02)) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 32%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 2px 6px rgba(0,0,0,0.15);
+    text-decoration: none;
+    transition: background 0.22s ease, border-color 0.22s ease,
+                color 0.22s ease, transform 0.15s ease, box-shadow 0.22s ease;
+    z-index: 2;
+}
+
+.lineup-ml-icon:hover {
+    color: #e0e7ff;
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent, #6366f1) 26%, rgba(255,255,255,0.08)) 0%,
+        color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.03)) 100%);
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 55%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 14px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
+    transform: translateY(-1px);
+}
+
+.lineup-ml-icon:active {
+    transform: scale(0.94);
+}
+
 .lineup-card::before {
     content: '';
     position: absolute;
-    top: 0; left: 10%; right: 10%;
+    top: 0; left: 8%; right: 8%;
     height: 1px;
     background: linear-gradient(90deg,
         transparent,
-        color-mix(in srgb, var(--accent, #6366f1) 35%, rgba(255,255,255,0.20)),
+        color-mix(in srgb, var(--accent, #6366f1) 55%, rgba(255,255,255,0.45)),
         transparent);
     pointer-events: none;
-    border-radius: 12px 12px 0 0;
+    border-radius: 14px 14px 0 0;
 }
 
-/* «Мой» состав — цвет темы, свечение, белые имена */
+.lineup-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(180deg,
+        rgba(255,255,255,0.05) 0%,
+        transparent 100%);
+    border-radius: 14px 14px 0 0;
+    pointer-events: none;
+}
+
 .lineup-card.is-player {
     background:
         linear-gradient(180deg,
-            color-mix(in srgb, var(--accent, #6366f1) 16%, transparent) 0%,
-            color-mix(in srgb, var(--accent, #6366f1) 7%, transparent) 100%);
-    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 55%, transparent);
+            color-mix(in srgb, var(--accent, #6366f1) 22%, rgba(255,255,255,0.10)) 0%,
+            color-mix(in srgb, var(--accent, #6366f1) 10%, rgba(255,255,255,0.03)) 55%,
+            color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.04)) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.14),
-        inset 0 -1px 0 rgba(0,0,0,0.18),
-        0 0 0 1px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent),
-        0 0 24px color-mix(in srgb, var(--accent, #6366f1) 35%, transparent);
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        inset 0 -1px 0 rgba(0,0,0,0.22),
+        inset 0 0 0 1px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--accent, #6366f1) 25%, transparent),
+        0 0 32px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent),
+        0 4px 12px rgba(0,0,0,0.22);
 }
 
 .lineup-card.is-player::before {
     left: 0; right: 0;
     background: linear-gradient(90deg,
         transparent,
-        color-mix(in srgb, var(--accent, #6366f1) 80%, transparent),
+        color-mix(in srgb, var(--accent, #6366f1) 90%, transparent),
         transparent);
+    height: 1.5px;
 }
 
-.lineup-card-header {
+/* === Строка ДАТА — на всю ширину === */
+.lineup-date-row {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-}
-
-.lineup-left {
-    display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 8px;
-    flex-wrap: wrap;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+    z-index: 1;
+    padding-right: 40px;
 }
 
-/* ===== Бейджи ===== */
-.lineup-date-badge,
-.lineup-time-badge,
-.lineup-hall-badge {
-    font-size: 13px;
-    font-weight: 700;
-    color: #ffffff;
-    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-    padding: 4px 10px;
-    border-radius: 8px;
+.lineup-date-row .lineup-meta-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #71717a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     white-space: nowrap;
+}
+
+.lineup-date-row .lineup-meta-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e5e5e5;
+    white-space: nowrap;
+}
+
+/* === Основная часть карточки: метаданные слева, состав справа === */
+.lineup-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+/* Метаданные — grid 2 колонки (label | value) */
+.lineup-meta {
+    display: grid;
+    grid-template-columns: 52px max-content;
+    column-gap: 8px;
+    row-gap: 6px;
     flex-shrink: 0;
 }
 
-.lineup-league-badge {
+.lineup-meta-row {
+    display: contents;
+}
+
+.lineup-meta .lineup-meta-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #71717a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    white-space: nowrap;
+    align-self: center;
+}
+
+.lineup-meta .lineup-meta-value {
     font-size: 13px;
+    font-weight: 600;
+    color: #e5e5e5;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    align-self: center;
+    min-width: 0;
+}
+
+.lineup-meta .lineup-time-value {
+    font-size: 15px;
     font-weight: 700;
+    color: #ffffff;
+}
+
+.lineup-meta .lineup-league-value {
     color: var(--accent-light, #a5b4fc);
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 16%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 7%, transparent) 100%);
-    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 28%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-    padding: 4px 10px;
-    border-radius: 8px;
-    white-space: nowrap;
-    flex-shrink: 0;
 }
 
-.lineup-type-badge {
-    font-size: 13px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 8px;
-    letter-spacing: -0.1px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
-}
-
-.lineup-type-new {
-    color: #34d399;
-    background: linear-gradient(180deg, rgba(52,211,153,0.16) 0%, rgba(52,211,153,0.06) 100%);
-    border: 1px solid rgba(52, 211, 153, 0.3);
-}
-
-.lineup-type-std {
-    color: #ffffff;
-    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* ===== СОСТАВ ===== */
+/* === Состав — сдвинут правее === */
 .lineup-players-wrapper {
-    padding-left: 4px;
-    padding-right: 0;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding-right: 8px;
+    align-self: flex-start;
+    margin-left: 6%;
 }
 
 .lineup-players-column {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
+/* ★ Ключевое — без переносов, всегда в одну строку */
 .lineup-player-name {
-    font-size: 12px;
-    font-weight: 500;
-    color: #e5e5e5;
+    font-size: 15px;
+    font-weight: 700;
+    color: #f5f5f7;
+    letter-spacing: -0.2px;
+    line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -238,7 +323,49 @@
 
 .lineup-card.is-player .lineup-player-name {
     color: #ffffff;
-    text-shadow: 0 0 8px color-mix(in srgb, var(--accent, #6366f1) 55%, transparent);
+    font-weight: 800;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--accent, #6366f1) 70%, transparent);
+}
+
+/* ===== Бейдж формата ===== */
+.lineup-type-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 6px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    width: fit-content;
+    color: var(--accent-light, #a5b4fc);
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent, #6366f1) 22%, transparent) 0%,
+        color-mix(in srgb, var(--accent, #6366f1) 10%, transparent) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 0 10px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
+}
+
+.lineup-type-new {
+    color: #ffffff;
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent, #6366f1) 40%, transparent) 0%,
+        color-mix(in srgb, var(--accent, #6366f1) 20%, transparent) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 65%, transparent);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        0 0 12px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--accent, #6366f1) 80%, transparent);
+}
+
+.lineup-type-std {
+    color: var(--accent-light, #a5b4fc);
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent, #6366f1) 14%, transparent) 0%,
+        color-mix(in srgb, var(--accent, #6366f1) 6%, transparent) 100%);
+    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 32%, transparent);
 }
 
 @keyframes lineupSlideIn {
@@ -246,7 +373,7 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== КНОПКА СОХРАНИТЬ ===== */
+/* ===== Кнопка «Сохранить» ===== */
 .apple-save-btn {
     width: 100%;
     margin-top: 12px;
@@ -283,55 +410,42 @@
     transform: scale(0.98);
 }
 
-/* ===== КНОПКА «ОТКРЫТЬ НА ML» ===== */
-.lineup-source-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 10px;
-    padding: 8px 14px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: -0.1px;
-    color: var(--accent-light, #a5b4fc);
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 12%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 5%, transparent) 100%);
-    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 22%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
-    text-decoration: none;
-    transition: background 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
-                border-color 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
-                color 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
-                transform 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
-                box-shadow 0.22s ease;
-    -webkit-tap-highlight-color: transparent;
-    will-change: transform;
-}
-
-.lineup-source-btn span { white-space: nowrap; }
-
-.lineup-source-btn svg {
-    flex-shrink: 0;
-    transition: transform 0.22s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.lineup-source-btn:hover {
-    color: #e0e7ff;
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 20%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 10%, transparent) 100%);
-    border-color: color-mix(in srgb, var(--accent, #6366f1) 42%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.10),
-        0 0 12px color-mix(in srgb, var(--accent, #6366f1) 25%, transparent);
-}
-
-.lineup-source-btn:hover svg { transform: translate(1px, -1px); }
-
-.lineup-source-btn:active {
-    transform: scale(0.97);
-    background: color-mix(in srgb, var(--accent, #6366f1) 26%, transparent);
+/* ===== Мобилка ===== */
+@media (max-width: 400px) {
+    .lineup-card {
+        padding: 12px;
+    }
+    .lineup-body {
+        gap: 10px;
+    }
+    .lineup-meta {
+        grid-template-columns: 46px max-content;
+        column-gap: 6px;
+        row-gap: 5px;
+    }
+    .lineup-meta .lineup-meta-label {
+        font-size: 9px;
+    }
+    .lineup-meta .lineup-meta-value {
+        font-size: 12px;
+    }
+    .lineup-meta .lineup-time-value {
+        font-size: 14px;
+    }
+    .lineup-player-name {
+        font-size: 13.5px;
+    }
+    .lineup-ml-icon {
+        width: 26px;
+        height: 26px;
+        top: 8px;
+        right: 8px;
+    }
+    .lineup-players-wrapper {
+        padding-right: 8px;
+        margin-left: 4%;
+    }
+    .lineup-date-row {
+        padding-right: 36px;
+    }
 }

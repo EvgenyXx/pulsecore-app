@@ -61,9 +61,6 @@ function getDates() {
     return dates;
 }
 
-/**
- * Бейдж формата: New — 4pl_new, Standard — стандарт.
- */
 function renderTypeBadge(type) {
     if (!type) return '';
     const isNew = String(type).toLowerCase().includes('new') || String(type).toLowerCase() === 'four_pl_new';
@@ -81,25 +78,24 @@ function renderLineupRows(lineupsByHall) {
 
     let html = '';
     allLineups.forEach((l, i) => {
-        const playersArray = (l.players || '—').split(',').map(p => capitalizeName(p.trim())).filter(p => p);
+        const playersArray = (l.players || '—')
+            .split(',')
+            .map(p => capitalizeName(p.trim()))
+            .filter(p => p);
 
         const playersList = playersArray.length > 0
-            ? `<div class="lineup-players-column">${playersArray.map(p => `<span class="lineup-player-name">${p}</span>`).join('')}</div>`
+            ? playersArray.map(p => `<span class="lineup-player-name">${p}</span>`).join('')
             : '<span class="text-zinc-600 text-xs">—</span>';
 
         const isPlayerInLineup = l.player || l.inLineup || l.isPlayer || false;
         const rowClass = isPlayerInLineup ? 'lineup-card is-player' : 'lineup-card';
 
         const typeBadge = renderTypeBadge(l.type);
+        const dateValue = l.date ? formatDateShort(l.date) : '—';
 
-        const dateBadge = l.date
-            ? `<span class="lineup-date-badge">${formatDateShort(l.date)}</span>`
-            : '';
-
-        const sourceBtn = l.link
-            ? `<a class="lineup-source-btn" href="${l.link}" target="_blank" rel="noopener">
-                   <span>Открыть на ML</span>
-                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        const mlIcon = l.link
+            ? `<a class="lineup-ml-icon" href="${l.link}" target="_blank" rel="noopener" aria-label="Открыть на ML">
+                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                        <polyline points="15 3 21 3 21 9"/>
                        <line x1="10" y1="14" x2="21" y2="3"/>
@@ -109,19 +105,39 @@ function renderLineupRows(lineupsByHall) {
 
         html += `
             <div class="${rowClass}" style="animation-delay: ${i * 40}ms">
-                <div class="lineup-card-header">
-                    <div class="lineup-left">
-                        ${dateBadge}
-                        <span class="lineup-time-badge">${l.time || '??:??'}</span>
-                        <span class="lineup-league-badge">${l.league || '?'}</span>
-                        <span class="lineup-hall-badge">${l.hall}</span>
-                        ${typeBadge}
+                ${mlIcon}
+
+                <div class="lineup-date-row">
+                    <span class="lineup-meta-label">Дата</span>
+                    <span class="lineup-meta-value">${dateValue}</span>
+                </div>
+
+                <div class="lineup-body">
+                    <div class="lineup-meta">
+                        <div class="lineup-meta-row">
+                            <span class="lineup-meta-label">Время</span>
+                            <span class="lineup-meta-value lineup-time-value">${l.time || '??:??'}</span>
+                        </div>
+                        <div class="lineup-meta-row">
+                            <span class="lineup-meta-label">Лига</span>
+                            <span class="lineup-meta-value lineup-league-value">${l.league || '?'}</span>
+                        </div>
+                        <div class="lineup-meta-row">
+                            <span class="lineup-meta-label">Зал</span>
+                            <span class="lineup-meta-value">${l.hall}</span>
+                        </div>
+                        ${typeBadge ? `
+                            <div class="lineup-meta-row">
+                                <span class="lineup-meta-label">Формат</span>
+                                ${typeBadge}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="lineup-players-wrapper">
+                        <div class="lineup-players-column">${playersList}</div>
                     </div>
                 </div>
-                <div class="lineup-players-wrapper">
-                    ${playersList}
-                </div>
-                ${sourceBtn}
             </div>
         `;
     });
