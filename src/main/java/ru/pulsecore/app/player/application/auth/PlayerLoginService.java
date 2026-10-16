@@ -29,6 +29,6 @@ public class PlayerLoginService {
 
     public void loginAndRedirect(Player player, HttpServletRequest request, HttpServletResponse response) throws IOException {
         login(player, request);
-        response.sendRedirect("/dashboard.html");
+        response.sendRedirect("/");
     }
 }

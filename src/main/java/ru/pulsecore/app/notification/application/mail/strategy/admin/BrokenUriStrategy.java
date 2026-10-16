@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.mail.MailStrategy;
 import ru.pulsecore.app.notification.application.mail.MailTemplateService;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriContext;
 import ru.pulsecore.app.notification.application.mail.context.MailContext;
@@ -24,8 +24,8 @@ public class BrokenUriStrategy implements MailStrategy {
     private final PlayerClient  playerClient;
 
     @Override
-    public String getType() {
-        return MailTypes.BROKEN_URI;
+    public MailType type() {
+        return MailType.BROKEN_URI;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class BrokenUriStrategy implements MailStrategy {
                 .map(PlayerData::name)
                 .collect(Collectors.joining(","));
 
-        String tex = templates.format(
+        String text = templates.format(
                 MailTemplate.BROKEN_URI,brokenUriContext.brokenUri(),
                 brokenUriContext.date(),
                 brokenUriContext.time(),
@@ -47,7 +47,7 @@ public class BrokenUriStrategy implements MailStrategy {
         mailSender.adminSendEmail(
                 MailFormat.TEXT,
                 "⚠️ Турнир удалён с сайта",
-                tex,
+                text,
                 null,
                 null
 

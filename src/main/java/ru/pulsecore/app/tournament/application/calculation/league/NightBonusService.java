@@ -24,8 +24,8 @@ public class NightBonusService {
     public double calculateBonus(TournamentPage page, String league) {
         if (page == null) return 0;
 
-        LocalTime time = parseTime(page.time());
-        int hall = parseHall(page.hall());
+        LocalTime time = parseTime(page.json().time());
+        int hall = parseHall(page.json().hallTitle());
 
         if (time == null) {
             log.warn("Ночной бонус: нет времени (url={}), бонус = 0",

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.pulsecore.app.shared.dto.response.PricesResponse;
 import ru.pulsecore.app.payment.api.PaymentApi;
-import ru.pulsecore.app.payment.application.PriceService;
+import ru.pulsecore.app.payment.application.price.PriceService;
 
 @Tag(name = "Payment", description = "Цены подписки")
 @RestController

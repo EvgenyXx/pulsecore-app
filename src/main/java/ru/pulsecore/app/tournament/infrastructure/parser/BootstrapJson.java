@@ -20,7 +20,7 @@ public final class BootstrapJson {
     if (script == null) return null;
     try {
         JsonNode root = MAPPER.readTree(script.data());
-        log.debug("BootstrapJson: parsed tree:\n{}", root.toPrettyString());
+//        log.debug("BootstrapJson: parsed tree:\n{}", root.toPrettyString());
         return root;
     } catch (Exception e) {
         log.warn("BootstrapJson: ошибка {}", e.getMessage());

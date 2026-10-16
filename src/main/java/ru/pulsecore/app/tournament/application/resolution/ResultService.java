@@ -73,7 +73,7 @@ public class ResultService {
     private ParsedResult buildParsedResult(TournamentContext ctx, String url) {
         List<ResultDto> results = buildResults(ctx);
         normalizeNames(results);
-        log.debug("🔎 typeId из контекста: '{}'", ctx.getTypeId());
+        log.debug("🔎 typeId из контекста: '{}'", ctx.getVersion());
 
         applyBonusPoints(ctx, results);
         results.sort((a, b) -> Integer.compare(b.getTotal(), a.getTotal()));

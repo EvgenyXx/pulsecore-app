@@ -5,8 +5,8 @@ self.addEventListener('push', (event) => {
     const data = event.data ? event.data.json() : {};
     const options = {
         body: data.body || '',
-        icon: '/img.png',
-        badge: '/img.png',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/icon-192.png',
         data: { url: data.url || '/dashboard' }
     };
     event.waitUntil(

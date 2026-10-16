@@ -168,7 +168,10 @@ export async function changePassword() {
 
 export async function saveEmail() {
     const btn = document.getElementById('saveEmailBtn');
-    const email = document.getElementById('emailInput').value.trim();
+    // ФИКС: email в профиле имеет id="settingsEmailInput"
+    const emailInput = document.querySelector('#settings-account #settingsEmailInput');
+    if (!emailInput) return;
+    const email = emailInput.value.trim();
 
     btn.disabled = true;
     btn.innerHTML = '⏳';

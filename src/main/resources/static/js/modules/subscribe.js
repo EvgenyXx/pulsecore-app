@@ -3,12 +3,12 @@ import { formatMoney } from '../core/utils.js';
 
 let selectedPlan = null;
 let prices = {};
+let isActive = false;
 
 export async function loadPrices() {
     try {
         prices = (await SubscribeAPI.getPrices()).prices;
         renderPlans();
-        document.getElementById('pageSubtitle').textContent = 'Выберите тариф';
     } catch (e) {
         document.getElementById('pageSubtitle').textContent = 'Ошибка загрузки цен';
     }
@@ -28,11 +28,6 @@ function getPricePerMonth(total, months) {
     return Math.round(total / months);
 }
 
-function getDiscountPercent(price1, priceN, months) {
-    const fullPrice = price1 * months;
-    return Math.round((1 - priceN / fullPrice) * 100);
-}
-
 function renderPlans() {
     const container = document.getElementById('plansContainer');
     const entries = Object.entries(prices)
@@ -40,33 +35,23 @@ function renderPlans() {
         .sort((a, b) => a.months - b.months);
 
     if (entries.length === 0) {
-        container.innerHTML = '<p class="text-zinc-500 text-center w-full">Нет доступных тарифов</p>';
+        container.innerHTML = '<p class="text-zinc-500 text-center" style="grid-column: 1/-1;">Нет доступных тарифов</p>';
         return;
     }
 
-    const basePrice = entries[0].price;
-    const mostPopular = entries.length > 1 ? entries[entries.length - 1] : entries[0];
-
-    container.innerHTML = entries.map((plan, index) => {
-        const isPopular = plan.months === mostPopular.months && entries.length > 1;
-        const discount = plan.months > 1 ? getDiscountPercent(basePrice, plan.price, plan.months) : 0;
+    container.innerHTML = entries.map(plan => {
         const perMonth = getPricePerMonth(plan.price, plan.months);
-        const fullPrice = basePrice * plan.months;
-        const hasDiscount = plan.months > 1 && plan.price < fullPrice;
 
         return `
-            <div class="plan-card ${isPopular ? 'popular' : ''}" id="plan${plan.months}" onclick="selectPlan(${plan.months})">
+            <div class="plan-card" id="plan${plan.months}" onclick="selectPlan(${plan.months})">
+                <span class="plan-check">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </span>
                 <div class="plan-name">${getMonthLabel(plan.months)}</div>
-                <div class="plan-price"><span class="amount-gold">${plan.price}</span> ₽</div>
+                <div class="plan-price">${plan.price}<span class="plan-price-cur">₽</span></div>
                 <div class="plan-period">${perMonth} ₽ / мес</div>
-                ${hasDiscount ? `
-                <div class="plan-savings">
-                    <span class="price-old">${fullPrice} ₽</span>
-                    <span class="savings-badge">−${discount}%</span>
-                </div>` : `
-                <div class="plan-savings">
-                    <span class="savings-badge">Полный доступ</span>
-                </div>`}
             </div>
         `;
     }).join('');
@@ -77,20 +62,80 @@ function renderPlans() {
 export async function loadSubscription() {
     try {
         const sub = await SubscribeAPI.getSubscription();
-        if (sub && sub.activeNow) {
-            document.getElementById('activeSubBlock').classList.remove('hidden');
-            const exp = sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : 'неизвестно';
-            document.getElementById('activeSubText').textContent = `Действует до ${exp}`;
-            document.getElementById('pageSubtitle').textContent = 'Продлите подписку';
+        isActive = !!(sub && sub.activeNow);
+
+        const status = document.getElementById('subStatus');
+        const subtitle = document.getElementById('pageSubtitle');
+        const plansTitle = document.getElementById('plansTitle');
+
+        if (isActive) {
+            const exp = sub.expiresAt
+                ? new Date(sub.expiresAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+                : '—';
+
+            status.className = 'sub-status is-active';
+            status.innerHTML = `
+                <div class="sub-status-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <div class="sub-status-body">
+                    <p class="sub-status-title">Подписка активна</p>
+                    <p class="sub-status-text">Действует до ${exp}</p>
+                </div>
+            `;
+
+            subtitle.textContent = 'Продлите подписку';
+            plansTitle.textContent = 'Продлить на';
+        } else {
+            status.className = 'sub-status is-inactive';
+            status.innerHTML = `
+                <div class="sub-status-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="2"/>
+                        <line x1="2" y1="10" x2="22" y2="10"/>
+                        <line x1="6" y1="15" x2="10" y2="15"/>
+                    </svg>
+                </div>
+                <div class="sub-status-body">
+                    <p class="sub-status-title">Оформите PRO</p>
+                    <p class="sub-status-text">Аналитика, H2H, live-трансляции</p>
+                </div>
+            `;
+
+            subtitle.textContent = 'Оформите подписку';
+            plansTitle.textContent = 'Выберите тариф';
         }
+
+        updatePayButton();
     } catch (e) {}
+}
+
+function updatePayButton() {
+    const wrapper = document.getElementById('payBtnWrapper');
+    const btn = document.getElementById('payBtn');
+    if (!wrapper || !btn) return;
+
+    if (!selectedPlan) {
+        wrapper.classList.add('hidden');
+        return;
+    }
+
+    const price = prices[selectedPlan];
+    const action = isActive ? 'Продлить' : 'Оформить';
+    btn.textContent = price ? `${action} · ${formatMoney(price)}` : action;
+    btn.disabled = false;
+    wrapper.classList.remove('hidden');
 }
 
 export function selectPlan(months) {
     selectedPlan = months;
+
     document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
-    document.getElementById(`plan${months}`).classList.add('selected');
-    document.getElementById('payBtn').disabled = false;
+    document.getElementById(`plan${months}`)?.classList.add('selected');
+
+    updatePayButton();
 }
 
 export async function handlePay() {

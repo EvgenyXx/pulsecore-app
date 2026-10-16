@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.mail.MailStrategy;
 import ru.pulsecore.app.notification.application.mail.MailTemplateService;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 import ru.pulsecore.app.notification.application.mail.context.MailContext;
 import ru.pulsecore.app.notification.application.mail.context.PlayerTransferredContext;
@@ -24,8 +24,8 @@ public class PlayerTransferredMailStrategy implements MailStrategy {
     private final MailTemplateService templates;
 
     @Override
-    public String getType() {
-        return MailTypes.PLAYER_TRANSFERRED;
+    public MailType type() {
+        return MailType.PLAYER_TRANSFERRED;
     }
 
     @Override

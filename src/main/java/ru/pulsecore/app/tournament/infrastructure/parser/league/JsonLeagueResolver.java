@@ -13,7 +13,7 @@ public class JsonLeagueResolver implements LeagueResolver {
     public LeagueType resolve(TournamentPage page) {
         if (page == null) return null;
 
-        String league = page.leagueTitle();
+        String league = page.json().leagueTitle();
         if (league == null || league.isBlank()) return null;
 
         LeagueType result = fromLetter(league.trim().toUpperCase());

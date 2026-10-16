@@ -13,19 +13,18 @@ import java.util.stream.Collectors;
 @Component
 public class MailStrategyRegistry {
 
-    private final Map<String, MailStrategy> strategies;
+    private final Map<MailType, MailStrategy> strategies;
 
     public MailStrategyRegistry(List<MailStrategy> strategyList) {
         this.strategies = strategyList.stream()
-                .collect(Collectors.toMap(MailStrategy::getType, s -> s));
+                .collect(Collectors.toMap(MailStrategy::type, s -> s));
     }
 
-    public void send(String type, MailContext ctx) {
+    public void send(MailType type, MailContext ctx) {
         MailStrategy strategy = strategies.get(type);
         if (strategy == null) {
             throw new MailStrategyNotFoundException(type);
         }
         strategy.send(ctx);
-
     }
 }

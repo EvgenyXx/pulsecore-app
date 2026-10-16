@@ -295,6 +295,16 @@ window.sendMessage = sendMessage;
 window.cancelReply = cancelReply;
 window.toggleFullscreen = toggleFullscreen;
 
-document.getElementById('chatInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && mentionList.length === 0) sendMessage();
-});
+// ============ INIT ============
+// Раньше внизу файла был прямой addEventListener на #chatInput —
+// при динамическом импорте это опасно (модуль может грузиться до DOM).
+// Переносим в init() и вызываем из boot.js.
+
+export function init() {
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && mentionList.length === 0) sendMessage();
+        });
+    }
+}

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.application.mail.MailStrategyRegistry;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.admin.AdminNewUserContext;
 import ru.pulsecore.app.notification.application.mail.context.WelcomeContext;
 import ru.pulsecore.app.shared.event.PlayerCreatedEvent;
@@ -25,14 +25,14 @@ public class PlayerCreatedHandler {
 
         // Welcome
         if (event.email() != null && !event.email().isBlank()) {
-            mailStrategyRegistry.send(MailTypes.WELCOME,
+            mailStrategyRegistry.send(MailType.WELCOME,
                     new WelcomeContext(event.email(), event.playerName()));
         }
 
         // Admin
         String agent = event.userAgent() != null ? event.userAgent() : "Неизвестно";
         Client client = uaParser.parse(agent);
-        mailStrategyRegistry.send(MailTypes.ADMIN_NEW_USER,
+        mailStrategyRegistry.send(MailType.ADMIN_NEW_USER,
                 new AdminNewUserContext(
                         event.playerName(),
                         event.email(),

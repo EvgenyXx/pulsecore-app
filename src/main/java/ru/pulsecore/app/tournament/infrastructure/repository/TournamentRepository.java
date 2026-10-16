@@ -18,7 +18,7 @@ import java.util.Optional;
 public interface TournamentRepository extends JpaRepository<TournamentEntity, Long> {
 
     @Query(value = """
-                SELECT 
+                SELECT
                     t.id AS id,
                     t.link AS link,
                     t.date AS date,

@@ -3,7 +3,7 @@ package ru.pulsecore.app.notification.application.mail.strategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.notification.application.mail.MailStrategy;
-import ru.pulsecore.app.notification.application.mail.MailTypes;
+import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 
 import ru.pulsecore.app.notification.application.mail.context.BroadcastContext;
@@ -17,8 +17,8 @@ public class BroadcastMailStrategy implements MailStrategy {
     private final UniversalMailSender mailSender;
 
     @Override
-    public String getType() {
-        return MailTypes.BROADCAST;
+    public MailType type() {
+        return MailType.BROADCAST;
     }
 
     @Override

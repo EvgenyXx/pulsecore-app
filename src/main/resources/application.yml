@@ -81,8 +81,12 @@ app:
                   - /subscribe.html
                   - /profile.html
                   - /dashboard.html
-                  - /img.png
-                  - /favicon.ico
+                  - /favicon.png
+                  - /apple-touch-icon.png
+                  - /apple-touch-icon-precomposed.png
+                  - /manifest.json
+                  - /sw.js
+                  - /icons/**
                   - /robots.txt
                   - /error
                   - /api/player/**

@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.calculation.removed.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.application.calculation.DefaultMatchCalculationStrategy;
+import ru.pulsecore.app.tournament.application.calculation.StandardDefaultMatchCalculationStrategy;
 import ru.pulsecore.app.tournament.domain.RemovedPlayerHandler;
 import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
@@ -12,7 +12,7 @@ import ru.pulsecore.app.tournament.domain.model.TournamentContext;
 @RequiredArgsConstructor
 public class RemovedInFinalHandler implements RemovedPlayerHandler {
 
-    private final DefaultMatchCalculationStrategy defaultStrategy;
+    private final StandardDefaultMatchCalculationStrategy defaultStrategy;
 
     @Override
     public RemovedStage getStage() {

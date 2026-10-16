@@ -47,7 +47,6 @@ async function loadLive() {
     try {
         const hasSub = await checkSubscription();
         if (!hasSub) {
-            // Скрываем ВСЁ внутри livePage кроме noSubBlock
             document.querySelectorAll('#livePage > *').forEach(el => {
                 if (el.id !== 'noSubBlock') el.style.display = 'none';
             });
@@ -56,7 +55,6 @@ async function loadLive() {
             return;
         }
 
-        // Показываем всё обратно
         document.querySelectorAll('#livePage > *').forEach(el => {
             el.style.display = '';
         });
