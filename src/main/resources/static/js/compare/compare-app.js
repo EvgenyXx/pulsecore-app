@@ -4,7 +4,7 @@ import { renderH2HCard, renderMatchRow } from './h2h-card.js';
 import { renderSalaryH2HCard } from './salary-card.js';
 import { PlayerSearch } from './player-search.js';
 import { searchPlayers, searchRegisteredPlayers } from './data-loader.js';
-import { getPeriodDates } from './period.js';
+import { ComparePeriod, getPeriodDates, buildPeriodParams } from './period.js';
 import { initTooltips } from './tooltip.js';
 import { checkSubscription, subBlockHtml } from '../modules/subscription-block.js';
 import {
@@ -32,7 +32,7 @@ let leftSearchSalary = null;
 let rightSearchSalary = null;
 
 let currentMode = 'versus';
-let currentPeriod = 'all';
+let currentPeriod = ComparePeriod.MONTH;
 let customStartDate = null;
 let customEndDate = null;
 let searchesReady = false;
@@ -90,18 +90,9 @@ function hideH2HResult() {
     matchesRequestId++;
 }
 
-// ===== Расчёт дат =====
-function resolveDates() {
-    let start = customStartDate;
-    let end = customEndDate;
-
-    if (!start || !end) {
-        const dates = getPeriodDates(currentPeriod || 'all');
-        start = dates.start;
-        end = dates.end;
-    }
-
-    return { start, end };
+// ===== Параметры периода для запроса =====
+function resolvePeriodParams() {
+    return buildPeriodParams(customStartDate, customEndDate, currentPeriod);
 }
 
 // ===== Красивый рендер ошибки =====
@@ -129,14 +120,6 @@ async function compareH2H() {
     const selRight = getSelectedRight();
     if (!selLeft || !selRight) return;
 
-    const { start, end } = resolveDates();
-
-    if (!start || !end) {
-        const resultContainer = document.getElementById('h2hResult');
-        renderError(resultContainer, 'Не указан период', 'Выберите даты начала и окончания периода в настройках.');
-        return;
-    }
-
     const btn = document.getElementById('h2hCompareBtn');
     if (!btn) return;
     btn.disabled = true;
@@ -153,9 +136,14 @@ async function compareH2H() {
 
         const params = new URLSearchParams({
             player1Name: selLeft.playerName,
-            player2Name: selRight.playerName,
-            start: start,
-            end: end
+            player2Name: selRight.playerName
+        });
+
+        const periodParams = resolvePeriodParams();
+        Object.entries(periodParams).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                params.append(key, value);
+            }
         });
 
         const res = await fetch(`${endpoint}?${params}`, {
@@ -228,15 +216,19 @@ async function loadMatchesPage(reqId, reset = false) {
     }
 
     try {
-        const { start, end } = resolveDates();
         const params = new URLSearchParams({
             player1Name: selLeft.playerName,
             player2Name: selRight.playerName,
-            page: matchesPage,
-            size: MATCHES_PAGE_SIZE
+            page: String(matchesPage),
+            size: String(MATCHES_PAGE_SIZE)
         });
-        if (start) params.append('start', start);
-        if (end) params.append('end', end);
+
+        const periodParams = resolvePeriodParams();
+        Object.entries(periodParams).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                params.append(key, value);
+            }
+        });
 
         const res = await fetch(`/api/tournament/compare/h2h/matches?${params}`, {
             credentials: 'same-origin'
@@ -308,11 +300,6 @@ function initMatchesScroll() {
 
 // ===== Поиск =====
 
-/**
- * Создаёт ОБА набора поисковиков один раз.
- * Salary — /api/player/search (только зарегистрированные).
- * Default — /api/tournament/compare/players/search (все).
- */
 function ensureSearches() {
     if (searchesReady) return;
 
@@ -401,7 +388,10 @@ window.addEventListener('settings-applied', (e) => {
     const detail = e.detail || {};
 
     currentMode = detail.mode || currentMode;
-    currentPeriod = detail.period || currentPeriod;
+
+    if (detail.period) {
+        currentPeriod = detail.period;
+    }
 
     if (detail.metricId) {
         const { setMetric } = window;

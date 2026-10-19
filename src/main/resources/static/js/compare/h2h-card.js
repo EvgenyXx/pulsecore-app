@@ -27,13 +27,12 @@ export function renderH2HCard(data) {
 
     return `
         <div class="h2h-card">
-            <h3 class="h2h-title">Личные встречи</h3>
+            <h3 class="h2h-title">Личные встречи <span style="opacity: 0.5; font-weight: normal; margin-left: 4px;">(${total})</span></h3>
 
             <div class="h2h-players">
                 <div class="h2h-player ${p1Class}">
                     <p class="h2h-player-name">${data.player1Name}</p>
                     <p class="h2h-player-wins">${p1Wins}</p>
-                    <p class="h2h-player-label">${total} матчей</p>
                 </div>
                 <div class="h2h-vs">
                     <span class="h2h-vs-text">VS</span>
@@ -41,7 +40,6 @@ export function renderH2HCard(data) {
                 <div class="h2h-player ${p2Class}">
                     <p class="h2h-player-name">${data.player2Name}</p>
                     <p class="h2h-player-wins">${p2Wins}</p>
-                    <p class="h2h-player-label">${total} матчей</p>
                 </div>
             </div>
 
