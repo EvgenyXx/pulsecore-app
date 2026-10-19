@@ -19,13 +19,11 @@ import {
 
 const MATCHES_PAGE_SIZE = 20;
 
-// Выбранные игроки по метрикам (раздельные)
 let selectedLeftDefault = null;
 let selectedRightDefault = null;
 let selectedLeftSalary = null;
 let selectedRightSalary = null;
 
-// Два независимых набора поисковиков
 let leftSearchDefault = null;
 let rightSearchDefault = null;
 let leftSearchSalary = null;
@@ -38,13 +36,11 @@ let customEndDate = null;
 let searchesReady = false;
 let activeMetric = 'h2h';
 
-// ===== Лента матчей =====
 let matchesPage = 0;
 let matchesHasMore = false;
 let matchesLoading = false;
 let matchesRequestId = 0;
 
-// ===== Хелперы выбора игроков =====
 function isSalary() {
     return activeMetric === 'salary';
 }
@@ -56,7 +52,6 @@ function getSelectedRight() {
     return isSalary() ? selectedRightSalary : selectedRightDefault;
 }
 
-// ===== Видимость рядов поиска =====
 function applySearchRowVisibility() {
     const salaryRow = document.getElementById('playerSearchRowSalary');
     const defaultRow = document.getElementById('playerSearchRow');
@@ -90,12 +85,10 @@ function hideH2HResult() {
     matchesRequestId++;
 }
 
-// ===== Параметры периода для запроса =====
 function resolvePeriodParams() {
     return buildPeriodParams(customStartDate, customEndDate, currentPeriod);
 }
 
-// ===== Красивый рендер ошибки =====
 function renderError(container, title, message) {
     container.innerHTML = `
         <div style="
@@ -114,7 +107,6 @@ function renderError(container, title, message) {
     container.classList.remove('hidden');
 }
 
-// ===== Основной compare =====
 async function compareH2H() {
     const selLeft = getSelectedLeft();
     const selRight = getSelectedRight();
@@ -193,7 +185,6 @@ async function compareH2H() {
     }
 }
 
-// ===== Лента матчей (только для метрики h2h) =====
 async function loadMatchesPage(reqId, reset = false) {
     if (matchesLoading) return;
     if (!matchesHasMore && !reset) return;
@@ -297,8 +288,6 @@ function initMatchesScroll() {
         }
     });
 }
-
-// ===== Поиск =====
 
 function ensureSearches() {
     if (searchesReady) return;

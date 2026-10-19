@@ -9,15 +9,10 @@ function formatPercent(val) {
     return val != null ? Number(val).toFixed(1) + '%' : '0%';
 }
 
-window.toggleMethodology = function() {
-    const body = document.getElementById('methodologyBody');
-    const arrow = document.getElementById('methodologyArrow');
-    if (body.style.display === 'none') {
-        body.style.display = 'block';
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        body.style.display = 'none';
-        arrow.style.transform = 'rotate(0deg)';
+window.toggleMethodologySheet = function() {
+    const overlay = document.getElementById('methodologySheetOverlay');
+    if (overlay) {
+        overlay.classList.toggle('open');
     }
 };
 
@@ -40,7 +35,6 @@ export function renderSalaryH2HCard(data) {
     const p2Share = 100 - p1Share;
 
     return `
-        <!-- Высота уменьшена: было calc(100dvh - 270px), стало calc(100dvh - 340px) -->
         <div class="h2h-card salary-mode" style="height: calc(100dvh - 340px); padding-bottom: 24px;">
             
             <!-- ФИКСИРОВАННАЯ ШАПКА -->
@@ -117,35 +111,25 @@ export function renderSalaryH2HCard(data) {
                     text-align: left;
                 ">
                     
-                    <!-- Убрали имя сверху, оставили только текст -->
-                    <div style="font-size: 14px; color: #d4d4d8; line-height: 1.5; margin-bottom: 12px; text-align: center;">
-                        ${isDraw ? 'Игроки показали равные результаты.' : 'За данный период игрок ' + winnerName + ' находился в более стабильной и сильной форме по соотношению ключевых показателей.'}
-                    </div>
-
-                    <!-- Кнопка "Методика" -->
-                    <div style="margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
-                        <div onclick="toggleMethodology()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #ffffff; font-size: 13px; font-weight: 700; user-select: none;">
-                            <span>Методика расчета</span>
-                            <svg id="methodologyArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition: transform 0.2s;">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </div>
-                        
-                        <div id="methodologyBody" style="display: none; margin-top: 10px; font-size: 12px; color: #a1a1aa; line-height: 1.5; text-align: left;">
-                            <p style="margin-bottom: 8px; text-align: left;">Рейтинг честно сравнивает игроков, независимо от их лиги и общего количества игр. Мы смотрим только на то, как игрок показывает себя относительно своего уровня:</p>
-                            <ul style="list-style-type: disc; padding-left: 16px; margin: 0; display: flex; flex-direction: column; gap: 6px;">
-                                <li style="text-align: left;">Эффективность (отношение среднего чека игрока к среднему чеку по его лиге)</li>
-                                <li style="text-align: left;">Процент выигранных матчей</li>
-                                <li style="text-align: left;">Количество сыгранных турниров</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="salary-topsis-score" style="margin-bottom: 0; gap: 12px;">
+                    <!-- 1. Сначала проценты TOPSIS -->
+                    <div class="salary-topsis-score" style="margin-bottom: 16px; gap: 12px;">
                         <span class="${p1Win ? 'win' : ''}" style="font-size: 18px;">${formatPercent(p1.topsisScore)}</span>
                         <span class="vs" style="font-size: 11px;">vs</span>
                         <span class="${p2Win ? 'win' : ''}" style="font-size: 18px;">${formatPercent(p2.topsisScore)}</span>
                     </div>
+
+                    <!-- 2. Потом текст с результатом и иконкой методики -->
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <div style="font-size: 14px; color: #d4d4d8; line-height: 1.5; text-align: center;">
+                            ${isDraw ? 'Игроки показали равные результаты.' : 'За данный период игрок ' + winnerName + ' находился в более стабильной и сильной форме по соотношению ключевых показателей.'}
+                        </div>
+                        
+                        <!-- Иконка вопроса -->
+                        <div onclick="toggleMethodologySheet()" style="flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #a1a1aa; font-size: 11px; font-weight: bold; transition: background 0.2s;">
+                            ?
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

@@ -311,7 +311,6 @@
                         </div>
                     </div>
 
-                    <!-- Поиск для метрики «Зарплата» — только зарегистрированные -->
                     <div class="player-search-row" id="playerSearchRowSalary" style="display: none;">
                         <div class="player-search-wrapper">
                             <input type="text" id="searchLeftSalary" class="player-search-input" placeholder="Поиск игрока 1..." autocomplete="off">
@@ -323,7 +322,6 @@
                         </div>
                     </div>
 
-                    <!-- Поиск для остальных метрик — все игроки из матчей -->
                     <div class="player-search-row" id="playerSearchRow">
                         <div class="player-search-wrapper">
                             <input type="text" id="searchLeft" class="player-search-input" placeholder="Поиск игрока 1..." autocomplete="off">
@@ -674,6 +672,22 @@
                 <input type="date" id="customEnd" class="date-input" placeholder="дд.мм.гггг">
             </div>
             <button class="period-sheet-btn" onclick="applySettings()" style="justify-content: center; background: rgba(99,102,241,0.1); color: #c7d2fe; margin-top: 8px;">Применить</button>
+        </div>
+    </div>
+
+    <!-- ШТОРКА МЕТОДИКИ -->
+    <div class="period-sheet-overlay" id="methodologySheetOverlay" onclick="toggleMethodologySheet()">
+        <div class="period-sheet" onclick="event.stopPropagation()">
+            <div class="period-sheet-handle"></div>
+            <h3 class="text-base font-bold text-white mb-4 text-center">Методика расчета</h3>
+            <div style="font-size: 13px; color: #a1a1aa; line-height: 1.6; text-align: left; padding-bottom: 20px;">
+                <p style="margin-bottom: 12px;">Рейтинг честно сравнивает игроков, независимо от их лиги и общего количества игр. Мы смотрим только на то, как игрок показывает себя относительно своего уровня:</p>
+                <ul style="list-style-type: disc; padding-left: 20px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+                    <li>Эффективность (отношение среднего чека игрока к среднему чеку по его лиге)</li>
+                    <li>Процент выигранных матчей</li>
+                    <li>Количество сыгранных турниров</li>
+                </ul>
+            </div>
         </div>
     </div>
 
