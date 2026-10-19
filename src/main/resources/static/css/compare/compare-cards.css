@@ -55,3 +55,6 @@
     width: 52px;
     flex-shrink: 0;
 }
+.tooltip-container:hover .tooltip-text {
+    opacity: 1 !important;
+}

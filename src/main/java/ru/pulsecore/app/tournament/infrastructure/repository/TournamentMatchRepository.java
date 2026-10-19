@@ -17,6 +17,23 @@ import java.util.UUID;
 @Repository
 public interface TournamentMatchRepository extends JpaRepository<TournamentMatchEntity, UUID> {
 
+    @Query(value = """
+            SELECT 
+                p.name::text AS playerName,
+                COUNT(tm.id) AS totalMatches,
+                SUM(CASE WHEN LOWER(tm.winner_name) = LOWER(p.name::text) THEN 1 ELSE 0 END) AS wins
+            FROM players p
+            LEFT JOIN tournament_match tm ON (LOWER(tm.player1_name) = LOWER(p.name::text) OR LOWER(tm.player2_name) = LOWER(p.name::text))
+                AND tm.played_at >= :start AND tm.played_at <= :end
+            WHERE LOWER(p.name::text) IN (:playerNames)
+            GROUP BY p.name::text
+            """, nativeQuery = true)
+    List<PlayerMatchStatsProjection> findWinrateForCompare(
+            @Param("playerNames") List<String> playerNames,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
     @Query("""
                 SELECT
                     m.playedAt AS playedAt,

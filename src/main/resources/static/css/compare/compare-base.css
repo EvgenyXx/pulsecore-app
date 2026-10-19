@@ -212,6 +212,13 @@ body {
     max-height: 780px;
 }
 
+/* Фикс высоты для карточки зарплат */
+.h2h-card.salary-mode {
+    height: auto;
+    min-height: 420px;
+    max-height: none;
+}
+
 .h2h-card::before {
     content: '';
     position: absolute;
@@ -626,4 +633,111 @@ body {
 .card-spacer {
     width: 52px;
     flex-shrink: 0;
+}
+
+/* ===== Salary Card Styles ===== */
+
+.salary-period {
+    text-align: center;
+    color: #6e6e73;
+    font-size: 0.7rem;
+    margin-bottom: 16px;
+    margin-top: -6px;
+}
+
+.salary-diff {
+    text-align: center;
+    color: #a5b4fc;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.salary-metrics-table {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+}
+
+.salary-metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.salary-metric-row:last-child {
+    border-bottom: none;
+}
+
+.salary-val {
+    width: 30%;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #6e6e73;
+}
+
+.salary-val:first-child { text-align: left; }
+.salary-val:last-child { text-align: right; }
+
+.salary-val.win {
+    color: #ffffff;
+}
+
+.salary-label {
+    width: 40%;
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #98989d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.salary-topsis-block {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.salary-topsis-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #98989d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.salary-topsis-score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.salary-topsis-score span:not(.vs) {
+    color: #6e6e73;
+}
+
+.salary-topsis-score span.win {
+    color: #fff;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
+}
+
+.salary-topsis-score .vs {
+    font-size: 0.9rem;
+    color: #6e6e73;
+    font-weight: 400;
+}
+
+.salary-topsis-winner {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-light, #c7d2fe);
 }

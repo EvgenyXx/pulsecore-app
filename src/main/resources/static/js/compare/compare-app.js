@@ -1,6 +1,7 @@
 // js/compare/compare-app.js
 
 import { renderH2HCard, renderMatchRow } from './h2h-card.js';
+import { renderSalaryH2HCard } from './salary-card.js';
 import { PlayerSearch } from './player-search.js';
 import { getPeriodDates } from './period.js';
 import { initTooltips } from './tooltip.js';
@@ -73,9 +74,37 @@ function resolveDates() {
     return { start, end };
 }
 
+// ===== Красивый рендер ошибки (в стиле крупных брендов) =====
+function renderError(container, title, message) {
+    container.innerHTML = `
+        <div style="
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 16px;
+            backdrop-filter: blur(10px);
+        ">
+            <div style="color: #fca5a5; font-weight: 700; font-size: 16px; margin-bottom: 6px;">${title}</div>
+            <div style="color: #ef4444; font-size: 13px; line-height: 1.5;">${message}</div>
+        </div>
+    `;
+    container.classList.remove('hidden');
+}
+
 // ===== Основной compare =====
 async function compareH2H() {
     if (!selectedLeft || !selectedRight) return;
+
+    const { start, end } = resolveDates();
+
+    // Проверка на фронте: если дат нет, показываем ошибку и не шлем запрос
+    if (!start || !end) {
+        const resultContainer = document.getElementById('h2hResult');
+        renderError(resultContainer, 'Не указан период', 'Выберите даты начала и окончания периода в настройках.');
+        return;
+    }
 
     const btn = document.getElementById('h2hCompareBtn');
     if (!btn) return;
@@ -83,49 +112,71 @@ async function compareH2H() {
     btn.textContent = 'Загрузка...';
 
     try {
-        const { start, end } = resolveDates();
+        const settings = getSettings();
+        const metricId = settings.metricId || 'h2h';
+
+        let endpoint = '/api/tournament/compare/h2h';
+        if (metricId === 'salary') {
+            endpoint = '/api/tournament/compare/salary/h2h';
+        }
 
         const params = new URLSearchParams({
             player1Name: selectedLeft.playerName,
-            player2Name: selectedRight.playerName
+            player2Name: selectedRight.playerName,
+            start: start,
+            end: end
         });
-        if (start) params.append('start', start);
-        if (end) params.append('end', end);
 
-        const res = await fetch(`/api/tournament/compare/h2h?${params}`, {
+        const res = await fetch(`${endpoint}?${params}`, {
             credentials: 'same-origin'
         });
 
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const resultContainer = document.getElementById('h2hResult');
+
+        if (!res.ok) {
+            let errorMessage = 'Проверьте соединение и попробуйте снова.';
+            try {
+                const errorData = await res.json();
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (e) {
+                // Если не удалось распарсить JSON, оставляем дефолтный текст
+            }
+            renderError(resultContainer, 'Ошибка данных', errorMessage);
+            return;
+        }
 
         const data = await res.json();
 
-        const resultContainer = document.getElementById('h2hResult');
-        resultContainer.innerHTML = renderH2HCard(data);
-        resultContainer.classList.remove('hidden');
-        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (metricId === 'salary') {
+            resultContainer.innerHTML = renderSalaryH2HCard(data);
+            resultContainer.classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            resultContainer.innerHTML = renderH2HCard(data);
+            resultContainer.classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-        initMatchesScroll();
-
-        matchesPage = 0;
-        matchesHasMore = true;
-        matchesLoading = false;
-        matchesRequestId++;
-        const reqId = matchesRequestId;
-
-        await loadMatchesPage(reqId, true);
+            initMatchesScroll();
+            matchesPage = 0;
+            matchesHasMore = true;
+            matchesLoading = false;
+            matchesRequestId++;
+            const reqId = matchesRequestId;
+            await loadMatchesPage(reqId, true);
+        }
     } catch (e) {
-        console.error('Ошибка H2H:', e);
+        console.error('Ошибка сравнения:', e);
         const resultContainer = document.getElementById('h2hResult');
-        resultContainer.innerHTML = '<p class="text-red-400 text-center py-4">Ошибка загрузки H2H</p>';
-        resultContainer.classList.remove('hidden');
+        renderError(resultContainer, 'Нет соединения', 'Сервер временно недоступен. Попробуйте позже.');
     } finally {
         btn.disabled = false;
         btn.textContent = 'Сравнить';
     }
 }
 
-// ===== Лента матчей =====
+// ===== Лента матчей (только для метрики h2h) =====
 async function loadMatchesPage(reqId, reset = false) {
     if (matchesLoading) return;
     if (!matchesHasMore && !reset) return;
@@ -292,10 +343,15 @@ window.initCompareApp = loadCompare;
 window.compareH2H = compareH2H;
 
 window.addEventListener('settings-applied', (e) => {
-    const { mode } = e.detail;
+    const detail = e.detail || {};
 
-    currentMode = mode;
-    currentPeriod = getSettings().period || currentPeriod;
+    currentMode = detail.mode || currentMode;
+    currentPeriod = detail.period || currentPeriod;
+
+    if (detail.metricId) {
+        const { setMetric } = window;
+        if (setMetric) setMetric(detail.metricId);
+    }
 
     const customStartInput = document.getElementById('customStart');
     const customEndInput = document.getElementById('customEnd');

@@ -44,8 +44,6 @@ public class TournamentApi {
     public static final String DAILY_INCOME = "/daily-income";
 
 
-
-
     /**
      * Главная страница на дашборде.
      * DASHBOARD — главная страница игрока.
@@ -82,10 +80,9 @@ public class TournamentApi {
      * REPORTS_CANCEL - отменить отправку выбранного отчета
      * Dashboard
      */
-    public static final String REPORTS = "/reports" ;
+    public static final String REPORTS = "/reports";
     public static final String REPORTS_PENDING = "/reports/pending";
     public static final String REPORTS_CANCEL = "/reports/{id}/cancel";
-
 
 
     /**
@@ -118,11 +115,18 @@ public class TournamentApi {
      * COMPARE_H2H_MATCHES — список матчей H2H с пагинацией.
      * Compare.
      */
+
     public static final String COMPARE_PLAYERS = "/compare/players";
     public static final String COMPARE_MATCH_STATS = "/compare/match-stats";
     public static final String COMPARE_H2H = "/compare/h2h";
     public static final String COMPARE_H2H_MATCHES = COMPARE_H2H + "/matches";
     public static final String COMPARE_PLAYERS_SEARCH = "/compare/players/search";
+
+    /**
+     * Сравнение игроков по зарплате.
+     * COMPARE_SALARY_H2H — H2H по зарплате (TOPSIS).
+     */
+    public static final String COMPARE_SALARY_H2H = "/compare/salary/h2h";
 
     public static final String LINEUP_BY_ID = "/lineups/{id}";
     public static final String PARAM_LINEUP_BY_ID = "id";

@@ -11,6 +11,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -20,6 +21,12 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleAsyncRequestNotUsable(AsyncRequestNotUsableException e) {
+        log.debug("Клиент прервал соединение: {}", e.getMessage());
+    }
+
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Void> handleMaxSize(MaxUploadSizeExceededException ex) {
@@ -85,7 +92,7 @@ public class GlobalExceptionHandler {
                 .status(e.getStatus().value())
                 .error(e.getStatus().getReasonPhrase())
                 .message(e.getMessage())
-                .type(e.getType())  // ← добавь эту строку
+                .type(e.getType())
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(e.getStatus()).body(response);

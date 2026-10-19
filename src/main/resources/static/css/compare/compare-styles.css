@@ -308,6 +308,97 @@ body {
     flex-shrink: 0;
 }
 
+/* ===== НОВАЯ КАРТОЧКА (ЗАРПЛАТА / TOPSIS) ===== */
+
+.h2h-metrics-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.metric-label {
+    color: #a1a1aa;
+    font-size: 13px;
+    width: 40%;
+    text-align: left;
+}
+
+.metric-val {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    width: 30%;
+    text-align: center;
+}
+
+.metric-val.is-winner {
+    color: #22d3ee; /* Твой акцентный цвет (Cyan) */
+}
+
+.h2h-topsis-result {
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.h2h-topsis-label {
+    color: #a1a1aa;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.h2h-topsis-score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.h2h-topsis-score .score-p1,
+.h2h-topsis-score .score-p2 {
+    color: #52525b; /* Проигравший (серый) */
+    transition: color 0.2s;
+}
+
+.h2h-topsis-score .score-p1.win,
+.h2h-topsis-score .score-p2.win {
+    color: #ffffff; /* Победитель (белый) */
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.h2h-topsis-vs {
+    font-size: 14px;
+    color: #52525b;
+    font-weight: 400;
+}
+
+.h2h-topsis-winner {
+    font-size: 14px;
+    font-weight: 700;
+    color: #22c55e; /* Зеленый */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
 /* ===== МОБИЛЬНАЯ ВЕРСИЯ (PWA) ===== */
 @media (max-width: 640px) {
     #comparePage {
@@ -556,4 +647,9 @@ body {
         white-space: nowrap;
         text-align: right;
     }
+
+    /* Адаптив для карточки ЗП */
+    .metric-label { font-size: 12px; }
+    .metric-val { font-size: 13px; }
+    .h2h-topsis-score { font-size: 20px; }
 }
