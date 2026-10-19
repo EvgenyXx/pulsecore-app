@@ -27,6 +27,12 @@ public class PlayerSearchService {
     private final PlayerRepository playerRepository;
     private final PlayerMapper playerMapper;
 
+    public Page<PlayerData> searchRegisteredPlayers(String query, int page, int size) {
+    return playerRepository
+            .searchByName(query, PageRequest.of(page, size))
+            .map(playerMapper::toData);
+}
+
     public List<PlayerData> getPlayersIds(Set<UUID> playerIds) {
         return playerRepository.findProjectionsByIds(playerIds)
                 .stream()

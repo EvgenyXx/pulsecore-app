@@ -3,6 +3,7 @@
 import { renderH2HCard, renderMatchRow } from './h2h-card.js';
 import { renderSalaryH2HCard } from './salary-card.js';
 import { PlayerSearch } from './player-search.js';
+import { searchPlayers, searchRegisteredPlayers } from './data-loader.js';
 import { getPeriodDates } from './period.js';
 import { initTooltips } from './tooltip.js';
 import { checkSubscription, subBlockHtml } from '../modules/subscription-block.js';
@@ -18,14 +19,24 @@ import {
 
 const MATCHES_PAGE_SIZE = 20;
 
-let selectedLeft = null;
-let selectedRight = null;
-let leftSearch = null;
-let rightSearch = null;
+// Выбранные игроки по метрикам (раздельные)
+let selectedLeftDefault = null;
+let selectedRightDefault = null;
+let selectedLeftSalary = null;
+let selectedRightSalary = null;
+
+// Два независимых набора поисковиков
+let leftSearchDefault = null;
+let rightSearchDefault = null;
+let leftSearchSalary = null;
+let rightSearchSalary = null;
+
 let currentMode = 'versus';
 let currentPeriod = 'all';
 let customStartDate = null;
 let customEndDate = null;
+let searchesReady = false;
+let activeMetric = 'h2h';
 
 // ===== Лента матчей =====
 let matchesPage = 0;
@@ -33,9 +44,28 @@ let matchesHasMore = false;
 let matchesLoading = false;
 let matchesRequestId = 0;
 
+// ===== Хелперы выбора игроков =====
+function isSalary() {
+    return activeMetric === 'salary';
+}
+
+function getSelectedLeft() {
+    return isSalary() ? selectedLeftSalary : selectedLeftDefault;
+}
+function getSelectedRight() {
+    return isSalary() ? selectedRightSalary : selectedRightDefault;
+}
+
+// ===== Видимость рядов поиска =====
+function applySearchRowVisibility() {
+    const salaryRow = document.getElementById('playerSearchRowSalary');
+    const defaultRow = document.getElementById('playerSearchRow');
+    if (salaryRow) salaryRow.style.display = isSalary() ? '' : 'none';
+    if (defaultRow) defaultRow.style.display = isSalary() ? 'none' : '';
+}
+
 function showSearchRow() {
-    const searchRow = document.getElementById('playerSearchRow');
-    if (searchRow) searchRow.style.display = '';
+    applySearchRowVisibility();
 }
 
 function showH2HButton() {
@@ -74,7 +104,7 @@ function resolveDates() {
     return { start, end };
 }
 
-// ===== Красивый рендер ошибки (в стиле крупных брендов) =====
+// ===== Красивый рендер ошибки =====
 function renderError(container, title, message) {
     container.innerHTML = `
         <div style="
@@ -95,11 +125,12 @@ function renderError(container, title, message) {
 
 // ===== Основной compare =====
 async function compareH2H() {
-    if (!selectedLeft || !selectedRight) return;
+    const selLeft = getSelectedLeft();
+    const selRight = getSelectedRight();
+    if (!selLeft || !selRight) return;
 
     const { start, end } = resolveDates();
 
-    // Проверка на фронте: если дат нет, показываем ошибку и не шлем запрос
     if (!start || !end) {
         const resultContainer = document.getElementById('h2hResult');
         renderError(resultContainer, 'Не указан период', 'Выберите даты начала и окончания периода в настройках.');
@@ -121,8 +152,8 @@ async function compareH2H() {
         }
 
         const params = new URLSearchParams({
-            player1Name: selectedLeft.playerName,
-            player2Name: selectedRight.playerName,
+            player1Name: selLeft.playerName,
+            player2Name: selRight.playerName,
             start: start,
             end: end
         });
@@ -140,9 +171,7 @@ async function compareH2H() {
                 if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
-                // Если не удалось распарсить JSON, оставляем дефолтный текст
-            }
+            } catch (e) {}
             renderError(resultContainer, 'Ошибка данных', errorMessage);
             return;
         }
@@ -180,7 +209,9 @@ async function compareH2H() {
 async function loadMatchesPage(reqId, reset = false) {
     if (matchesLoading) return;
     if (!matchesHasMore && !reset) return;
-    if (!selectedLeft || !selectedRight) return;
+    const selLeft = getSelectedLeft();
+    const selRight = getSelectedRight();
+    if (!selLeft || !selRight) return;
 
     matchesLoading = true;
 
@@ -199,8 +230,8 @@ async function loadMatchesPage(reqId, reset = false) {
     try {
         const { start, end } = resolveDates();
         const params = new URLSearchParams({
-            player1Name: selectedLeft.playerName,
-            player2Name: selectedRight.playerName,
+            player1Name: selLeft.playerName,
+            player2Name: selRight.playerName,
             page: matchesPage,
             size: MATCHES_PAGE_SIZE
         });
@@ -217,7 +248,6 @@ async function loadMatchesPage(reqId, reset = false) {
         if (reqId !== matchesRequestId) return;
 
         const items = page.content || [];
-
         if (!list) return;
 
         if (reset) list.innerHTML = '';
@@ -234,7 +264,7 @@ async function loadMatchesPage(reqId, reset = false) {
         empty?.classList.add('hidden');
 
         const html = items.map(m =>
-            renderMatchRow(m, selectedLeft.playerName, selectedRight.playerName)
+            renderMatchRow(m, selLeft.playerName, selRight.playerName)
         ).join('');
 
         list.insertAdjacentHTML('beforeend', html);
@@ -249,7 +279,6 @@ async function loadMatchesPage(reqId, reset = false) {
                 </div>
             `);
         }
-
     } catch (e) {
         console.error('Ошибка загрузки матчей:', e);
     } finally {
@@ -257,7 +286,6 @@ async function loadMatchesPage(reqId, reset = false) {
     }
 }
 
-// Наблюдатель за скроллом СПИСКА МАТЧЕЙ — бесконечная подгрузка
 function initMatchesScroll() {
     const list = document.querySelector('.h2h-matches-scroll');
     if (!list || list.dataset.h2hBound === '1') return;
@@ -279,28 +307,54 @@ function initMatchesScroll() {
 }
 
 // ===== Поиск =====
-function handleSearchSelect(side, playerName) {
-    const player = { playerName: playerName };
 
-    if (side === 'left') {
-        selectedLeft = player;
-    } else {
-        selectedRight = player;
-    }
+/**
+ * Создаёт ОБА набора поисковиков один раз.
+ * Salary — /api/player/search (только зарегистрированные).
+ * Default — /api/tournament/compare/players/search (все).
+ */
+function ensureSearches() {
+    if (searchesReady) return;
 
-    hideH2HResult();
-}
+    leftSearchDefault = new PlayerSearch(
+        'searchLeft', 'searchLeftDropdown',
+        (name) => {
+            if (name === null) { selectedLeftDefault = null; hideH2HResult(); return; }
+            selectedLeftDefault = { playerName: name };
+            hideH2HResult();
+        },
+        { searchFn: searchPlayers }
+    );
+    rightSearchDefault = new PlayerSearch(
+        'searchRight', 'searchRightDropdown',
+        (name) => {
+            if (name === null) { selectedRightDefault = null; hideH2HResult(); return; }
+            selectedRightDefault = { playerName: name };
+            hideH2HResult();
+        },
+        { searchFn: searchPlayers }
+    );
 
-function initSearch() {
-    if (leftSearch) return;
+    leftSearchSalary = new PlayerSearch(
+        'searchLeftSalary', 'searchLeftSalaryDropdown',
+        (name) => {
+            if (name === null) { selectedLeftSalary = null; hideH2HResult(); return; }
+            selectedLeftSalary = { playerName: name };
+            hideH2HResult();
+        },
+        { searchFn: searchRegisteredPlayers }
+    );
+    rightSearchSalary = new PlayerSearch(
+        'searchRightSalary', 'searchRightSalaryDropdown',
+        (name) => {
+            if (name === null) { selectedRightSalary = null; hideH2HResult(); return; }
+            selectedRightSalary = { playerName: name };
+            hideH2HResult();
+        },
+        { searchFn: searchRegisteredPlayers }
+    );
 
-    leftSearch = new PlayerSearch('searchLeft', 'searchLeftDropdown', (name) => {
-        handleSearchSelect('left', name);
-    });
-
-    rightSearch = new PlayerSearch('searchRight', 'searchRightDropdown', (name) => {
-        handleSearchSelect('right', name);
-    });
+    searchesReady = true;
 }
 
 async function loadCompare() {
@@ -310,6 +364,7 @@ async function loadCompare() {
         if (!hasSub) {
             document.querySelector('.compare-header').style.display = 'none';
             document.getElementById('playerSearchRow')?.style.setProperty('display', 'none');
+            document.getElementById('playerSearchRowSalary')?.style.setProperty('display', 'none');
             document.getElementById('h2hCompareBtnWrapper')?.remove();
 
             const container = document.querySelector('#comparePage .max-w-5xl');
@@ -322,8 +377,8 @@ async function loadCompare() {
         document.querySelector('.compare-header').style.display = '';
         document.getElementById('compareNoSub')?.remove();
 
-        initSearch();
-
+        activeMetric = getSettings().metricId || 'h2h';
+        ensureSearches();
         showSearchRow();
         showH2HButton();
     } catch (e) {
@@ -351,6 +406,7 @@ window.addEventListener('settings-applied', (e) => {
     if (detail.metricId) {
         const { setMetric } = window;
         if (setMetric) setMetric(detail.metricId);
+        activeMetric = detail.metricId;
     }
 
     const customStartInput = document.getElementById('customStart');
@@ -358,6 +414,7 @@ window.addEventListener('settings-applied', (e) => {
     customStartDate = customStartInput?.value || null;
     customEndDate = customEndInput?.value || null;
 
+    ensureSearches();
     showSearchRow();
     showH2HButton();
 });

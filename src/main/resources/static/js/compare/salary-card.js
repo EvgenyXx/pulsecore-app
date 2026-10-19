@@ -40,8 +40,8 @@ export function renderSalaryH2HCard(data) {
     const p2Share = 100 - p1Share;
 
     return `
-        <!-- Высота подрезана (растянута вниз) -->
-        <div class="h2h-card salary-mode" style="height: calc(100dvh - 270px); padding-bottom: 24px;">
+        <!-- Высота уменьшена: было calc(100dvh - 270px), стало calc(100dvh - 340px) -->
+        <div class="h2h-card salary-mode" style="height: calc(100dvh - 340px); padding-bottom: 24px;">
             
             <!-- ФИКСИРОВАННАЯ ШАПКА -->
             <div style="flex-shrink: 0;">
