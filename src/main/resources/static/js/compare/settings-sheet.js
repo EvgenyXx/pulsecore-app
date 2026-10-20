@@ -6,7 +6,7 @@ import { initTooltips } from './tooltip.js';
 
 let currentMode = 'versus';
 let currentMetricId = 'salary'; // Дефолтная метрика — Зарплата
-let currentPeriod = ComparePeriod.MONTH; // Дефолтный период — Месяц
+let currentPeriod = 'month'; // Дефолтный период — Месяц (храним строкой)
 let metricAccordionOpen = false;
 
 export function initSettingsSheet() {
@@ -15,7 +15,6 @@ export function initSettingsSheet() {
 }
 
 function initSegments() {
-    // Режим (modeRow) убран из HTML — слайдер только для периода
     const periodRow = document.getElementById('periodSegmentRow');
 
     if (periodRow && !periodRow.querySelector('.segment-slider')) {
@@ -32,13 +31,15 @@ function updatePeriodSlider() {
     const row = document.getElementById('periodSegmentRow');
     const slider = row?.querySelector('.segment-slider');
     if (slider) {
+        // Мапа соответствия строки к позиции бегунка (0 - неделя, 1 - месяц, 2 - год, 3 - всё время)
         const positions = {
-            [ComparePeriod.WEEK]: 0,
-            [ComparePeriod.MONTH]: 1,
-            [ComparePeriod.YEAR]: 2,
-            [ComparePeriod.ALL]: 3
+            'week': 0,
+            'month': 1,
+            'year': 2,
+            'all': 3
         };
-        slider.className = `segment-slider mode-4 pos-${positions[currentPeriod] ?? 1}`;
+        const pos = positions[currentPeriod] ?? 1;
+        slider.className = `segment-slider mode-4 pos-${pos}`;
     }
 }
 
@@ -99,8 +100,10 @@ export function setMetric(metricId) {
     renderMetricAccordion();
 }
 
+// Принимаем строку ('week', 'month', 'year', 'all')
 export function setPeriod(period) {
-    currentPeriod = period;
+    // Принудительно делаем нижний регистр, чтобы 'YEAR' не сломал поиск
+    currentPeriod = String(period).toLowerCase();
 
     // Снимаем active со всех кнопок периода
     document.querySelectorAll('[onclick*="setPeriod"]').forEach(btn => {
@@ -108,11 +111,12 @@ export function setPeriod(period) {
     });
 
     // Вешаем active на выбранную
-    const activeBtn = document.querySelector(`[onclick="setPeriod('${period}')"]`);
+    const activeBtn = document.querySelector(`[onclick="setPeriod('${currentPeriod}')"]`);
     if (activeBtn) {
         activeBtn.classList.add('active');
     }
 
+    // Двигаем ползунок
     updatePeriodSlider();
 }
 
@@ -132,7 +136,7 @@ export function applySettings() {
             detail: {
                 mode: currentMode,
                 metricId: currentMetricId,
-                period: currentPeriod,
+                period: currentPeriod, // 'week', 'month' и т.д.
                 start: customStart,
                 end: customEnd
             }
@@ -140,12 +144,12 @@ export function applySettings() {
         return;
     }
 
-    // Иначе отправляем выбранный период (по дефолту MONTH)
+    // Иначе отправляем выбранный период
     window.dispatchEvent(new CustomEvent('settings-applied', {
         detail: {
             mode: currentMode,
             metricId: currentMetricId,
-            period: currentPeriod
+            period: currentPeriod // Отправляется 'week', 'month' и т.д.
         }
     }));
 }

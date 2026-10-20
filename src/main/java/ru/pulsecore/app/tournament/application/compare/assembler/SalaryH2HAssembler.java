@@ -7,6 +7,7 @@ import ru.pulsecore.app.tournament.api.dto.response.SalaryH2HPlayerDto;
 import ru.pulsecore.app.tournament.infrastructure.exception.PlayerStatsNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.PlayerCompareResponse;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.PlayerMatchStatsProjection;
+import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class SalaryH2HAssembler {
         double winrate = calculateWinrate(wins, totalMatches);
 
         return SalaryH2HPlayerDto.builder()
-                .name(name)
+                .name(StringUtils.capitalize(name))
                 .league(money.getPrimaryLeague())
                 .tournamentsCount(money.getTournaments())
                 .totalAmount(money.getTotalAmount())

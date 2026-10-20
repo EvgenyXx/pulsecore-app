@@ -22,8 +22,6 @@ export function renderSalaryH2HCard(data) {
     }
 
     const { player1: p1, player2: p2, winnerName } = data;
-    const p1Win = winnerName === p1.name;
-    const p2Win = winnerName === p2.name;
     const isDraw = winnerName === 'Ничья';
 
     const p1MoreMoney = p1.totalAmount > p2.totalAmount;
@@ -60,14 +58,10 @@ export function renderSalaryH2HCard(data) {
                     </div>
                 </div>
 
-                <!-- Полоска больше -->
+                <!-- Полоска больше (БЕЗ ПРОЦЕНТОВ ВНУТРИ) -->
                 <div class="h2h-bar" style="height: 16px; border-radius: 8px; margin-bottom: 16px;">
-                    <div class="h2h-bar-left" style="width: ${p1Share}%; display: flex; align-items: center; justify-content: center;">
-                        <span class="h2h-bar-value" style="font-size: 10px;">${p1Share}%</span>
-                    </div>
-                    <div class="h2h-bar-right" style="width: ${p2Share}%; display: flex; align-items: center; justify-content: center;">
-                        <span class="h2h-bar-value" style="font-size: 10px;">${p2Share}%</span>
-                    </div>
+                    <div class="h2h-bar-left" style="width: ${p1Share}%;"></div>
+                    <div class="h2h-bar-right" style="width: ${p2Share}%;"></div>
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 2px;">
@@ -99,7 +93,7 @@ export function renderSalaryH2HCard(data) {
                     </div>
                 </div>
 
-                <!-- Итоговый рейтинг (Со стеклянным эффектом) -->
+                <!-- Итоговый рейтинг (Со стеклянным эффектом, БЕЗ ПРОЦЕНТОВ) -->
                 <div style="
                     background: rgba(255, 255, 255, 0.03);
                     backdrop-filter: blur(12px);
@@ -108,17 +102,10 @@ export function renderSalaryH2HCard(data) {
                     box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
                     border-radius: 16px; 
                     padding: 18px 16px 14px; 
-                    text-align: left;
+                    text-align: center;
                 ">
                     
-                    <!-- 1. Сначала проценты TOPSIS -->
-                    <div class="salary-topsis-score" style="margin-bottom: 16px; gap: 12px;">
-                        <span class="${p1Win ? 'win' : ''}" style="font-size: 18px;">${formatPercent(p1.topsisScore)}</span>
-                        <span class="vs" style="font-size: 11px;">vs</span>
-                        <span class="${p2Win ? 'win' : ''}" style="font-size: 18px;">${formatPercent(p2.topsisScore)}</span>
-                    </div>
-
-                    <!-- 2. Потом текст с результатом и иконкой методики -->
+                    <!-- Текст с результатом и иконкой методики -->
                     <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <div style="font-size: 14px; color: #d4d4d8; line-height: 1.5; text-align: center;">
                             ${isDraw ? 'Игроки показали равные результаты.' : 'За данный период игрок ' + winnerName + ' находился в более стабильной и сильной форме по соотношению ключевых показателей.'}

@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.pulsecore.app.tournament.domain.enums.ComparePeriod;
 
-
 import java.time.LocalDate;
 
 public record CompareH2HRequest(
@@ -20,7 +19,8 @@ public record CompareH2HRequest(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate end,
 
-        ComparePeriod period
+
+        String period
 ) {
     public LocalDate resolveStart() {
         if (start != null) {
@@ -36,10 +36,11 @@ public record CompareH2HRequest(
         return getActualPeriod().endDate();
     }
 
+
     private ComparePeriod getActualPeriod() {
-        if (period == null) {
+        if (period == null || period.isBlank()) {
             return ComparePeriod.MONTH;
         }
-        return period;
+        return ComparePeriod.fromCode(period);
     }
 }
