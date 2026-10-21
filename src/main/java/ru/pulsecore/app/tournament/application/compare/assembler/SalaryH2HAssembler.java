@@ -44,7 +44,7 @@ public class SalaryH2HAssembler {
         double winrate = calculateWinrate(wins, totalMatches);
 
         return SalaryH2HPlayerDto.builder()
-                .name(StringUtils.capitalize(name))
+                .name(StringUtils.shortName(name))
                 .league(money.getPrimaryLeague())
                 .tournamentsCount(money.getTournaments())
                 .totalAmount(money.getTotalAmount())

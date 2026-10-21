@@ -28,24 +28,51 @@ export function initBottomTab(activePage = null) {
     const nav = document.createElement('nav');
     nav.id = 'bottomTab';
     nav.className = 'bottom-tab';
-    nav.innerHTML = items.map(it => `
-        <a href="${it.href}" class="bottom-tab-item" data-tab="${it.id}">
-            <span class="bottom-tab-icon" data-anim="${it.id}">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    ${it.icon}
-                </svg>
-            </span>
-            <span class="bottom-tab-label">${it.label}</span>
-        </a>
-    `).join('');
 
-    document.body.appendChild(nav);
+    // Добавляем "бегунок" ровно на 1/5 ширины (20%)
+    nav.innerHTML = `
+        <div class="bottom-tab-indicator" id="bottomTabIndicator"></div>
+        ${items.map(it => `
+            <a href="${it.href}" class="bottom-tab-item" data-tab="${it.id}">
+                <span class="bottom-tab-icon" data-anim="${it.id}">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        ${it.icon}
+                    </svg>
+                </span>
+                <span class="bottom-tab-label">${it.label}</span>
+            </a>
+        `).join('')}
+    `;
+
+    const root = document.getElementById('appRoot') || document.body;
+    root.appendChild(nav);
     document.body.classList.add('has-bottom-tab');
+
+    const indicator = nav.querySelector('#bottomTabIndicator');
+
+    // Список позиций для каждой кнопки (0%, 20%, 40%, 60%, 80%)
+    const positions = {
+        'home': 0,
+        'halls': 1,
+        'sum': 2,
+        'more': 3,
+        'profile': 4
+    };
+
+    function updateIndicator(tabId) {
+        const pos = positions[tabId];
+        if (pos !== undefined) {
+            // Сдвигаем плашку ровно на ее ширину (каждая занимает 20% контейнера)
+            indicator.style.transform = `translateX(${pos * 100}%)`;
+        }
+    }
 
     nav.querySelectorAll('.bottom-tab-item').forEach(el => {
         el.addEventListener('click', (e) => {
             nav.querySelectorAll('.bottom-tab-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
+
+            updateIndicator(el.dataset.tab);
 
             const icon = el.querySelector('.bottom-tab-icon');
             if (icon) {
@@ -54,20 +81,15 @@ export function initBottomTab(activePage = null) {
                 icon.classList.add('icon-anim');
                 setTimeout(() => icon.classList.remove('icon-anim'), 400);
             }
-
-            const rect = el.getBoundingClientRect();
-            const x = (e.clientX || rect.left + rect.width / 2) - rect.left;
-            const y = (e.clientY || rect.top + rect.height / 2) - rect.top;
-            const ripple = document.createElement('span');
-            ripple.className = 'bottom-tab-ripple';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            el.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 500);
         });
     });
 
-    autoHighlight(activePage);
+    setTimeout(() => {
+        autoHighlight(activePage);
+        const activeEl = nav.querySelector('.bottom-tab-item.active');
+        if (activeEl) updateIndicator(activeEl.dataset.tab);
+    }, 50);
+
     watchLiveScreen();
 }
 
@@ -91,7 +113,6 @@ function autoHighlight(activePage) {
     if (el) el.classList.add('active');
 }
 
-// Скрываем нижнюю панель на экране трансляции
 function watchLiveScreen() {
     function toggle() {
         const liveScreen = document.getElementById('liveTournamentScreen');
@@ -100,10 +121,8 @@ function watchLiveScreen() {
 
         const isLiveOpen = liveScreen && !liveScreen.classList.contains('hidden');
         nav.style.display = isLiveOpen ? 'none' : '';
-        document.body.style.paddingBottom = isLiveOpen ? '' : '';
     }
 
-    // Следим за изменениями hash и класса hidden
     window.addEventListener('hashchange', toggle);
 
     const liveScreen = document.getElementById('liveTournamentScreen');
@@ -111,6 +130,5 @@ function watchLiveScreen() {
         const observer = new MutationObserver(toggle);
         observer.observe(liveScreen, { attributes: true, attributeFilter: ['class', 'style'] });
     }
-
     toggle();
 }

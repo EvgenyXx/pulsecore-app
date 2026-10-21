@@ -28,7 +28,7 @@ public enum ComparePeriod {
 
     public static ComparePeriod fromCode(String value){
         for (ComparePeriod comparePeriod : values()){
-            if (value.equals(comparePeriod.value)){
+            if (value.equalsIgnoreCase(comparePeriod.value)){
                 return comparePeriod;
             }
         }

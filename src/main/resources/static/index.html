@@ -658,13 +658,13 @@
                     <svg class="sheet-accordion-arrow" id="metricArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
                 <div class="sheet-accordion-body" id="metricAccordionBody" style="display: none;"></div>
-            </div>
+                      </div>
             <p class="sheet-section-title">Период</p>
             <div class="sheet-segment-row" id="periodSegmentRow">
                 <button class="sheet-segment-btn" id="periodWeek" onclick="setPeriod('week')">Неделя</button>
-                <button class="sheet-segment-btn" id="periodMonth" onclick="setPeriod('month')">Месяц</button>
+                <button class="sheet-segment-btn active" id="periodMonth" onclick="setPeriod('month')">Месяц</button>
                 <button class="sheet-segment-btn" id="periodYear" onclick="setPeriod('year')">Год</button>
-                <button class="sheet-segment-btn active" id="periodAll" onclick="setPeriod('all')">Всё</button>
+                <button class="sheet-segment-btn" id="periodAll" onclick="setPeriod('all')">Всё</button>
             </div>
             <div class="date-row">
                 <input type="date" id="customStart" class="date-input" placeholder="дд.мм.гггг">
