@@ -13,23 +13,17 @@ export function initBottomTab(activePage = null) {
     };
 
     const items = [
-        { id: 'home',    label: 'Главная',    href: links.home,
-            icon: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
-        { id: 'halls',   label: 'Расписание', href: links.halls,
-            icon: '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
-        { id: 'sum',     label: 'Сумма',      href: links.sum,
-            icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
-        { id: 'more',    label: 'Прочее',     href: links.more,
-            icon: '<circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>' },
-        { id: 'profile', label: 'Профиль',    href: links.profile,
-            icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' }
+        { id: 'home',    label: 'Главная',    href: links.home, icon: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+        { id: 'halls',   label: 'Расписание', href: links.halls, icon: '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
+        { id: 'sum',     label: 'Сумма',      href: links.sum, icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+        { id: 'more',    label: 'Прочее',     href: links.more, icon: '<circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>' },
+        { id: 'profile', label: 'Профиль',    href: links.profile, icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' }
     ];
 
     const nav = document.createElement('nav');
     nav.id = 'bottomTab';
     nav.className = 'bottom-tab';
 
-    // Добавляем "бегунок" ровно на 1/5 ширины (20%)
     nav.innerHTML = `
         <div class="bottom-tab-indicator" id="bottomTabIndicator"></div>
         ${items.map(it => `
@@ -49,26 +43,30 @@ export function initBottomTab(activePage = null) {
     document.body.classList.add('has-bottom-tab');
 
     const indicator = nav.querySelector('#bottomTabIndicator');
-
-    // Список позиций для каждой кнопки (0%, 20%, 40%, 60%, 80%)
-    const positions = {
-        'home': 0,
-        'halls': 1,
-        'sum': 2,
-        'more': 3,
-        'profile': 4
-    };
+    const positions = { 'home': 0, 'halls': 1, 'sum': 2, 'more': 3, 'profile': 4 };
+    let moveTimeout = null;
 
     function updateIndicator(tabId) {
         const pos = positions[tabId];
         if (pos !== undefined) {
-            // Сдвигаем плашку ровно на ее ширину (каждая занимает 20% контейнера)
-            indicator.style.transform = `translateX(${pos * 100}%)`;
+            // Добавляем класс "в полете" (капсула растягивается)
+            indicator.classList.add('is-moving');
+
+            // Двигаем
+            indicator.style.left = `${pos * 20}%`;
+
+            // Убираем класс через 400мс (когда долетела), чтобы она сжалась обратно
+            clearTimeout(moveTimeout);
+            moveTimeout = setTimeout(() => {
+                indicator.classList.remove('is-moving');
+            }, 400);
         }
     }
 
     nav.querySelectorAll('.bottom-tab-item').forEach(el => {
         el.addEventListener('click', (e) => {
+            if (navigator.vibrate) navigator.vibrate(10);
+
             nav.querySelectorAll('.bottom-tab-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
 
@@ -118,13 +116,10 @@ function watchLiveScreen() {
         const liveScreen = document.getElementById('liveTournamentScreen');
         const nav = document.getElementById('bottomTab');
         if (!nav) return;
-
         const isLiveOpen = liveScreen && !liveScreen.classList.contains('hidden');
         nav.style.display = isLiveOpen ? 'none' : '';
     }
-
     window.addEventListener('hashchange', toggle);
-
     const liveScreen = document.getElementById('liveTournamentScreen');
     if (liveScreen) {
         const observer = new MutationObserver(toggle);
