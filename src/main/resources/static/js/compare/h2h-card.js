@@ -28,51 +28,44 @@ export function renderH2HCard(data) {
 
     const scoreStats = data.scoreStats || [];
 
-    const scoreRowsHtml = scoreStats.map(s => {
-        const isP1Win = s.player1Wins > s.player2Wins;
-        const isP2Win = s.player2Wins > s.player1Wins;
-        return `
-            <div class="salary-metric-row" style="border-bottom: 1px solid rgba(255,255,255,0.04); padding: 10px 0;">
-                <span class="salary-val" style="color: ${isP1Win ? '#34d399' : '#fff'}; font-weight: ${isP1Win ? '800' : '500'};">${s.player1Wins}</span>
-                <span class="salary-label" style="font-weight: 700; color: #e4e4e7;">${s.score}</span>
-                <span class="salary-val" style="color: ${isP2Win ? '#34d399' : '#fff'}; font-weight: ${isP2Win ? '800' : '500'};">${s.player2Wins}</span>
-            </div>
-        `;
-    }).join('');
+    const scoreRowsHtml = scoreStats.map(s => `
+        <div class="salary-metric-row" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding: 10px 0;">
+            <span class="salary-val" style="font-weight: 600;">${s.player1Wins}</span>
+            <span class="salary-label" style="font-weight: 800; color: #fff;">${s.score}</span>
+            <span class="salary-val" style="font-weight: 600;">${s.player2Wins}</span>
+        </div>
+    `).join('');
 
-    // Важно: переносим модалку в body после рендера
     setTimeout(moveModalToBody, 0);
 
     return `
         <div class="h2h-card salary-mode" style="height: auto; padding: 12px 12px 16px 12px;">
             
             <!-- 1. ШАПКА -->
-            <div class="h2h-glass-header" style="margin-bottom: 12px; padding: 16px; border-radius: 16px;">
-                <div class="h2h-players" style="margin-bottom: 16px; align-items: flex-start;">
+            <div class="h2h-glass-header" style="margin-bottom: 12px; padding: 20px 16px; border-radius: 20px;">
+                <div class="h2h-players" style="margin-bottom: 16px; align-items: center;">
                     <div class="h2h-player" style="text-align: left;">
-                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 4px; line-height: 1.2;">${data.player1Name}</p>
-                        <div><span class="h2h-league-badge">Победы</span></div>
-                        <p class="h2h-player-wins" style="font-size: 1.3rem; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 8px;">${p1Wins}</p>
-                        <div class="h2h-diff-badge ${p1MoreWins ? 'win' : 'lose'}">
+                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 8px; line-height: 1.2;">${data.player1Name}</p>
+                        <p class="h2h-player-wins" style="font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; margin-top: 4px; text-shadow: 0 0 20px rgba(255,255,255,0.4);">${p1Wins}</p>
+                        <div class="h2h-diff-badge ${p1MoreWins ? 'win' : 'lose'}" style="margin-top: 8px;">
                             ${p1MoreWins ? `+${diffWins}` : `-${diffWins}`}
                         </div>
                     </div>
 
-                    <div class="h2h-vs" style="margin-top: 44px;">
+                    <div class="h2h-vs" style="margin-top: 20px;">
                         <span class="h2h-vs-text" style="font-size: 1.1rem; color: #a1a1aa; opacity: 0.4; font-weight: 900; font-style: italic;">VS</span>
                     </div>
 
                     <div class="h2h-player" style="text-align: right;">
-                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 4px; line-height: 1.2;">${data.player2Name}</p>
-                        <div><span class="h2h-league-badge">Победы</span></div>
-                        <p class="h2h-player-wins" style="font-size: 1.3rem; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 8px;">${p2Wins}</p>
-                        <div class="h2h-diff-badge ${p2MoreWins ? 'win' : 'lose'}">
+                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 8px; line-height: 1.2;">${data.player2Name}</p>
+                        <p class="h2h-player-wins" style="font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; margin-top: 4px; text-shadow: 0 0 20px rgba(255,255,255,0.4);">${p2Wins}</p>
+                        <div class="h2h-diff-badge ${p2MoreWins ? 'win' : 'lose'}" style="margin-top: 8px;">
                             ${p2MoreWins ? `+${diffWins}` : `-${diffWins}`}
                         </div>
                     </div>
                 </div>
 
-                <div class="h2h-bar" style="height: 24px; border-radius: 12px; flex-shrink: 0;">
+                <div class="h2h-bar" style="height: 24px; border-radius: 12px; flex-shrink: 0; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
                     <div class="h2h-bar-left" style="width: ${p1Percent}%; display: flex; align-items: center; justify-content: center;">
                         <span class="h2h-bar-value" style="font-size: 12px; font-weight: 700;">${p1Percent}%</span>
                     </div>
@@ -83,21 +76,21 @@ export function renderH2HCard(data) {
             </div>
 
             <!-- 2. ТАБЛИЦА СЧЕТОВ -->
-            <div class="h2h-glass-table" style="margin-bottom: 12px; padding: 4px 16px; border-radius: 16px;">
+            <div class="h2h-glass-table" style="margin-bottom: 12px; padding: 8px 16px; border-radius: 20px;">
                 <div class="salary-metrics-table" style="margin-bottom: 0;">
-                    <div class="salary-metric-row" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 4px;">
-                        <span class="salary-val" style="font-size: 11px; color: #8b87a8; text-align: left;">${data.player1Name.split(' ')[0]}</span>
-                        <span class="salary-label" style="font-size: 11px; color: #8b87a8;">Счёт</span>
-                        <span class="salary-val" style="font-size: 11px; color: #8b87a8; text-align: right;">${data.player2Name.split(' ')[0]}</span>
+                    <div class="salary-metric-row" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; margin-bottom: 6px;">
+                        <span class="salary-val" style="text-align: center; font-size: 12px; color: #8b87a8;"></span>
+                        <span class="salary-label" style="font-size: 11px; color: #8b87a8; text-transform: uppercase; letter-spacing: 1px;">Счёт</span>
+                        <span class="salary-val" style="text-align: center; font-size: 12px; color: #8b87a8;"></span>
                     </div>
                     ${scoreRowsHtml || '<div class="text-center text-zinc-500 text-xs py-4">Нет данных о счетах</div>'}
                 </div>
             </div>
 
             <!-- 3. КНОПКА ОТКРЫТИЯ МОДАЛКИ -->
-            <div class="salary-topsis-block" style="padding: 0; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);">
+            <div class="salary-topsis-block" style="padding: 0; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);">
                 <button onclick="window.openH2HHistory()" 
-                        style="width: 100%; padding: 16px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: #fff;">
+                        style="width: 100%; padding: 18px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: #fff;">
                     <span style="font-size: 14px; font-weight: 600;">Показать историю матчей</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -141,7 +134,6 @@ function moveModalToBody() {
 window.openH2HHistory = function() {
     const modal = document.getElementById('h2hHistoryModal');
     if (modal) {
-        // Гарантируем, что модалка в body
         if (modal.parentElement !== document.body) {
             document.body.appendChild(modal);
         }
@@ -155,21 +147,11 @@ window.closeH2HHistory = function() {
 };
 
 export function renderMatchRow(match, player1Name, player2Name) {
-    const winnerIsP1 = match.winnerName?.toLowerCase() === player1Name?.toLowerCase();
-    const winnerIsP2 = match.winnerName?.toLowerCase() === player2Name?.toLowerCase();
-
-    const sideClass = winnerIsP1 ? 'is-p1' : (winnerIsP2 ? 'is-p2' : '');
-
     return `
-        <div class="h2h-match-row ${sideClass}">
+        <div class="h2h-match-row">
             <span class="h2h-match-date">${formatShortDate(match.playedAt)}</span>
             <span class="h2h-match-score">${match.score || '—'}</span>
-            <span class="h2h-match-winner">
-                <svg class="h2h-match-crown" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
-                </svg>
-                <span>${match.winnerName || '—'}</span>
-            </span>
+            <span class="h2h-match-winner">${match.winnerName || '—'}</span>
         </div>
     `;
 }
