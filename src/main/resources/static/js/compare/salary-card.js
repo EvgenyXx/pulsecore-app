@@ -30,74 +30,83 @@ export function renderSalaryH2HCard(data) {
     const p2MoreMoney = p2.totalAmount > p1.totalAmount;
     const diffTotal = Math.abs(p1.totalAmount - p2.totalAmount);
 
-    const winBadgeStyle = "display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(52, 211, 153, 0.15); color: #34d399; margin-top: 6px;";
-    const loseBadgeStyle = "display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(255, 255, 255, 0.05); color: #71717a; margin-top: 6px;";
+    // Стили для капсул разницы
+    const winBadgeStyle = "display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(52, 211, 153, 0.15); color: #34d399; margin-top: 4px;";
+    const loseBadgeStyle = "display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(255, 255, 255, 0.05); color: #71717a; margin-top: 4px;";
 
-    // Стиль для имен: ограничение в 2 строки, фиксированная высота
-    const nameStyle = "color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em; word-break: break-word;";
+    // Стиль для плашки лиги (компактный)
+    const leagueBadgeStyle = "display: inline-block; font-size: 10px; font-weight: 700; color: #a1a1aa; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;";
 
     return `
-        <div class="h2h-card salary-mode" style="height: calc(100dvh - 340px); padding-bottom: 24px;">
+        <!-- Уменьшили высоту карточки на 30px (было -340px, стало -370px) -->
+        <div class="h2h-card salary-mode" style="height: calc(100dvh - 370px); padding-bottom: 16px;">
             
             <!-- ФИКСИРОВАННАЯ ШАПКА -->
             <div style="flex-shrink: 0;">
                 
-                <div class="h2h-players" style="margin-bottom: 20px; align-items: flex-start;">
+                <div class="h2h-players" style="margin-bottom: 12px; align-items: flex-start;">
                     
                     <!-- Игрок 1 -->
-                    <div class="h2h-player" style="text-align: left; padding-right: 4px;">
-                        <p class="h2h-player-name" style="${nameStyle}">${p1.name}</p>
-                        <p class="h2h-player-wins" style="font-size: 1.2rem; font-weight: 800; color: #fff; text-shadow: none; line-height: 1.1;">${formatMoney(p1.totalAmount)}</p>
+                    <div class="h2h-player" style="text-align: left;">
+                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 2px; line-height: 1.2;">${p1.name}</p>
+                        
+                        <!-- Лига ровно между именем и суммой -->
+                        <div>
+                            <span style="${leagueBadgeStyle}">Лига ${p1.league || '?'}</span>
+                        </div>
+
+                        <p class="h2h-player-wins" style="font-size: 1.3rem; font-weight: 800; color: #fff; line-height: 1.1;">${formatMoney(p1.totalAmount)}</p>
                         <div style="${p1MoreMoney ? winBadgeStyle : loseBadgeStyle}">
                             ${p1MoreMoney ? `+${formatMoney(diffTotal)}` : `-${formatMoney(diffTotal)}`}
                         </div>
                     </div>
 
                     <!-- VS -->
-                    <div class="h2h-vs" style="margin-top: 10px;">
+                    <div class="h2h-vs" style="margin-top: 20px;">
                         <span class="h2h-vs-text" style="font-size: 1.1rem; color: #a1a1aa; opacity: 0.4; font-weight: 900; font-style: italic;">VS</span>
                     </div>
 
                     <!-- Игрок 2 -->
-                    <div class="h2h-player" style="text-align: right; padding-left: 4px;">
-                        <p class="h2h-player-name" style="${nameStyle}">${p2.name}</p>
-                        <p class="h2h-player-wins" style="font-size: 1.2rem; font-weight: 800; color: #fff; text-shadow: none; line-height: 1.1;">${formatMoney(p2.totalAmount)}</p>
+                    <div class="h2h-player" style="text-align: right;">
+                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 2px; line-height: 1.2;">${p2.name}</p>
+                        
+                        <!-- Лига ровно между именем и суммой -->
+                        <div>
+                            <span style="${leagueBadgeStyle}">Лига ${p2.league || '?'}</span>
+                        </div>
+
+                        <p class="h2h-player-wins" style="font-size: 1.3rem; font-weight: 800; color: #fff; line-height: 1.1;">${formatMoney(p2.totalAmount)}</p>
                         <div style="${p2MoreMoney ? winBadgeStyle : loseBadgeStyle}">
                             ${p2MoreMoney ? `+${formatMoney(diffTotal)}` : `-${formatMoney(diffTotal)}`}
                         </div>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 2px;">
-                    <span style="font-size: 12px; font-weight: 600; color: #d4d4d8; background: rgba(255,255,255,0.05); padding: 3px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">${p1.league || 'Лига ?'}</span>
-                    <span style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; letter-spacing: 1px;">Лига</span>
-                    <span style="font-size: 12px; font-weight: 600; color: #d4d4d8; background: rgba(255,255,255,0.05); padding: 3px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">${p2.league || 'Лига ?'}</span>
-                </div>
             </div>
 
             <!-- СКРОЛЛИРУЕМАЯ ОБЛАСТЬ -->
-            <div class="h2h-matches-scroll" style="margin-top: 8px; display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px;">
+            <div class="h2h-matches-scroll" style="margin-top: 8px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px;">
                 
                 <!-- Таблица метрик -->
                 <div class="salary-metrics-table" style="margin-top: 0;">
-                    <div class="salary-metric-row" style="padding: 12px 0;">
+                    <div class="salary-metric-row" style="padding: 10px 0;">
                         <span class="salary-val ${p1.tournamentsCount > p2.tournamentsCount ? 'win' : ''}" style="font-size: 16px;">${p1.tournamentsCount}</span>
                         <span class="salary-label" style="font-size: 12px;">Сыграно турниров</span>
                         <span class="salary-val ${p2.tournamentsCount > p1.tournamentsCount ? 'win' : ''}" style="font-size: 16px;">${p2.tournamentsCount}</span>
                     </div>
-                    <div class="salary-metric-row" style="padding: 12px 0;">
+                    <div class="salary-metric-row" style="padding: 10px 0;">
                         <span class="salary-val ${p1.avgAmount > p2.avgAmount ? 'win' : ''}" style="font-size: 16px;">${formatMoney(p1.avgAmount)}</span>
                         <span class="salary-label" style="font-size: 12px;">Средний чек</span>
                         <span class="salary-val ${p2.avgAmount > p1.avgAmount ? 'win' : ''}" style="font-size: 16px;">${formatMoney(p2.avgAmount)}</span>
                     </div>
-                    <div class="salary-metric-row" style="padding: 12px 0;">
+                    <div class="salary-metric-row" style="padding: 10px 0;">
                         <span class="salary-val ${p1.winratePercent > p2.winratePercent ? 'win' : ''}" style="font-size: 16px;">${formatPercent(p1.winratePercent)}</span>
                         <span class="salary-label" style="font-size: 12px;">Процент побед</span>
                         <span class="salary-val ${p2.winratePercent > p1.winratePercent ? 'win' : ''}" style="font-size: 16px;">${formatPercent(p2.winratePercent)}</span>
                     </div>
                 </div>
 
-                <!-- Итоговый рейтинг -->
+                <!-- Итоговый рейтинг (Стеклянный блок) -->
                 <div style="
                     background: rgba(255, 255, 255, 0.03);
                     backdrop-filter: blur(12px);
@@ -105,12 +114,13 @@ export function renderSalaryH2HCard(data) {
                     border: 1px solid rgba(255,255,255,0.08);
                     box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
                     border-radius: 16px; 
-                    padding: 18px 16px 14px; 
+                    padding: 14px 16px; 
                     text-align: center;
+                    margin-top: 4px;
                 ">
                     
                     <!-- Проценты TOPSIS -->
-                    <div class="salary-topsis-score" style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 1.4rem; font-weight: 800;">
+                    <div class="salary-topsis-score" style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 1.3rem; font-weight: 800;">
                         <span class="${p1Win ? 'win' : ''}" style="color: ${p1Win ? '#ffffff' : '#71717a'}; text-shadow: ${p1Win ? '0 0 16px rgba(255,255,255,0.4)' : 'none'};">${formatPercent(p1.topsisScore)}</span>
                         <span class="vs" style="font-size: 11px; color: #52525b; font-weight: 800; font-style: normal;">VS</span>
                         <span class="${p2Win ? 'win' : ''}" style="color: ${p2Win ? '#ffffff' : '#71717a'}; text-shadow: ${p2Win ? '0 0 16px rgba(255,255,255,0.4)' : 'none'};">${formatPercent(p2.topsisScore)}</span>
@@ -118,7 +128,7 @@ export function renderSalaryH2HCard(data) {
 
                     <!-- Текст с результатом и иконкой методики -->
                     <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <div style="font-size: 14px; color: #d4d4d8; line-height: 1.5; text-align: center;">
+                        <div style="font-size: 13px; color: #d4d4d8; line-height: 1.4; text-align: center;">
                             ${isDraw ? 'Игроки показали равные результаты.' : 'За данный период ' + winnerName + ' находился в более стабильной и сильной форме по соотношению ключевых показателей.'}
                         </div>
                         
