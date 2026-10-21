@@ -17,6 +17,22 @@ import java.util.UUID;
 @Repository
 public interface TournamentMatchRepository extends JpaRepository<TournamentMatchEntity, UUID> {
 
+    @Query("""
+                SELECT m.score AS score, m.winnerName AS winnerName
+                FROM TournamentMatchEntity m
+                WHERE 
+                    ((LOWER(m.player1Name) = LOWER(:player1Name) AND LOWER(m.player2Name) = LOWER(:player2Name))
+                    OR (LOWER(m.player1Name) = LOWER(:player2Name) AND LOWER(m.player2Name) = LOWER(:player1Name)))
+                    AND m.playedAt BETWEEN :start AND :end
+                    AND m.score IS NOT NULL
+            """)
+    List<MatchScoreProjection> findMatchScores(
+            @Param("player1Name") String player1Name,
+            @Param("player2Name") String player2Name,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
     @Query(value = """
             SELECT 
                 p.name::text AS playerName,

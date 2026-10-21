@@ -73,12 +73,19 @@ function showH2HButton() {
     }
 }
 
+function removeOldModal() {
+    const oldModal = document.getElementById('h2hHistoryModal');
+    if (oldModal) oldModal.remove();
+}
+
 function hideH2HResult() {
     const resultContainer = document.getElementById('h2hResult');
     if (resultContainer) {
         resultContainer.classList.add('hidden');
         resultContainer.innerHTML = '';
     }
+    removeOldModal(); // <--- УДАЛЯЕМ СТАРУЮ МОДАЛКУ
+
     matchesPage = 0;
     matchesHasMore = false;
     matchesLoading = false;
@@ -157,6 +164,9 @@ async function compareH2H() {
         }
 
         const data = await res.json();
+
+        // УДАЛЯЕМ СТАРУЮ МОДАЛКУ ПЕРЕД РЕНДЕРОМ
+        removeOldModal();
 
         if (metricId === 'salary') {
             resultContainer.innerHTML = renderSalaryH2HCard(data);
