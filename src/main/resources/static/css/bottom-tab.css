@@ -2,8 +2,6 @@
 
 .bottom-tab {
     position: fixed;
-
-    /* Прижимаем к низу */
     bottom: 0;
     left: 16px;
     right: 16px;
@@ -20,13 +18,8 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.05) !important;
     overflow: hidden;
 
-    /*
-       ВОТ ЗДЕСЬ РЕГУЛИРУЕТСЯ ОТСТУП ОТ НИЗА ЭКРАНА.
-       Меняй 8px на 0 (вплотную) или на 16 (выше).
-    */
     margin-bottom: calc(-8px + env(safe-area-inset-bottom, 0px));
 
-    /* Убеждаемся, что тут нет transform и animation, которые ломают PWA */
     transform: none !important;
     animation: none !important;
 }
@@ -39,7 +32,7 @@ body.has-bottom-tab {
     padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Бегунок (капсула) */
+/* ===== БЕГУНОК (ЖИДКОСТЬ) ===== */
 .bottom-tab-indicator {
     position: absolute;
     top: 3px;
@@ -52,17 +45,20 @@ body.has-bottom-tab {
     z-index: 0;
     box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
 
+    /* Плавный полет с отскоком */
     transition:
-        left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-        transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.3s ease;
 }
 
+/* В полете пузырь вытягивается */
 .bottom-tab-indicator.is-moving {
-    transform: scaleX(1.15);
-    background: rgba(255, 255, 255, 0.18);
+    transform: scaleX(1.25) scaleY(0.9);
+    background: rgba(255, 255, 255, 0.2);
 }
 
-/* Кнопка */
+/* ===== КНОПКА ===== */
 .bottom-tab-item {
     flex: 1;
     display: flex;
@@ -90,43 +86,49 @@ body.has-bottom-tab {
     font-weight: 600;
 }
 
+/* ===== ИКОНКА (ЖИВАЯ) ===== */
 .bottom-tab-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 24px;
     height: 24px;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Упругая пружинка для иконки */
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Когда кнопка активна, иконка подпрыгивает */
 .bottom-tab-item.active .bottom-tab-icon {
-    transform: translateY(-2px) scale(1.1);
+    transform: translateY(-3px) scale(1.15);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .bottom-tab-label {
     line-height: 1.1;
     letter-spacing: 0.1px;
     white-space: nowrap;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .bottom-tab-item.active .bottom-tab-label {
     transform: translateY(-1px);
 }
 
+/* Клик по кнопке */
 .bottom-tab-item:active .bottom-tab-icon {
-    transform: scale(0.85) translateY(0);
+    transform: scale(0.8) translateY(0);
 }
 
+/* Анимация "отскока" иконки */
 .bottom-tab-icon.icon-anim {
-    animation: tabIconPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: tabIconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes tabIconPop {
-    0%   { transform: scale(1) translateY(-2px); }
+    0%   { transform: scale(1) translateY(-3px); }
     40%  { transform: scale(0.8) translateY(0); }
-    70%  { transform: scale(1.15) translateY(-3px); }
-    100% { transform: scale(1.1) translateY(-2px); }
+    70%  { transform: scale(1.25) translateY(-4px); }
+    100% { transform: scale(1.15) translateY(-3px); }
 }
 
 /* Адаптация под темы */
@@ -134,15 +136,15 @@ body.has-bottom-tab {
 
 [data-theme="ocean"] .bottom-tab { border-color: rgba(6, 182, 212, 0.3) !important; }
 [data-theme="ocean"] .bottom-tab-indicator { background: rgba(6, 182, 212, 0.15); }
-[data-theme="ocean"] .bottom-tab-indicator.is-moving { background: rgba(6, 182, 212, 0.25); }
+[data-theme="ocean"] .bottom-tab-indicator.is-moving { background: rgba(6, 182, 212, 0.28); }
 [data-theme="ocean"] .bottom-tab-item.active { color: #22d3ee; }
 
 [data-theme="mars"] .bottom-tab { border-color: rgba(245, 158, 11, 0.3) !important; }
 [data-theme="mars"] .bottom-tab-indicator { background: rgba(245, 158, 11, 0.15); }
-[data-theme="mars"] .bottom-tab-indicator.is-moving { background: rgba(245, 158, 11, 0.25); }
+[data-theme="mars"] .bottom-tab-indicator.is-moving { background: rgba(245, 158, 11, 0.28); }
 [data-theme="mars"] .bottom-tab-item.active { color: #fbbf24; }
 
 [data-theme="nebula"] .bottom-tab { border-color: rgba(139, 92, 246, 0.3) !important; }
 [data-theme="nebula"] .bottom-tab-indicator { background: rgba(139, 92, 246, 0.15); }
-[data-theme="nebula"] .bottom-tab-indicator.is-moving { background: rgba(139, 92, 246, 0.25); }
+[data-theme="nebula"] .bottom-tab-indicator.is-moving { background: rgba(139, 92, 246, 0.28); }
 [data-theme="nebula"] .bottom-tab-item.active { color: #A78BFA; }

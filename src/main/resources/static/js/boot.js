@@ -161,7 +161,11 @@ async function startApp() {
         setPeriod: (period) => window.switchPeriod(period)
     });
 
-    // 8. Ждём минимальное время показа заставки
+    // 8. Фикс клавиатуры для PWA (чтобы шапка не сползала при вводе)
+    const { initKeyboardFix } = await import('/js/modules/keyboard-fix.js');
+    initKeyboardFix();
+
+    // 9. Ждём минимальное время показа заставки
     await ensureMinBootTime();
     hint('Почти готово…');
     await sleep(300);
