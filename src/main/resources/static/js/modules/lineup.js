@@ -2,6 +2,10 @@ import { API } from '../core/api.js';
 import { state } from '../core/state.js';
 import { formatDateShort, capitalizeName } from '../core/utils.js';
 
+let currentPage = 0;
+let isLastPage = false;
+let isLoading = false;
+
 export function loadHallsUIState() {
     const collapsed = localStorage.getItem('hallsCheckboxesCollapsed') === 'true';
     const allSelected = localStorage.getItem('hallsAllSelected') === 'true';
@@ -34,13 +38,10 @@ export async function saveSelectedHalls() {
 
 export function switchHallsDate(date) {
     state.hallsDate = date;
-
     const slider = document.querySelector('.date-slider');
     const dates = getDates();
     const activeIndex = dates.indexOf(date);
-    if (slider) {
-        slider.className = `date-slider pos-${activeIndex}`;
-    }
+    if (slider) slider.className = `date-slider pos-${activeIndex}`;
 
     document.querySelectorAll('.date-tab').forEach(btn => {
         btn.classList.remove('active');
@@ -69,101 +70,118 @@ function renderTypeBadge(type) {
         : '<span class="lineup-type-badge lineup-type-std">Standard</span>';
 }
 
-function renderLineupRows(lineupsByHall) {
-    let allLineups = [];
-    for (const [hall, lineups] of Object.entries(lineupsByHall)) {
-        lineups.forEach(l => allLineups.push({ ...l, hall: hall }));
-    }
-    allLineups.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+function renderSingleCard(l) {
+    const playersArray = (l.players || '—')
+        .split(',')
+        .map(p => capitalizeName(p.trim()))
+        .filter(p => p);
 
-    let html = '';
-    allLineups.forEach((l, i) => {
-        const playersArray = (l.players || '—')
-            .split(',')
-            .map(p => capitalizeName(p.trim()))
-            .filter(p => p);
+    const playersList = playersArray.length > 0
+        ? playersArray.map(p => `<span class="lineup-player-name">${p}</span>`).join('')
+        : '<span class="text-zinc-600 text-xs">—</span>';
 
-        const playersList = playersArray.length > 0
-            ? playersArray.map(p => `<span class="lineup-player-name">${p}</span>`).join('')
-            : '<span class="text-zinc-600 text-xs">—</span>';
+    const isPlayerInLineup = l.player || l.inLineup || l.isPlayer || false;
+    const rowClass = isPlayerInLineup ? 'lineup-card is-player' : 'lineup-card';
+    const beam = isPlayerInLineup ? '<span class="lineup-beam" aria-hidden="true"></span>' : '';
+    const typeBadge = renderTypeBadge(l.type);
+    const dateValue = l.date ? formatDateShort(l.date) : '—';
 
-        const isPlayerInLineup = l.player || l.inLineup || l.isPlayer || false;
-        const rowClass = isPlayerInLineup ? 'lineup-card is-player' : 'lineup-card';
+    const mlIcon = l.link
+        ? `<a class="lineup-ml-icon" href="${l.link}" target="_blank" rel="noopener" aria-label="Открыть на ML">
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                   <polyline points="15 3 21 3 21 9"/>
+                   <line x1="10" y1="14" x2="21" y2="3"/>
+               </svg>
+           </a>`
+        : '';
 
-        const beam = isPlayerInLineup ? '<span class="lineup-beam" aria-hidden="true"></span>' : '';
-
-        const typeBadge = renderTypeBadge(l.type);
-        const dateValue = l.date ? formatDateShort(l.date) : '—';
-
-        const mlIcon = l.link
-            ? `<a class="lineup-ml-icon" href="${l.link}" target="_blank" rel="noopener" aria-label="Открыть на ML">
-                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                       <polyline points="15 3 21 3 21 9"/>
-                       <line x1="10" y1="14" x2="21" y2="3"/>
-                   </svg>
-               </a>`
-            : '';
-
-        html += `
-            <div class="${rowClass}" style="animation-delay: ${i * 40}ms">
-                ${beam}
-                ${mlIcon}
-
-                <div class="lineup-date-row">
-                    <span class="lineup-meta-label">Дата</span>
-                    <span class="lineup-meta-value">${dateValue}</span>
+    return `
+        <div class="${rowClass}">
+            ${beam}
+            ${mlIcon}
+            <div class="lineup-date-row">
+                <span class="lineup-meta-label">Дата</span>
+                <span class="lineup-meta-value">${dateValue}</span>
+            </div>
+            <div class="lineup-body">
+                <div class="lineup-meta">
+                    <div class="lineup-meta-row">
+                        <span class="lineup-meta-label">Время</span>
+                        <span class="lineup-meta-value lineup-time-value">${l.time || '??:??'}</span>
+                    </div>
+                    <div class="lineup-meta-row">
+                        <span class="lineup-meta-label">Лига</span>
+                        <span class="lineup-meta-value lineup-league-value">${l.league || '?'}</span>
+                    </div>
+                    <div class="lineup-meta-row">
+                        <span class="lineup-meta-label">Зал</span>
+                        <span class="lineup-meta-value">${l.hall}</span>
+                    </div>
+                    ${typeBadge ? `<div class="lineup-meta-row"><span class="lineup-meta-label">Формат</span>${typeBadge}</div>` : ''}
                 </div>
-
-                <div class="lineup-body">
-                    <div class="lineup-meta">
-                        <div class="lineup-meta-row">
-                            <span class="lineup-meta-label">Время</span>
-                            <span class="lineup-meta-value lineup-time-value">${l.time || '??:??'}</span>
-                        </div>
-                        <div class="lineup-meta-row">
-                            <span class="lineup-meta-label">Лига</span>
-                            <span class="lineup-meta-value lineup-league-value">${l.league || '?'}</span>
-                        </div>
-                        <div class="lineup-meta-row">
-                            <span class="lineup-meta-label">Зал</span>
-                            <span class="lineup-meta-value">${l.hall}</span>
-                        </div>
-                        ${typeBadge ? `
-                            <div class="lineup-meta-row">
-                                <span class="lineup-meta-label">Формат</span>
-                                ${typeBadge}
-                            </div>
-                        ` : ''}
-                    </div>
-
-                    <div class="lineup-players-wrapper">
-                        <div class="lineup-players-column">${playersList}</div>
-                    </div>
+                <div class="lineup-players-wrapper">
+                    <div class="lineup-players-column">${playersList}</div>
                 </div>
             </div>
-        `;
-    });
-    return html;
+        </div>
+    `;
 }
 
 export async function refreshLineupsOnly() {
-    let lineupsByHall = {};
-    if (state.selectedHalls.length > 0) {
-        try {
-            lineupsByHall = await API.getMyLineups(state.hallsDate);
-        } catch (e) {}
-    }
-
+    resetPagination();
     const container = document.getElementById('lineupsContainer');
     if (!container) return;
 
-    if (Object.keys(lineupsByHall).length > 0) {
-        container.innerHTML = renderLineupRows(lineupsByHall);
-    } else {
-        container.innerHTML = '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Нет составов по выбранным залам</p></div>';
+    container.innerHTML = '<div id="lineupsList"></div><div id="lineupsLoader" style="text-align:center; padding: 20px; color:#71717a; font-size:12px; display:none;">Загрузка...</div>';
+    await loadPage();
+}
+
+async function loadPage() {
+    if (isLoading || isLastPage) return;
+    isLoading = true;
+
+    const loader = document.getElementById('lineupsLoader');
+    if (loader) loader.style.display = 'block';
+
+    try {
+        const pageData = await API.getMyLineups(state.hallsDate, currentPage, 7);
+        const items = pageData.content || [];
+
+        const list = document.getElementById('lineupsList');
+        if (list && items.length > 0) {
+            let chunkHtml = '';
+            items.forEach(l => { chunkHtml += renderSingleCard(l); });
+            list.insertAdjacentHTML('beforeend', chunkHtml);
+        }
+
+        isLastPage = pageData.last !== undefined ? pageData.last : (items.length < 7);
+        currentPage++;
+
+    } catch (e) {
+        console.error('Ошибка загрузки составов:', e);
+    } finally {
+        isLoading = false;
+        if (loader) loader.style.display = 'none';
     }
 }
+
+function resetPagination() {
+    currentPage = 0;
+    isLastPage = false;
+    isLoading = false;
+}
+
+if (window._lineupScrollHandler) {
+    window.removeEventListener('scroll', window._lineupScrollHandler);
+}
+window._lineupScrollHandler = function() {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+        loadPage();
+    }
+};
+window.addEventListener('scroll', window._lineupScrollHandler);
+
 
 export function toggleAllHalls() {
     const allCheckbox = document.getElementById('allHallsCheckbox');
@@ -189,21 +207,14 @@ export async function loadHallsContent() {
     c.innerHTML = '<div class="text-center py-8"></div>';
 
     await loadSelectedHalls();
-
     const uiState = loadHallsUIState();
 
     let allHalls = [];
     try {
+        // ТЕПЕРЬ ЖДЕМ МАССИВ СТРОК
         const data = await API.getAllLineups(state.hallsDate);
-        allHalls = Object.keys(data).sort();
+        allHalls = data.sort();
     } catch (e) {}
-
-    let lineupsByHall = {};
-    if (state.selectedHalls.length > 0) {
-        try {
-            lineupsByHall = await API.getMyLineups(state.hallsDate);
-        } catch (e) {}
-    }
 
     let html = '';
     const dates = getDates();
@@ -244,13 +255,12 @@ export async function loadHallsContent() {
         html += '<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Залы не загружены</p></div>';
     }
 
-    html += '<div class="apple-card" id="lineupsContainer">';
-    if (Object.keys(lineupsByHall).length > 0) {
-        html += renderLineupRows(lineupsByHall);
-    } else if (state.selectedHalls.length > 0) {
-        html += '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Нет составов по выбранным залам</p></div>';
-    }
-    html += '</div>';
-
+    html += '<div class="apple-card" id="lineupsContainer"></div>';
     c.innerHTML = html;
+
+    if (state.selectedHalls.length > 0) {
+        await refreshLineupsOnly();
+    } else {
+        document.getElementById('lineupsContainer').innerHTML = '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Выберите залы</p></div>';
+    }
 }

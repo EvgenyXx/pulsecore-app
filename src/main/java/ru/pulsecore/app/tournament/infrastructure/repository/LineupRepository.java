@@ -1,5 +1,7 @@
 package ru.pulsecore.app.tournament.infrastructure.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,10 +12,8 @@ import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import java.time.LocalDate;
 import java.util.List;
 
-
 @Repository
 public interface LineupRepository extends JpaRepository<Lineup, Long> {
-
 
     @Modifying
     @Query(value = """
@@ -34,13 +34,15 @@ public interface LineupRepository extends JpaRepository<Lineup, Long> {
                       @Param("link") String link,
                       @Param("type") String type);
 
+    @Query("SELECT DISTINCT l.hall FROM Lineup l WHERE l.date = :date AND l.hall IS NOT NULL ORDER BY l.hall")
+    List<String> findDistinctHallsByDate(@Param("date") LocalDate date);
+
+    @Query("SELECT l FROM Lineup l WHERE l.date = :date AND l.hall IN :halls ORDER BY l.time")
+    Page<Lineup> findByDateAndHallIn(@Param("date") LocalDate date, @Param("halls") List<String> halls, Pageable pageable);
+
     List<Lineup> findByDate(LocalDate date);
 
     List<Lineup> findByDateBetweenOrderByDateAscTimeAsc(LocalDate start, LocalDate end);
-
-
-    @Query("SELECT l FROM Lineup l WHERE l.date = :date AND l.hall IN :halls ORDER BY l.time")
-    List<Lineup> findByDateAndHallIn(@Param("date") LocalDate date, @Param("halls") List<String> halls);
 
     @Modifying
     @Query("DELETE FROM Lineup WHERE date = :date")
@@ -50,9 +52,6 @@ public interface LineupRepository extends JpaRepository<Lineup, Long> {
     @Query("DELETE FROM Lineup WHERE date < :date")
     void deleteByDateBefore(@Param("date") LocalDate date);
 
-
     @Query("SELECT l.id FROM Lineup l WHERE l.date < :before")
     List<Long> findIdsByDateBefore(@Param("before") LocalDate before);
-
-
 }
