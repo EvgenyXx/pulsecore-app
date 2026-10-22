@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.tournament.api.dto.response.*;
 import ru.pulsecore.app.tournament.application.mapping.TournamentMatchMapper;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentMatchRepository;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,8 +43,8 @@ public class CompareService {
         );
 
         return PlayerH2HResponseDto.builder()
-                .player1Name(StringUtils.shortName(player1Name))
-                .player2Name(StringUtils.shortName(player2Name))
+                .player1Name(PlayerNameUtils.shortName(player1Name))
+                .player2Name(PlayerNameUtils.shortName(player2Name))
                 .summary(summary)
                 .scoreStats(scoreStats)
                 .build();

@@ -11,7 +11,7 @@ import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
 import ru.pulsecore.app.tournament.infrastructure.util.DateConstants;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -78,7 +78,7 @@ public abstract class AbstractFourPlayerRemovedStrategy implements MatchCalculat
     }
 
     protected String norm(String name) {
-        return StringUtils.normalizeSearch(name);
+        return PlayerNameUtils.normalizeSearch(name);
     }
 
     protected LocalDate parseDate(String date) {

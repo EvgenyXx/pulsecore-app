@@ -1,13 +1,12 @@
-package ru.pulsecore.app.tournament.infrastructure.util;
+package ru.pulsecore.app.shared.util;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class StringUtils {
+public class PlayerNameUtils {
 
     /**
      * Извлекает первое имя из полного ФИО и делает его с заглавной буквы.
-     *
      * Примеры:
      * extractFirstName("хрипуненко павел") → "Павел"
      * extractFirstName("ЧЕРНОВ АЛЕКСАНДР ИВАНОВИЧ") → "Александр"
@@ -22,7 +21,6 @@ public class StringUtils {
 
     /**
      * Делает каждое слово с заглавной буквы, остальные буквы — строчные.
-     *
      * Примеры:
      * capitalize("хрипуненко павел") → "Хрипуненко Павел"
      * capitalize("ЧЕРНОВ АЛЕКСАНДР") → "Чернов Александр"
@@ -42,7 +40,6 @@ public class StringUtils {
 
     /**
      * Возвращает фамилию + инициалы с больших букв.
-     *
      * Примеры:
      * shortName("хрипуненко павел") → "Хрипуненко П."
      * shortName("ЧЕРНОВ АЛЕКСАНДР ИВАНОВИЧ") → "Чернов А. И."
@@ -69,7 +66,6 @@ public class StringUtils {
     /**
      * Приводит имя к нижнему регистру для поиска и сравнения.
      * Убирает неразрывные пробелы и лишние пробелы.
-     *
      * Примеры:
      * normalizeSearch("Хрипуненко Павел") → "хрипуненко павел"
      * normalizeSearch("ЧЕРНОВ  АЛЕКСАНДР") → "чернов александр"

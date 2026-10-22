@@ -14,7 +14,7 @@ import ru.pulsecore.app.shared.event.PushContent;
 import ru.pulsecore.app.shared.util.PushMessageBuilder;
 import ru.pulsecore.app.tournament.domain.enums.LineupType;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +80,7 @@ public class NewTournamentEventPublisher {
     }
 
     private MailContext buildNewTournamentContext(PlayerData player, TournamentDto tournament) {
-        String firstName = StringUtils.extractFirstName(player.name());
+        String firstName = PlayerNameUtils.extractFirstName(player.name());
         String rawDate = tournament.getDate() != null ? tournament.getDate().getDate() : null;
         String type = LineupType.fromApiType(tournament.getType()).displayName();
 

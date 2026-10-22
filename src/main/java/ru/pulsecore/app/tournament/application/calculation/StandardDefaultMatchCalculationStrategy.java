@@ -12,7 +12,7 @@ import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
 import ru.pulsecore.app.tournament.infrastructure.util.DateConstants;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -55,8 +55,8 @@ public class StandardDefaultMatchCalculationStrategy implements MatchCalculation
     private void processMatch(Match m, PointsCalculator calculator,
                               Map<String, Integer> pointsMap, Map<String, Integer> placeMap,
                               LocalDate tournamentDate) {
-        String p1 = StringUtils.normalizeSearch(m.getPlayer1());
-        String p2 = StringUtils.normalizeSearch(m.getPlayer2());
+        String p1 = PlayerNameUtils.normalizeSearch(m.getPlayer1());
+        String p2 = PlayerNameUtils.normalizeSearch(m.getPlayer2());
 
         int p1Points = calculator.calculatePoints(m, tournamentDate);
         pointsMap.merge(p1, p1Points, Integer::sum);

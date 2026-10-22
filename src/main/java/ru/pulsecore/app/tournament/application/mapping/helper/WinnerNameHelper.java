@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.mapping.helper;
 
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 @Component
 public class WinnerNameHelper {
@@ -12,6 +12,6 @@ public class WinnerNameHelper {
         if (winnerName==null || winnerName.isEmpty()){
             return winnerName;
         }
-        return StringUtils.shortName(winnerName);
+        return PlayerNameUtils.shortName(winnerName);
     }
 }

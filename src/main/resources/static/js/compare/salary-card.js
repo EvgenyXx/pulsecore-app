@@ -5,6 +5,12 @@ function formatMoney(amount) {
     return Number(amount).toLocaleString('ru-RU', { maximumFractionDigits: 0 }) + ' ₽';
 }
 
+// Функция для шапки — выводит только цифры (без знака рубля)
+function formatMoneyNoSign(amount) {
+    if (amount == null) return '0';
+    return Number(amount).toLocaleString('ru-RU', { maximumFractionDigits: 0 });
+}
+
 function formatPercent(val) {
     return val != null ? Number(val).toFixed(1) + '%' : '0%';
 }
@@ -35,24 +41,37 @@ export function renderSalaryH2HCard(data) {
             
             <!-- СТЕКЛЯННАЯ ШАПКА -->
             <div class="h2h-glass-header" style="margin-bottom: 12px; padding: 16px; border-radius: 16px;">
-                <div class="h2h-players" style="margin-bottom: 0; align-items: flex-start;">
-                    <div class="h2h-player" style="text-align: left;">
-                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 4px; line-height: 1.2;">${p1.name}</p>
+                <div class="h2h-players" style="margin-bottom: 0; align-items: flex-start; gap: 8px;">
+                    
+                    <!-- Левый игрок -->
+                    <div class="h2h-player" style="text-align: left; min-width: 0; flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 4px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${p1.name}</p>
                         <div><span class="h2h-league-badge">Лига ${p1.league || '?'}</span></div>
-                        <p class="h2h-player-wins" style="font-size: 1.3rem; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 8px;">${formatMoney(p1.totalAmount)}</p>
+                        
+                        <!-- Сумма без знака рубля -->
+                        <p class="h2h-player-wins" style="font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 8px; white-space: nowrap; text-shadow: 0 0 15px rgba(255,255,255,0.4);">
+                            ${formatMoneyNoSign(p1.totalAmount)}
+                        </p>
+                        
                         <div class="h2h-diff-badge ${p1MoreMoney ? 'win' : 'lose'}">
                             ${p1MoreMoney ? `+${formatMoney(diffTotal)}` : `-${formatMoney(diffTotal)}`}
                         </div>
                     </div>
 
-                    <div class="h2h-vs" style="margin-top: 44px;">
+                    <div class="h2h-vs" style="margin-top: 44px; flex-shrink: 0; width: 30px; display: flex; justify-content: center;">
                         <span class="h2h-vs-text" style="font-size: 1.1rem; color: #a1a1aa; opacity: 0.4; font-weight: 900; font-style: italic;">VS</span>
                     </div>
 
-                    <div class="h2h-player" style="text-align: right;">
-                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 4px; line-height: 1.2;">${p2.name}</p>
+                    <!-- Правый игрок -->
+                    <div class="h2h-player" style="text-align: right; min-width: 0; flex: 1; display: flex; flex-direction: column; align-items: flex-end;">
+                        <p class="h2h-player-name" style="color: #ffffff; font-size: 16px; font-weight: 600; margin-bottom: 4px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${p2.name}</p>
                         <div><span class="h2h-league-badge">Лига ${p2.league || '?'}</span></div>
-                        <p class="h2h-player-wins" style="font-size: 1.3rem; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 8px;">${formatMoney(p2.totalAmount)}</p>
+                        
+                        <!-- Сумма без знака рубля -->
+                        <p class="h2h-player-wins" style="font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 8px; white-space: nowrap; text-shadow: 0 0 15px rgba(255,255,255,0.4);">
+                            ${formatMoneyNoSign(p2.totalAmount)}
+                        </p>
+                        
                         <div class="h2h-diff-badge ${p2MoreMoney ? 'win' : 'lose'}">
                             ${p2MoreMoney ? `+${formatMoney(diffTotal)}` : `-${formatMoney(diffTotal)}`}
                         </div>
