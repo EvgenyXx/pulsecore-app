@@ -38,17 +38,14 @@ export function renderH2HCard(data) {
     const scoreRowsHtml = scoreStats.map(s => {
         const matchCount = (s.player1Wins || 0) + (s.player2Wins || 0);
         const percent = Math.round((matchCount / totalScoreMatches) * 100);
-        const leftShare = matchCount > 0 ? Math.round((s.player1Wins / matchCount) * 100) : 50;
 
         return `
             <div class="h2h-score-row">
                 <span class="h2h-score-wins left">${s.player1Wins}</span>
                 
                 <div class="h2h-score-bar-wrap">
-                    <div class="h2h-score-bar-fill left" style="width: ${leftShare}%"></div>
-                    <div class="h2h-score-bar-fill right" style="width: ${100 - leftShare}%"></div>
+                    <div class="h2h-score-bar-fill-single" style="width: ${percent}%;"></div>
                     
-                    <!-- Капсула со счётом и процентом ровно по центру -->
                     <div class="h2h-score-bar-center">
                         <span class="h2h-bar-score">${s.score}</span>
                         <span class="h2h-bar-divider">•</span>
@@ -67,35 +64,46 @@ export function renderH2HCard(data) {
         <div class="h2h-card salary-mode" style="height: auto; padding: 12px 12px 16px 12px;">
             
             <!-- 1. ШАПКА -->
-            <div class="h2h-glass-header" style="margin-bottom: 12px; padding: 16px; border-radius: 20px;">
-                <div class="h2h-players" style="margin-bottom: 12px; align-items: center;">
-                    <div class="h2h-player" style="text-align: left;">
-                        <p class="h2h-player-name" style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.2;">${data.player1Name}</p>
-                        <p class="h2h-player-wins" style="font-size: 1.45rem; font-weight: 800; color: #fff; line-height: 1; margin-top: 4px; text-shadow: 0 0 20px rgba(255,255,255,0.4);">${p1Wins}</p>
-                        <div class="h2h-diff-badge ${p1MoreWins ? 'win' : 'lose'}" style="margin-top: 6px; padding: 2px 8px; font-size: 10px;">
+            <div class="h2h-glass-header" style="margin-bottom: 12px; padding: 16px; border-radius: 24px;">
+                <div class="h2h-players" style="margin-bottom: 12px; align-items: flex-start;">
+                    
+                    <!-- Левый игрок -->
+                    <div class="h2h-player" style="text-align: left; flex: 1; min-width: 0;">
+                        <p class="h2h-player-name" style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${data.player1Name}</p>
+                        <p class="h2h-player-wins" style="font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-top: 4px; text-shadow: 0 0 20px rgba(255,255,255,0.4);">${p1Wins}</p>
+                        <div class="h2h-diff-badge ${p1MoreWins ? 'win' : 'lose'}" style="margin-top: 8px; padding: 3px 10px; font-size: 11px; font-weight: 700; border-radius: 12px; backdrop-filter: blur(8px); display: inline-block;">
                             ${p1MoreWins ? `+${diffWins}` : `-${diffWins}`}
                         </div>
                     </div>
 
-                    <div class="h2h-vs" style="margin-top: 12px;">
-                        <span class="h2h-vs-text" style="font-size: 1rem; color: #a1a1aa; opacity: 0.4; font-weight: 900; font-style: italic;">VS</span>
+                    <!-- VS -->
+                    <div class="h2h-vs" style="margin-top: 12px; flex-shrink: 0; width: 40px; display: flex; justify-content: center;">
+                        <span class="h2h-vs-text" style="font-size: 1.1rem; color: #a1a1aa; opacity: 0.5; font-weight: 900; font-style: italic; text-shadow: 0 0 10px rgba(255,255,255,0.2);">VS</span>
                     </div>
 
-                    <div class="h2h-player" style="text-align: right;">
-                        <p class="h2h-player-name" style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.2;">${data.player2Name}</p>
-                        <p class="h2h-player-wins" style="font-size: 1.45rem; font-weight: 800; color: #fff; line-height: 1; margin-top: 4px; text-shadow: 0 0 20px rgba(255,255,255,0.4);">${p2Wins}</p>
-                        <div class="h2h-diff-badge ${p2MoreWins ? 'win' : 'lose'}" style="margin-top: 6px; padding: 2px 8px; font-size: 10px;">
+                    <!-- Правый игрок -->
+                    <div class="h2h-player" style="text-align: right; flex: 1; min-width: 0;">
+                        <p class="h2h-player-name" style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${data.player2Name}</p>
+                        <p class="h2h-player-wins" style="font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-top: 4px; text-shadow: 0 0 20px rgba(255,255,255,0.4);">${p2Wins}</p>
+                        <div class="h2h-diff-badge ${p2MoreWins ? 'win' : 'lose'}" style="margin-top: 8px; padding: 3px 10px; font-size: 11px; font-weight: 700; border-radius: 12px; backdrop-filter: blur(8px); display: inline-block;">
                             ${p2MoreWins ? `+${diffWins}` : `-${diffWins}`}
                         </div>
                     </div>
                 </div>
 
-                <div class="h2h-bar" style="height: 20px; border-radius: 10px; flex-shrink: 0; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
-                    <div class="h2h-bar-left" style="width: ${p1Percent}%; display: flex; align-items: center; justify-content: center;">
-                        <span class="h2h-bar-value" style="font-size: 10px; font-weight: 700;">${p1Percent}%</span>
+                <!-- ВЕРХНИЙ БАР -->
+                <div class="h2h-bar-top-wrap">
+                    <div class="h2h-bar-top-fill left" style="width: ${p1Percent}%;">
+                        <div class="h2h-bar-top-glare"></div>
                     </div>
-                    <div class="h2h-bar-right" style="width: ${p2Percent}%; display: flex; align-items: center; justify-content: center;">
-                        <span class="h2h-bar-value" style="font-size: 10px; font-weight: 700;">${p2Percent}%</span>
+                    <div class="h2h-bar-top-fill right" style="width: ${p2Percent}%;">
+                        <div class="h2h-bar-top-glare"></div>
+                    </div>
+                    
+                    <div class="h2h-bar-top-capsule">
+                        <span class="h2h-bar-score">${p1Percent}%</span>
+                        <span class="h2h-bar-divider">•</span>
+                        <span class="h2h-bar-pct">${p2Percent}%</span>
                     </div>
                 </div>
             </div>
@@ -112,7 +120,7 @@ export function renderH2HCard(data) {
                 </div>
             </div>
 
-            <!-- 3. КНОПКА ОТКРЫТИЯ МОДАЛКИ -->
+            <!-- 3. КНОПКА -->
             <div class="salary-topsis-block" style="padding: 0; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); border-radius: 16px;">
                 <button onclick="window.openH2HHistory()" 
                         style="width: 100%; padding: 14px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: #fff;">
