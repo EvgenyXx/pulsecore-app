@@ -44,14 +44,14 @@
 }
 
 .h2h-league-badge {
-    display: inline-block; font-size: 10px; font-weight: 700; color: #a1a1aa;
-    background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px;
+    display: inline-block; font-size: 9px; font-weight: 700; color: #a1a1aa;
+    background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;
     text-transform: uppercase; letter-spacing: 0.5px;
 }
 
 .h2h-diff-badge {
-    display: inline-block; padding: 4px 12px; border-radius: 12px;
-    font-size: 13px; font-weight: 700; margin-top: 6px;
+    display: inline-block; border-radius: 10px;
+    font-weight: 700;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 .h2h-diff-badge.win {
@@ -77,13 +77,13 @@
 
 .h2h-bar-left {
     background: linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%);
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .h2h-bar-right {
     background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
@@ -98,11 +98,11 @@
 }
 
 .h2h-glass-table .salary-metric-row {
-    padding: 12px 0;
+    padding: 8px 0;
 }
 
 .h2h-glass-table .salary-metric-row:first-child {
-    padding-top: 4px;
+    padding-top: 2px;
 }
 
 .salary-val {
@@ -166,7 +166,7 @@
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #fff;
     background: rgba(99, 102, 241, 0.05);
@@ -204,7 +204,7 @@
     display: none;
 }
 
-/* ===== СТРОКИ МАТЧЕЙ (ВСЁ В ОДНОМ ЦВЕТЕ) ===== */
+/* ===== СТРОКИ МАТЧЕЙ ===== */
 
 .h2h-history-modal .h2h-match-row {
     display: grid;
@@ -224,10 +224,99 @@
     background: rgba(255, 255, 255, 0.06);
 }
 
-/* Единый приятный цвет для всех элементов строки */
 .h2h-history-modal .h2h-match-date,
 .h2h-history-modal .h2h-match-score,
 .h2h-history-modal .h2h-match-winner {
     color: #d1d0e0;
     font-weight: 500;
+}
+
+/* =========================================================
+   PREMIUM SCORE BAR (Центрирование, увеличенный центральный блок)
+   ========================================================= */
+
+.h2h-score-row {
+    display: grid;
+    grid-template-columns: 24px 1fr 24px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.h2h-score-row:last-child {
+    border-bottom: none;
+}
+
+/* Цифры побед по краям — не трогаем */
+.h2h-score-wins {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+.h2h-score-wins.left { justify-content: flex-start; }
+.h2h-score-wins.right { justify-content: flex-end; }
+
+/* Бар (увеличен на ~6%) */
+.h2h-score-bar-wrap {
+    width: 100%;
+    position: relative;
+    height: 21px; /* было 20px */
+    border-radius: 10.5px; /* было 10px */
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.h2h-score-bar-fill.left {
+    height: 100%;
+    background: linear-gradient(180deg, #4f46e5 0%, #3730a3 100%);
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    transition: width 0.4s ease;
+}
+
+.h2h-score-bar-fill.right {
+    height: 100%;
+    background: linear-gradient(180deg, #d97706 0%, #92400e 100%);
+    transition: width 0.4s ease;
+}
+
+/* Капсула со счётом по центру (увеличена на ~6%) */
+.h2h-score-bar-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* было 4px */
+    background: rgba(0, 0, 0, 0.7);
+    padding: 3px 10px; /* было 2px 8px */
+    border-radius: 12px; /* было 10px */
+    border: 1px solid rgba(255,255,255,0.1);
+    pointer-events: none;
+}
+
+.h2h-bar-score {
+    font-size: 11px; /* было 10px */
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.h2h-bar-divider {
+    font-size: 9px; /* было 8px */
+    color: rgba(255,255,255,0.5);
+    line-height: 1;
+}
+
+.h2h-bar-pct {
+    font-size: 10px; /* было 9px */
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1;
 }
