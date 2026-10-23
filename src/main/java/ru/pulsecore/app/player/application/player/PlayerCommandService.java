@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.domain.Role;
 import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
-import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
-
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,34 +27,25 @@ public class PlayerCommandService {
     private final PasswordEncoder passwordEncoder;
 
 
-
     @Transactional(propagation = Propagation.MANDATORY)
     public void deletePlayer(UUID playerId) {
         playerRepository.deleteById(playerId);
     }
 
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    public Player save(Player player) {
-        if (player.getName() != null) {
-            player.setName(NameNormalizer.normalize(player.getName()));
-        }
-        return playerRepository.save(player);
-    }
 
     @Transactional(propagation = Propagation.MANDATORY)
     public Player create(String name, String email, String rawPassword, Role defaultRole) {
-        return playerRepository.save(Player.builder()
+        return playerRepository.saveAndFlush(Player.builder()
                 .name(name)
-                .email(email)
+                .nameNormalized(PlayerNameUtils.normalizeName(name))
+                .email(email.trim().toLowerCase(Locale.ROOT))
                 .password(passwordEncoder.encode(rawPassword))
                 .verified(true)
                 .createdAt(LocalDateTime.now())
                 .roles(Set.of(defaultRole))
                 .build());
     }
-
-
 
 
 }

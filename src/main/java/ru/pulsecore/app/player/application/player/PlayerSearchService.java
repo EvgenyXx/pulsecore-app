@@ -28,10 +28,10 @@ public class PlayerSearchService {
     private final PlayerMapper playerMapper;
 
     public Page<PlayerData> searchRegisteredPlayers(String query, int page, int size) {
-    return playerRepository
-            .searchByName(query, PageRequest.of(page, size))
-            .map(playerMapper::toData);
-}
+        return playerRepository
+                .searchByName(query, PageRequest.of(page, size))
+                .map(playerMapper::toData);
+    }
 
     public List<PlayerData> getPlayersIds(Set<UUID> playerIds) {
         return playerRepository.findProjectionsByIds(playerIds)
@@ -101,5 +101,10 @@ public class PlayerSearchService {
 
     public boolean existsByName(String name) {
         return playerRepository.existsByNameIgnoreCase(name);
+    }
+
+
+    public boolean existsByNameNormalized(String nameNormalized) {
+        return playerRepository.existsByNameNormalized(nameNormalized);
     }
 }

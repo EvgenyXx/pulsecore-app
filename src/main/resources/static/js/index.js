@@ -93,6 +93,20 @@ function togglePassword(id, btn) {
     btn.textContent = isPwd ? "Скрыть" : "Показать";
 }
 
+// Хелпер: безопасно читает {message, type} из ответа бэка.
+// Если тело не JSON (прокси, HTML-ошибка) — возвращает fallback.
+async function readError(res, fallback) {
+    try {
+        const data = await res.json();
+        return {
+            message: data.message || fallback,
+            type: data.type || null
+        };
+    } catch (_) {
+        return { message: fallback, type: null };
+    }
+}
+
 async function login() {
     const email = document.getElementById("emailInput").value.trim();
     const password = document.getElementById("passwordInput").value;
@@ -114,11 +128,11 @@ async function login() {
         });
 
         if (!r.ok) {
-            const data = await r.json();
-            if (data.type === "OAUTH_ONLY") {
-                err.innerHTML = `${data.message}<br><br><a href="/oauth2/authorization/yandex" style="color: #ff9f0a;">Войти через Яндекс</a>`;
+            const { message, type } = await readError(r, "Неверный email или пароль");
+            if (type === "OAUTH_ONLY") {
+                err.innerHTML = `${message}<br><br><a href="/oauth2/authorization/yandex" style="color: #ff9f0a;">Войти через Яндекс</a>`;
             } else {
-                err.textContent = data.message || "Неверный email или пароль";
+                err.textContent = message;
             }
             err.classList.remove("hidden");
             return;
@@ -163,11 +177,11 @@ async function register() {
         });
 
         if (!r.ok) {
-            const e = await r.json();
-            if (e.type === "OAUTH_EMAIL") {
-                err.innerHTML = `${e.message}<br><br><a href="/oauth2/authorization/yandex" style="color: #ff9f0a;">Войти через Яндекс</a>`;
+            const { message, type } = await readError(r, "Ошибка регистрации");
+            if (type === "OAUTH_EMAIL" || type === "OAUTH_ONLY") {
+                err.innerHTML = `${message}<br><br><a href="/oauth2/authorization/yandex" style="color: #ff9f0a;">Войти через Яндекс</a>`;
             } else {
-                err.textContent = e.message || "Ошибка регистрации";
+                err.textContent = message;
             }
             err.classList.remove("hidden");
             btn.disabled = false;
@@ -210,7 +224,8 @@ async function verifyEmail() {
         });
 
         if (!vr.ok) {
-            err.textContent = "Неверный код";
+            const { message } = await readError(vr, "Неверный код");
+            err.textContent = message;
             err.classList.remove("hidden");
             btn.disabled = false;
             btn.textContent = "Подтвердить";
@@ -225,7 +240,8 @@ async function verifyEmail() {
         });
 
         if (!lr.ok) {
-            err.textContent = "Ошибка входа";
+            const { message } = await readError(lr, "Ошибка входа");
+            err.textContent = message;
             err.classList.remove("hidden");
             btn.disabled = false;
             btn.textContent = "Подтвердить";
@@ -264,7 +280,8 @@ async function forgotPassword() {
         });
 
         if (!r.ok) {
-            err.textContent = "Ошибка отправки";
+            const { message } = await readError(r, "Ошибка отправки");
+            err.textContent = message;
             err.classList.remove("hidden");
             btn.disabled = false;
             btn.textContent = "Отправить код";
@@ -318,8 +335,8 @@ async function resetPassword() {
         });
 
         if (!r.ok) {
-            const e = await r.json();
-            err.textContent = e.message || "Неверный код";
+            const { message } = await readError(r, "Неверный код");
+            err.textContent = message;
             err.classList.remove("hidden");
             btn.disabled = false;
             btn.textContent = "Сменить пароль";

@@ -125,4 +125,6 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
             "COALESCE(s.active, false) AND s.expiresAt > CURRENT_TIMESTAMP as hasActiveSubscription " +
             "FROM Player p LEFT JOIN p.subscription s")
     List<PlayerDataProjection> findAllPlayers();
+
+    boolean existsByNameNormalized(String nameNormalized);
 }

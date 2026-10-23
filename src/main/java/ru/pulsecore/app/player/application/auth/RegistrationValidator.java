@@ -6,6 +6,7 @@ import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.infrastructure.exception.EmailAlreadyExistsException;
 import ru.pulsecore.app.player.infrastructure.exception.OAuthOnlyLoginException;
 import ru.pulsecore.app.player.infrastructure.exception.PlayerNameAlreadyExistsException;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 
 /**
@@ -21,7 +22,7 @@ public class RegistrationValidator {
 
     public void validate(String email, String name) {
         String normalizedEmail = email.toLowerCase().trim();
-        String normalizedName = name.toLowerCase().trim();
+        String normalizedName = PlayerNameUtils.normalizeName(name);
 
         playerSearchService.findByEmail(normalizedEmail).ifPresent(player -> {
             if (player.getPassword() == null || player.getPassword().isBlank()) {
@@ -30,7 +31,7 @@ public class RegistrationValidator {
             throw new EmailAlreadyExistsException();
         });
 
-        if (playerSearchService.existsByName(normalizedName)) {
+        if (playerSearchService.existsByNameNormalized(normalizedName)) {
             throw new PlayerNameAlreadyExistsException();
         }
     }

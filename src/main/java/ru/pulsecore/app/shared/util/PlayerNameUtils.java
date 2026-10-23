@@ -2,8 +2,27 @@ package ru.pulsecore.app.shared.util;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @UtilityClass
 public class PlayerNameUtils {
+
+    /**
+     * Нормализует имя для хранения и сравнения: приводит к нижнему регистру,
+     * обрезает пробелы по краям, схлопывает повторные пробелы и сортирует слова
+     * по алфавиту, чтобы порядок «фамилия имя» и «имя фамилия» давал одинаковый результат.
+     * Примеры:
+     * normalizeName("Хрипуненко Павел") → "павел хрипуненко"
+     * normalizeName("  ЧЕРНОВ   АЛЕКСАНДР ") → "александр чернов"
+     * normalizeName(null) → ""
+     */
+    public String normalizeName(String name) {
+        if (name == null || name.isBlank()) return "";
+        return Arrays.stream(name.toLowerCase().trim().split("\\s+"))
+                .sorted()
+                .collect(Collectors.joining(" "));
+    }
 
     /**
      * Извлекает первое имя из полного ФИО и делает его с заглавной буквы.
@@ -12,7 +31,7 @@ public class PlayerNameUtils {
      * extractFirstName("ЧЕРНОВ АЛЕКСАНДР ИВАНОВИЧ") → "Александр"
      * extractFirstName("карпенко") → "Карпенко"
      */
-    public static String extractFirstName(String fullName) {
+    public String extractFirstName(String fullName) {
         if (fullName == null || fullName.isBlank()) return "";
         String[] parts = fullName.trim().split("\\s+");
         String firstName = parts.length >= 2 ? parts[1] : parts[0];
@@ -26,7 +45,7 @@ public class PlayerNameUtils {
      * capitalize("ЧЕРНОВ АЛЕКСАНДР") → "Чернов Александр"
      * capitalize("карпенко") → "Карпенко"
      */
-    public static String capitalize(String name) {
+    public String capitalize(String name) {
         if (name == null || name.isBlank()) return name;
         String[] parts = name.trim().split("\\s+");
         StringBuilder sb = new StringBuilder();
@@ -45,14 +64,14 @@ public class PlayerNameUtils {
      * shortName("ЧЕРНОВ АЛЕКСАНДР ИВАНОВИЧ") → "Чернов А. И."
      * shortName("карпенко") → "Карпенко"
      */
-    public static String shortName(String fullName) {
+    public String shortName(String fullName) {
         if (fullName == null || fullName.isBlank()) return fullName;
         String[] parts = fullName.trim().split("\\s+");
         if (parts.length == 1) return capitalize(parts[0]);
 
         // Фамилия + инициалы
         StringBuilder sb = new StringBuilder();
-        sb.append(capitalize(parts[0]));  // Фамилия
+        sb.append(capitalize(parts[0]));
 
         for (int i = 1; i < parts.length; i++) {
             sb.append(" ");
@@ -71,7 +90,7 @@ public class PlayerNameUtils {
      * normalizeSearch("ЧЕРНОВ  АЛЕКСАНДР") → "чернов александр"
      * normalizeSearch(" Карпенко ") → "карпенко"
      */
-    public static String normalizeSearch(String name) {
+    public String normalizeSearch(String name) {
         if (name == null) return "";
         return name.toLowerCase()
                 .replace("\u00A0", " ")
