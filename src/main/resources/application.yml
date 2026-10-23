@@ -82,7 +82,6 @@ app:
       - /api/players
       - /subscribe.html
       - /profile.html
-      - /dashboard.html
       - /favicon.png
       - /apple-touch-icon.png
       - /apple-touch-icon-precomposed.png

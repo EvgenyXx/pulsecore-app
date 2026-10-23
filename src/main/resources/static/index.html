@@ -680,12 +680,25 @@
         <div class="period-sheet" onclick="event.stopPropagation()">
             <div class="period-sheet-handle"></div>
             <h3 class="text-base font-bold text-white mb-4 text-center">Методика расчета</h3>
+
             <div style="font-size: 13px; color: #a1a1aa; line-height: 1.6; text-align: left; padding-bottom: 20px;">
-                <p style="margin-bottom: 12px;">Рейтинг честно сравнивает игроков, независимо от их лиги и общего количества игр. Мы смотрим только на то, как игрок показывает себя относительно своего уровня:</p>
-                <ul style="list-style-type: disc; padding-left: 20px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
-                    <li>Эффективность (отношение среднего чека игрока к среднему чеку по его лиге)</li>
-                    <li>Процент выигранных матчей</li>
-                    <li>Количество сыгранных турниров</li>
+                <p style="margin-bottom: 12px;">
+                    Чтобы честно сравнить игроков из разных лиг, мы не смотрим на их общий заработок. Вместо этого мы используем математический алгоритм TOPSIS. Он оценивает три критерия и показывает, кто из игроков эффективнее.
+                </p>
+
+                <div style="height: 1px; background: rgba(255, 255, 255, 0.08); margin: 16px 0;"></div>
+
+                <ul style="list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
+                    <li>
+                        <div style="color: #ffffff; font-weight: 600; margin-bottom: 4px;">Эффективность</div>
+                        <div style="color: #a1a1aa;">Отношение среднего чека игрока к среднему чеку по его лиге.</div>
+                    </li>
+                    <li>
+                        <div style="color: #ffffff; font-weight: 600; margin-bottom: 4px;">Процент выигранных матчей</div>
+                    </li>
+                    <li>
+                        <div style="color: #ffffff; font-weight: 600; margin-bottom: 4px;">Количество сыгранных турниров</div>
+                    </li>
                 </ul>
             </div>
         </div>

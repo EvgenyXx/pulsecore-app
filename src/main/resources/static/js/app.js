@@ -1,6 +1,6 @@
 import { API } from './core/api.js';
 import { state } from './core/state.js';
-import { capitalizeName } from './core/utils.js';
+import { formatMoney, capitalizeName } from './core/utils.js';
 import { loadDashboardWidgets, goHome, highlightNav } from './dashboard/dashboard.js';
 import { loadTopWeek, switchLeague, switchPeriod } from './modules/top.js';
 import { loadSelectedHalls, loadHallsContent, switchHallsDate, toggleAllHalls, toggleHallsCheckboxes, saveSelectedHalls } from './modules/lineup.js';
@@ -23,7 +23,6 @@ window.saveSelectedHalls = saveSelectedHalls;
 window.logout = logout;
 window.toggleTheme = toggleTheme;
 
-// SPA fix: dashboard-router и PTR вызывают эти функции через window
 window.loadDashboardWidgets = loadDashboardWidgets;
 window.loadTopWeek = loadTopWeek;
 window.loadSelectedHalls = loadSelectedHalls;
@@ -44,11 +43,10 @@ async function showAction(action) {
         title.innerHTML = `
     <h2 class="action-title-3d" data-text="Расписание турниров">Расписание турниров</h2>
 `;
-
         loadHallsContent();
     } else if (action === 'sum') {
         title.innerHTML = `
-    <h2 class="action-title-3d" data-text="Сумма за период">Сумма за период</h2>
+    <h2 class="action-title-3d" data-text="Cash">Cash</h2>
 `;
 
         const hasSub = await checkSubscription();
@@ -58,6 +56,24 @@ async function showAction(action) {
         }
 
         state.currentSumPage = 0;
+
+        let lastResultHtml = '';
+        if (state.lastResult) {
+            lastResultHtml = `
+                <div class="apple-card menu-card" style="cursor: default;">
+                    <div class="menu-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 8"/></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[17px] font-bold text-white tracking-tight truncate">${formatMoney(state.lastResult.amount)}</h3>
+                        <p class="text-[12px] text-zinc-400 mt-0.5">Последний результат · ${state.lastResult.date}</p>
+                    </div>
+                    <button onclick="event.stopPropagation(); openEditTournamentModal(${state.lastResult.resultId || 0}, '${state.lastResult.date || ''}', ${state.lastResult.amount})" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors text-zinc-500 hover:text-white" aria-label="Изменить">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                </div>
+            `;
+        }
 
         content.innerHTML = `
         <div class="sum-menu space-y-2">
@@ -82,6 +98,8 @@ async function showAction(action) {
                 </div>
                 <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
+
+            ${lastResultHtml}
         </div>
         <div id="sumCalculator" class="hidden mt-4"></div>
         <p id="sumError" class="text-red-400 text-xs mt-3 hidden"></p>
@@ -294,8 +312,6 @@ async function init() {
             }
         }
 
-        // Параллельная загрузка данных — все запросы одновременно.
-        // Спиннер уйдёт, когда ВСЁ готово → юзер видит заполненный дашборд.
         await Promise.all([
             loadDashboardWidgets(),
             loadTopWeek(null),
