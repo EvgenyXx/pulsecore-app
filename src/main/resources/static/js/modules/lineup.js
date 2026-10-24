@@ -5,6 +5,7 @@ import { formatDateShort, capitalizeName } from '../core/utils.js';
 let currentPage = 0;
 let isLastPage = false;
 let isLoading = false;
+let scrollContainer = null;
 
 export function loadHallsUIState() {
     const collapsed = localStorage.getItem('hallsCheckboxesCollapsed') === 'true';
@@ -32,6 +33,7 @@ export async function saveSelectedHalls() {
     const hallsStr = state.selectedHalls.join(', ');
     try {
         await API.saveHalls(hallsStr);
+        closeHallsSheet();
         await refreshLineupsOnly();
     } catch (e) {}
 }
@@ -130,10 +132,13 @@ function renderSingleCard(l) {
 
 export async function refreshLineupsOnly() {
     resetPagination();
-    const container = document.getElementById('lineupsContainer');
-    if (!container) return;
+    const list = document.getElementById('lineupsList');
+    if (!list) return;
 
-    container.innerHTML = '<div id="lineupsList"></div><div id="lineupsLoader" style="text-align:center; padding: 20px; color:#71717a; font-size:12px; display:none;">Загрузка...</div>';
+    list.innerHTML = '<div id="lineupsLoader" style="text-align:center; padding: 20px; color:#71717a; font-size:12px;">Загрузка...</div>';
+
+    if (scrollContainer) scrollContainer.scrollTop = 0;
+
     await loadPage();
 }
 
@@ -141,28 +146,37 @@ async function loadPage() {
     if (isLoading || isLastPage) return;
     isLoading = true;
 
-    const loader = document.getElementById('lineupsLoader');
-    if (loader) loader.style.display = 'block';
-
     try {
         const pageData = await API.getMyLineups(state.hallsDate, currentPage, 7);
         const items = pageData.content || [];
-
         const list = document.getElementById('lineupsList');
-        if (list && items.length > 0) {
+
+        if (list) {
+            if (currentPage === 0) list.innerHTML = '';
+            const loader = document.getElementById('lineupsLoader');
+            if (loader) loader.remove();
+
             let chunkHtml = '';
             items.forEach(l => { chunkHtml += renderSingleCard(l); });
-            list.insertAdjacentHTML('beforeend', chunkHtml);
+
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = chunkHtml;
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    while (wrapper.firstChild) {
+                        list.appendChild(wrapper.firstChild);
+                    }
+                });
+            });
         }
 
         isLastPage = pageData.last !== undefined ? pageData.last : (items.length < 7);
         currentPage++;
-
     } catch (e) {
-        console.error('Ошибка загрузки составов:', e);
+        console.error('Ошибка загрузки:', e);
     } finally {
         isLoading = false;
-        if (loader) loader.style.display = 'none';
     }
 }
 
@@ -172,56 +186,67 @@ function resetPagination() {
     isLoading = false;
 }
 
-if (window._lineupScrollHandler) {
-    window.removeEventListener('scroll', window._lineupScrollHandler);
-}
-window._lineupScrollHandler = function() {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
-        loadPage();
-    }
-};
-window.addEventListener('scroll', window._lineupScrollHandler);
+function bindScroll() {
+    scrollContainer = document.getElementById('hallsScrollArea');
+    if (!scrollContainer) return;
 
+    scrollContainer.addEventListener('scroll', () => {
+        if (scrollContainer.scrollHeight - scrollContainer.scrollTop <= scrollContainer.clientHeight + 100) {
+            loadPage();
+        }
+    });
+}
+
+// ============ ШТОРКА ЗАЛОВ (ВЫНОСИМ В BODY) ============
+window.openHallsSheet = function() {
+    const overlay = document.getElementById('hallsSheetOverlay');
+    if (overlay) {
+        document.body.appendChild(overlay); // Физически переносим в конец body, чтобы перекрыть всё
+        overlay.classList.add('open');
+    }
+    const bottomTab = document.getElementById('bottomTab');
+    if (bottomTab) bottomTab.style.display = 'none'; // Скрываем навигацию
+};
+
+window.closeHallsSheet = function() {
+    const overlay = document.getElementById('hallsSheetOverlay');
+    if (overlay) overlay.classList.remove('open');
+
+    const bottomTab = document.getElementById('bottomTab');
+    if (bottomTab) bottomTab.style.display = '';
+};
+
+export function toggleHallsCheckboxes() {}
 
 export function toggleAllHalls() {
     const allCheckbox = document.getElementById('allHallsCheckbox');
     const checkboxes = document.querySelectorAll('#hallsCheckboxes input[type="checkbox"]');
     const selectAll = allCheckbox.checked;
     checkboxes.forEach(cb => { cb.checked = selectAll; cb.parentElement.classList.toggle('selected', selectAll); });
-    const wrapper = document.getElementById('hallsCheckboxesWrapper');
-    saveHallsUIState(wrapper.classList.contains('hidden'), selectAll);
-}
-
-export function toggleHallsCheckboxes() {
-    const wrapper = document.getElementById('hallsCheckboxesWrapper');
-    const arrow = document.getElementById('hallsToggleArrow');
-    if (!wrapper || !arrow) return;
-    wrapper.classList.toggle('hidden');
-    arrow.classList.toggle('rotate-180');
-    const allSelected = document.getElementById('allHallsCheckbox')?.checked || false;
-    saveHallsUIState(wrapper.classList.contains('hidden'), allSelected);
 }
 
 export async function loadHallsContent() {
     const c = document.getElementById('actionContent');
-    c.innerHTML = '<div class="text-center py-8"></div>';
+    c.innerHTML = '';
 
     await loadSelectedHalls();
-    const uiState = loadHallsUIState();
 
     let allHalls = [];
     try {
-        // ТЕПЕРЬ ЖДЕМ МАССИВ СТРОК
         const data = await API.getAllLineups(state.hallsDate);
         allHalls = data.sort();
     } catch (e) {}
 
-    let html = '';
     const dates = getDates();
     const activeDateIndex = dates.indexOf(state.hallsDate) >= 0 ? dates.indexOf(state.hallsDate) : 0;
 
-    html += '<div class="date-switcher mb-5">';
-    html += `<div class="date-slider pos-${activeDateIndex}"></div>`;
+    let html = '<div class="halls-main-container">';
+
+    // Шапка: Даты + Кнопка фильтра
+    html += '<div class="halls-header">';
+    html += `<div class="date-switcher-container">
+        <div class="date-switcher">
+            <div class="date-slider pos-${activeDateIndex}"></div>`;
     dates.forEach((d, idx) => {
         const label = idx === 0 ? 'Сегодня' : idx === 1 ? 'Завтра' : 'Послезавтра';
         html += `<button onclick="switchHallsDate('${d}')" data-date="${d}" class="date-tab ${d === state.hallsDate ? 'active' : ''}">
@@ -229,38 +254,49 @@ export async function loadHallsContent() {
             <span class="date-tab-date">${formatDateShort(d)}</span>
         </button>`;
     });
+    html += `</div></div>`;
+
+    // Кнопка фильтра (воронка)
+    html += `<button class="halls-filter-btn" onclick="openHallsSheet()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+    </button>`;
+
     html += '</div>';
 
-    if (allHalls.length > 0) {
-        const allSelected = uiState.allSelected && state.selectedHalls.length === allHalls.length;
-        html += `<div class="apple-card mb-4">
-            <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleHallsCheckboxes()">
-                <h3 class="text-[15px] font-semibold text-white tracking-tight">Выберите залы</h3>
-                <div class="flex items-center gap-2">
-                    <label class="hall-select-all" onclick="event.stopPropagation()">
-                        <input type="checkbox" id="allHallsCheckbox" ${allSelected ? 'checked' : ''} onchange="toggleAllHalls()" class="accent-indigo-500 w-4 h-4">
-                        <span class="text-xs text-zinc-300 select-none">Все</span>
-                    </label>
-                    <span class="toggle-arrow text-zinc-400 text-xs transition-transform duration-300 ${uiState.collapsed ? 'rotate-180' : ''}" id="hallsToggleArrow">▼</span>
-                </div>
-            </div>
-            <div id="hallsCheckboxesWrapper" class="${uiState.collapsed ? 'hidden' : ''}">
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="hallsCheckboxes">`;
-        allHalls.forEach(hall => {
-            const checked = state.selectedHalls.includes(hall);
-            html += `<label class="hall-checkbox-card ${checked ? 'selected' : ''}"><input type="checkbox" value="${hall}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)"><span class="text-sm text-white">${hall}</span></label>`;
-        });
-        html += '</div><button onclick="saveSelectedHalls()" class="apple-save-btn">Сохранить</button></div></div>';
-    } else {
-        html += '<div class="text-center py-4 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Залы не загружены</p></div>';
-    }
+    html += `<div class="halls-scroll-area" id="hallsScrollArea">
+        <div id="lineupsList"></div>
+    </div>`;
 
-    html += '<div class="apple-card" id="lineupsContainer"></div>';
+    html += '</div>';
+
+    // Шторка с залами (пока в actionContent, но JS перенесет её в body при открытии)
+    html += `<div class="halls-sheet-overlay" id="hallsSheetOverlay" onclick="if(event.target===this)closeHallsSheet()">
+        <div class="halls-sheet" onclick="event.stopPropagation()">
+            <div class="halls-sheet-handle"></div>
+            <h3 class="halls-sheet-title">Выберите залы</h3>
+            <div class="flex items-center justify-end mb-3">
+                <label class="hall-select-all" onclick="event.stopPropagation()">
+                    <input type="checkbox" id="allHallsCheckbox" ${state.selectedHalls.length === allHalls.length ? 'checked' : ''} onchange="toggleAllHalls()" class="accent-indigo-500 w-4 h-4">
+                    <span class="text-xs text-zinc-300 select-none">Выбрать все</span>
+                </label>
+            </div>
+            <div class="grid grid-cols-2 gap-2" id="hallsCheckboxes">`;
+    allHalls.forEach(hall => {
+        const checked = state.selectedHalls.includes(hall);
+        html += `<label class="hall-checkbox-card ${checked ? 'selected' : ''}"><input type="checkbox" value="${hall}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('selected', this.checked)"><span class="text-sm text-white">${hall}</span></label>`;
+    });
+    html += `</div>
+            <button onclick="saveSelectedHalls()" class="apple-save-btn">Применить</button>
+        </div>
+    </div>`;
+
     c.innerHTML = html;
 
+    bindScroll();
     if (state.selectedHalls.length > 0) {
         await refreshLineupsOnly();
     } else {
-        document.getElementById('lineupsContainer').innerHTML = '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Выберите залы</p></div>';
+        document.getElementById('lineupsList').innerHTML = '<div class="text-center py-8 text-gray-500"><span class="text-2xl">📭</span><p class="text-xs">Выберите залы</p></div>';
     }
 }
+// v2

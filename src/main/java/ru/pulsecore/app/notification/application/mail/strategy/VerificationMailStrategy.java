@@ -1,4 +1,3 @@
-// VerificationMailStrategy.java
 package ru.pulsecore.app.notification.application.mail.strategy;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +28,7 @@ public class VerificationMailStrategy implements MailStrategy {
     public void send(MailContext ctx) {
         VerificationContext c = (VerificationContext) ctx;
         String text = templates.format(MailTemplate.VERIFICATION, c.code());
-        mailSender.send(MailFormat.TEXT, c.to(), "PulseCore — Код подтверждения", text, null, null);
+        mailSender.send(MailFormat.TEXT, c.to(),
+                "PulseCore — Код подтверждения", text, null, null);
     }
 }

@@ -1,4 +1,36 @@
-/* ===== Дата-переключатель со слайдером (псевдо-стекло) ===== */
+/* =========================================
+   ГЛАВНЫЙ КОНТЕЙНЕР (Фиксирован на экране)
+   ========================================= */
+.halls-main-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100dvh - 120px);
+    max-height: calc(100dvh - 120px);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+/* =========================================
+   ШАПКА (Даты + Иконка фильтра)
+   ========================================= */
+.halls-header {
+    flex-shrink: 0;
+    z-index: 10;
+    background: transparent;
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-switcher-container {
+    flex: 1;
+    position: relative;
+}
+
 .date-switcher {
     position: relative;
     display: flex;
@@ -17,16 +49,10 @@
     left: 2px;
     width: calc(33.333% - 2px);
     height: calc(100% - 4px);
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 24%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 14%, transparent) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 24%, transparent) 0%, color-mix(in srgb, var(--accent, #6366f1) 14%, transparent) 100%);
     border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 42%, transparent);
     border-radius: 10px;
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.12),
-        inset 0 -1px 0 rgba(0,0,0,0.15),
-        0 2px 8px color-mix(in srgb, var(--accent, #6366f1) 25%, transparent),
-        0 4px 16px color-mix(in srgb, var(--accent, #6366f1) 15%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.15), 0 2px 8px color-mix(in srgb, var(--accent, #6366f1) 25%, transparent), 0 4px 16px color-mix(in srgb, var(--accent, #6366f1) 15%, transparent);
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 0;
     will-change: transform;
@@ -44,12 +70,12 @@
     border-radius: 10px;
     text-align: center;
     cursor: pointer;
-    transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                text-shadow 0.4s ease;
+    transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1), text-shadow 0.4s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     border: 1px solid transparent;
     box-sizing: border-box;
+    background: transparent;
 }
 
 .date-tab-label {
@@ -77,6 +103,98 @@
     color: var(--accent-light, #a5b4fc);
 }
 
+/* Кнопка-фильтр */
+.halls-filter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    color: var(--accent-light, #a5b4fc);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.halls-filter-btn:active {
+    transform: scale(0.92);
+    background: rgba(255,255,255,0.08);
+}
+
+/* =========================================
+   ВНУТРЕННИЙ СКРОЛЛ СПИСКА
+   ========================================= */
+.halls-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 0;
+}
+
+.halls-scroll-area::-webkit-scrollbar { width: 0; }
+.halls-scroll-area { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* =========================================
+   ШТОРКА ЗАЛОВ (Поверх всего)
+   ========================================= */
+.halls-sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 99999; /* Максимальный приоритет */
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    isolation: isolate;
+}
+.halls-sheet-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.halls-sheet {
+    background: #12121f;
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px 16px 32px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-bottom: none;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.halls-sheet-overlay.open .halls-sheet {
+    transform: translateY(0);
+}
+
+.halls-sheet-handle {
+    width: 36px; height: 4px; background: rgba(255,255,255,0.2);
+    border-radius: 2px; margin: 0 auto 18px;
+}
+
+.halls-sheet-title {
+    color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 16px; text-align: center;
+}
+
 /* ===== Карточки залов ===== */
 .hall-select-all {
     display: flex;
@@ -90,32 +208,42 @@
     cursor: pointer;
 }
 
-/* ===== Карточки составов ===== */
+.hall-checkbox-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+}
+.hall-checkbox-card.selected {
+    background: color-mix(in srgb, var(--accent, #6366f1) 15%, transparent);
+    border-color: color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
+}
+.hall-checkbox-card input[type="checkbox"] {
+    accent-color: var(--accent, #6366f1);
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+/* ===== Твои родные карточки составов ===== */
 .lineup-card {
     position: relative;
     display: flex;
     flex-direction: column;
     padding: 14px 14px 12px;
-    margin-bottom: 10px;
     border-radius: 14px;
-    background:
-        linear-gradient(180deg,
-            color-mix(in srgb, var(--accent, #6366f1) 8%, rgba(255,255,255,0.10)) 0%,
-            color-mix(in srgb, var(--accent, #6366f1) 3%, rgba(255,255,255,0.03)) 55%,
-            color-mix(in srgb, var(--accent, #6366f1) 5%, rgba(255,255,255,0.04)) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 8%, rgba(255,255,255,0.10)) 0%, color-mix(in srgb, var(--accent, #6366f1) 3%, rgba(255,255,255,0.03)) 55%, color-mix(in srgb, var(--accent, #6366f1) 5%, rgba(255,255,255,0.04)) 100%);
     border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 20%, rgba(255,255,255,0.12));
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.16),
-        inset 0 -1px 0 rgba(0,0,0,0.22),
-        inset 0 0 0 1px rgba(255,255,255,0.03),
-        0 2px 6px rgba(0,0,0,0.18),
-        0 8px 24px rgba(0,0,0,0.12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.03), 0 2px 6px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.12);
     animation: lineupSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     opacity: 0;
     transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, transform 0.3s ease;
 }
 
-/* Иконка ML — правый верхний угол */
 .lineup-ml-icon {
     position: absolute;
     top: 10px;
@@ -127,33 +255,20 @@
     justify-content: center;
     border-radius: 8px;
     color: var(--accent-light, #a5b4fc);
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 16%, rgba(255,255,255,0.06)) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 8%, rgba(255,255,255,0.02)) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 16%, rgba(255,255,255,0.06)) 0%, color-mix(in srgb, var(--accent, #6366f1) 8%, rgba(255,255,255,0.02)) 100%);
     border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 32%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.12),
-        0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 6px rgba(0,0,0,0.15);
     text-decoration: none;
-    transition: background 0.22s ease, border-color 0.22s ease,
-                color 0.22s ease, transform 0.15s ease, box-shadow 0.22s ease;
+    transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.15s ease, box-shadow 0.22s ease;
     z-index: 3;
 }
 
 .lineup-ml-icon:hover {
     color: #e0e7ff;
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 26%, rgba(255,255,255,0.08)) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.03)) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 26%, rgba(255,255,255,0.08)) 0%, color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.03)) 100%);
     border-color: color-mix(in srgb, var(--accent, #6366f1) 55%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.16),
-        0 0 14px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 0 14px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
     transform: translateY(-1px);
-}
-
-.lineup-ml-icon:active {
-    transform: scale(0.94);
 }
 
 .lineup-card::before {
@@ -161,10 +276,7 @@
     position: absolute;
     top: 0; left: 8%; right: 8%;
     height: 1px;
-    background: linear-gradient(90deg,
-        transparent,
-        color-mix(in srgb, var(--accent, #6366f1) 55%, rgba(255,255,255,0.45)),
-        transparent);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent, #6366f1) 55%, rgba(255,255,255,0.45)), transparent);
     pointer-events: none;
     border-radius: 14px 14px 0 0;
     z-index: 2;
@@ -175,292 +287,70 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 40%;
-    background: linear-gradient(180deg,
-        rgba(255,255,255,0.05) 0%,
-        transparent 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
     border-radius: 14px 14px 0 0;
     pointer-events: none;
     z-index: 1;
 }
 
 .lineup-card.is-player {
-    background:
-        linear-gradient(180deg,
-            color-mix(in srgb, var(--accent, #6366f1) 22%, rgba(255,255,255,0.10)) 0%,
-            color-mix(in srgb, var(--accent, #6366f1) 10%, rgba(255,255,255,0.03)) 55%,
-            color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.04)) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 22%, rgba(255,255,255,0.10)) 0%, color-mix(in srgb, var(--accent, #6366f1) 10%, rgba(255,255,255,0.03)) 55%, color-mix(in srgb, var(--accent, #6366f1) 14%, rgba(255,255,255,0.04)) 100%);
     border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.20),
-        inset 0 -1px 0 rgba(0,0,0,0.22),
-        inset 0 0 0 1px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent),
-        0 0 0 1px color-mix(in srgb, var(--accent, #6366f1) 25%, transparent),
-        0 0 32px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent),
-        0 4px 12px rgba(0,0,0,0.22);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(0,0,0,0.22), inset 0 0 0 1px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent), 0 0 0 1px color-mix(in srgb, var(--accent, #6366f1) 25%, transparent), 0 0 32px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent), 0 4px 12px rgba(0,0,0,0.22);
 }
 
 .lineup-card.is-player::before {
     left: 0; right: 0;
-    background: linear-gradient(90deg,
-        transparent,
-        color-mix(in srgb, var(--accent, #6366f1) 90%, transparent),
-        transparent);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent, #6366f1) 90%, transparent), transparent);
     height: 1.5px;
 }
 
-/* === Строка ДАТА — на всю ширину === */
 .lineup-date-row {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    position: relative;
-    z-index: 2;
-    padding-right: 40px;
+    display: flex; align-items: baseline; gap: 8px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 2; padding-right: 40px;
 }
+.lineup-date-row .lineup-meta-label { font-size: 10px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.lineup-date-row .lineup-meta-value { font-size: 13px; font-weight: 600; color: #e5e5e5; white-space: nowrap; }
 
-.lineup-date-row .lineup-meta-label {
-    font-size: 10px;
-    font-weight: 600;
-    color: #71717a;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-}
+.lineup-body { display: flex; align-items: flex-start; gap: 12px; position: relative; z-index: 2; min-width: 0; }
+.lineup-meta { display: grid; grid-template-columns: 52px max-content; column-gap: 8px; row-gap: 6px; flex-shrink: 0; }
+.lineup-meta-row { display: contents; }
+.lineup-meta .lineup-meta-label { font-size: 10px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2; white-space: nowrap; align-self: center; }
+.lineup-meta .lineup-meta-value { font-size: 13px; font-weight: 600; color: #e5e5e5; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; align-self: center; min-width: 0; }
+.lineup-meta .lineup-time-value { font-size: 15px; font-weight: 700; color: #ffffff; }
+.lineup-meta .lineup-league-value { color: var(--accent-light, #a5b4fc); }
 
-.lineup-date-row .lineup-meta-value {
-    font-size: 13px;
-    font-weight: 600;
-    color: #e5e5e5;
-    white-space: nowrap;
-}
+.lineup-players-wrapper { flex: 1; min-width: 0; display: flex; flex-direction: column; padding-right: 8px; align-self: flex-start; margin-left: 6%; }
+.lineup-players-column { display: flex; flex-direction: column; gap: 6px; }
+.lineup-player-name { font-size: 15px; font-weight: 700; color: #f5f5f7; letter-spacing: -0.2px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.3s ease, text-shadow 0.3s ease; }
+.lineup-card.is-player .lineup-player-name { color: #ffffff; font-weight: 800; text-shadow: 0 0 12px color-mix(in srgb, var(--accent, #6366f1) 70%, transparent); }
 
-/* === Основная часть карточки === */
-.lineup-body {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    position: relative;
-    z-index: 2;
-    min-width: 0;
-}
+.lineup-type-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px; letter-spacing: 0.2px; white-space: nowrap; width: fit-content; color: var(--accent-light, #a5b4fc); background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 22%, transparent) 0%, color-mix(in srgb, var(--accent, #6366f1) 10%, transparent) 100%); border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 40%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 10px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent); text-shadow: 0 0 8px color-mix(in srgb, var(--accent, #6366f1) 60%, transparent); }
+.lineup-type-new { color: #ffffff; background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 40%, transparent) 0%, color-mix(in srgb, var(--accent, #6366f1) 20%, transparent) 100%); border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 65%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.20), 0 0 12px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent); text-shadow: 0 0 10px color-mix(in srgb, var(--accent, #6366f1) 80%, transparent); }
 
-/* Метаданные — grid 2 колонки (label | value) */
-.lineup-meta {
-    display: grid;
-    grid-template-columns: 52px max-content;
-    column-gap: 8px;
-    row-gap: 6px;
-    flex-shrink: 0;
-}
+@keyframes lineupSlideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-.lineup-meta-row {
-    display: contents;
-}
+.apple-save-btn { width: 100%; margin-top: 12px; padding: 12px 0; border-radius: 12px; font-size: 15px; font-weight: 600; color: #ffffff; background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 22%, transparent) 0%, color-mix(in srgb, var(--accent, #6366f1) 12%, transparent) 100%); border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 38%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -1px 0 rgba(0,0,0,0.18), 0 2px 8px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent); cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); text-shadow: 0 0 8px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent); }
+.apple-save-btn:hover { background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 30%, transparent) 0%, color-mix(in srgb, var(--accent, #6366f1) 18%, transparent) 100%); border-color: color-mix(in srgb, var(--accent, #6366f1) 55%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.18), 0 0 18px color-mix(in srgb, var(--accent, #6366f1) 35%, transparent); }
+.apple-save-btn:active { transform: scale(0.98); }
 
-.lineup-meta .lineup-meta-label {
-    font-size: 10px;
-    font-weight: 600;
-    color: #71717a;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 1.2;
-    white-space: nowrap;
-    align-self: center;
-}
-
-.lineup-meta .lineup-meta-value {
-    font-size: 13px;
-    font-weight: 600;
-    color: #e5e5e5;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    align-self: center;
-    min-width: 0;
-}
-
-.lineup-meta .lineup-time-value {
-    font-size: 15px;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.lineup-meta .lineup-league-value {
-    color: var(--accent-light, #a5b4fc);
-}
-
-/* === Состав — сдвинут правее === */
-.lineup-players-wrapper {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    padding-right: 8px;
-    align-self: flex-start;
-    margin-left: 6%;
-}
-
-.lineup-players-column {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-/* ★ Ключевое — без переносов, всегда в одну строку */
-.lineup-player-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: #f5f5f7;
-    letter-spacing: -0.2px;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-.lineup-card.is-player .lineup-player-name {
-    color: #ffffff;
-    font-weight: 800;
-    text-shadow: 0 0 12px color-mix(in srgb, var(--accent, #6366f1) 70%, transparent);
-}
-
-/* ===== Бейдж формата ===== */
-.lineup-type-badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 9px;
-    border-radius: 6px;
-    letter-spacing: 0.2px;
-    white-space: nowrap;
-    width: fit-content;
-    color: var(--accent-light, #a5b4fc);
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 22%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 10%, transparent) 100%);
-    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.12),
-        0 0 10px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent);
-    text-shadow: 0 0 8px color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
-}
-
-.lineup-type-new {
-    color: #ffffff;
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 40%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 20%, transparent) 100%);
-    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 65%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.20),
-        0 0 12px color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
-    text-shadow: 0 0 10px color-mix(in srgb, var(--accent, #6366f1) 80%, transparent);
-}
-
-.lineup-type-std {
-    color: var(--accent-light, #a5b4fc);
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 14%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 6%, transparent) 100%);
-    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 32%, transparent);
-}
-
-@keyframes lineupSlideIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== Кнопка «Сохранить» ===== */
-.apple-save-btn {
-    width: 100%;
-    margin-top: 12px;
-    padding: 12px 0;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #ffffff;
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 22%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 12%, transparent) 100%);
-    border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 38%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.14),
-        inset 0 -1px 0 rgba(0,0,0,0.18),
-        0 2px 8px color-mix(in srgb, var(--accent, #6366f1) 20%, transparent);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-    text-shadow: 0 0 8px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
-}
-
-.apple-save-btn:hover {
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 30%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 18%, transparent) 100%);
-    border-color: color-mix(in srgb, var(--accent, #6366f1) 55%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.18),
-        inset 0 -1px 0 rgba(0,0,0,0.18),
-        0 0 18px color-mix(in srgb, var(--accent, #6366f1) 35%, transparent);
-}
-
-.apple-save-btn:active {
-    transform: scale(0.98);
-}
-
-/* ===== Мобилка ===== */
 @media (max-width: 400px) {
-    .lineup-card {
-        padding: 12px;
-    }
-    .lineup-body {
-        gap: 10px;
-    }
-    .lineup-meta {
-        grid-template-columns: 46px max-content;
-        column-gap: 6px;
-        row-gap: 5px;
-    }
-    .lineup-meta .lineup-meta-label {
-        font-size: 9px;
-    }
-    .lineup-meta .lineup-meta-value {
-        font-size: 12px;
-    }
-    .lineup-meta .lineup-time-value {
-        font-size: 14px;
-    }
-    .lineup-player-name {
-        font-size: 13.5px;
-    }
-    .lineup-ml-icon {
-        width: 26px;
-        height: 26px;
-        top: 8px;
-        right: 8px;
-    }
-    .lineup-players-wrapper {
-        padding-right: 8px;
-        margin-left: 4%;
-    }
-    .lineup-date-row {
-        padding-right: 36px;
-    }
+    .lineup-card { padding: 12px; }
+    .lineup-body { gap: 10px; }
+    .lineup-meta { grid-template-columns: 46px max-content; column-gap: 6px; row-gap: 5px; }
+    .lineup-meta .lineup-meta-label { font-size: 9px; }
+    .lineup-meta .lineup-meta-value { font-size: 12px; }
+    .lineup-meta .lineup-time-value { font-size: 14px; }
+    .lineup-player-name { font-size: 13.5px; }
+    .lineup-ml-icon { width: 26px; height: 26px; top: 8px; right: 8px; }
+    .lineup-players-wrapper { padding-right: 8px; margin-left: 4%; }
+    .lineup-date-row { padding-right: 36px; }
 }
 
 /* ===================================================== */
-/* ★ БЕГУЩАЯ ПОЛОСА ПО КРАЮ — широкая и яркая ★          */
+/* ★ БЕГУЩАЯ ПОЛОСА ПО КРАЮ ★          */
 /* ===================================================== */
 
-@property --lineup-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-}
+@property --lineup-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 
 .lineup-card.is-player .lineup-beam {
     position: absolute;
@@ -469,65 +359,18 @@
     padding: 4px;
     pointer-events: none;
     z-index: 1;
-
-    /*
-      Широкая полоса света ~45°:
-      - 0–270°   — пусто
-      - 270–300° — плавный разгон (accent 20% → 60%)
-      - 300–330° — основной свет (accent 90% → light 100%)
-      - 330–345° — ядро (чистый белый)
-      - 345–360° — затухание
-    */
-    background: conic-gradient(
-        from var(--lineup-angle),
-        transparent 0deg,
-        transparent 270deg,
-        color-mix(in srgb, var(--accent, #8B5CF6) 20%, transparent) 290deg,
-        color-mix(in srgb, var(--accent, #8B5CF6) 70%, transparent) 310deg,
-        color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 325deg,
-        #ffffff 335deg,
-        #ffffff 340deg,
-        color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 348deg,
-        color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent) 354deg,
-        color-mix(in srgb, var(--accent, #8B5CF6) 20%, transparent) 358deg,
-        transparent 360deg
-    );
-
-    -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-            mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-            mask-composite: exclude;
-
-    filter:
-        drop-shadow(0 0 4px #ffffff)
-        drop-shadow(0 0 10px color-mix(in srgb, var(--accent-light, #A78BFA) 100%, transparent))
-        drop-shadow(0 0 20px color-mix(in srgb, var(--accent, #8B5CF6) 90%, transparent))
-        drop-shadow(0 0 32px color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent));
+    background: conic-gradient(from var(--lineup-angle), transparent 0deg, transparent 270deg, color-mix(in srgb, var(--accent, #8B5CF6) 20%, transparent) 290deg, color-mix(in srgb, var(--accent, #8B5CF6) 70%, transparent) 310deg, color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 325deg, #ffffff 335deg, #ffffff 340deg, color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 348deg, color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent) 354deg, color-mix(in srgb, var(--accent, #8B5CF6) 20%, transparent) 358deg, transparent 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+    filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 10px color-mix(in srgb, var(--accent-light, #A78BFA) 100%, transparent)) drop-shadow(0 0 20px color-mix(in srgb, var(--accent, #8B5CF6) 90%, transparent)) drop-shadow(0 0 32px color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent));
     animation: lineupOrbit 4s linear infinite;
 }
 
-@keyframes lineupOrbit {
-    from { --lineup-angle: 0deg; }
-    to   { --lineup-angle: 360deg; }
-}
+@keyframes lineupOrbit { from { --lineup-angle: 0deg; } to { --lineup-angle: 360deg; } }
 
 @media (prefers-reduced-motion: reduce) {
     .lineup-card.is-player .lineup-beam {
         animation: none;
-        background: conic-gradient(
-            from 0deg,
-            transparent 0deg,
-            transparent 270deg,
-            color-mix(in srgb, var(--accent, #8B5CF6) 70%, transparent) 300deg,
-            color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 325deg,
-            #ffffff 338deg,
-            color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 348deg,
-            color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent) 356deg,
-            transparent 360deg
-        );
+        background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, color-mix(in srgb, var(--accent, #8B5CF6) 70%, transparent) 300deg, color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 325deg, #ffffff 338deg, color-mix(in srgb, var(--accent-light, #A78BFA) 95%, transparent) 348deg, color-mix(in srgb, var(--accent, #8B5CF6) 60%, transparent) 356deg, transparent 360deg);
     }
 }
+/*v2*/

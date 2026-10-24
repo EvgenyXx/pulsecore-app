@@ -37,12 +37,14 @@ async function showAction(action) {
 
     homePage.style.display = 'none';
     actionPage.classList.remove('hidden');
+    actionPage.style.display = 'block';
     actionPage.style.opacity = '1';
 
     if (action === 'halls') {
         title.innerHTML = `
     <h2 class="action-title-3d" data-text="Расписание турниров">Расписание турниров</h2>
 `;
+        content.innerHTML = '';
         loadHallsContent();
     } else if (action === 'sum') {
         title.innerHTML = `
