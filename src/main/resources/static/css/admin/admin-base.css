@@ -503,3 +503,105 @@ textarea {
     -webkit-appearance: none;
     margin: 0;
 }
+
+/* =====================================================
+   ПЕРЕСИНХРОНИЗАЦИЯ — КАЛЕНДАРИКИ
+   ===================================================== */
+
+.resync-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.resync-date-field {
+    flex: 1;
+    min-width: 130px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0 12px;
+    height: 42px;
+    box-sizing: border-box;
+    transition: var(--admin-transition);
+}
+
+.resync-date-field:focus-within {
+    border-color: rgba(10, 132, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.resync-date-caption {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #98989d;
+    flex-shrink: 0;
+}
+
+.resync-date-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    color: #f5f5f7 !important;
+    padding: 0 !important;
+    height: 100%;
+    font-size: 0.9rem !important;
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+
+.resync-date-input::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+    cursor: pointer;
+    opacity: 0.9;
+    padding: 0;
+    margin-left: 4px;
+}
+
+.resync-date-input::-webkit-datetime-edit {
+    color: #f5f5f7 !important;
+    padding: 0;
+}
+
+.resync-date-input::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+}
+
+.resync-date-input::-webkit-datetime-edit-text {
+    color: #6e6e73;
+    padding: 0 2px;
+}
+
+.resync-date-input::-webkit-inner-spin-button {
+    display: none;
+}
+
+.resync-run-btn {
+    height: 42px;
+    flex-shrink: 0;
+    padding: 0 18px !important;
+    width: auto !important;
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .resync-date-field {
+        min-width: 0;
+        flex: 1 1 calc(50% - 4px);
+    }
+    .resync-run-btn {
+        flex: 1 1 100%;
+        width: 100% !important;
+    }
+}
