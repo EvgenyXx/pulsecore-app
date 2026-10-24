@@ -1,8 +1,10 @@
 // js/compare/compare-app.js
 
 import { renderH2HCard, renderMatchRow } from './h2h-card.js';
+import { renderSalaryH2HCard } from './salary-card.js';
 import { PlayerSearch } from './player-search.js';
-import { getPeriodDates } from './period.js';
+import { searchPlayers, searchRegisteredPlayers } from './data-loader.js';
+import { ComparePeriod, getPeriodDates, buildPeriodParams } from './period.js';
 import { initTooltips } from './tooltip.js';
 import { checkSubscription, subBlockHtml } from '../modules/subscription-block.js';
 import {
@@ -17,24 +19,48 @@ import {
 
 const MATCHES_PAGE_SIZE = 20;
 
-let selectedLeft = null;
-let selectedRight = null;
-let leftSearch = null;
-let rightSearch = null;
+let selectedLeftDefault = null;
+let selectedRightDefault = null;
+let selectedLeftSalary = null;
+let selectedRightSalary = null;
+
+let leftSearchDefault = null;
+let rightSearchDefault = null;
+let leftSearchSalary = null;
+let rightSearchSalary = null;
+
 let currentMode = 'versus';
-let currentPeriod = 'all';
+let currentPeriod = ComparePeriod.MONTH;
 let customStartDate = null;
 let customEndDate = null;
+let searchesReady = false;
+let activeMetric = 'h2h';
 
-// ===== Лента матчей =====
 let matchesPage = 0;
 let matchesHasMore = false;
 let matchesLoading = false;
 let matchesRequestId = 0;
 
+function isSalary() {
+    return activeMetric === 'salary';
+}
+
+function getSelectedLeft() {
+    return isSalary() ? selectedLeftSalary : selectedLeftDefault;
+}
+function getSelectedRight() {
+    return isSalary() ? selectedRightSalary : selectedRightDefault;
+}
+
+function applySearchRowVisibility() {
+    const salaryRow = document.getElementById('playerSearchRowSalary');
+    const defaultRow = document.getElementById('playerSearchRow');
+    if (salaryRow) salaryRow.style.display = isSalary() ? '' : 'none';
+    if (defaultRow) defaultRow.style.display = isSalary() ? 'none' : '';
+}
+
 function showSearchRow() {
-    const searchRow = document.getElementById('playerSearchRow');
-    if (searchRow) searchRow.style.display = '';
+    applySearchRowVisibility();
 }
 
 function showH2HButton() {
@@ -47,35 +73,51 @@ function showH2HButton() {
     }
 }
 
+function removeOldModal() {
+    const oldModal = document.getElementById('h2hHistoryModal');
+    if (oldModal) oldModal.remove();
+}
+
 function hideH2HResult() {
     const resultContainer = document.getElementById('h2hResult');
     if (resultContainer) {
         resultContainer.classList.add('hidden');
         resultContainer.innerHTML = '';
     }
+    removeOldModal(); // <--- УДАЛЯЕМ СТАРУЮ МОДАЛКУ
+
     matchesPage = 0;
     matchesHasMore = false;
     matchesLoading = false;
     matchesRequestId++;
 }
 
-// ===== Расчёт дат =====
-function resolveDates() {
-    let start = customStartDate;
-    let end = customEndDate;
-
-    if (!start || !end) {
-        const dates = getPeriodDates(currentPeriod || 'all');
-        start = dates.start;
-        end = dates.end;
-    }
-
-    return { start, end };
+function resolvePeriodParams() {
+    return buildPeriodParams(customStartDate, customEndDate, currentPeriod);
 }
 
-// ===== Основной compare =====
+function renderError(container, title, message) {
+    container.innerHTML = `
+        <div style="
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 16px;
+            backdrop-filter: blur(10px);
+        ">
+            <div style="color: #fca5a5; font-weight: 700; font-size: 16px; margin-bottom: 6px;">${title}</div>
+            <div style="color: #ef4444; font-size: 13px; line-height: 1.5;">${message}</div>
+        </div>
+    `;
+    container.classList.remove('hidden');
+}
+
 async function compareH2H() {
-    if (!selectedLeft || !selectedRight) return;
+    const selLeft = getSelectedLeft();
+    const selRight = getSelectedRight();
+    if (!selLeft || !selRight) return;
 
     const btn = document.getElementById('h2hCompareBtn');
     if (!btn) return;
@@ -83,53 +125,82 @@ async function compareH2H() {
     btn.textContent = 'Загрузка...';
 
     try {
-        const { start, end } = resolveDates();
+        const settings = getSettings();
+        const metricId = settings.metricId || 'h2h';
+
+        let endpoint = '/api/tournament/compare/h2h';
+        if (metricId === 'salary') {
+            endpoint = '/api/tournament/compare/salary/h2h';
+        }
 
         const params = new URLSearchParams({
-            player1Name: selectedLeft.playerName,
-            player2Name: selectedRight.playerName
+            player1Name: selLeft.playerName,
+            player2Name: selRight.playerName
         });
-        if (start) params.append('start', start);
-        if (end) params.append('end', end);
 
-        const res = await fetch(`/api/tournament/compare/h2h?${params}`, {
+        const periodParams = resolvePeriodParams();
+        Object.entries(periodParams).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                params.append(key, value);
+            }
+        });
+
+        const res = await fetch(`${endpoint}?${params}`, {
             credentials: 'same-origin'
         });
 
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const resultContainer = document.getElementById('h2hResult');
+
+        if (!res.ok) {
+            let errorMessage = 'Проверьте соединение и попробуйте снова.';
+            try {
+                const errorData = await res.json();
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (e) {}
+            renderError(resultContainer, 'Ошибка данных', errorMessage);
+            return;
+        }
 
         const data = await res.json();
 
-        const resultContainer = document.getElementById('h2hResult');
-        resultContainer.innerHTML = renderH2HCard(data);
-        resultContainer.classList.remove('hidden');
-        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // УДАЛЯЕМ СТАРУЮ МОДАЛКУ ПЕРЕД РЕНДЕРОМ
+        removeOldModal();
 
-        initMatchesScroll();
+        if (metricId === 'salary') {
+            resultContainer.innerHTML = renderSalaryH2HCard(data);
+            resultContainer.classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            resultContainer.innerHTML = renderH2HCard(data);
+            resultContainer.classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-        matchesPage = 0;
-        matchesHasMore = true;
-        matchesLoading = false;
-        matchesRequestId++;
-        const reqId = matchesRequestId;
-
-        await loadMatchesPage(reqId, true);
+            initMatchesScroll();
+            matchesPage = 0;
+            matchesHasMore = true;
+            matchesLoading = false;
+            matchesRequestId++;
+            const reqId = matchesRequestId;
+            await loadMatchesPage(reqId, true);
+        }
     } catch (e) {
-        console.error('Ошибка H2H:', e);
+        console.error('Ошибка сравнения:', e);
         const resultContainer = document.getElementById('h2hResult');
-        resultContainer.innerHTML = '<p class="text-red-400 text-center py-4">Ошибка загрузки H2H</p>';
-        resultContainer.classList.remove('hidden');
+        renderError(resultContainer, 'Нет соединения', 'Сервер временно недоступен. Попробуйте позже.');
     } finally {
         btn.disabled = false;
         btn.textContent = 'Сравнить';
     }
 }
 
-// ===== Лента матчей =====
 async function loadMatchesPage(reqId, reset = false) {
     if (matchesLoading) return;
     if (!matchesHasMore && !reset) return;
-    if (!selectedLeft || !selectedRight) return;
+    const selLeft = getSelectedLeft();
+    const selRight = getSelectedRight();
+    if (!selLeft || !selRight) return;
 
     matchesLoading = true;
 
@@ -146,15 +217,19 @@ async function loadMatchesPage(reqId, reset = false) {
     }
 
     try {
-        const { start, end } = resolveDates();
         const params = new URLSearchParams({
-            player1Name: selectedLeft.playerName,
-            player2Name: selectedRight.playerName,
-            page: matchesPage,
-            size: MATCHES_PAGE_SIZE
+            player1Name: selLeft.playerName,
+            player2Name: selRight.playerName,
+            page: String(matchesPage),
+            size: String(MATCHES_PAGE_SIZE)
         });
-        if (start) params.append('start', start);
-        if (end) params.append('end', end);
+
+        const periodParams = resolvePeriodParams();
+        Object.entries(periodParams).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                params.append(key, value);
+            }
+        });
 
         const res = await fetch(`/api/tournament/compare/h2h/matches?${params}`, {
             credentials: 'same-origin'
@@ -166,7 +241,6 @@ async function loadMatchesPage(reqId, reset = false) {
         if (reqId !== matchesRequestId) return;
 
         const items = page.content || [];
-
         if (!list) return;
 
         if (reset) list.innerHTML = '';
@@ -183,7 +257,7 @@ async function loadMatchesPage(reqId, reset = false) {
         empty?.classList.add('hidden');
 
         const html = items.map(m =>
-            renderMatchRow(m, selectedLeft.playerName, selectedRight.playerName)
+            renderMatchRow(m, selLeft.playerName, selRight.playerName)
         ).join('');
 
         list.insertAdjacentHTML('beforeend', html);
@@ -198,7 +272,6 @@ async function loadMatchesPage(reqId, reset = false) {
                 </div>
             `);
         }
-
     } catch (e) {
         console.error('Ошибка загрузки матчей:', e);
     } finally {
@@ -206,7 +279,6 @@ async function loadMatchesPage(reqId, reset = false) {
     }
 }
 
-// Наблюдатель за скроллом СПИСКА МАТЧЕЙ — бесконечная подгрузка
 function initMatchesScroll() {
     const list = document.querySelector('.h2h-matches-scroll');
     if (!list || list.dataset.h2hBound === '1') return;
@@ -227,29 +299,48 @@ function initMatchesScroll() {
     });
 }
 
-// ===== Поиск =====
-function handleSearchSelect(side, playerName) {
-    const player = { playerName: playerName };
+function ensureSearches() {
+    if (searchesReady) return;
 
-    if (side === 'left') {
-        selectedLeft = player;
-    } else {
-        selectedRight = player;
-    }
+    leftSearchDefault = new PlayerSearch(
+        'searchLeft', 'searchLeftDropdown',
+        (name) => {
+            if (name === null) { selectedLeftDefault = null; hideH2HResult(); return; }
+            selectedLeftDefault = { playerName: name };
+            hideH2HResult();
+        },
+        { searchFn: searchPlayers }
+    );
+    rightSearchDefault = new PlayerSearch(
+        'searchRight', 'searchRightDropdown',
+        (name) => {
+            if (name === null) { selectedRightDefault = null; hideH2HResult(); return; }
+            selectedRightDefault = { playerName: name };
+            hideH2HResult();
+        },
+        { searchFn: searchPlayers }
+    );
 
-    hideH2HResult();
-}
+    leftSearchSalary = new PlayerSearch(
+        'searchLeftSalary', 'searchLeftSalaryDropdown',
+        (name) => {
+            if (name === null) { selectedLeftSalary = null; hideH2HResult(); return; }
+            selectedLeftSalary = { playerName: name };
+            hideH2HResult();
+        },
+        { searchFn: searchRegisteredPlayers }
+    );
+    rightSearchSalary = new PlayerSearch(
+        'searchRightSalary', 'searchRightSalaryDropdown',
+        (name) => {
+            if (name === null) { selectedRightSalary = null; hideH2HResult(); return; }
+            selectedRightSalary = { playerName: name };
+            hideH2HResult();
+        },
+        { searchFn: searchRegisteredPlayers }
+    );
 
-function initSearch() {
-    if (leftSearch) return;
-
-    leftSearch = new PlayerSearch('searchLeft', 'searchLeftDropdown', (name) => {
-        handleSearchSelect('left', name);
-    });
-
-    rightSearch = new PlayerSearch('searchRight', 'searchRightDropdown', (name) => {
-        handleSearchSelect('right', name);
-    });
+    searchesReady = true;
 }
 
 async function loadCompare() {
@@ -259,6 +350,7 @@ async function loadCompare() {
         if (!hasSub) {
             document.querySelector('.compare-header').style.display = 'none';
             document.getElementById('playerSearchRow')?.style.setProperty('display', 'none');
+            document.getElementById('playerSearchRowSalary')?.style.setProperty('display', 'none');
             document.getElementById('h2hCompareBtnWrapper')?.remove();
 
             const container = document.querySelector('#comparePage .max-w-5xl');
@@ -271,8 +363,8 @@ async function loadCompare() {
         document.querySelector('.compare-header').style.display = '';
         document.getElementById('compareNoSub')?.remove();
 
-        initSearch();
-
+        activeMetric = getSettings().metricId || 'h2h';
+        ensureSearches();
         showSearchRow();
         showH2HButton();
     } catch (e) {
@@ -292,16 +384,26 @@ window.initCompareApp = loadCompare;
 window.compareH2H = compareH2H;
 
 window.addEventListener('settings-applied', (e) => {
-    const { mode } = e.detail;
+    const detail = e.detail || {};
 
-    currentMode = mode;
-    currentPeriod = getSettings().period || currentPeriod;
+    currentMode = detail.mode || currentMode;
+
+    if (detail.period) {
+        currentPeriod = detail.period;
+    }
+
+    if (detail.metricId) {
+        const { setMetric } = window;
+        if (setMetric) setMetric(detail.metricId);
+        activeMetric = detail.metricId;
+    }
 
     const customStartInput = document.getElementById('customStart');
     const customEndInput = document.getElementById('customEnd');
     customStartDate = customStartInput?.value || null;
     customEndDate = customEndInput?.value || null;
 
+    ensureSearches();
     showSearchRow();
     showH2HButton();
 });

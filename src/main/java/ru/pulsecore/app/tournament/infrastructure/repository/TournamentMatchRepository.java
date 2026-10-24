@@ -18,6 +18,39 @@ import java.util.UUID;
 public interface TournamentMatchRepository extends JpaRepository<TournamentMatchEntity, UUID> {
 
     @Query("""
+                SELECT m.score AS score, m.winnerName AS winnerName
+                FROM TournamentMatchEntity m
+                WHERE 
+                    ((LOWER(m.player1Name) = LOWER(:player1Name) AND LOWER(m.player2Name) = LOWER(:player2Name))
+                    OR (LOWER(m.player1Name) = LOWER(:player2Name) AND LOWER(m.player2Name) = LOWER(:player1Name)))
+                    AND m.playedAt BETWEEN :start AND :end
+                    AND m.score IS NOT NULL
+            """)
+    List<MatchScoreProjection> findMatchScores(
+            @Param("player1Name") String player1Name,
+            @Param("player2Name") String player2Name,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query(value = """
+            SELECT 
+                p.name::text AS playerName,
+                COUNT(tm.id) AS totalMatches,
+                SUM(CASE WHEN LOWER(tm.winner_name) = LOWER(p.name::text) THEN 1 ELSE 0 END) AS wins
+            FROM players p
+            LEFT JOIN tournament_match tm ON (LOWER(tm.player1_name) = LOWER(p.name::text) OR LOWER(tm.player2_name) = LOWER(p.name::text))
+                AND tm.played_at >= :start AND tm.played_at <= :end
+            WHERE LOWER(p.name::text) IN (:playerNames)
+            GROUP BY p.name::text
+            """, nativeQuery = true)
+    List<PlayerMatchStatsProjection> findWinrateForCompare(
+            @Param("playerNames") List<String> playerNames,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
                 SELECT
                     m.playedAt AS playedAt,
                     m.score AS score,

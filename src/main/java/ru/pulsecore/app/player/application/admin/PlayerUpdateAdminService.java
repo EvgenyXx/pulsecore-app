@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
-import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.application.mapper.PlayerMapper;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 
 import java.util.UUID;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayerUpdateAdminService {
 
-    private final PlayerCommandService  commandService;
+    private final PlayerRepository playerRepository;
     private final PlayerSearchService  searchService;
     private final PlayerMapper playerMapper;
 
@@ -28,7 +28,7 @@ public class PlayerUpdateAdminService {
         var player = searchService.getById(playerId);
 
         playerMapper.updateEntity(request, player);
-        commandService.save(player);
+        playerRepository.save(player);
 
         return playerMapper.toData(player);
     }

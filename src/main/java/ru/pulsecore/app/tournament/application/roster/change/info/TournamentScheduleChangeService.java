@@ -17,7 +17,7 @@ import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepositor
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.TournamentProjection;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.NumberUtils;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -105,7 +105,7 @@ public class TournamentScheduleChangeService {
                                 MailType.TOURNAMENT_SCHEDULE_CHANGED,
                                 new TournamentScheduleChangedContext(
                                         p.email(),
-                                        StringUtils.extractFirstName(p.name()), info))));
+                                        PlayerNameUtils.extractFirstName(p.name()), info))));
         mailDispatcher.send(content);
     }
 

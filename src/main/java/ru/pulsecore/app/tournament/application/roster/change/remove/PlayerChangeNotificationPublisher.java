@@ -12,7 +12,7 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 @Slf4j
 @Component
@@ -31,7 +31,7 @@ public class PlayerChangeNotificationPublisher {
                         MailType.PLAYER_REPLACED,
                         new PlayerReplacedContext(
                                 player.email(),
-                                StringUtils.extractFirstName(player.name()),
+                                PlayerNameUtils.extractFirstName(player.name()),
                                 tournament.getTitle(),
                                 DateTimeUtils.formatDate(tournament.getDate().getDate()),
                                 DateTimeUtils.formatTime(tournament.getDate().getDate()),
@@ -56,7 +56,7 @@ public class PlayerChangeNotificationPublisher {
                         MailType.PLAYER_TRANSFERRED,
                         new PlayerTransferredContext(
                                 player.email(),
-                                StringUtils.extractFirstName(player.name()),
+                                PlayerNameUtils.extractFirstName(player.name()),
                                 transferInfo
                         )
                 )

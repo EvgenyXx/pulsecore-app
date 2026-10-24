@@ -10,7 +10,7 @@ import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
 import ru.pulsecore.app.notification.client.PlayerClient;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.SubscriptionWebhookEvent;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +38,7 @@ public class PaymentNotificationService {
     private void sendUserSuccessEmail(PlayerData player, SubscriptionWebhookEvent event) {
         String text = templates.format(
                 MailTemplate.PAYMENT_SUCCESS_USER,
-                StringUtils.extractFirstName(player.name()),
+                PlayerNameUtils.extractFirstName(player.name()),
                 event.month()
         );
         mailSender.send(

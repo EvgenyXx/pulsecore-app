@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.domain.Player;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 
 import java.util.UUID;
 
@@ -15,13 +16,12 @@ import java.util.UUID;
 public class PlayerPushService {
 
     private final PlayerSearchService playerSearchService;
-    private final PlayerCommandService playerCommandService;
-
+    private final PlayerRepository playerRepository;
     @Transactional
     public boolean togglePushEnabled(UUID playerId) {
         Player player = playerSearchService.getById(playerId);
         player.setPushEnabled(!player.isPushEnabled());
-        playerCommandService.save(player);
+        playerRepository.save(player);
         log.info("Push-уведомления {} для игрока {} ({})",
                 player.isPushEnabled() ? "включены" : "отключены",
                 player.getName(), playerId);

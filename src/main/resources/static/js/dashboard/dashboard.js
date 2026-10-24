@@ -109,45 +109,23 @@ export async function loadDashboardWidgets() {
         const data = await API.getDashboard(state.playerId);
         state.primaryLeague = data.primaryLeague || 'A';
 
-        // Сохраняем имя игрока в state (для подсветки в зале славы)
         if (data.playerName) {
             state.playerName = data.playerName;
         }
+
+        // Сохраняем данные о последнем результате для вкладки "Сумма"
+        state.lastResult = data.lastResult;
 
         document.getElementById('pushToggleContainer')?.classList.remove('hidden');
         if (typeof checkPushStatus === 'function') checkPushStatus();
 
         loadReportBadge();
 
-        const lastHtml = data.lastResult
-            ? `<div class="widget-card apple-card">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-[15px] font-semibold text-white tracking-tight">Последний результат</h3>
-                            <p class="text-[11px] text-zinc-500">${data.lastResult.date}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between gap-3">
-                        <p class="text-[28px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">${formatMoney(data.lastResult.amount)}</p>
-                        <button onclick="event.stopPropagation(); openEditTournamentModal(${data.lastResult.resultId || 0}, '${data.lastResult.date || ''}', ${data.lastResult.amount})" class="edit-btn" aria-label="Изменить сумму">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                        </button>
-                    </div>
-                    <div class="matches-container hidden mt-3"></div>
-                </div>`
-            : `<div class="widget-card apple-card items-center justify-center">
-                    <div class="text-center">
-                        <span class="text-3xl">📭</span>
-                        <p class="text-zinc-400 text-sm mt-2">Нет результатов</p>
-                    </div>
-                </div>`;
-
-        container.innerHTML = lastHtml;
+        // Карточка с главной убрана
+        if (container) container.innerHTML = '';
         dashboardLoaded = true;
     } catch (e) {
+        if (!container) return;
         container.innerHTML = `
             <div class="col-span-full widget-card rounded-2xl p-8 text-center">
                 <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">

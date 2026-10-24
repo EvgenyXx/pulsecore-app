@@ -5,7 +5,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RequestLoggingFilter extends OncePerRequestFilter {
@@ -42,9 +40,6 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
                 if (player.isPresent()) {
                     playerId = player.get().getId();
                 }
-                log.debug("📊 {} -> {} {}", email, request.getMethod(), uri);
-            } else {
-                log.warn("📊 ANON -> {} {}", request.getMethod(), uri);
             }
 
             pageViewService.save(playerId, email, uri, request.getMethod(),

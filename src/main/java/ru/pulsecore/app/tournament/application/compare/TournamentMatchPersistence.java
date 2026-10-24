@@ -9,7 +9,7 @@ import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentMatchRepository;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.TournamentMatchProjection;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.util.List;
 
@@ -43,10 +43,10 @@ public class TournamentMatchPersistence {
     private TournamentMatchDto toDto(TournamentMatchProjection p) {
         return TournamentMatchDto.builder()
                 .stage(p.getStage())
-                .player1Name(StringUtils.shortName(p.getPlayer1Name()))
-                .player2Name(StringUtils.shortName(p.getPlayer2Name()))
+                .player1Name(PlayerNameUtils.shortName(p.getPlayer1Name()))
+                .player2Name(PlayerNameUtils.shortName(p.getPlayer2Name()))
                 .score(p.getScore())
-                .winnerName(StringUtils.shortName(p.getWinnerName()))
+                .winnerName(PlayerNameUtils.shortName(p.getWinnerName()))
                 .playedAt(p.getPlayedAt())
                 .build();
     }

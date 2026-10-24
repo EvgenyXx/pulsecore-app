@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.resolution;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.domain.model.Match;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 import ru.pulsecore.app.tournament.domain.enums.MatchStage;
 import ru.pulsecore.app.tournament.domain.model.RemovedResult;
 import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
@@ -65,8 +65,8 @@ public class RemovedPlayerDetector {
 
         if (canceledSemi == null) return null;
 
-        String p1 = StringUtils.normalizeSearch(canceledSemi.getPlayer1());
-        String p2 = StringUtils.normalizeSearch(canceledSemi.getPlayer2());
+        String p1 = PlayerNameUtils.normalizeSearch(canceledSemi.getPlayer1());
+        String p2 = PlayerNameUtils.normalizeSearch(canceledSemi.getPlayer2());
 
         Match finalMatch = matches.stream()
                 .filter(m -> MatchStage.FINAL.matches(m.getStage()))
@@ -75,8 +75,8 @@ public class RemovedPlayerDetector {
 
         if (finalMatch == null) return null;
 
-        String f1 = StringUtils.normalizeSearch(finalMatch.getPlayer1());
-        String f2 = StringUtils.normalizeSearch(finalMatch.getPlayer2());
+        String f1 = PlayerNameUtils.normalizeSearch(finalMatch.getPlayer1());
+        String f2 = PlayerNameUtils.normalizeSearch(finalMatch.getPlayer2());
 
         if (!p1.equals(f1) && !p1.equals(f2)) return canceledSemi.getPlayer1();
         if (!p2.equals(f1) && !p2.equals(f2)) return canceledSemi.getPlayer2();

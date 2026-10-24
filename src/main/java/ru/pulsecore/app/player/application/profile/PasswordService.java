@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.exception.OldPasswordMismatchException;
 import ru.pulsecore.app.player.infrastructure.exception.SamePasswordException;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import java.util.UUID;
 
 
@@ -23,7 +23,7 @@ import java.util.UUID;
 public class PasswordService {
 
     private final PlayerSearchService playerSearchService;
-    private final PlayerCommandService  playerCommandService;
+    private final PlayerRepository playerRepository;
     private final PasswordEncoder passwordEncoder;
 
     public void verifyPassword(UUID id, String rawPassword) {
@@ -48,7 +48,7 @@ public class PasswordService {
         }
 
         player.setPassword(passwordEncoder.encode(newPassword));
-        playerCommandService.save(player);
+        playerRepository.save(player);
         log.info("Пароль изменён для игрока: {}", player.getEmail());
     }
 }

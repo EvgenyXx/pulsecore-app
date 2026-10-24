@@ -5,6 +5,6 @@ import ru.pulsecore.app.shared.exception.BaseException;
 
 public class PlayerNameAlreadyExistsException extends BaseException {
     public PlayerNameAlreadyExistsException() {
-        super(HttpStatus.CONFLICT, "Игрок с таким именем уже существует");
+        super(HttpStatus.CONFLICT, "Это имя уже используется. Попробуйте другое.");
     }
 }

@@ -14,6 +14,15 @@ public class DateTimeUtils {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
+    /**
+     * Форматирует период для отображения на фронте.
+     * Возвращает строку вида "01.05.2026 - 31.05.2026".
+     */
+    public static String formatPeriod(LocalDate start, LocalDate end) {
+        if (start == null || end == null) return "";
+        return start.format(DATE_FORMAT) + " - " + end.format(DATE_FORMAT);
+    }
+
     public static String formatDate(String raw) {
         if (raw == null) return "—";
         try {

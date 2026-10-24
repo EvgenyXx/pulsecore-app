@@ -24,18 +24,13 @@ import ru.pulsecore.app.player.application.auth.RegistrationFacade;
 @RequiredArgsConstructor
 public class RegistrationController {
 
-    private static final String PENDING_SESSION_KEY = "pending";
-
     private final RegistrationFacade registrationFacade;
-
 
     @Operation(summary = "Зарегистрировать нового пользователя")
     @PostMapping(PlayerApi.REGISTER)
     public ResponseEntity<MessageResponse> register(@Valid @RequestBody RegisterRequest request,
                                                     HttpSession session) {
-        var pending = registrationFacade.initiate(request.getName(), request.getEmail(), request.getPassword());
-        session.setAttribute(PENDING_SESSION_KEY, pending);
-        session.setMaxInactiveInterval(600);
+        registrationFacade.initiate(request.getName(), request.getEmail(), request.getPassword(), session);
         return ResponseEntity.ok(new MessageResponse(PlayerApi.OK));
     }
 
@@ -44,13 +39,12 @@ public class RegistrationController {
     public ResponseEntity<AuthResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequest request,
                                                     HttpSession session,
                                                     HttpServletRequest httpRequest) {
-
         AuthResponse response = registrationFacade.completeRegistration(
-            session,
-            request.getCode(),
-            httpRequest.getRemoteAddr(),
-            httpRequest.getHeader("User-Agent")
-    );
+                session,
+                request.getCode(),
+                httpRequest.getRemoteAddr(),
+                httpRequest.getHeader("User-Agent")
+        );
         return ResponseEntity.ok(response);
     }
 }

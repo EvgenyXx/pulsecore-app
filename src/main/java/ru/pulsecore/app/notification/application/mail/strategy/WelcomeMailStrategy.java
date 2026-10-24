@@ -11,6 +11,7 @@ import ru.pulsecore.app.notification.application.mail.context.MailContext;
 import ru.pulsecore.app.notification.application.mail.context.WelcomeContext;
 import ru.pulsecore.app.notification.application.mail.template.MailFormat;
 import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -27,11 +28,11 @@ public class WelcomeMailStrategy implements MailStrategy {
     @Override
     public void send(MailContext ctx) {
         WelcomeContext c = (WelcomeContext) ctx;
-        String text = templates.format(MailTemplate.WELCOME, c.firstName());
+        String text = templates.format(MailTemplate.WELCOME, PlayerNameUtils.extractFirstName(c.firstName()));
         mailSender.send(
                 MailFormat.TEXT,
                 c.to(),
-                "🏓 " + c.firstName() + ", добро пожаловать в PulseCore!",
+                "Добро пожаловать в PulseCore!",
                 text,
                 null,
                 null);

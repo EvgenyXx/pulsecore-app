@@ -3,11 +3,11 @@ package ru.pulsecore.app.player.api;
 public final class PlayerApi {
 
 
-
-
-    private PlayerApi() {}
+    private PlayerApi() {
+    }
 
     public static final String BASE_PATH = "/api/player";
+    public static final String SEARCH = "/search";
 
     /**
      * Информация о подписке.
@@ -27,8 +27,6 @@ public final class PlayerApi {
     public static final String SAVE_LIVE_HALLS = "/live-halls";
     public static final String GET_PLAYER_HALLS = "/halls";
     public static final String GET_LIVE_HALLS = "/live/halls";
-
-
 
 
     /**

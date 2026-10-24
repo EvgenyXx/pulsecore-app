@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.exception.BadResetCodeException;
 import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.PasswordResetContext;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
 import java.io.Serializable;
@@ -26,7 +26,7 @@ public class PlayerPasswordResetService {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    private final PlayerCommandService  commandService;
+    private final PlayerRepository playerRepository;
     private final PlayerSearchService  searchService;
     private final PasswordEncoder passwordEncoder;
     private final MailDispatcher mailDispatcher;
@@ -58,6 +58,6 @@ public class PlayerPasswordResetService {
         Player player = searchService.findByEmail(email.toLowerCase().trim())
                 .orElseThrow(BadResetCodeException::new);
         player.setPassword(passwordEncoder.encode(newPassword));
-        commandService.save(player);
+        playerRepository.save(player);
     }
 }

@@ -1,57 +1,440 @@
-/* ===== КАРТОЧКИ (DESKTOP) ===== */
+/* ===== СТЕКЛЯННЫЕ БЛОКИ ===== */
 
-.cards-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
+.h2h-glass-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255,255,255,0.02) inset;
+    position: relative;
+    overflow: hidden;
 }
 
-.result-card {
-    flex: 1;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.h2h-glass-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    pointer-events: none;
+}
+
+.h2h-glass-table {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.h2h-glass-table::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 15%; right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    pointer-events: none;
+}
+
+/* 1. БЕЙДЖИ ЛИГ (Круглее и с легкой рамкой) */
+.h2h-league-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    color: #a1a1aa;
+    background: rgba(255,255,255,0.06);
+    padding: 3px 8px;
+    border-radius: 8px; /* Было 4px */
+    border: 1px solid rgba(255,255,255,0.08); /* Легкая обводка */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.h2h-diff-badge {
+    display: inline-block;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.h2h-diff-badge.win {
+    background: rgba(52, 211, 153, 0.15);
+    border: 1px solid rgba(52, 211, 153, 0.5);
+    color: #34d399;
+    text-shadow: 0 0 12px rgba(52, 211, 153, 0.6);
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.2);
+}
+.h2h-diff-badge.lose {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #a1a1aa;
+}
+
+/* ===== ВЕРХНИЙ БАР ===== */
+.h2h-bar-top-wrap {
+    display: flex;
+    background: rgba(15, 15, 25, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    height: 24px;
     border-radius: 12px;
-    padding: 10px 8px;
+    position: relative;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.h2h-bar-top-fill {
+    height: 100%;
+    position: relative;
+}
+
+.h2h-bar-top-fill.left {
+    background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        inset 2px 0 10px rgba(168, 85, 247, 0.4);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.h2h-bar-top-fill.right {
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        inset -2px 0 10px rgba(59, 130, 246, 0.4);
+}
+
+.h2h-bar-top-glare {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.h2h-bar-top-capsule {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 15, 25, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 2px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+}
+
+/* ===== ТАБЛИЦА ===== */
+.h2h-glass-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.h2h-glass-table .salary-metric-row {
+    padding: 8px 0;
+}
+
+.h2h-glass-table .salary-metric-row:first-child {
+    padding-top: 2px;
+}
+
+.salary-val {
+    color: #fff !important;
+}
+
+.salary-topsis-block > button:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.salary-topsis-block > button svg {
+    transition: transform 0.3s ease;
+}
+
+/* 2. БЛОК С ТЕКСТОМ И КНОПКОЙ "?" (Выравнивание в строку) */
+.salary-topsis-text-row {
+    display: flex;
+    align-items: center; /* Выравниваем по центру по вертикали */
+    justify-content: space-between;
+    gap: 12px; /* Отступ между текстом и кнопкой */
+}
+
+.salary-topsis-text {
+    color: #a1a1aa;
+    font-size: 12px;
+    line-height: 1.5; /* "Дышащий" текст */
+    text-align: left;
+    flex: 1; /* Текст занимает всё свободное место */
+}
+
+/* 3. КНОПКА "?" (Темная и стеклянная) */
+.salary-methodology-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #a1a1aa;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.salary-methodology-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
+
+.h2h-history-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.h2h-history-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.h2h-history-modal-content {
+    background: linear-gradient(180deg, #1c1a2e 0%, #12101f 100%);
+    border: 1px solid rgba(165, 180, 252, 0.15);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255,255,255,0.1);
+    transform: translateY(30px) scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.h2h-history-modal.open .h2h-history-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.h2h-history-modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(165, 180, 252, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.h2h-history-modal-header button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.h2h-history-modal-header button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.h2h-history-modal-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.h2h-history-modal-body::-webkit-scrollbar {
+    display: none;
+}
+
+/* ===== СТРОКИ МАТЧЕЙ ===== */
+
+.h2h-history-modal .h2h-match-row {
+    display: grid;
+    grid-template-columns: 105px 40px 1fr;
+    column-gap: 40px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    transition: background 0.2s ease;
+}
+
+.h2h-history-modal .h2h-match-row:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.h2h-history-modal .h2h-match-date {
+    white-space: nowrap;
+    color: #d1d0e0;
+    font-weight: 500;
     text-align: left;
 }
 
-.result-card .player-name {
-    color: #fff;
-    font-weight: 800;
-    font-size: 1.4rem;
+.h2h-history-modal .h2h-match-score {
+    color: #ffffff;
+    font-weight: 700;
+    text-align: center;
+    font-size: 13px;
+}
+
+.h2h-history-modal .h2h-match-winner {
+    color: #d1d0e0;
+    font-weight: 500;
+    text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: center;
-    margin-bottom: 2px;
 }
 
-.result-card .player-league {
-    color: #a5b4fc;
-    font-size: 0.6rem;
-    text-align: center;
-    margin-bottom: 6px;
+/* =========================================================
+   НИЖНИЕ БАРЫ
+   ========================================================= */
+
+.h2h-score-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 28px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.65rem;
-    margin-bottom: 3px;
+.h2h-score-row:last-child {
+    border-bottom: none;
 }
 
-.stat-label {
-    color: #a1a1aa;
-    font-size: 0.6rem;
-}
-
-.stat-value {
-    color: #fff;
+.h2h-score-wins {
+    font-size: 14px;
     font-weight: 700;
-    font-size: 0.65rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+.h2h-score-wins.left { justify-content: flex-start; }
+.h2h-score-wins.right { justify-content: flex-end; }
+
+.h2h-score-bar-wrap {
+    width: 100%;
+    position: relative;
+    height: 22px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: rgba(15, 15, 25, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
 }
 
-.card-spacer {
-    width: 52px;
-    flex-shrink: 0;
+.h2h-score-bar-fill-single {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+    border-radius: 10px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 0 16px rgba(168, 85, 247, 0.5);
+    position: relative;
+    z-index: 1;
+    animation: barFillIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.h2h-score-bar-fill-single::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+.h2h-score-bar-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 15, 25, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 2px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+}
+
+.h2h-bar-score {
+    font-size: 12px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1;
+    text-shadow: 0 0 8px rgba(255,255,255,0.4);
+}
+
+.h2h-bar-divider {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1;
+}
+
+.h2h-bar-pct {
+    font-size: 11px;
+    font-weight: 800;
+    color: #e9d5ff;
+    line-height: 1;
+    text-shadow: 0 0 8px rgba(233, 213, 255, 0.6);
+}
+
+@keyframes barFillIn {
+    from {
+        opacity: 0;
+        width: 0%;
+    }
+    to {
+        opacity: 1;
+    }
 }

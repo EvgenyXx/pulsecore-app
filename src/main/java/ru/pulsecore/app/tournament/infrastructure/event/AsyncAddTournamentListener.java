@@ -14,10 +14,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class AsyncAddTournamentListener {
 
-    /**
-     * Начало синхронизации при регистрации.
-     */
-    private static final LocalDate DEFAULT_FROM = LocalDate.of(2023, 1, 1);
+    private static final LocalDate DEFAULT_END = LocalDate.of(2023, 1, 1);
 
     private final TournamentCascadeSyncService cascadeSyncService;
 
@@ -25,9 +22,10 @@ public class AsyncAddTournamentListener {
     private void addTournaments(PlayerCreatedEvent event) {
         log.info("Началась асинхронная обработка для {}", event.playerName());
         try {
-            LocalDate to = LocalDate.now().minusDays(1);   // вчера, сегодняшний день не считаем
+            LocalDate from = LocalDate.now().minusDays(1); // вчера (старт)
 
-            cascadeSyncService.syncPeriod(event.playerId(), event.playerName(), DEFAULT_FROM, to);
+
+            cascadeSyncService.syncPeriod(event.playerId(), event.playerName(), from, DEFAULT_END);
         } catch (Exception e) {
             log.error("Произошла ошибка при асинхронной обработке турниров {}", e.getMessage());
         }

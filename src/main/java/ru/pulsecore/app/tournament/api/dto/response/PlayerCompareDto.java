@@ -1,7 +1,7 @@
 package ru.pulsecore.app.tournament.api.dto.response;
 
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.PlayerCompareResponse;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.util.UUID;
 
@@ -16,7 +16,7 @@ public record PlayerCompareDto(
     public static PlayerCompareDto from(PlayerCompareResponse p) {
         return new PlayerCompareDto(
                 p.getPlayerId(),
-                StringUtils.capitalize(p.getPlayerName()),
+                PlayerNameUtils.capitalize(p.getPlayerName()),
                 p.getPrimaryLeague(),
                 p.getTournaments(),
                 p.getTotalAmount(),

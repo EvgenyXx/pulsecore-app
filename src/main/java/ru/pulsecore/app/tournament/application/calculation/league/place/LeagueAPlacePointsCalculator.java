@@ -13,6 +13,7 @@ import java.time.LocalDate;
  */
 @Service
 public class LeagueAPlacePointsCalculator implements PlacePointsCalculator {
+
     @Override
     public int pointsForPlace(int place, LeagueType league, LocalDate date) {
         return switch (place) {

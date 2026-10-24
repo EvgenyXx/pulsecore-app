@@ -1,5 +1,7 @@
-
 spring:
+  output:
+    ansi:
+      enabled: ALWAYS
   security:
     oauth2:
       client:

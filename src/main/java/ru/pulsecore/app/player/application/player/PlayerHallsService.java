@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.domain.Player;
+import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import java.util.UUID;
 
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayerHallsService {
 
-    private final PlayerCommandService playerCommandService;
+    private final PlayerRepository playerRepository;
     private final PlayerSearchService playerSearchService;
 
 
@@ -24,7 +25,7 @@ public class PlayerHallsService {
     public void saveSelectedHalls(UUID playerId, String halls) {
         Player player = playerSearchService.getById(playerId);
         player.setSelectedHalls(halls);
-        playerCommandService.save(player);
+        playerRepository.save(player);
     }
 
 
@@ -33,7 +34,7 @@ public class PlayerHallsService {
     public void saveLiveSelectedHalls(UUID playerId, String halls) {
         Player player = playerSearchService.getById(playerId);
         player.setLiveSelectedHalls(halls);
-        playerCommandService.save(player);
+        playerRepository.save(player);
     }
 
 

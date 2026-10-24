@@ -13,7 +13,7 @@ import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
 import ru.pulsecore.app.tournament.infrastructure.util.DateConstants;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -60,13 +60,13 @@ public class FourPlayerBracketDefaultCalculationStrategy implements MatchCalcula
 
             switch (matchNumber) {
                 case FINAL -> {
-                    places.put(StringUtils.normalizeSearch(m.winnerOf()), Place.FIRST.getValue());
-                    places.put(StringUtils.normalizeSearch(m.loserOf()), Place.SECOND.getValue());
+                    places.put(PlayerNameUtils.normalizeSearch(m.winnerOf()), Place.FIRST.getValue());
+                    places.put(PlayerNameUtils.normalizeSearch(m.loserOf()), Place.SECOND.getValue());
                 }
                 case LOWER_MESH_3_GAME_2 ->
-                        places.put(StringUtils.normalizeSearch(m.loserOf()), Place.THIRD.getValue());
+                        places.put(PlayerNameUtils.normalizeSearch(m.loserOf()), Place.THIRD.getValue());
                 case LOWER_MESH_3_GAME_1 ->
-                        places.put(StringUtils.normalizeSearch(m.loserOf()), Place.FOURTH.getValue());
+                        places.put(PlayerNameUtils.normalizeSearch(m.loserOf()), Place.FOURTH.getValue());
                 default -> {
                 }
             }
