@@ -12,7 +12,7 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.repository.LineupRepository;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
 import java.time.LocalDate;
 import java.util.*;
@@ -34,7 +34,7 @@ public class PlayerSummaryService {
         PlayerData player = playerClient.getPlayerById(id);
 
         return PlayerSummaryResponse.builder()
-                .playerName(StringUtils.capitalize(player.name()))
+                .playerName(PlayerNameUtils.capitalize(player.name()))
                 .lastResult(getLastResult(player.id()))
                 .upcomingLineups(getUpcomingLineups(player.name()))
                 .subscription(getSubscriptionInfo(player.id()))
@@ -108,7 +108,7 @@ public class PlayerSummaryService {
                 .time(lineup.getTime())
                 .league(lineup.getLeague())
                 .inLineup(true)
-                .players(StringUtils.capitalize(lineup.getPlayers()))
+                .players(PlayerNameUtils.capitalize(lineup.getPlayers()))
                 .isSoon(date.equals(soonestDate))
                 .build();
     }

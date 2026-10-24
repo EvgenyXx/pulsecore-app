@@ -10,10 +10,11 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.tournament.api.dto.response.*;
 import ru.pulsecore.app.tournament.application.mapping.TournamentMatchMapper;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentMatchRepository;
-import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -23,6 +24,7 @@ public class CompareService {
 
     private final TournamentMatchRepository matchRepository;
     private final TournamentMatchMapper matchMapper;
+    private final ScoreStatsService scoreStatsService;
 
     public PlayerH2HResponseDto getH2H(String player1Name, String player2Name, LocalDate start, LocalDate end) {
         LocalDateTime effectiveStart = start != null
@@ -36,10 +38,15 @@ public class CompareService {
                 matchRepository.findH2HSummary(player1Name, player2Name, effectiveStart, effectiveEnd)
         );
 
+        List<ScoreStatsDto> scoreStats = scoreStatsService.getScoreStats(
+                player1Name, player2Name, effectiveStart, effectiveEnd
+        );
+
         return PlayerH2HResponseDto.builder()
-                .player1Name(player1Name)
-                .player2Name(player2Name)
+                .player1Name(PlayerNameUtils.shortName(player1Name))
+                .player2Name(PlayerNameUtils.shortName(player2Name))
                 .summary(summary)
+                .scoreStats(scoreStats)
                 .build();
     }
 

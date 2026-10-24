@@ -40,7 +40,7 @@ public class JsonTournamentStatusParser {
             if (stage != GameStage.FINAL) continue;
             GameStatus status = GameStatus.fromCode(gameJson.statusType());
             boolean fin = status == GameStatus.COMPLETED || status == GameStatus.CANCELED;
-            if (fin) log.debug("FINISHED: финал statusType={}", status);//todo добавить более информативный лог что за лига день и тд
+            if (fin) log.debug("FINISHED: финал statusType={}", status);
             return fin;
         }
         return false;

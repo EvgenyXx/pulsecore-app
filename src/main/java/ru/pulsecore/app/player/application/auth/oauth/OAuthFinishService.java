@@ -11,6 +11,7 @@ import ru.pulsecore.app.player.infrastructure.exception.OAuthEmailNotReceivedExc
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.application.subscription.TrialActivator;
 
+import java.util.Locale;
 
 
 /**
@@ -39,7 +40,7 @@ public class OAuthFinishService {
         }
 
         String name = (lastname + " " + firstname).toLowerCase().trim();
-        String email = data.email();
+        String email = data.email().trim().toLowerCase(Locale.ROOT);
         String ip = httpRequest.getRemoteAddr();
         String userAgent = httpRequest.getHeader("User-Agent");
 

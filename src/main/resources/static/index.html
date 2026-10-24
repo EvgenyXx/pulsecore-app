@@ -17,14 +17,12 @@
 
     <link rel="manifest" href="/manifest.json">
 
-    <!-- Иконки: iOS берёт apple-touch-icon, не manifest -->
     <link rel="shortcut icon" type="image/png" href="/icons/icon-192.png">
     <link rel="icon" type="image/png" href="/icons/icon-192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png">
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
     <link rel="apple-touch-icon-precomposed" href="/icons/icon-192.png">
 
-    <!-- CSS -->
     <link rel="stylesheet" href="/css/boot.css">
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/app.css">
@@ -52,7 +50,6 @@
     <link rel="stylesheet" href="/css/analytics/analytics-desktop.css">
     <link rel="stylesheet" href="/css/analytics/analytics-sheet.css">
 
-    <!-- CDN -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -77,16 +74,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
-    <!-- SPA fix: settings-* показываются через inline display, .hidden от daisyUI перебивает -->
     <style>
         #profilePage > div[id^="settings-"] {
-            /* не используем .hidden — управляем через style.display */
         }
     </style>
 </head>
 <body class="min-h-screen">
 
-<!-- ===== СПИННЕР (пульс + волны + точки) ===== -->
 <div id="bootOverlay">
     <div class="boot-pulse-wrap">
         <div class="boot-pulse-ring"></div>
@@ -100,18 +94,12 @@
     <p class="boot-hint" id="bootHint">Загрузка данных…</p>
 </div>
 
-<!-- ===== ФОРМА ЛОГИНА ===== -->
 <div id="authScreen">
     <div class="auth-bg"></div>
-
     <div class="auth-shell">
-        <div class="auth-logo">
-            <h1>PulseCore</h1>
-        </div>
-
+        <div class="auth-logo"><h1>PulseCore</h1></div>
         <div class="auth-card">
             <p class="auth-title">Вход в систему</p>
-
             <div id="loginForm">
                 <input id="loginEmailInput" type="email" placeholder="Email" class="auth-input" autocomplete="email">
                 <div class="auth-password">
@@ -120,20 +108,16 @@
                 </div>
                 <p id="loginError" class="auth-error hidden"></p>
                 <button type="button" onclick="login()" class="auth-btn auth-btn-primary">Войти</button>
-
                 <div class="auth-divider"><span>или</span></div>
-
                 <a href="/oauth2/authorization/yandex" class="auth-btn auth-btn-yandex">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="white"/><text x="12" y="17" text-anchor="middle" font-size="16" font-weight="900" fill="#FC3F1D" font-family="Arial">Я</text></svg>
                     Войти через Яндекс
                 </a>
-
                 <div class="auth-links">
                     <span onclick="showForgot()">Забыли пароль?</span>
                     <span onclick="showRegister()">Регистрация</span>
                 </div>
             </div>
-
             <div id="registerForm" class="hidden">
                 <div class="auth-notice">
                     Имя и фамилия должны совпадать с Лигой Мастерс.<br>
@@ -152,7 +136,6 @@
                 <button type="button" onclick="register()" id="regBtn" class="auth-btn auth-btn-primary">Зарегистрироваться</button>
                 <p class="auth-switch">Уже есть аккаунт? <span onclick="showLogin()">Войти</span></p>
             </div>
-
             <div id="verifyForm" class="hidden">
                 <p class="auth-subtitle">Код отправлен на <span id="verifyEmailDisplay"></span></p>
                 <div class="auth-code" id="verifyCodeInputs">
@@ -162,7 +145,6 @@
                 <button type="button" onclick="verifyEmail()" id="verifyBtn" class="auth-btn auth-btn-primary">Подтвердить</button>
                 <button type="button" onclick="showRegister()" class="auth-btn auth-btn-ghost">Назад</button>
             </div>
-
             <div id="forgotForm" class="hidden">
                 <p class="auth-subtitle">Введите email для восстановления</p>
                 <input id="forgotEmail" type="email" placeholder="Email" class="auth-input">
@@ -170,7 +152,6 @@
                 <button type="button" onclick="forgotPassword()" id="forgotBtn" class="auth-btn auth-btn-primary">Отправить код</button>
                 <button type="button" onclick="showLogin()" class="auth-btn auth-btn-ghost">Назад</button>
             </div>
-
             <div id="resetForm" class="hidden">
                 <p class="auth-subtitle">Код отправлен на <span id="resetEmailDisplay"></span></p>
                 <div class="auth-code" id="resetCodeInputs">
@@ -190,13 +171,11 @@
             </div>
         </div>
     </div>
-
     <div class="auth-footer">
         ИНН 234999508765 <span class="dot">·</span> 422-ФЗ <span class="dot">·</span> <a href="https://pulsecore-app.ru">pulsecore-app.ru</a>
     </div>
 </div>
 
-<!-- ===== ПРИЛОЖЕНИЕ ===== -->
 <div id="appRoot" class="flex flex-col md:flex-row flex-1 min-h-0" style="display:none;">
 
     <div class="bg-mesh"></div>
@@ -246,7 +225,6 @@
                 </div>
 
                 <div id="topWeekPanel" class="widget-card rounded-2xl p-5 sm:p-6 mb-6 content-panel"></div>
-
                 <div id="dashboardWidgets" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
             </div>
 
@@ -263,7 +241,6 @@
                     <h1 class="more-hub-title">Прочее</h1>
                     <p class="more-hub-subtitle">Дополнительные разделы</p>
                 </div>
-
                 <div class="more-hub-list">
                     <a href="#" onclick="event.preventDefault();navigate('live')" class="more-hub-card">
                         <span class="more-hub-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>
@@ -273,7 +250,6 @@
                         </span>
                         <span class="more-hub-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                     </a>
-
                     <a href="#" onclick="event.preventDefault();navigate('analytics')" class="more-hub-card">
                         <span class="more-hub-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
                         <span class="more-hub-text">
@@ -282,7 +258,6 @@
                         </span>
                         <span class="more-hub-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
                     </a>
-
                     <a href="#" onclick="event.preventDefault();navigate('compare')" class="more-hub-card">
                         <span class="more-hub-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path d="M21 21l-7-7"/><path d="M3 21l7-7"/></svg></span>
                         <span class="more-hub-text">
@@ -302,24 +277,18 @@
                     <h1 class="text-[22px] font-bold text-white tracking-tight">Live-трансляции</h1>
                     <p class="text-zinc-500 text-xs mt-1" id="subtitle">Загрузка...</p>
                 </div>
-
                 <div id="tabFilter" class="hidden">
                     <span class="hall-filter-tag tab-filter-tag active" data-tab="live">LIVE</span>
                     <span class="hall-filter-tag tab-filter-tag" data-tab="upcoming">Скоро</span>
                     <span class="hall-filter-tag tab-filter-tag" data-tab="finished">Завершён</span>
                 </div>
-
                 <div id="hallFilter" class="hidden"></div>
-
                 <div id="loading" class="text-center py-20">
                     <div class="spinner mb-4"></div>
                     <p class="text-zinc-500 text-sm">Загрузка...</p>
                 </div>
-
                 <div id="noSubBlock" class="hidden max-w-md mx-auto mt-10"></div>
-
                 <div id="liveList" class="space-y-4 hidden"></div>
-
                 <div id="empty" class="text-center py-20 hidden">
                     <p class="text-zinc-400 font-medium">Нет активных трансляций</p>
                     <p class="text-zinc-600 text-sm mt-1">Турниры начнутся — появятся здесь</p>
@@ -327,7 +296,6 @@
             </div>
         </div>
 
-        <!-- ===== COMPARE PAGE — фикс-верх + скролл-низ ===== -->
         <div id="comparePage" class="hidden" style="display: none;">
             <div class="max-w-5xl mx-auto">
                 <div class="compare-sticky">
@@ -343,6 +311,17 @@
                         </div>
                     </div>
 
+                    <div class="player-search-row" id="playerSearchRowSalary" style="display: none;">
+                        <div class="player-search-wrapper">
+                            <input type="text" id="searchLeftSalary" class="player-search-input" placeholder="Поиск игрока 1..." autocomplete="off">
+                            <div id="searchLeftSalaryDropdown" class="player-search-dropdown hidden"></div>
+                        </div>
+                        <div class="player-search-wrapper">
+                            <input type="text" id="searchRightSalary" class="player-search-input" placeholder="Поиск игрока 2..." autocomplete="off">
+                            <div id="searchRightSalaryDropdown" class="player-search-dropdown hidden"></div>
+                        </div>
+                    </div>
+
                     <div class="player-search-row" id="playerSearchRow">
                         <div class="player-search-wrapper">
                             <input type="text" id="searchLeft" class="player-search-input" placeholder="Поиск игрока 1..." autocomplete="off">
@@ -353,14 +332,6 @@
                             <div id="searchRightDropdown" class="player-search-dropdown hidden"></div>
                         </div>
                     </div>
-
-                    <!-- Колёса убраны — выбор только через поиск
-                    <div class="wheels-row" id="wheelsRow">
-                        <div class="wheel-container"><div id="pickerLeft" class="wheel-picker"></div></div>
-                        <div class="vs-badge">VS</div>
-                        <div class="wheel-container"><div id="pickerRight" class="wheel-picker"></div></div>
-                    </div>
-                    -->
 
                     <div class="cards-row" id="cardsRow" style="display: none;">
                         <div id="leftCard" class="result-card"><p class="text-zinc-500 text-sm text-center">Выберите игрока</p></div>
@@ -390,14 +361,11 @@
                     <span class="online-count" id="onlineCount"></span>
                     <span class="tournament-info" id="tournamentInfo"></span>
                 </div>
-
                 <div class="players-row" id="playersList"></div>
-
                 <div id="tournamentLoading" class="loading-block">
                     <div class="spinner mb-4"></div>
                     <p class="text-zinc-500 text-sm">Загрузка...</p>
                 </div>
-
                 <div id="content" class="hidden">
                     <div class="video-card" id="videoWrapper">
                         <button onclick="toggleFullscreen()" class="fullscreen-btn" title="На весь экран">
@@ -406,7 +374,6 @@
                         <div id="videoPlaceholder" class="video-placeholder">Загрузка трансляции...</div>
                         <iframe id="streamFrame" style="border: 0; display: none; background: #000; width: 100%; aspect-ratio: 16/9; border-radius: 16px;" allow="fullscreen" src="" scrolling="no"></iframe>
                     </div>
-
                     <h3 class="chat-title">Чат</h3>
                     <div class="chat-container">
                         <div id="chatMessages" class="chat-messages">
@@ -685,27 +652,19 @@
         <div class="period-sheet" onclick="event.stopPropagation()">
             <div class="period-sheet-handle"></div>
 
-            <!-- Режим (Версус/Одиночный) убран
-            <p class="sheet-section-title">Режим</p>
-            <div class="sheet-segment-row" id="modeSegmentRow">
-                <button class="sheet-segment-btn active" id="modeVersus" onclick="setMode('versus')">Версус</button>
-                <button class="sheet-segment-btn" id="modeSingle" onclick="setMode('single')">Одиночный</button>
-            </div>
-            -->
-
             <div class="sheet-accordion" id="metricAccordion">
                 <div class="sheet-accordion-header" onclick="toggleMetricAccordion()">
                     <span class="sheet-section-title" style="margin: 0;">Метрика</span>
                     <svg class="sheet-accordion-arrow" id="metricArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
                 <div class="sheet-accordion-body" id="metricAccordionBody" style="display: none;"></div>
-            </div>
+                      </div>
             <p class="sheet-section-title">Период</p>
             <div class="sheet-segment-row" id="periodSegmentRow">
                 <button class="sheet-segment-btn" id="periodWeek" onclick="setPeriod('week')">Неделя</button>
-                <button class="sheet-segment-btn" id="periodMonth" onclick="setPeriod('month')">Месяц</button>
+                <button class="sheet-segment-btn active" id="periodMonth" onclick="setPeriod('month')">Месяц</button>
                 <button class="sheet-segment-btn" id="periodYear" onclick="setPeriod('year')">Год</button>
-                <button class="sheet-segment-btn active" id="periodAll" onclick="setPeriod('all')">Всё</button>
+                <button class="sheet-segment-btn" id="periodAll" onclick="setPeriod('all')">Всё</button>
             </div>
             <div class="date-row">
                 <input type="date" id="customStart" class="date-input" placeholder="дд.мм.гггг">
@@ -716,13 +675,42 @@
         </div>
     </div>
 
+    <!-- ШТОРКА МЕТОДИКИ -->
+    <div class="period-sheet-overlay" id="methodologySheetOverlay" onclick="toggleMethodologySheet()">
+        <div class="period-sheet" onclick="event.stopPropagation()">
+            <div class="period-sheet-handle"></div>
+            <h3 class="text-base font-bold text-white mb-4 text-center">Методика расчета</h3>
+
+            <div style="font-size: 13px; color: #a1a1aa; line-height: 1.6; text-align: left; padding-bottom: 20px;">
+                <p style="margin-bottom: 12px;">
+                    Чтобы честно сравнить игроков из разных лиг, мы не смотрим на их общий заработок. Вместо этого мы используем математический алгоритм TOPSIS. Он оценивает три критерия и показывает, кто из игроков эффективнее.
+                </p>
+
+                <div style="height: 1px; background: rgba(255, 255, 255, 0.08); margin: 16px 0;"></div>
+
+                <ul style="list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
+                    <li>
+                        <div style="color: #ffffff; font-weight: 600; margin-bottom: 4px;">Эффективность</div>
+                        <div style="color: #a1a1aa;">Отношение среднего чека игрока к среднему чеку по его лиге.</div>
+                    </li>
+                    <li>
+                        <div style="color: #ffffff; font-weight: 600; margin-bottom: 4px;">Процент выигранных матчей</div>
+                    </li>
+                    <li>
+                        <div style="color: #ffffff; font-weight: 600; margin-bottom: 4px;">Количество сыгранных турниров</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="report-backdrop" id="reportBackdrop" onclick="closeScheduledReports()"></div>
     <div class="report-dropdown" id="reportDropdown">
         <div class="report-dropdown-handle"></div>
         <div id="reportSheetContent"></div>
     </div>
 
-</div><!-- /#appRoot -->
+</div>
 
 <script type="module" src="/js/boot.js"></script>
 </body>

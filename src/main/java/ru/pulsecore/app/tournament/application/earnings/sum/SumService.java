@@ -11,7 +11,7 @@ import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRep
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.PeriodStatsProjection;
 import ru.pulsecore.app.player.api.dto.response.SumResponse;
 
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 
@@ -50,7 +50,7 @@ public class SumService {
                 player.id(), start, end, PageRequest.of(page, size));
 
         return SumResponse.builder()
-                .playerName(StringUtils.capitalize(player.name()))
+                .playerName(PlayerNameUtils.capitalize(player.name()))
                 .start(start.toString())
                 .end(end.toString())
                 .sum(stats != null ? stats.getSum() : 0)

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.*;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,6 @@ import java.util.UUID;
 
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
-
 
     @Query(value = """
                 SELECT player_id AS playerId, league
@@ -40,7 +40,6 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
                 WHERE rn = 1 AND league IS NOT NULL
             """, nativeQuery = true)
     List<PrimaryLeagueProjection> findPrimaryLeagues(@Param("playerIds") Set<UUID> playerIds);
-
 
     @Modifying
     @Query("DELETE FROM TournamentResultEntity t WHERE t.playerId = :playerId")
@@ -65,7 +64,6 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
                                                    @Param("since") LocalDate since,
                                                    @Param("year") int year);
 
-
     @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
             "FROM TournamentResultEntity tr " +
             "WHERE tr.date >= :since " +
@@ -73,8 +71,18 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             "ORDER BY SUM(tr.amount) DESC")
     List<LeagueStatProjection> getAllLeaguesStats(@Param("since") LocalDate since);
 
-    boolean existsByPlayerIdAndTournament_ExternalId(UUID playerId, Long externalId);
+    // Средние по лигам СТРОГО за период
+    @Query("SELECT tr.league as league, COUNT(tr) as count, SUM(tr.amount) as sum, AVG(tr.amount) as avg " +
+            "FROM TournamentResultEntity tr " +
+            "WHERE tr.date BETWEEN :start AND :end " +
+            "GROUP BY tr.league " +
+            "ORDER BY SUM(tr.amount) DESC")
+    List<LeagueStatProjection> getAllLeaguesStatsByPeriod(
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
 
+    boolean existsByPlayerIdAndTournament_ExternalId(UUID playerId, Long externalId);
 
     @Query("SELECT t FROM TournamentResultEntity t WHERE t.playerId = :playerId AND t.date BETWEEN :start AND :end ORDER BY t.date ASC")
     Page<TournamentResultEntity> findByPlayerIdAndDateBetweenOrderByDateAsc(
@@ -83,7 +91,6 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             @Param("end") LocalDate end,
             Pageable pageable);
 
-
     @Query("""
             SELECT COUNT(t) as count, COALESCE(SUM(t.amount), 0) as sum,
                    COALESCE(AVG(t.amount), 0) as average, COALESCE(SUM(t.amount) * 0.97, 0) as minusThreePercent
@@ -91,7 +98,6 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             WHERE t.playerId = :playerId AND t.date BETWEEN :start AND :end
             """)
     PeriodStatsProjection getStats(@Param("playerId") UUID playerId, @Param("start") LocalDate start, @Param("end") LocalDate end);
-
 
     @Query(value = """
             SELECT tr.date AS date, tr.amount AS amount, tr.id AS resultId
@@ -102,24 +108,25 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             """, nativeQuery = true)
     Optional<LastResultProjection> getLastResult(@Param("playerId") UUID playerId);
 
+    // Лига за период (мода) + данные для H2H
     @Query("""
                 SELECT p.id AS playerId,
                        p.name AS playerName,
-                       p.primaryLeague AS primaryLeague,
-                       COUNT(tr.id) AS tournaments,
+                       MODE() WITHIN GROUP (ORDER BY tr.league) AS primaryLeague,
+                       COUNT(DISTINCT tr.tournament) AS tournaments,
                        COALESCE(SUM(tr.amount), 0) AS totalAmount,
                        COALESCE(AVG(tr.amount), 0) AS averageAmount
                 FROM Player p
-                LEFT JOIN TournamentResultEntity tr ON tr.playerId = p.id
+                JOIN TournamentResultEntity tr ON tr.playerId = p.id
                   AND tr.date BETWEEN :start AND :end
-                GROUP BY p.id, p.name, p.primaryLeague
-                ORDER BY LOWER(p.name) ASC
+                WHERE LOWER(p.name) IN (:playerNames)
+                GROUP BY p.id, p.name
             """)
     List<PlayerCompareResponse> findPlayersForCompare(
+            @Param("playerNames") List<String> playerNames,
             @Param("start") LocalDate start,
             @Param("end") LocalDate end
     );
-
 
     @Query(value = """
             SELECT COALESCE(AVG(t.amount), 0)
@@ -132,6 +139,4 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             ) t
             """, nativeQuery = true)
     double getPlayerAverageLastGames(@Param("playerId") UUID playerId, @Param("limit") int limit);
-
-
 }

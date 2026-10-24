@@ -1,3 +1,10 @@
+/* Контейнер зала славы */
+.top-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 /* Карточка ранга */
 .rank-card {
     display: flex;
@@ -7,48 +14,29 @@
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: background 0.35s ease,
-                border-color 0.35s ease,
-                box-shadow 0.35s ease,
-                transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
     will-change: opacity, transform;
 }
 
 .rank-card:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.06);
     transform: translateX(3px);
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.rank-card.first {
-    background: rgba(245, 158, 11, 0.06);
-    border: 1px solid rgba(245, 158, 11, 0.25);
-    transition: background 0.4s ease,
-                border-color 0.4s ease,
-                box-shadow 0.4s ease,
-                transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-/* === МОЙ аккаунт — лёгкий градиент + обводка + glow, нежно === */
 .rank-card.mine {
-    background: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent, #6366f1) 8%, transparent) 0%,
-        color-mix(in srgb, var(--accent, #6366f1) 3%, transparent) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 8%, transparent) 0%, color-mix(in srgb, var(--accent, #6366f1) 3%, transparent) 100%);
     border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.06),
-        0 2px 12px color-mix(in srgb, var(--accent, #6366f1) 15%, transparent);
-    transition: background 0.4s ease,
-                border-color 0.4s ease,
-                box-shadow 0.4s ease,
-                transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 12px color-mix(in srgb, var(--accent, #6366f1) 15%, transparent);
 }
 
 .rank-card.mine:hover {
     border-color: color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        0 0 18px color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 18px color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
 }
 
 .rank-number {
@@ -66,12 +54,6 @@
     transition: background 0.35s ease, color 0.35s ease;
 }
 
-.rank-card.first .rank-number {
-    background: rgba(245, 158, 11, 0.2);
-    color: #fbbf24;
-}
-
-/* === МОЙ номер — обводка цветом темы + текст + лёгкий glow === */
 .rank-card.mine .rank-number {
     background: transparent;
     color: var(--accent-light, #818cf8);
@@ -80,22 +62,37 @@
     text-shadow: 0 0 6px color-mix(in srgb, var(--accent, #6366f1) 50%, transparent);
 }
 
-/* Apple карточки */
+.rank-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.rank-meta-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #52525b;
+    font-weight: 600;
+}
+
+/* =========================================
+   СТИЛИ КАК У МЕНЮ
+   ========================================= */
 .apple-card {
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     padding: 16px;
     transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .apple-card:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
     transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Матчи в стиле Apple */
 .matches-divider {
     height: 1px;
     background: rgba(255, 255, 255, 0.1);
@@ -155,14 +152,7 @@
     flex-shrink: 0;
 }
 
-/* Анимации */
 @keyframes matchSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
 }

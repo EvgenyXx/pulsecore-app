@@ -1,12 +1,12 @@
 // js/compare/settings-sheet.js
 
 import { compareMetrics } from './metrics.js';
-import { getPeriodDates } from './period.js';
+import { ComparePeriod } from './period.js';
 import { initTooltips } from './tooltip.js';
 
 let currentMode = 'versus';
-let currentMetricId = 'h2h';
-let currentPeriod = 'all';
+let currentMetricId = 'salary'; // Дефолтная метрика — Зарплата
+let currentPeriod = 'month'; // Дефолтный период — Месяц (храним строкой)
 let metricAccordionOpen = false;
 
 export function initSettingsSheet() {
@@ -15,40 +15,31 @@ export function initSettingsSheet() {
 }
 
 function initSegments() {
-    // Режим (modeRow) убран из HTML — слайдер только для периода
-    // const modeRow = document.getElementById('modeSegmentRow');
     const periodRow = document.getElementById('periodSegmentRow');
-
-    // if (modeRow && !modeRow.querySelector('.segment-slider')) {
-    //     const slider = document.createElement('div');
-    //     slider.className = 'segment-slider mode-2 pos-0';
-    //     modeRow.insertBefore(slider, modeRow.firstChild);
-    // }
 
     if (periodRow && !periodRow.querySelector('.segment-slider')) {
         const slider = document.createElement('div');
-        slider.className = 'segment-slider mode-4 pos-3';
+        slider.className = 'segment-slider mode-4 pos-1'; // pos-1 это месяц
         periodRow.insertBefore(slider, periodRow.firstChild);
     }
 
-    // updateModeSlider();
-    updatePeriodSlider();
+    // Инициализируем визуальное состояние под текущий период (Месяц)
+    setPeriod(currentPeriod);
 }
-
-// function updateModeSlider() {
-//     const row = document.getElementById('modeSegmentRow');
-//     const slider = row?.querySelector('.segment-slider');
-//     if (slider) {
-//         slider.className = `segment-slider mode-2 ${currentMode === 'versus' ? 'pos-0' : 'pos-1'}`;
-//     }
-// }
 
 function updatePeriodSlider() {
     const row = document.getElementById('periodSegmentRow');
     const slider = row?.querySelector('.segment-slider');
     if (slider) {
-        const positions = { 'week': 0, 'month': 1, 'year': 2, 'all': 3 };
-        slider.className = `segment-slider mode-4 pos-${positions[currentPeriod] ?? 3}`;
+        // Мапа соответствия строки к позиции бегунка (0 - неделя, 1 - месяц, 2 - год, 3 - всё время)
+        const positions = {
+            'week': 0,
+            'month': 1,
+            'year': 2,
+            'all': 3
+        };
+        const pos = positions[currentPeriod] ?? 1;
+        slider.className = `segment-slider mode-4 pos-${pos}`;
     }
 }
 
@@ -100,7 +91,6 @@ export function toggleSettingsSheet() {
     if (overlay) overlay.classList.toggle('open');
 }
 
-// setMode оставлен как заглушка — UI режима убран
 export function setMode(mode) {
     currentMode = mode;
 }
@@ -110,18 +100,23 @@ export function setMetric(metricId) {
     renderMetricAccordion();
 }
 
+// Принимаем строку ('week', 'month', 'year', 'all')
 export function setPeriod(period) {
-    currentPeriod = period;
+    // Принудительно делаем нижний регистр, чтобы 'YEAR' не сломал поиск
+    currentPeriod = String(period).toLowerCase();
 
+    // Снимаем active со всех кнопок периода
     document.querySelectorAll('[onclick*="setPeriod"]').forEach(btn => {
         btn.classList.remove('active');
     });
 
-    const activeBtn = document.querySelector(`[onclick="setPeriod('${period}')"]`);
+    // Вешаем active на выбранную
+    const activeBtn = document.querySelector(`[onclick="setPeriod('${currentPeriod}')"]`);
     if (activeBtn) {
         activeBtn.classList.add('active');
     }
 
+    // Двигаем ползунок
     updatePeriodSlider();
 }
 
@@ -130,21 +125,32 @@ export function setPeriodFromSheet(period) {
 }
 
 export function applySettings() {
-    const { start, end } = getPeriodDates(currentPeriod);
     const customStart = document.getElementById('customStart')?.value;
     const customEnd = document.getElementById('customEnd')?.value;
 
+    toggleSettingsSheet();
+
     if (customStart && customEnd) {
-        toggleSettingsSheet();
+        // Если введены кастомные даты — отправляем их, период игнорируем
         window.dispatchEvent(new CustomEvent('settings-applied', {
-            detail: { mode: currentMode, metricId: currentMetricId, start: customStart, end: customEnd }
+            detail: {
+                mode: currentMode,
+                metricId: currentMetricId,
+                period: currentPeriod, // 'week', 'month' и т.д.
+                start: customStart,
+                end: customEnd
+            }
         }));
         return;
     }
 
-    toggleSettingsSheet();
+    // Иначе отправляем выбранный период
     window.dispatchEvent(new CustomEvent('settings-applied', {
-        detail: { mode: currentMode, metricId: currentMetricId, start, end }
+        detail: {
+            mode: currentMode,
+            metricId: currentMetricId,
+            period: currentPeriod // Отправляется 'week', 'month' и т.д.
+        }
     }));
 }
 

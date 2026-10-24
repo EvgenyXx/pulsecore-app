@@ -3,11 +3,13 @@
 import { searchPlayers } from './data-loader.js';
 
 export class PlayerSearch {
-    constructor(inputId, dropdownId, onSelect) {
+    constructor(inputId, dropdownId, onSelect, options = {}) {
         this.input = document.getElementById(inputId);
         this.dropdown = document.getElementById(dropdownId);
         this.onSelect = onSelect;
         this.allPlayers = [];
+
+        this.searchFn = options.searchFn || searchPlayers;
 
         if (!this.input || !this.dropdown) return;
 
@@ -18,7 +20,6 @@ export class PlayerSearch {
         this.loading = false;
         this.currentQuery = '';
 
-        // Оборачиваем input в wrapper с кнопкой очистки
         this.setupClearButton();
 
         this.input.addEventListener('input', () => this.handleInput());
@@ -43,16 +44,18 @@ export class PlayerSearch {
         });
     }
 
+    setSearchFn(fn) {
+        this.searchFn = fn || searchPlayers;
+        this.clear();
+    }
+
     setupClearButton() {
-        // Создаём обёртку
         const wrapper = document.createElement('div');
         wrapper.className = 'player-search-input-wrapper';
 
-        // Переносим input в обёртку
         this.input.parentNode.insertBefore(wrapper, this.input);
         wrapper.appendChild(this.input);
 
-        // Кнопка очистки
         const clearBtn = document.createElement('button');
         clearBtn.type = 'button';
         clearBtn.className = 'player-search-clear hidden';
@@ -81,8 +84,6 @@ export class PlayerSearch {
         this.dropdown.innerHTML = '';
         this.hide();
         this.updateClearButton();
-
-        // Сообщаем наверх, что игрок сброшен
         if (this.onSelect) this.onSelect(null);
     }
 
@@ -131,7 +132,7 @@ export class PlayerSearch {
         this.loading = true;
 
         try {
-            const data = await searchPlayers(this.currentQuery, this.page, this.size);
+            const data = await this.searchFn(this.currentQuery, this.page, this.size);
             this.hasMore = !data.last;
             this.append(data.content, this.page === 0);
             this.page++;

@@ -5,6 +5,6 @@ import ru.pulsecore.app.shared.exception.BaseException;
 
 public class EmailAlreadyExistsException extends BaseException {
     public EmailAlreadyExistsException() {
-        super(HttpStatus.CONFLICT, "Email уже используется");
+        super(HttpStatus.CONFLICT, "Этот email уже используется. Попробуйте другой.");
     }
 }

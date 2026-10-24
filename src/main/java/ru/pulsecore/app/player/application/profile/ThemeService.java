@@ -13,7 +13,7 @@ import java.util.UUID;
 public class ThemeService {
 
     private static final String PREFIX = "theme:";
-    private static final String DEFAULT_THEME = "dark";
+    private static final String DEFAULT_THEME = "ocean";
 
     private final AppSettingsRepository appSettingsRepository;
 

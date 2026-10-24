@@ -56,12 +56,10 @@ export async function loadTopWeek(league) {
 export function switchLeague(league) {
     state.currentLeague = league;
 
-    // 1. слайдер
     const activeIndex = league === null ? 0 : LEAGUES.indexOf(league) + 1;
     const slider = document.querySelector('.league-slider');
     if (slider) slider.className = `league-slider pos-${activeIndex}`;
 
-    // 2. табы — снимаем active у всех, ставим по data-league
     const pills = document.querySelectorAll('.league-pill');
     pills.forEach(pill => pill.classList.remove('active'));
 
@@ -72,7 +70,6 @@ export function switchLeague(league) {
         }
     });
 
-    // 3. список
     refreshTopListOnly(league);
 }
 
@@ -119,14 +116,18 @@ async function refreshTopListOnly(league) {
                 const name = capitalizeName(p.name || '');
                 const isMe = currentPlayerName && name.toLowerCase() === currentPlayerName.toLowerCase();
                 const position = i + 1;
+                const isFirst = position === 1;
 
                 html += `
-                    <div class="rank-card ${isMe ? 'mine' : ''}">
+                    <div class="rank-card ${isMe ? 'mine' : ''} ${isFirst ? 'first' : ''}">
                         <div class="rank-number">${position}</div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-[15px] font-medium text-white truncate">${name}</span>
-                                <span class="text-[13px] font-semibold text-zinc-400">${p.tournaments}</span>
+                                <div class="rank-meta">
+                                    <span class="text-[13px] font-semibold text-zinc-400">${p.tournaments}</span>
+                                    <span class="rank-meta-label">тур.</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -140,7 +141,10 @@ async function refreshTopListOnly(league) {
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-[15px] font-medium text-white truncate">${currentPlayerName || 'Игрок'}</span>
-                                <span class="text-[13px] font-semibold text-zinc-400">${data.playerTournaments || ''}</span>
+                                <div class="rank-meta">
+                                    <span class="text-[13px] font-semibold text-zinc-400">${data.playerTournaments || ''}</span>
+                                    <span class="rank-meta-label">тур.</span>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -37,7 +37,7 @@ public class SubscriptionExpiryProcessor {
         }
 
         subscriptionRepository.saveAll(save);
-        log.info("❌ Деактивировано {} просроченных подписок", expired.size());
+
         if (!expired.isEmpty()) {
             log.info("Деактивировано {} просроченных подписок", expired.size());
         }

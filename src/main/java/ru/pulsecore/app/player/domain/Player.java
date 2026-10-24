@@ -23,6 +23,10 @@ public class Player {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String nameNormalized;
+
+
     @Column(unique = true)
     private String email;
 
@@ -70,7 +74,6 @@ public class Player {
     private Subscription subscription;
 
 
-
     @Column(name = "primary_league", length = 20)
     private String primaryLeague;
 
@@ -81,7 +84,6 @@ public class Player {
     @Column(name = "selected_halls", length = 500)
     @Builder.Default
     private String selectedHalls = "";
-
 
 
     private LocalDateTime createdAt;

@@ -43,7 +43,7 @@ export async function initSidebar(activePage = null) {
                 ${getNavItem('nav-compare', 'compare', 'Сравнение', 'Игроки',
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3l-7 7"/><path d="M3 3l7 7"/><path d="M16 21h5v-5"/><path d="M8 21H3v-5"/><path d="M21 21l-7-7"/><path d="M3 21l7 7"/></svg>',
         "navigate('compare')")}
-                ${getNavItem('nav-sum', 'sum', 'Сумма за период', 'Подсчёт и список',
+                ${getNavItem('nav-sum', 'sum', 'Cash', 'Заработок и отчёты',
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
         "navigate('sum')")}
                 ${getNavItem('nav-live', 'live', 'Live', 'Трансляции',

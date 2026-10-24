@@ -1,4 +1,4 @@
-package ru.pulsecore.app.shared.exception;
+package ru.pulsecore.app.shared.exception.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,7 +15,7 @@ public class ErrorResponse {
     private int status;
     private String error;
     private String message;
-    private String type;  // ← добавь это поле
+    private String type;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;

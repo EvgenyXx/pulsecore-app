@@ -10,6 +10,7 @@ import ru.pulsecore.app.notification.domain.PushSubscription;
 import ru.pulsecore.app.notification.infrastructure.config.NotificationAsyncConfig;
 import ru.pulsecore.app.notification.infrastructure.repository.PushSubscriptionRepository;
 import ru.pulsecore.app.shared.event.PushContent;
+
 import java.security.Security;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,9 @@ public class WebPushService {
             log.debug("Нет push-подписок для playerIds={}", contentByPlayer.keySet());
             return;
         }
+
+        log.info("📤 Отправка push: пришло игроков {}, найдено подписок {}",
+                contentByPlayer.size(), subscriptions.size());
 
         subscriptions.forEach(sub -> {
                     PushContent pushContent = contentByPlayer.get(sub.getPlayerId());

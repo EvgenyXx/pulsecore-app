@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.calculation.removed.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+import ru.pulsecore.app.shared.util.PlayerNameUtils;
 import ru.pulsecore.app.tournament.domain.enums.MatchStage;
 import ru.pulsecore.app.tournament.application.calculation.StandardDefaultMatchCalculationStrategy;
 import ru.pulsecore.app.tournament.domain.RemovedPlayerHandler;
@@ -29,7 +29,7 @@ public class RemovedInGroupHandler implements RemovedPlayerHandler {
 
     @Override
     public MatchProcessingResult handle(TournamentContext ctx) {
-        String removed = StringUtils.normalizeSearch(ctx.getRemovedPlayer());
+        String removed = PlayerNameUtils.normalizeSearch(ctx.getRemovedPlayer());
 
         MatchProcessingResult result = defaultStrategy.process(ctx);
 
@@ -49,8 +49,8 @@ public class RemovedInGroupHandler implements RemovedPlayerHandler {
                 .filter(m -> MatchStage.FINAL.matches(m.getStage()))
                 .findFirst()
                 .ifPresent(finalMatch -> {
-                    finalists.add(StringUtils.normalizeSearch(finalMatch.getPlayer1()));
-                    finalists.add(StringUtils.normalizeSearch(finalMatch.getPlayer2()));
+                    finalists.add(PlayerNameUtils.normalizeSearch(finalMatch.getPlayer1()));
+                    finalists.add(PlayerNameUtils.normalizeSearch(finalMatch.getPlayer2()));
                 });
 
         return finalists;
@@ -59,7 +59,7 @@ public class RemovedInGroupHandler implements RemovedPlayerHandler {
     private Optional<String> findThirdPlaceCandidate(TournamentContext ctx, String removed, Set<String> finalists) {
         return ctx.getMatches().stream()
                 .flatMap(m -> Stream.of(m.getPlayer1(), m.getPlayer2()))
-                .map(StringUtils::normalizeSearch)
+                .map(PlayerNameUtils::normalizeSearch)
                 .distinct()
                 .filter(p -> !p.equals(removed))
                 .filter(p -> !finalists.contains(p))

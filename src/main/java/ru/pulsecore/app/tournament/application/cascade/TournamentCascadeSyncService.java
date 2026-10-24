@@ -22,9 +22,6 @@ public class TournamentCascadeSyncService {
     private final TournamentAutoAddService tournamentAutoAddService;
     private final Set<UUID> syncingPlayers = ConcurrentHashMap.newKeySet();
 
-    /**
-     * Синхронизация за период. ВСЕ даты — в параметрах.
-     */
     @Async(AsyncConfig.TASK_EXECUTOR)
     public void syncPeriod(UUID playerId, String playerName, LocalDate from, LocalDate to) {
         if (!syncingPlayers.add(playerId)) {
@@ -40,31 +37,28 @@ public class TournamentCascadeSyncService {
     }
 
     /**
-     * Идём по месяцам от from до to (включительно).
+     * Идём по месяцам от from (вчера) до to (2023) в обратном порядке.
      */
     private void syncMonthsBetween(UUID playerId, String playerName, LocalDate from, LocalDate to) {
         YearMonth month = YearMonth.from(from);
         YearMonth endMonth = YearMonth.from(to);
 
-        while (!month.isAfter(endMonth)) {
+        while (!month.isBefore(endMonth)) {
             syncMonth(playerId, playerName, month, from, to);
-            month = month.plusMonths(1);
-            if (!month.isAfter(endMonth)) {
+            month = month.minusMonths(1);
+            if (!month.isBefore(endMonth)) {
                 sleepBetweenMonths();
             }
         }
     }
 
-    /**
-     * Синхронизация одного месяца с учётом границ from/to.
-     */
     private void syncMonth(UUID playerId, String playerName, YearMonth month, LocalDate from, LocalDate to) {
         try {
             LocalDate start = month.atDay(1);
             LocalDate end = month.atEndOfMonth();
 
-            if (start.isBefore(from)) start = from;
-            if (end.isAfter(to)) end = to;
+            if (start.isBefore(to)) start = to;
+            if (end.isAfter(from)) end = from;
             if (start.isAfter(end)) return;
 
             log.debug("{} — синхронизация {}", playerName, MonthUtils.toRussianMonthYear(start));

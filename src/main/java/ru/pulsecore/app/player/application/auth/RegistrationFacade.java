@@ -10,7 +10,6 @@ import ru.pulsecore.app.player.application.player.PlayerCommandService;
 import ru.pulsecore.app.player.application.role.RoleService;
 import ru.pulsecore.app.player.application.subscription.TrialSubscriptionActivator;
 import ru.pulsecore.app.player.domain.Player;
-import ru.pulsecore.app.player.infrastructure.exception.BadCredentialsException;
 
 import java.io.Serializable;
 
@@ -18,8 +17,9 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 public class RegistrationFacade {
 
-    public static final String PENDING_SESSION_KEY = "pending";
+    private static final int CODE_TTL_SECONDS = 600;
 
+    private final RegistrationSessionExtractor sessionExtractor;
     private final RegistrationValidator validator;
     private final VerificationCodeGenerator codeGenerator;
     private final PlayerCommandService playerCommandService;
@@ -31,33 +31,19 @@ public class RegistrationFacade {
     public record Pending(String name, String email, String password, String code) implements Serializable {
     }
 
-    public Pending initiate(String name, String email, String rawPassword) {
+    public void initiate(String name, String email, String rawPassword, HttpSession session) {
         validator.validate(email, name);
         String code = codeGenerator.generate();
         mailPublisher.sendVerificationCode(email, code);
-        return new Pending(name, email, rawPassword, code);
-    }
 
-
-    @Transactional
-    public AuthResponse completeRegistration(HttpSession session,
-                                             String code,
-                                             String ip,
-                                             String userAgent) {
-        Pending pending = (Pending) session.getAttribute(PENDING_SESSION_KEY);
-        if (pending == null) {
-            throw new BadCredentialsException();
-        }
-
-        Player player = complete(pending, code, ip, userAgent);
-        session.removeAttribute(PENDING_SESSION_KEY);
-        return playerMapper.toAuthResponse(player);
+        var pending = new Pending(name, email, rawPassword, code);
+        session.setAttribute(RegistrationSessionExtractor.PENDING_SESSION_KEY, pending);
+        session.setMaxInactiveInterval(CODE_TTL_SECONDS);
     }
 
     @Transactional
-    public Player complete(Pending pending, String code, String ip, String userAgent) {
-        if (!pending.code().equals(code)) throw new BadCredentialsException();
-
+    public AuthResponse completeRegistration(HttpSession session, String code, String ip, String userAgent) {
+        Pending pending = sessionExtractor.extract(session, code);
         var defaultRole = roleService.findRoleUser();
         Player player = playerCommandService.create(
                 pending.name(),
@@ -66,6 +52,11 @@ public class RegistrationFacade {
                 defaultRole);
         postRegistration.execute(player);
         mailPublisher.playerCreated(player, ip, userAgent);
-        return player;
+
+
+        session.removeAttribute(RegistrationSessionExtractor.PENDING_SESSION_KEY);
+
+        return playerMapper.toAuthResponse(player);
     }
+
 }

@@ -15,8 +15,13 @@ export const API = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ halls: hallsStr })
     }),
-    getMyLineups: (date) => apiRequest(`/api/tournament/my?date=${date}`),
+
+    // Пагинация: возвращает объект Page { content: [...], last: true/false }
+    getMyLineups: (date, page = 0, size = 7) => apiRequest(`/api/tournament/my?date=${date}&page=${page}&size=${size}`),
+
+    // Возвращает ПРОСТО МАССИВ СТРОК (названия залов): ["Зал 1", "Зал 2"]
     getAllLineups: (date) => apiRequest(`/api/tournament/all?date=${date}`),
+
     getTop: (period, league) => {
         const url = league ? `/api/tournament/top/${period}/${league}` : `/api/tournament/top/${period}`;
         return apiRequest(url);

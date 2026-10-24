@@ -3,7 +3,7 @@ package ru.pulsecore.app.shared.util;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.domain.enums.LineupType;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
-import ru.pulsecore.app.tournament.infrastructure.util.StringUtils;
+
 import java.util.List;
 
 public class PushMessageBuilder {
@@ -15,7 +15,7 @@ public class PushMessageBuilder {
     if (tournaments == null || tournaments.isEmpty()) return "";
     if (tournaments.size() == 1) return buildNewTournamentBody(playerName, tournaments.get(0));
 
-    String firstName = StringUtils.extractFirstName(playerName);
+    String firstName = PlayerNameUtils.extractFirstName(playerName);
     StringBuilder body = new StringBuilder();
     body.append(firstName).append(", вы записаны на ").append(tournaments.size()).append(" турнира:\n\n");
 
@@ -31,7 +31,7 @@ public class PushMessageBuilder {
 }
 
     public static String buildNewTournamentBody(String playerName, TournamentDto t) {
-        String firstName = StringUtils.extractFirstName(playerName);
+        String firstName = PlayerNameUtils.extractFirstName(playerName);
         String dateStr = DateTimeUtils.formatDate(t.getDate() != null ? t.getDate().getDate() : null);
         String timeStr = DateTimeUtils.formatTime(t.getDate() != null ? t.getDate().getDate() : null);
         String hall = t.getHall() != null ? t.getHall() : "—";
