@@ -54,7 +54,8 @@ public class TournamentUrlProcessor {
                                   TournamentRepository tournamentRepository,
                                   TournamentNotificationService notificationService,
                                   TournamentStatusService statusService,
-                                  @Qualifier(RateLimiterConfig.HISTORY_SYNC_RATE_LIMITER) Bucket tournamentRateLimiter,
+                                  @Qualifier(RateLimiterConfig.HISTORY_SYNC_RATE_LIMITER)
+                                  Bucket tournamentRateLimiter,
                                   TournamentMatchService matchService) {
         this.resultProcessor = resultProcessor;
         this.resultService = resultService;

@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AuthFacade {
+public class AuthService {
 
     private final PlayerAuthenticationService authenticationService;
     private final PlayerSearchService playerSearchService;

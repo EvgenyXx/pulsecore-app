@@ -53,7 +53,7 @@ public class RosterOrchestrationScheduler {
     }
 
     @Scheduled(
-            initialDelay = 3,
+            initialDelay = 0,
             fixedDelay = 10,
             timeUnit = TimeUnit.MINUTES,
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)

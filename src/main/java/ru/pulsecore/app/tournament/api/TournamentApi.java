@@ -115,9 +115,6 @@ public class TournamentApi {
      * COMPARE_H2H_MATCHES — список матчей H2H с пагинацией.
      * Compare.
      */
-
-    public static final String COMPARE_PLAYERS = "/compare/players";
-    public static final String COMPARE_MATCH_STATS = "/compare/match-stats";
     public static final String COMPARE_H2H = "/compare/h2h";
     public static final String COMPARE_H2H_MATCHES = COMPARE_H2H + "/matches";
     public static final String COMPARE_PLAYERS_SEARCH = "/compare/players/search";

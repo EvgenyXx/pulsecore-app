@@ -14,7 +14,7 @@ import ru.pulsecore.app.player.infrastructure.config.SecurityUser;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.request.LoginRequest;
 import ru.pulsecore.app.player.api.dto.response.MeResponse;
-import ru.pulsecore.app.player.application.auth.AuthFacade;
+import ru.pulsecore.app.player.application.auth.AuthService;
 
 @Tag(name = "Auth", description = "Вход, выход, текущий пользователь")
 @RestController
@@ -22,7 +22,7 @@ import ru.pulsecore.app.player.application.auth.AuthFacade;
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final AuthFacade authFacade;
+    private final AuthService authFacade;
 
     @Operation(summary = "Войти в систему")
     @PostMapping(PlayerApi.LOGIN)
