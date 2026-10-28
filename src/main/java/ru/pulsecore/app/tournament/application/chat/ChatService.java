@@ -63,12 +63,13 @@ public class ChatService {
     }
 
     private void sendReplyPush(ChatMessage originalMsg, ChatMessageDto replyMsg) {
+         String targetUrl = "/#/live/" + originalMsg.getLineupId();
         pushDispatcher.send(Map.of(
                 originalMsg.getPlayerId(),
                 new PushContent(
                         "Ответ в чате",
                         replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
-                        "/dashboard#/live/" + originalMsg.getLineupId()
+                        targetUrl
                 ))
         );
     }
