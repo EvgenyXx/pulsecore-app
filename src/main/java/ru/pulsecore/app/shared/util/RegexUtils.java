@@ -12,4 +12,8 @@ public class RegexUtils {
      * Убирает пробелы, цифры и любые спецсимволы.
      */
     public final Pattern ONLY_LETTERS = Pattern.compile("[^a-zA-Zа-яА-ЯёЁ]");
+
+
+    // Разделитель CSV (запятая и любые пробелы после неё)
+    public final Pattern CSV_SPLITTER = Pattern.compile(",\\s*");
 }
