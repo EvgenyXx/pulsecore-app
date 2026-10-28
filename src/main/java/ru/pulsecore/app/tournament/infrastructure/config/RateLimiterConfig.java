@@ -20,7 +20,7 @@ public class RateLimiterConfig {
         return Bucket.builder()
                 .addLimit(Bandwidth.builder()
                         .capacity(1)
-                        .refillIntervally(1, Duration.ofSeconds(4))
+                        .refillIntervally(1, Duration.ofSeconds(3))
                         .build())
                 .build();
     }
@@ -41,7 +41,7 @@ public class RateLimiterConfig {
         return Bucket.builder()
                 .addLimit(Bandwidth.builder()
                         .capacity(1)
-                        .refillIntervally(1, Duration.ofSeconds(4))
+                        .refillIntervally(1, Duration.ofSeconds(2))
                         .build())
                 .build();
     }

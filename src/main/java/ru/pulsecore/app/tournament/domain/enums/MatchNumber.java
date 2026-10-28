@@ -16,10 +16,14 @@ public enum MatchNumber {
     LOWER_MESH_3_GAME_2(7),
     FINAL(8);
 
-    /** Последняя игра, где снятие классифицируется как BEFORE_PLAYOFF. */
+    /**
+     * Последняя игра, где снятие классифицируется как BEFORE_PLAYOFF.
+     */
     private static final int LAST_EARLY_NUMBER = 6;
 
-    /** Игра за 3-е место (полуфинал). */
+    /**
+     * Игра за 3-е место (полуфинал).
+     */
     private static final MatchNumber SEMIFINAL = LOWER_MESH_3_GAME_2;
 
     private final int number;
@@ -40,6 +44,6 @@ public enum MatchNumber {
         return Arrays.stream(values())
                 .filter(m -> m.number == number)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown match number: " + number));
+                .orElse(null);
     }
 }
