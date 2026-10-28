@@ -20,8 +20,8 @@ public class Match {
     private String setsDetails;
     private String league;
     private String table;
-    private String status;       // statusTitle (человекочитаемый)
-    private String statusType;   // statusType (машинный: "canceled" / "completed")
+    private String status;
+    private String statusType;
     private String groupType;
     private int sortNumber;
 

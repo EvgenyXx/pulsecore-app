@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.TopLeagueResponse;
-import ru.pulsecore.app.player.api.dto.response.TopPlayerDto;
 import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
+import ru.pulsecore.app.tournament.application.mapping.TopLeagueMapper;
 import ru.pulsecore.app.tournament.domain.entity.TopPlayersView;
 import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
 import ru.pulsecore.app.tournament.infrastructure.repository.TopPlayersViewRepository;
@@ -20,56 +20,23 @@ public class TopPeriodService {
 
     private final TopPlayersViewRepository repository;
     private final PlayerClient playerClient;
+    private final TopLeagueMapper mapper;
 
     @Cacheable(value = CacheNames.TOP_ALL, key = CacheNames.KEY_PERIOD)
     public TopLeagueResponse getTopAllLeagues(String period, UUID playerId) {
         List<TopPlayersView> all = repository.findByPeriodOrderByTotalDesc(period);
-        return buildResponse(all, playerId);
+        return mapper.toLeagueResponse(all, playerId);
     }
 
     @Cacheable(value = CacheNames.TOP_LEAGUE, key = CacheNames.KEY_PERIOD_LEAGUE)
     public TopLeagueResponse getTopByLeague(String period, String league, UUID playerId) {
-       PlayerData player = playerClient.getPlayerById(playerId);
+        PlayerData player = playerClient.getPlayerById(playerId);
+        List<TopPlayersView> players = repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
 
         if (!league.equals(player.primaryLeague())) {
-            List<TopPlayersView> top5 = repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
-            if (top5.size() > 5) top5 = top5.subList(0, 5);
-            return TopLeagueResponse.builder()
-                    .top5(top5.stream().map(this::toDto).toList())
-                    .playerPosition(0)
-                    .playerTournaments(0)
-                    .build();
+            return mapper.toLeagueResponseWithoutPlayer(players);
         }
 
-        List<TopPlayersView> all = repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
-        return buildResponse(all, playerId);
-    }
-
-
-    private TopLeagueResponse buildResponse(List<TopPlayersView> all, UUID playerId) {
-        List<TopPlayersView> top5 = all.size() > 5 ? all.subList(0, 5) : all;
-
-        int position = 0;
-        int tournaments = 0;
-        for (int i = 0; i < all.size(); i++) {
-            if (all.get(i).getPlayerId().equals(playerId)) {
-                position = i + 1;
-                tournaments = all.get(i).getTournaments().intValue();
-                break;
-            }
-        }
-
-        return TopLeagueResponse.builder()
-                .top5(top5.stream().map(this::toDto).toList())
-                .playerPosition(position)
-                .playerTournaments(tournaments)
-                .build();
-    }
-
-    private TopPlayerDto toDto(TopPlayersView v) {
-        return TopPlayerDto.builder()
-                .name(v.getName())
-                .tournaments(v.getTournaments())
-                .build();
+        return mapper.toLeagueResponse(players, playerId);
     }
 }
