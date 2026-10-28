@@ -88,7 +88,7 @@ public class TournamentUrlProcessor {
 
                 matchService.createMatches(parsed,tournament);
             } catch (Exception e) {
-                log.warn("{} — {}", url, e.getMessage());
+               log.error("ПОЛОМКА на URL: {}. Ошибка: {}", url, e.getMessage(), e);
             }
         }
 
