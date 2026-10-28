@@ -19,14 +19,16 @@ public class WithdrawalDetector {
     public WithdrawalStage detect(List<Match> matches) {
         // 1. Снятие в играх 1–6
         for (Match m : matches) {
-            if (m.isCanceled() && number(m).isEarly()) {
+            MatchNumber num = number(m);
+            if (num != null && m.isCanceled() && num.isEarly()) {
                 return WithdrawalStage.BEFORE_PLAYOFF;
             }
         }
 
         // 2. Снятие в полуфинале (7-я)
         for (Match m : matches) {
-            if (m.isCanceled() && number(m).isSemifinal()) {
+            MatchNumber num = number(m);
+            if (num != null && m.isCanceled() && num.isSemifinal()) {
                 return WithdrawalStage.PLAYOFF;
             }
         }
