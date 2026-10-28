@@ -331,44 +331,44 @@ async function init() {
 
 // ============ PULL-TO-REFRESH ============
 
-const ptr = document.getElementById('ptrIndicator');
-let ptrStartX = 0;
-let ptrStartY = 0;
-let ptrTriggered = false;
-
-document.addEventListener('touchstart', e => {
-    if (window.scrollY <= 5) {
-        ptrStartX = e.touches[0].clientX;
-        ptrStartY = e.touches[0].clientY;
-        ptrTriggered = false;
-    }
-}, { passive: true });
-
-document.addEventListener('touchmove', e => {
-    if (ptrTriggered || ptrStartY === 0 || window.scrollY > 5) return;
-
-    const dy = e.touches[0].clientY - ptrStartY;
-    const dx = Math.abs(e.touches[0].clientX - ptrStartX);
-
-    if (dy > 60 && dy > dx) {
-        ptrTriggered = true;
-        ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...';
-        ptr.classList.add('active');
-    }
-}, { passive: true });
-
-document.addEventListener('touchend', () => {
-    if (ptrTriggered) {
-        loadDashboardWidgets();
-        loadTopWeek(state.currentLeague);
-        setTimeout(() => {
-            ptr.innerHTML = '✓ Обновлено';
-            ptr.classList.add('done');
-            setTimeout(() => ptr.classList.remove('active', 'done'), 1200);
-        }, 500);
-    }
-    ptrStartX = 0;
-    ptrStartY = 0;
-});
+// const ptr = document.getElementById('ptrIndicator');
+// let ptrStartX = 0;
+// let ptrStartY = 0;
+// let ptrTriggered = false;
+//
+// document.addEventListener('touchstart', e => {
+//     if (window.scrollY <= 5) {
+//         ptrStartX = e.touches[0].clientX;
+//         ptrStartY = e.touches[0].clientY;
+//         ptrTriggered = false;
+//     }
+// }, { passive: true });
+//
+// document.addEventListener('touchmove', e => {
+//     if (ptrTriggered || ptrStartY === 0 || window.scrollY > 5) return;
+//
+//     const dy = e.touches[0].clientY - ptrStartY;
+//     const dx = Math.abs(e.touches[0].clientX - ptrStartX);
+//
+//     if (dy > 60 && dy > dx) {
+//         ptrTriggered = true;
+//         ptr.innerHTML = '<span class="spinner-sm"></span> Обновление...';
+//         ptr.classList.add('active');
+//     }
+// }, { passive: true });
+//
+// document.addEventListener('touchend', () => {
+//     if (ptrTriggered) {
+//         loadDashboardWidgets();
+//         loadTopWeek(state.currentLeague);
+//         setTimeout(() => {
+//             ptr.innerHTML = '✓ Обновлено';
+//             ptr.classList.add('done');
+//             setTimeout(() => ptr.classList.remove('active', 'done'), 1200);
+//         }, 500);
+//     }
+//     ptrStartX = 0;
+//     ptrStartY = 0;
+// });
 
 export { init };

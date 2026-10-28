@@ -2,23 +2,26 @@
 .top-list-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 /* Карточка ранга */
 .rank-card {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 16px;
-    border-radius: 14px;
+    gap: 12px;
+    padding: 8px 14px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
-    will-change: opacity, transform;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    will-change: opacity, transform, max-height, padding;
+    flex-shrink: 0;
+    max-height: 60px;
+    overflow: hidden;
 }
 
 .rank-card:hover {
@@ -40,18 +43,18 @@
 }
 
 .rank-number {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     color: #71717a;
     flex-shrink: 0;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.05);
-    transition: background 0.35s ease, color 0.35s ease;
+    transition: background 0.25s ease, color 0.25s ease;
 }
 
 .rank-card.mine .rank-number {
@@ -155,4 +158,157 @@
 @keyframes matchSlideIn {
     from { opacity: 0; transform: translateY(-6px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   ЗАЛ СЛАВЫ: ФИКС + КАРТОЧКА МЕНЯ СНИЗУ
+   ========================================= */
+
+.top-list-wrapper {
+    position: relative;
+    -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+    padding-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.top-list-wrapper:has(.expanded) {
+    -webkit-mask-image: none;
+    mask-image: none;
+    padding-bottom: 0;
+}
+
+.top-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+    overscroll-behavior-y: contain;
+    transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    /* Увеличили, чтобы 5-я карточка не обрезалась */
+    max-height: 275px;
+}
+
+.top-list-container.expanded {
+    max-height: 420px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.hidden-item {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+    pointer-events: none;
+}
+
+.show-item {
+    animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.top-list-container.expanded::-webkit-scrollbar {
+    width: 4px;
+}
+.top-list-container.expanded::-webkit-scrollbar-track {
+    background: transparent;
+}
+.top-list-container.expanded::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+/* Кнопка снизу */
+.top-toggle-btn-full {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    color: #a1a1aa;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 12px;
+}
+
+.top-toggle-btn-full:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.top-toggle-btn-full:active {
+    transform: scale(0.98);
+}
+
+/* Блок "Твоя позиция" под кнопкой */
+.my-position-block {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.my-position-label {
+    font-size: 11px;
+    color: #71717a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-left: 4px;
+    margin-bottom: 2px;
+}
+/* =========================================
+   ДОРАБОТКА БЛОКА "ТВОЯ ПОЗИЦИЯ"
+   ========================================= */
+
+.my-position-block {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Плавное появление */
+    animation: fadeInUp 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.my-position-label {
+    font-size: 11px;
+    color: #a1a1aa; /* Чуть светлее, чем было */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-left: 6px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Делаем карточку "моя позиция" более акцентной */
+.my-position-block .rank-card.mine {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.03) 100%);
+    border-left: 3px solid var(--accent, #6366f1); /* Вертикальная полоска */
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.my-position-block .rank-card.mine .rank-number {
+    font-size: 13px; /* Чуть крупнее цифра */
+    font-weight: 700;
 }

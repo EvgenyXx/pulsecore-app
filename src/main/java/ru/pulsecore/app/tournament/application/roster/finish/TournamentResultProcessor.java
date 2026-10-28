@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.ResultDto;
-import ru.pulsecore.app.tournament.infrastructure.util.PlayerNameMatcher;
+import ru.pulsecore.app.tournament.infrastructure.util.PlayerIdentity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 
@@ -34,7 +34,7 @@ public class TournamentResultProcessor {
 
         List<TournamentResultEntity> entities = new ArrayList<>();
         for (ResultDto r : results) {
-            if (PlayerNameMatcher.isSamePlayer(playerName, r.getPlayer())) {
+            if (PlayerIdentity.isSamePlayer(playerName, r.getPlayer())) {
                 entities.add(buildEntity(playerId, tournament, r, bonus, hasRemoved, league));
             }
         }
@@ -62,7 +62,7 @@ public class TournamentResultProcessor {
         List<TournamentResultEntity> entities = new ArrayList<>();
         for (ResultDto r : results) {
             roster.forEach((playerId, playerName) -> {
-                if (PlayerNameMatcher.isSamePlayer(playerName, r.getPlayer())) {
+                if (PlayerIdentity.isSamePlayer(playerName, r.getPlayer())) {
                     entities.add(buildEntity(playerId, tournament, r, bonus, hasRemoved, league));
                 }
             });

@@ -54,7 +54,8 @@ public class TournamentUrlProcessor {
                                   TournamentRepository tournamentRepository,
                                   TournamentNotificationService notificationService,
                                   TournamentStatusService statusService,
-                                  @Qualifier(RateLimiterConfig.HISTORY_SYNC_RATE_LIMITER) Bucket tournamentRateLimiter,
+                                  @Qualifier(RateLimiterConfig.HISTORY_SYNC_RATE_LIMITER)
+                                  Bucket tournamentRateLimiter,
                                   TournamentMatchService matchService) {
         this.resultProcessor = resultProcessor;
         this.resultService = resultService;
@@ -87,7 +88,7 @@ public class TournamentUrlProcessor {
 
                 matchService.createMatches(parsed,tournament);
             } catch (Exception e) {
-                log.warn("{} — {}", url, e.getMessage());
+               log.error("ПОЛОМКА на URL: {}. Ошибка: {}", url, e.getMessage(), e);
             }
         }
 
