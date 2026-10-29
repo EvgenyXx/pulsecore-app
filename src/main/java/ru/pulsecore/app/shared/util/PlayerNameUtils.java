@@ -8,6 +8,14 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class PlayerNameUtils {
 
+    public String cleanName(String name) {
+        if (name == null || name.isBlank()) return "";
+        return Arrays.stream(name.toLowerCase().trim().split("\\s+"))
+                .map(t -> RegexUtils.ONLY_LETTERS.matcher(t).replaceAll(""))
+                .filter(t -> !t.isEmpty())
+                .collect(Collectors.joining(" "));
+    }
+
     /**
      * Нормализует имя для хранения и сравнения: приводит к нижнему регистру,
      * обрезает пробелы по краям, схлопывает повторные пробелы и сортирует слова
@@ -17,9 +25,11 @@ public class PlayerNameUtils {
      * normalizeName("  ЧЕРНОВ   АЛЕКСАНДР ") → "александр чернов"
      * normalizeName(null) → ""
      */
-    public String normalizeName(String name) {
+     public String normalizeName(String name) {
         if (name == null || name.isBlank()) return "";
         return Arrays.stream(name.toLowerCase().trim().split("\\s+"))
+                .map(t -> RegexUtils.ONLY_LETTERS.matcher(t).replaceAll(""))
+                .filter(t -> !t.isEmpty())
                 .sorted()
                 .collect(Collectors.joining(" "));
     }

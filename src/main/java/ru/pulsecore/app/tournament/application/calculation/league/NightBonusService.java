@@ -16,7 +16,7 @@ public class NightBonusService {
             case "A" -> 1000;
             case "B" -> 750;
             case "C" -> 500;
-            case "D" -> 200;
+            case "D" -> 500;
             default -> 0;
         };
     }

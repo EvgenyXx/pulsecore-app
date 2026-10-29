@@ -37,7 +37,7 @@ public class PlayerCommandService {
     @Transactional(propagation = Propagation.MANDATORY)
     public Player create(String name, String email, String rawPassword, Role defaultRole) {
         return playerRepository.saveAndFlush(Player.builder()
-                .name(name)
+                .name(PlayerNameUtils.cleanName(name))
                 .nameNormalized(PlayerNameUtils.normalizeName(name))
                 .email(email.trim().toLowerCase(Locale.ROOT))
                 .password(passwordEncoder.encode(rawPassword))
