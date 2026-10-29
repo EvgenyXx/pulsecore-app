@@ -30,7 +30,7 @@ public class OAuthPlayerBuilder {
         Role userRole = roleService.findRoleUser();
 
         Player player = Player.builder()
-                .name(name)
+                .name(PlayerNameUtils.cleanName(name))
                 .nameNormalized(PlayerNameUtils.normalizeName(name))
                 .email(email)
                 .oauthProvider(sessionData.provider()).oauthId(sessionData.oauthId())
