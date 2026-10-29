@@ -15,8 +15,8 @@ public class LeagueDPlacePointsCalculator implements PlacePointsCalculator {
     public int pointsForPlace(int place, LeagueType league, LocalDate date) {
         return switch (place) {
             case 1 -> 4500;
-            case 2 -> 3000;
-            case 3 -> 2500;
+            case 2 -> 3500;
+            case 3 -> 2000;
             case 4 -> 1000;
             default -> 0;
         };
