@@ -41,18 +41,62 @@
 </div>
 
 <script>
-    // Хелпер: безопасно читает {message, type} из ответа бэка.
-    // Если тело не JSON (прокси, HTML-ошибка) — возвращает fallback.
     async function readError(res, fallback) {
         try {
             const data = await res.json();
             return {
                 message: data.message || fallback,
-                type: data.type || null
+                type: data.type || null,
+                telegramUrl: data.telegramUrl || null
             };
         } catch (_) {
-            return { message: fallback, type: null };
+            return { message: fallback, type: null, telegramUrl: null };
         }
+    }
+
+    function openTelegram(telegramUrl, text = '') {
+        if (!telegramUrl) return;
+        const username = telegramUrl
+            .replace(/^https?:\/\/t\.me\//, '')
+            .replace(/^@/, '');
+
+        const native = `tg://resolve?domain=${username}` +
+            (text ? `&text=${encodeURIComponent(text)}` : '');
+        const web = `https://t.me/${username}`;
+
+        const now = Date.now();
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = native;
+        document.body.appendChild(iframe);
+        setTimeout(() => iframe.remove(), 2000);
+
+        setTimeout(() => {
+            if (Date.now() - now < 2000 && !document.hidden) {
+                window.location.href = web;
+            }
+        }, 1500);
+    }
+
+    function showTelegramButton(errEl, telegramUrl) {
+        const old = document.getElementById('tgBtn');
+        if (old) old.remove();
+        if (!telegramUrl || !errEl) return;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = 'tgBtn';
+        btn.className = 'btn w-full bg-white/5 border-white/10 text-white mt-2';
+        btn.textContent = 'Написать в Telegram';
+
+        btn.addEventListener('click', () => {
+            const ln = document.getElementById('lastName')?.value?.trim() || '';
+            const fn = document.getElementById('firstName')?.value?.trim() || '';
+            const msg = `Здравствуйте! Хочу привязать профиль.\nИмя: ${fn} ${ln}`;
+            openTelegram(telegramUrl, msg);
+        });
+
+        errEl.parentNode.insertBefore(btn, errEl.nextSibling);
     }
 
     async function finish() {
@@ -62,7 +106,9 @@
         const btn = document.getElementById('btn');
         err.classList.add('hidden');
 
-        // Локальная валидация — до сети (бэк это не проверяет)
+        const oldTg = document.getElementById('tgBtn');
+        if (oldTg) oldTg.remove();
+
         if (!lastName || !firstName) {
             err.textContent = 'Заполните оба поля';
             err.classList.remove('hidden');
@@ -90,10 +136,14 @@
                 return;
             }
 
-            // Бэк — единственный источник текста ошибки
-            const { message } = await readError(r, 'Ошибка ' + r.status);
+            const { message, telegramUrl } = await readError(r, 'Ошибка ' + r.status);
             err.textContent = message;
             err.classList.remove('hidden');
+
+            if (telegramUrl) {
+                showTelegramButton(err, telegramUrl);
+            }
+
             btn.disabled = false;
             btn.textContent = 'Завершить регистрацию';
         } catch (e) {

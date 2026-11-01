@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
 import ru.pulsecore.app.shared.dto.response.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ public interface PlayerAdminClient {
     MessageResponse deactivate(UUID playerId);
     MessageResponse enable(UUID playerId);
     SubscriptionStatusResponse getSubscription(UUID playerId);
+    MessageResponse activateSubscriptionForPeriod(UUID playerId,LocalDateTime start,LocalDateTime end);
 
 
 }

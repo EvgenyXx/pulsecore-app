@@ -14,6 +14,8 @@ import ru.pulsecore.app.player.application.analytic.PageViewStatsService;
 import ru.pulsecore.app.player.application.admin.PlayerAdminService;
 import ru.pulsecore.app.player.application.role.RoleManagementService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionCommandService;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,5 +115,11 @@ public class AdminPlayerClientImpl implements PlayerAdminClient {
     @Override
     public List<PageViewStats> getStats(int days) {
         return pageViewStatsService.getStats(days);
+    }
+
+
+    @Override
+    public MessageResponse activateSubscriptionForPeriod(UUID playerId,LocalDateTime start, LocalDateTime end) {
+        return subscriptionCommandService.activateSubscriptionForPeriod(playerId, start, end);
     }
 }

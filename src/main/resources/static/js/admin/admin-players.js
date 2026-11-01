@@ -64,10 +64,13 @@ async function refreshPlayerUI(section) {
     let badges = '';
     let subActive = false;
     let subExpired = false;
+    let subStart = null;
+    let subEnd = null;
 
     try {
         const sub = await AdminAPI.getPlayerSubscription(selectedPlayerId);
         playersCache[selectedPlayerId] = sub;
+
         if (sub && sub.activeNow) {
             subActive = true;
             const expiresDate = new Date(sub.expiresAt);
@@ -84,6 +87,10 @@ async function refreshPlayerUI(section) {
                 subExpired = new Date(sub.expiresAt) < new Date();
             }
         }
+
+        // Период для инпутов (YYYY-MM-DD)
+        if (sub?.startedAt) subStart = sub.startedAt.slice(0, 10);
+        if (sub?.expiresAt) subEnd = sub.expiresAt.slice(0, 10);
     } catch (e) {}
 
     if (section === 'sub') {
@@ -100,6 +107,12 @@ async function refreshPlayerUI(section) {
 
     const showEnable = !subActive && !subExpired && playersCache[selectedPlayerId] && playersCache[selectedPlayerId].expiresAt;
     document.getElementById('playerEnableSub').classList.toggle('hidden', !showEnable);
+
+    // Период — подставить в инпуты
+    const startEl = document.getElementById('subPeriodStart');
+    const endEl = document.getElementById('subPeriodEnd');
+    if (startEl) startEl.value = subStart || '';
+    if (endEl) endEl.value = subEnd || '';
 
     try {
         const roles = await AdminAPI.getPlayerRoles(selectedPlayerId);
@@ -217,94 +230,114 @@ function isStatusChecked(prefix) {
     return checkbox ? checkbox.classList.contains('checked') : false;
 }
 
+function showPlayerMsg(text, type = 'ok') {
+    const msg = document.getElementById('playerMsg');
+    if (!msg) return;
+    msg.textContent = text;
+    msg.className = 'text-xs text-center mt-2 ' + (type === 'ok'
+        ? 'text-emerald-400'
+        : type === 'warn'
+            ? 'text-zinc-400'
+            : 'text-red-400');
+    msg.classList.remove('hidden');
+}
+
 export async function giveSub(days) {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Выдача...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Выдача...', 'warn');
 
     try {
         await AdminAPI.giveSubscription(selectedPlayerId, days);
-        msg.textContent = `Подписка выдана на ${days} дней`;
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(`Подписка выдана на ${days} дней`);
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка при выдаче';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка при выдаче', 'error');
     }
 }
 
 export async function giveSubCustom() {
     if (!selectedPlayerId) return;
     const days = parseInt(document.getElementById('playerCustomDays').value);
-    const msg = document.getElementById('playerMsg');
 
     if (!days || days < 1 || days > 3650) {
-        msg.textContent = 'Введите число от 1 до 3650';
-        msg.className = 'text-xs text-center text-red-400';
-        msg.classList.remove('hidden');
+        showPlayerMsg('Введите число от 1 до 3650', 'error');
         return;
     }
 
-    msg.textContent = 'Выдача...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Выдача...', 'warn');
 
     try {
         await AdminAPI.giveSubscription(selectedPlayerId, days);
-        msg.textContent = `Подписка выдана на ${days} дней`;
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(`Подписка выдана на ${days} дней`);
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка при выдаче';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка при выдаче', 'error');
+    }
+}
+
+// ===== Выдать подписку на период (две даты) =====
+export async function giveSubPeriod() {
+    if (!selectedPlayerId) return;
+
+    const startEl = document.getElementById('subPeriodStart');
+    const endEl = document.getElementById('subPeriodEnd');
+    const start = startEl?.value;
+    const end = endEl?.value;
+
+    if (!start || !end) {
+        showPlayerMsg('Укажите обе даты', 'error');
+        return;
+    }
+
+    if (start >= end) {
+        showPlayerMsg('Дата начала должна быть раньше даты конца', 'error');
+        return;
+    }
+
+    showPlayerMsg('Выдача...', 'warn');
+
+    try {
+        const data = await AdminAPI.activateSubscriptionForPeriod(
+            selectedPlayerId,
+            `${start}T00:00:00`,
+            `${end}T23:59:59`
+        );
+        showPlayerMsg(data.message || 'Подписка выдана на период');
+        await refreshPlayerUI('players');
+    } catch (e) {
+        showPlayerMsg(e.message || 'Ошибка при выдаче', 'error');
     }
 }
 
 export async function removeSub() {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Отключение...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Отключение...', 'warn');
 
     try {
         await AdminAPI.removeSubscription(selectedPlayerId);
-        msg.textContent = 'Подписка отключена';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg('Подписка отключена');
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка при отключении';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка при отключении', 'error');
     }
 }
 
 export async function enableSub() {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Включение...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Включение...', 'warn');
 
     try {
         await AdminAPI.enableSubscription(selectedPlayerId);
-        msg.textContent = 'Подписка включена';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg('Подписка включена');
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка при включении';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка при включении', 'error');
     }
 }
 
 export async function updatePlayer() {
     if (!selectedPlayerId) return;
-
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Сохранение...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Сохранение...', 'warn');
 
     try {
         await AdminAPI.updatePlayer(selectedPlayerId, {
@@ -316,76 +349,57 @@ export async function updatePlayer() {
             pushEnabled: isStatusChecked('playerPush'),
             notificationsEnabled: isStatusChecked('playerNotifications')
         });
-        msg.textContent = 'Сохранено';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg('Сохранено');
 
         document.getElementById('playerSelName').textContent = capitalizeName(document.getElementById('playerName').value);
         document.getElementById('playerSelEmail').textContent = document.getElementById('playerEmail').value;
     } catch (e) {
-        msg.textContent = 'Ошибка сохранения';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка сохранения', 'error');
     }
 }
 
 export async function togglePlayerRole(roleName) {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
     const toggleBtn = document.getElementById('toggleAdminBtn');
     const isGrant = toggleBtn.classList.contains('btn-amber');
 
-    msg.textContent = isGrant ? 'Выдача роли...' : 'Отзыв роли...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg(isGrant ? 'Выдача роли...' : 'Отзыв роли...', 'warn');
 
     try {
         await AdminAPI.togglePlayerRole(selectedPlayerId, roleName, isGrant);
-        msg.textContent = isGrant ? 'Роль выдана' : 'Роль отозвана';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(isGrant ? 'Роль выдана' : 'Роль отозвана');
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка', 'error');
     }
 }
 
 export async function deletePlayerTournaments() {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Удаление...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Удаление...', 'warn');
 
     try {
         const data = await AdminAPI.deletePlayerTournaments(selectedPlayerId);
-        msg.textContent = data.message;
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(data.message);
     } catch (e) {
-        msg.textContent = 'Ошибка';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка', 'error');
     }
 }
 
 export async function resyncPlayerTournaments() {
     if (!selectedPlayerId) return;
 
-    const fromEl = document.getElementById('resyncFrom');
-    const toEl = document.getElementById('resyncTo');
-    const from = fromEl?.value || null;
-    const to = toEl?.value || null;
-    const msg = document.getElementById('playerMsg');
-
+    const from = document.getElementById('resyncFrom')?.value || null;
+    const to = document.getElementById('resyncTo')?.value || null;
     const label = from && to ? `${from} – ${to}` : 'весь период';
-    msg.textContent = `Синхронизация ${label}...`;
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+
+    showPlayerMsg(`Синхронизация ${label}...`, 'warn');
 
     try {
         const data = await AdminAPI.resyncPlayerTournaments(selectedPlayerId, from, to);
-        msg.textContent = data.message || `Синхронизация запущена: ${label}`;
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(data.message || `Синхронизация запущена: ${label}`);
     } catch (e) {
-        msg.textContent = e.message || 'Ошибка синхронизации';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg(e.message || 'Ошибка синхронизации', 'error');
     }
 }
 
@@ -393,19 +407,14 @@ export async function deletePlayerAccount() {
     if (!selectedPlayerId) return;
     if (!confirm('Удалить аккаунт навсегда?')) return;
 
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Удаление...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Удаление...', 'warn');
 
     try {
         await AdminAPI.deletePlayerAccount(selectedPlayerId);
-        msg.textContent = 'Аккаунт удалён';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg('Аккаунт удалён');
         document.getElementById('playerSelected').classList.add('hidden');
     } catch (e) {
-        msg.textContent = 'Ошибка удаления';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка удаления', 'error');
     }
 }
 
@@ -414,12 +423,7 @@ export async function deletePlayerAccount() {
    ===================================================== */
 
 const SUBS_PAGE_SIZE = 20;
-const subsState = {
-    loaded: false,
-    loading: false,
-    items: [],
-    page: 0
-};
+const subsState = { loaded: false, loading: false, items: [], page: 0 };
 
 function fmtDate(dateStr) {
     if (!dateStr) return '—';

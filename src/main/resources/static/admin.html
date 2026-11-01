@@ -129,7 +129,6 @@
 <main class="flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
     <div class="max-w-3xl mx-auto">
 
-        <!-- ===== ИГРОКИ ===== -->
         <div id="section-players" class="hidden">
             <div class="segmented" id="seg-players">
                 <button class="segmented-btn active" data-sub="acc-players">Поиск</button>
@@ -200,6 +199,24 @@
                                 <input id="playerCustomDays" type="number" min="1" max="3650" placeholder="Дней" class="sub-input">
                                 <button onclick="giveSubCustom()" class="sub-btn sub-btn-amber">Выдать</button>
                             </div>
+
+                            <!-- НОВОЕ: выдать на период -->
+                            <div class="sub-period">
+                                <div class="sub-period-dates">
+                                    <div class="sub-period-field">
+                                        <label>С</label>
+                                        <input id="subPeriodStart" type="date">
+                                    </div>
+                                    <div class="sub-period-field">
+                                        <label>По</label>
+                                        <input id="subPeriodEnd" type="date">
+                                    </div>
+                                </div>
+                                <button onclick="giveSubPeriod()" class="sub-btn sub-btn-indigo sub-period-btn">
+                                    Выдать на период
+                                </button>
+                            </div>
+
                             <button onclick="enableSub()" id="playerEnableSub" class="sub-btn sub-btn-emerald hidden">Включить подписку</button>
                             <button onclick="removeSub()" id="playerRemoveSub" class="sub-btn sub-btn-danger hidden">Отключить подписку</button>
                         </div>
@@ -252,18 +269,15 @@
                 </div>
             </div>
 
-            <!-- ===== ПОДПИСКИ (как Входы) ===== -->
             <div class="sub-panel" id="acc-subs-overview-panel" style="display:none;">
                 <div class="widget-card subs-widget">
                     <div class="subs-top">
                         <span class="subs-info" id="subsOverviewInfo">Загрузка...</span>
                         <button onclick="refreshSubscriptionsOverview()" class="btn btn-ghost subs-refresh">Обновить</button>
                     </div>
-
                     <div class="subs-list" id="subsList">
                         <div class="subs-row subs-empty">Загрузка...</div>
                     </div>
-
                     <div class="subs-pager">
                         <button class="subs-page-btn" id="subsPrev" onclick="subsPrevPage()" type="button">Назад</button>
                         <span class="subs-page-label" id="subsPage">— / —</span>
@@ -329,17 +343,14 @@
                 </div>
             </div>
 
-            <!-- ===== ВХОДЫ ===== -->
             <div class="sub-panel" id="acc-last-login-panel" style="display:none;">
                 <div class="widget-card last-login-widget">
                     <div class="last-login-top">
                         <span class="last-login-info" id="lastLoginInfo">Загрузка...</span>
                     </div>
-
                     <div class="last-login-list" id="lastLoginList">
                         <div class="last-login-row last-login-empty">Загрузка...</div>
                     </div>
-
                     <div class="last-login-pager">
                         <button class="last-login-page-btn" id="lastLoginPrev" onclick="loadLastLoginPrev()" type="button">Назад</button>
                         <span class="last-login-page-label" id="lastLoginPage">— / —</span>
@@ -349,7 +360,6 @@
             </div>
         </div>
 
-        <!-- ===== ПОДПИСКИ ===== -->
         <div id="section-subscriptions" class="hidden">
             <div class="widget-card">
                 <div class="grid grid-cols-2 gap-3 mb-3">
@@ -364,7 +374,6 @@
             </div>
         </div>
 
-        <!-- ===== ТУРНИРЫ ===== -->
         <div id="section-tournaments" class="hidden">
             <div class="segmented" id="seg-tournaments">
                 <button class="segmented-btn active" data-sub="scheduler">Шедулеры</button>
@@ -397,7 +406,6 @@
             </div>
         </div>
 
-        <!-- ===== СТАТИСТИКА ===== -->
         <div id="section-stats" class="hidden">
             <div class="widget-card">
                 <div class="flex items-center gap-2 mb-3">
@@ -433,9 +441,10 @@
     window.loadSchedulerStatus = loadSchedulerStatus;
     window.toggleScheduler = toggleScheduler;
 
-    import { subsPrevPage, subsNextPage } from '/js/admin/admin-players.js';
+    import { subsPrevPage, subsNextPage, giveSubPeriod } from '/js/admin/admin-players.js';
     window.subsPrevPage = subsPrevPage;
     window.subsNextPage = subsNextPage;
+    window.giveSubPeriod = giveSubPeriod;
 
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';

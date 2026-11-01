@@ -31,7 +31,8 @@ public class TopPeriodService {
     @Cacheable(value = CacheNames.TOP_LEAGUE, key = CacheNames.KEY_PERIOD_LEAGUE)
     public TopLeagueResponse getTopByLeague(String period, String league, UUID playerId) {
         PlayerData player = playerClient.getPlayerById(playerId);
-        List<TopPlayersView> players = repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
+        List<TopPlayersView> players =
+                repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
 
         if (!league.equals(player.primaryLeague())) {
             return mapper.toLeagueResponseWithoutPlayer(players);

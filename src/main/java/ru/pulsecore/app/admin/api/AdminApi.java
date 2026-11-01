@@ -2,7 +2,8 @@ package ru.pulsecore.app.admin.api;
 
 public final class AdminApi {
 
-    private AdminApi() {}
+    private AdminApi() {
+    }
 
     public static final String BASE = "/api/admin";
 
@@ -37,19 +38,20 @@ public final class AdminApi {
     public static final String SEARCH_BY_NAME = "/search";
     public static final String PLAYER_UPDATE = "/players/{id}";
 
-   /**
- * Подписка игрока.
- * SUBSCRIBE — /players/{id}/subscribe, выдать подписку.
- * UNSUBSCRIBE — /players/{id}/unsubscribe, отключить подписку.
- * ENABLE_SUBSCRIPTION — /players/{id}/subscription/enable, включить обратно.
- * PLAYER_SUBSCRIPTION — /players/{id}/subscription, получить подписку.
- * Admin.
- */
-public static final String SUBSCRIBE = "/players/{id}/subscribe";
-public static final String UNSUBSCRIBE = "/players/{id}/unsubscribe";
-public static final String ENABLE_SUBSCRIPTION = "/players/{id}/subscription/enable";
-public static final String PLAYER_SUBSCRIPTION = "/players/{id}/subscription";
-public static final String ALL_SUBSCRIPTIONS = "/subscriptions/overview";
+    /**
+     * Подписка игрока.
+     * SUBSCRIBE — /players/{id}/subscribe, выдать подписку.
+     * UNSUBSCRIBE — /players/{id}/unsubscribe, отключить подписку.
+     * ENABLE_SUBSCRIPTION — /players/{id}/subscription/enable, включить обратно.
+     * PLAYER_SUBSCRIPTION — /players/{id}/subscription, получить подписку.
+     * Admin.
+     */
+    public static final String SUBSCRIBE = "/players/{id}/subscribe";
+    public static final String UNSUBSCRIBE = "/players/{id}/unsubscribe";
+    public static final String ENABLE_SUBSCRIPTION = "/players/{id}/subscription/enable";
+    public static final String PLAYER_SUBSCRIPTION = "/players/{id}/subscription";
+    public static final String ALL_SUBSCRIPTIONS = "/subscriptions/overview";
+    public static final String SUBSCRIBE_PERIOD = "/players/{id}/subscription/period";
 
     /**
      * Турниры игрока.
