@@ -1,4 +1,4 @@
-package ru.pulsecore.app.tournament.api.player;
+package ru.pulsecore.app.tournament.application.player;
 
 
 import lombok.RequiredArgsConstructor;

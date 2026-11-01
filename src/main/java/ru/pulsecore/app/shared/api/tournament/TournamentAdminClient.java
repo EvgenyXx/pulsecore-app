@@ -1,4 +1,4 @@
-package ru.pulsecore.app.admin.client;
+package ru.pulsecore.app.shared.api.tournament;
 
 import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface TournamentClient {
+public interface TournamentAdminClient {
 
     /**
      * Пересчитывает заработок игрока за указанный период.
@@ -41,7 +41,6 @@ public interface TournamentClient {
 
     List<AdminTournamentResponse> getTournamentsByDate(LocalDate date);
 
-    AdminTournamentResponse getTournamentById(Long id);
 
     AdminTournamentResponse updateTournament(Long id, UpdateTournamentRequest request);
 }

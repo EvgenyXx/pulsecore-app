@@ -10,7 +10,7 @@ import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.tournament.application.earnings.sum.SumService;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.ScheduledReportProjection;
 
 import java.time.LocalDateTime;
@@ -24,7 +24,7 @@ public class ScheduledReportProcessor {
 
     private final ScheduledReportService reportService;
     private final MailDispatcher mailDispatcher;
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final SumService sumService;
 
     public void processReport() {

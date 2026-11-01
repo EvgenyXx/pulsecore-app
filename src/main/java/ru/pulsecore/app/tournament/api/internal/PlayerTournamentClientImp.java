@@ -1,10 +1,10 @@
-package ru.pulsecore.app.tournament.infrastructure.internal;
+package ru.pulsecore.app.tournament.api.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.player.client.TournamentClient;
+import ru.pulsecore.app.shared.api.tournament.TournamentPlayerClient;
 import ru.pulsecore.app.shared.dto.response.PriorityLeagueResponse;
-import ru.pulsecore.app.tournament.api.player.TournamentPrimaryLeagueService;
+import ru.pulsecore.app.tournament.application.player.TournamentPrimaryLeagueService;
 import ru.pulsecore.app.tournament.infrastructure.repository.ChatMessageRepository;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class PlayerTournamentClientImp implements TournamentClient {
+public class PlayerTournamentClientImp implements TournamentPlayerClient {
 
     private final ChatMessageRepository chatMessageRepository;
     private final TournamentPrimaryLeagueService tournamentPrimaryLeagueService;

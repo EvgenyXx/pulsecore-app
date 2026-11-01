@@ -3,14 +3,14 @@ package ru.pulsecore.app.admin.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.admin.client.SchedulerClient;
+import ru.pulsecore.app.shared.api.tournament.SchedulerAdminClient;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SchedulerTournamentService {
 
-    private final SchedulerClient schedulerClient;
+    private final SchedulerAdminClient schedulerClient;
 
     public void pause() {
         schedulerClient.pauseScheduler();

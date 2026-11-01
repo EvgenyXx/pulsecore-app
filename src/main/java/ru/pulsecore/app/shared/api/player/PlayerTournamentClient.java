@@ -1,4 +1,4 @@
-package ru.pulsecore.app.tournament.infrastructure.client;
+package ru.pulsecore.app.shared.api.player;
 
 
 import ru.pulsecore.app.player.api.dto.response.SubscriptionInfoDto;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public interface PlayerClient {
+public interface PlayerTournamentClient {
 
     PlayerData getPlayerById(UUID playerId);
 

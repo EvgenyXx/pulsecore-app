@@ -1,4 +1,4 @@
-package ru.pulsecore.app.admin.client;
+package ru.pulsecore.app.shared.api.player;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +8,7 @@ import ru.pulsecore.app.shared.dto.response.*;
 import java.util.List;
 import java.util.UUID;
 
-public interface PlayerClient {
+public interface PlayerAdminClient {
 
     //player
     MessageResponse deletePlayer(UUID playerId);

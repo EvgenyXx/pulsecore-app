@@ -1,4 +1,4 @@
-package ru.pulsecore.app.player.infrastructure.internal;
+package ru.pulsecore.app.player.api.internal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 
 import java.util.List;
 import java.util.Set;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TournamentPlayerClientImpl implements PlayerClient {
+public class TournamentPlayerClientImpl implements PlayerTournamentClient {
 
 
     private final SubscriptionQueryService subscriptionQueryService;

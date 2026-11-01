@@ -1,10 +1,10 @@
-package ru.pulsecore.app.tournament.infrastructure.internal;
+package ru.pulsecore.app.tournament.api.internal;
 
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
-import ru.pulsecore.app.admin.client.TournamentClient;
+import ru.pulsecore.app.shared.api.tournament.TournamentAdminClient;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AdminTournamentClientIml implements TournamentClient {
+public class AdminTournamentClientIml implements TournamentAdminClient {
 
     private final AdminTournamentManagementService adminTournamentManagementService;
     private final AdminCalculateService adminCalculateService;
@@ -50,10 +50,7 @@ public class AdminTournamentClientIml implements TournamentClient {
         return adminTournamentQueryService.getTournamentsByDate(date);
     }
 
-    @Override
-    public AdminTournamentResponse getTournamentById(Long id) {
-        return adminTournamentQueryService.getTournamentById(id);
-    }
+
 
     @Override
     public AdminTournamentResponse updateTournament(Long id, UpdateTournamentRequest request) {

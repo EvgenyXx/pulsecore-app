@@ -1,6 +1,6 @@
-package ru.pulsecore.app.admin.client;
+package ru.pulsecore.app.shared.api.tournament;
 
-public interface SchedulerClient {
+public interface SchedulerAdminClient {
 
     void pauseScheduler();
     void resumeScheduler();

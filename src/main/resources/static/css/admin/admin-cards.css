@@ -41,8 +41,6 @@
     flex-shrink: 0;
 }
 
-/* ===== БЕЙДЖИ ===== */
-
 .badge {
     font-size: 0.7rem;
     padding: 4px 10px;
@@ -71,8 +69,6 @@
     color: #ff9f0a;
     border: 1px solid rgba(255, 159, 10, 0.25);
 }
-
-/* ===== ИНФО-СЕТКА ИГРОКА ===== */
 
 .player-info-grid {
     display: grid;
@@ -135,8 +131,6 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
 }
-
-/* ===== КАРТОЧКИ ТУРНИРОВ ===== */
 
 .tournament-card {
     background: rgba(255, 255, 255, 0.03);
@@ -313,216 +307,604 @@
     box-shadow: 0 0 8px rgba(255, 159, 10, 0.6);
 }
 
-/* ===== ОБЗОР ПОДПИСОК ===== */
+/* =====================================================
+   КАРТОЧКА ИГРОКА
+   ===================================================== */
 
-.subs-overview-top {
+#playerSelected.hidden {
+    display: none !important;
+}
+
+#playerSelected:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    max-height: calc(100dvh - 120px - env(safe-area-inset-bottom, 0px));
+}
+
+#playerSelected .player-card-head {
+    margin: 0;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+}
+
+#playerSelected #playerSelBadges {
+    padding: 10px 18px 0;
+    margin: 0 0 10px;
+    flex-shrink: 0;
+}
+
+#playerSelected #seg-player-card {
+    margin: 0 10px 12px;
+    width: calc(100% - 20px);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: rgba(28, 28, 30, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-sizing: border-box;
+}
+
+#playerSelected #seg-player-card::-webkit-scrollbar {
+    display: none;
+}
+
+#playerSelected #seg-player-card .segmented-btn {
+    flex: 0 0 auto;
+}
+
+#playerSelected .pc-scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 18px 14px;
+    min-height: 0;
+}
+
+#playerSelected .pc-panel {
+    animation: pcFade 0.18s ease;
+}
+
+@keyframes pcFade {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+#playerSelected .player-actions-grid {
+    position: sticky;
+    bottom: 0;
+    background: rgba(28, 28, 30, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 10px 0 4px;
+    margin-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+#playerSelected #playerMsg {
+    margin: 0 0 6px;
+}
+
+.status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-row:last-of-type { border-bottom: none; }
+
+.status-row .player-info-label {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.status-row .status-item {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+}
+
+.player-info-value {
+    font-size: 0.85rem;
+    color: #f5f5f7;
+    font-weight: 500;
+    text-align: right;
+}
+
+.danger-zone {
+    margin-top: 8px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255, 69, 58, 0.05);
+    border: 1px solid rgba(255, 69, 58, 0.15);
+}
+
+.danger-zone-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #ff453a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+/* =====================================================
+   ВХОДЫ — КОМПАКТНЫЙ СПИСОК
+   ===================================================== */
+
+.last-login-widget {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 200px - env(safe-area-inset-bottom, 0px));
+    padding: 16px !important;
+}
+
+.last-login-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+.last-login-info {
+    font-size: 0.8rem;
+    color: #98989d;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+}
+
+.last-login-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-right: 4px;
+    margin-bottom: 12px;
+}
+
+.last-login-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.15s ease, border-color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.last-login-row:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.last-login-row:active {
+    background: rgba(10, 132, 255, 0.08);
+    border-color: rgba(10, 132, 255, 0.25);
+}
+
+.last-login-idx {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #6e6e73;
+    min-width: 22px;
+    text-align: right;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.last-login-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.last-login-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #f5f5f7;
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.last-login-email {
+    font-size: 0.68rem;
+    color: #6e6e73;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.last-login-date {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #98989d;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.last-login-pager {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
 }
 
-.subs-overview-info {
-    font-size: 0.78rem;
+.last-login-page-btn {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: #f5f5f7;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Inter', -apple-system, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.last-login-page-btn:hover:not(:disabled) {
+    background: rgba(10, 132, 255, 0.15);
+    border-color: rgba(10, 132, 255, 0.4);
+    color: #409cff;
+}
+
+.last-login-page-btn:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.last-login-page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.last-login-page-label {
+    font-size: 0.8rem;
     color: #98989d;
-    font-weight: 500;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: center;
+}
+
+.last-login-empty {
+    text-align: center;
+    color: #6e6e73;
+    padding: 20px 12px;
+    font-size: 0.82rem;
+    justify-content: center;
+}
+
+.last-login-error {
+    color: #ff453a;
+    font-weight: 600;
+}
+
+/* =====================================================
+   ОБЗОР ПОДПИСОК — КОПИЯ ВХОДОВ
+   ===================================================== */
+
+.subs-widget {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 200px - env(safe-area-inset-bottom, 0px));
+    padding: 16px !important;
+}
+
+.subs-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+.subs-info {
+    font-size: 0.8rem;
+    color: #98989d;
+    font-weight: 600;
     letter-spacing: -0.2px;
 }
 
-.subs-overview-refresh {
+.subs-refresh {
     width: auto !important;
     padding: 8px 14px !important;
     font-size: 0.78rem !important;
     flex-shrink: 0;
 }
 
-/* Desktop-таблица */
-.subs-table-wrap {
+.subs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     overflow-y: auto;
-    max-height: 520px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(0, 0, 0, 0.15);
+    -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-right: 4px;
+    margin-bottom: 12px;
 }
 
-.subs-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.82rem;
-}
-
-.subs-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: rgba(18, 18, 31, 0.95);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: #98989d;
-    font-weight: 600;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    text-align: left;
-    padding: 12px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.subs-th-idx {
-    width: 36px;
-}
-
-.subs-th-right {
-    text-align: right !important;
-}
-
-.subs-table tbody td {
-    padding: 12px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    vertical-align: middle;
-    color: #f5f5f7;
-}
-
-.subs-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.subs-table tbody tr:hover {
+.subs-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.15s ease, border-color 0.15s ease;
+    flex-shrink: 0;
 }
 
-.subs-name {
-    font-weight: 600;
-    color: #f5f5f7;
-    letter-spacing: -0.2px;
+.subs-row:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-.subs-email {
-    font-size: 0.7rem;
-    color: #6e6e73;
-    margin-top: 2px;
+.subs-row-inactive {
+    opacity: 0.55;
 }
 
 .subs-idx {
+    font-size: 0.7rem;
+    font-weight: 700;
     color: #6e6e73;
-    font-weight: 500;
-    font-size: 0.75rem;
+    min-width: 22px;
+    text-align: right;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
 }
 
-.subs-right {
+.subs-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.subs-row .subs-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #f5f5f7;
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.subs-row .subs-email {
+    font-size: 0.68rem;
+    color: #6e6e73;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.subs-right-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    flex-shrink: 0;
     text-align: right;
 }
 
-.subs-muted {
+.subs-row .subs-date {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #98989d;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.subs-row .subs-days {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #30d158;
+}
+
+.subs-row .subs-muted {
     color: #6e6e73;
 }
 
-.subs-warn {
-    color: #ff9f0a;
-    font-weight: 600;
+.subs-row .subs-warn {
+    color: #ff9f0a !important;
 }
 
-.subs-empty {
+.subs-row.subs-empty {
     text-align: center;
     color: #6e6e73;
-    padding: 24px 12px !important;
+    padding: 20px 12px;
     font-size: 0.82rem;
+    justify-content: center;
 }
 
-/* Mobile-карточки (скрыты по умолчанию на десктопе) */
-.subs-cards {
-    display: none;
-    flex-direction: column;
-    gap: 8px;
+.subs-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
 }
 
-.subs-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
-    padding: 14px;
+.subs-page-btn {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: #f5f5f7;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Inter', -apple-system, sans-serif;
+    cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.subs-card:active {
-    background: rgba(255, 255, 255, 0.06);
+.subs-page-btn:hover:not(:disabled) {
+    background: rgba(10, 132, 255, 0.15);
+    border-color: rgba(10, 132, 255, 0.4);
+    color: #409cff;
 }
 
-.subs-card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 8px;
+.subs-page-btn:active:not(:disabled) {
+    transform: scale(0.97);
 }
 
-.subs-card-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #f5f5f7;
-    letter-spacing: -0.3px;
-    line-height: 1.2;
+.subs-page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
-.subs-card-email {
-    font-size: 0.72rem;
-    color: #6e6e73;
-    margin-top: 3px;
-    word-break: break-all;
-}
-
-.subs-card-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.subs-card-date {
-    font-size: 0.78rem;
-    color: #98989d;
-    font-weight: 500;
-}
-
-.subs-card-days {
+.subs-page-label {
     font-size: 0.8rem;
-    font-weight: 700;
-    color: #f5f5f7;
-    letter-spacing: -0.2px;
-}
-
-.subs-card-days.subs-warn {
-    color: #ff9f0a;
-}
-
-.subs-card-days.subs-muted {
-    color: #6e6e73;
-}
-
-.subs-card-empty {
+    color: #98989d;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 60px;
     text-align: center;
-    color: #6e6e73;
-    font-size: 0.85rem;
-    padding: 24px 12px;
 }
 
-.player-badge-earned {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 12px;
-}
+/* =====================================================
+   МОБИЛКА
+   ===================================================== */
+@media (max-width: 767px) {
 
-.player-badge-name {
-    font-weight: 500;
-}
+    #playerSelected:not(.hidden) {
+        max-height: calc(100dvh - 140px - env(safe-area-inset-bottom, 0px));
+    }
 
-.player-badge-earned-value {
-    color: #30d158;
-    font-weight: 700;
-    font-size: 0.78rem;
-    letter-spacing: -0.2px;
+    #playerSelected .player-card-head {
+        padding: 14px 14px 10px;
+    }
+
+    #playerSelected #playerSelBadges {
+        padding: 8px 14px 0;
+    }
+
+    #playerSelected #seg-player-card {
+        margin: 0 10px 10px;
+        width: calc(100% - 20px);
+    }
+
+    #playerSelected .pc-scroll {
+        padding: 0 14px 12px;
+    }
+
+    .player-info-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .player-info-item {
+        padding: 10px 8px;
+        min-height: 0;
+    }
+
+    .player-info-input {
+        text-align: left;
+        font-size: 16px;
+        padding: 10px 12px;
+        max-width: 100%;
+    }
+
+    .player-info-label {
+        font-size: 0.65rem;
+        margin-bottom: 2px;
+    }
+
+    .player-card-head {
+        gap: 12px;
+    }
+
+    .avatar-circle {
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+    }
+
+    .status-row { padding: 8px 0; }
+    .status-row .player-info-label { font-size: 0.7rem; }
+    .status-row .status-item { padding: 6px 10px; }
+    .status-row .status-checkbox { width: 20px; height: 20px; font-size: 0.75rem; }
+    .status-row .status-label { font-size: 0.8rem; }
+
+    #playerSelected .player-actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #playerSelected .player-actions-grid .btn {
+        width: 100% !important;
+    }
+
+    .last-login-widget {
+        max-height: calc(100dvh - 220px - env(safe-area-inset-bottom, 0px));
+        padding: 14px !important;
+    }
+
+    .last-login-row {
+        padding: 9px 10px;
+        gap: 8px;
+    }
+
+    .last-login-name { font-size: 0.82rem; }
+    .last-login-email { font-size: 0.65rem; }
+    .last-login-date { font-size: 0.7rem; }
+
+    .last-login-page-btn {
+        padding: 11px 12px;
+        font-size: 0.82rem;
+    }
+
+    .subs-widget {
+        max-height: calc(100dvh - 220px - env(safe-area-inset-bottom, 0px));
+        padding: 14px !important;
+    }
+
+    .subs-row {
+        padding: 9px 10px;
+        gap: 8px;
+    }
+
+    .subs-row .subs-name { font-size: 0.82rem; }
+    .subs-row .subs-email { font-size: 0.65rem; }
+    .subs-row .subs-date { font-size: 0.7rem; }
+    .subs-row .subs-days { font-size: 0.65rem; }
+
+    .subs-page-btn {
+        padding: 11px 12px;
+        font-size: 0.82rem;
+    }
 }

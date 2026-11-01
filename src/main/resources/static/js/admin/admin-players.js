@@ -72,7 +72,11 @@ async function refreshPlayerUI(section) {
             subActive = true;
             const expiresDate = new Date(sub.expiresAt);
             const daysLeft = Math.ceil((expiresDate - new Date()) / (1000 * 60 * 60 * 24));
-            badges += `<span class="badge badge-active">Подписка до ${expiresDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`;
+            const expiresStr = expiresDate.toLocaleString('ru-RU', {
+                day: 'numeric', month: 'long', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+            badges += `<span class="badge badge-active">Подписка до ${expiresStr}</span>`;
             badges += `<span class="badge badge-admin">${daysLeft} дн.</span>`;
         } else {
             badges += '<span class="badge badge-inactive">Нет подписки</span>';
@@ -85,59 +89,95 @@ async function refreshPlayerUI(section) {
     if (section === 'sub') {
         document.getElementById('subSelBadges').innerHTML = badges;
         document.getElementById('removeSubBtn').classList.toggle('hidden', !subActive);
-    } else {
+        return;
+    }
+
+    document.getElementById('playerSelBadges').innerHTML = badges;
+
+    document.getElementById('playerGiveSub30').classList.toggle('hidden', false);
+    document.getElementById('playerGiveSub60').classList.toggle('hidden', false);
+    document.getElementById('playerRemoveSub').classList.toggle('hidden', !subActive);
+
+    const showEnable = !subActive && !subExpired && playersCache[selectedPlayerId] && playersCache[selectedPlayerId].expiresAt;
+    document.getElementById('playerEnableSub').classList.toggle('hidden', !showEnable);
+
+    try {
+        const roles = await AdminAPI.getPlayerRoles(selectedPlayerId);
+        if (roles.includes('ROLE_ADMIN')) {
+            badges += ' <span class="badge badge-admin">Админ</span>';
+        }
         document.getElementById('playerSelBadges').innerHTML = badges;
 
-        document.getElementById('playerGiveSub30').classList.toggle('hidden', false);
-        document.getElementById('playerGiveSub60').classList.toggle('hidden', false);
-        document.getElementById('playerRemoveSub').classList.toggle('hidden', !subActive);
-
-        const showEnable = !subActive && !subExpired && playersCache[selectedPlayerId] && playersCache[selectedPlayerId].expiresAt;
-        document.getElementById('playerEnableSub').classList.toggle('hidden', !showEnable);
-
-        try {
-            const roles = await AdminAPI.getPlayerRoles(selectedPlayerId);
+        const toggleBtn = document.getElementById('toggleAdminBtn');
+        if (toggleBtn) {
+            toggleBtn.classList.remove('hidden');
             if (roles.includes('ROLE_ADMIN')) {
-                badges += ' <span class="badge badge-admin">Админ</span>';
+                toggleBtn.textContent = 'Разжаловать';
+                toggleBtn.className = 'btn btn-danger';
+            } else {
+                toggleBtn.textContent = 'Сделать админом';
+                toggleBtn.className = 'btn btn-amber';
             }
-            document.getElementById('playerSelBadges').innerHTML = badges;
+        }
+    } catch (e) {}
 
-            const toggleBtn = document.getElementById('toggleAdminBtn');
-            if (toggleBtn) {
-                toggleBtn.classList.remove('hidden');
-                if (roles.includes('ROLE_ADMIN')) {
-                    toggleBtn.textContent = 'Разжаловать';
-                    toggleBtn.className = 'btn btn-danger';
-                } else {
-                    toggleBtn.textContent = 'Сделать админом';
-                    toggleBtn.className = 'btn btn-amber';
-                }
-            }
-        } catch (e) {}
+    try {
+        const players = await AdminAPI.searchPlayers(selectedPlayerData?.name || '');
+        const playerData = players.find(p => p.id === selectedPlayerId);
+        if (playerData) {
+            selectedPlayerData = playerData;
+            document.getElementById('playerName').value = playerData.name || '';
+            document.getElementById('playerEmail').value = playerData.email || '';
+            document.getElementById('playerLeague').value = playerData.primaryLeague || '';
+            document.getElementById('playerHalls').value = playerData.selectedHalls || '';
+            document.getElementById('playerLiveHalls').value = playerData.liveSelectedHalls || '';
+            setStatusCheckbox('playerPush', playerData.pushEnabled);
+            setStatusCheckbox('playerNotifications', playerData.notificationsEnabled);
+            document.getElementById('playerLastLogin').textContent = formatLastLogin(playerData.lastLoginAt);
+        }
+    } catch (e) {}
 
-        try {
-            const players = await AdminAPI.searchPlayers(selectedPlayerData?.name || '');
-            const playerData = players.find(p => p.id === selectedPlayerId);
-            if (playerData) {
-                selectedPlayerData = playerData;
-                document.getElementById('playerName').value = playerData.name || '';
-                document.getElementById('playerEmail').value = playerData.email || '';
-                document.getElementById('playerLeague').value = playerData.primaryLeague || '';
-                document.getElementById('playerHalls').value = playerData.selectedHalls || '';
-                document.getElementById('playerLiveHalls').value = playerData.liveSelectedHalls || '';
-                setStatusCheckbox('playerPush', playerData.pushEnabled);
-                setStatusCheckbox('playerNotifications', playerData.notificationsEnabled);
-                document.getElementById('playerLastLogin').textContent = formatLastLogin(playerData.lastLoginAt);
-            }
-        } catch (e) {}
+    initPlayerCardSegments();
+}
+
+function initPlayerCardSegments() {
+    const seg = document.getElementById('seg-player-card');
+    if (!seg) return;
+
+    const panels = {
+        main: document.getElementById('pc-main'),
+        sub: document.getElementById('pc-sub'),
+        status: document.getElementById('pc-status'),
+        service: document.getElementById('pc-service')
+    };
+
+    function show(key) {
+        Object.entries(panels).forEach(([k, el]) => {
+            if (el) el.style.display = (k === key) ? 'block' : 'none';
+        });
     }
+
+    seg.querySelectorAll('.segmented-btn').forEach(btn => {
+        btn.onclick = () => {
+            seg.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            show(btn.dataset.pc);
+        };
+    });
+
+    seg.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+    const first = seg.querySelector('[data-pc="main"]');
+    if (first) first.classList.add('active');
+    show('main');
 }
 
 function formatLastLogin(dateStr) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
-    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) + ' ' +
-        d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleString('ru-RU', {
+        day: 'numeric', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
 }
 
 function setStatusCheckbox(prefix, value) {
@@ -176,8 +216,6 @@ function isStatusChecked(prefix) {
     const checkbox = document.getElementById(prefix + 'Checkbox');
     return checkbox ? checkbox.classList.contains('checked') : false;
 }
-
-// ===== ПОДПИСКА =====
 
 export async function giveSub(days) {
     if (!selectedPlayerId) return;
@@ -327,8 +365,6 @@ export async function deletePlayerTournaments() {
     }
 }
 
-// ===== ПЕРЕСИНХРОНИЗАЦИЯ =====
-
 export async function resyncPlayerTournaments() {
     if (!selectedPlayerId) return;
 
@@ -373,15 +409,26 @@ export async function deletePlayerAccount() {
     }
 }
 
-// ===== ОБЗОР ПОДПИСОК =====
+/* =====================================================
+   ОБЗОР ПОДПИСОК — ПАГИНАЦИЯ КАК «ВХОДЫ»
+   ===================================================== */
 
-const subState = { loaded: false, loading: false, items: [] };
+const SUBS_PAGE_SIZE = 20;
+const subsState = {
+    loaded: false,
+    loading: false,
+    items: [],
+    page: 0
+};
 
 function fmtDate(dateStr) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
     if (isNaN(d)) return '—';
-    return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return d.toLocaleString('ru-RU', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
 }
 
 function subIsActive(item) {
@@ -407,104 +454,121 @@ function subDaysLeft(item) {
     return Math.max(0, Math.ceil((new Date(expires) - new Date()) / 86400000));
 }
 
-function subStatusBadge(item) {
-    return subIsActive(item)
-        ? '<span class="badge badge-active">Активна</span>'
-        : '<span class="badge badge-inactive">Нет</span>';
-}
-
 function subRowHtml(item, idx) {
     const name = subName(item);
     const email = subEmail(item);
     const expires = subExpires(item);
     const days = subDaysLeft(item);
-    const daysClass = days === null ? 'subs-muted' : (days <= 7 ? 'subs-warn' : '');
+    const daysClass = days === null ? '' : (days <= 7 ? 'subs-warn' : '');
+    const active = subIsActive(item);
 
     return `
-        <tr>
-            <td class="subs-idx">${idx + 1}</td>
-            <td>
-                <div class="subs-name">${name}</div>
-                ${email ? `<div class="subs-email">${email}</div>` : ''}
-            </td>
-            <td>${subStatusBadge(item)}</td>
-            <td class="subs-right">${fmtDate(expires)}</td>
-            <td class="subs-right ${daysClass}">${days === null ? '—' : days + ' дн.'}</td>
-        </tr>
-    `;
-}
-
-function subCardHtml(item) {
-    const name = subName(item);
-    const email = subEmail(item);
-    const expires = subExpires(item);
-    const days = subDaysLeft(item);
-    const daysClass = days === null ? 'subs-muted' : (days <= 7 ? 'subs-warn' : '');
-    const badge = subStatusBadge(item);
-
-    return `
-        <div class="subs-card">
-            <div class="subs-card-top">
-                <div style="min-width:0;flex:1;">
-                    <div class="subs-card-name">${name}</div>
-                    ${email ? `<div class="subs-card-email">${email}</div>` : ''}
-                </div>
-                <div style="flex-shrink:0;">${badge}</div>
+        <div class="subs-row ${active ? '' : 'subs-row-inactive'}">
+            <span class="subs-idx">${idx + 1}</span>
+            <div class="subs-main">
+                <span class="subs-name">${name}</span>
+                ${email ? `<span class="subs-email">${email}</span>` : ''}
             </div>
-            <div class="subs-card-bottom">
-                <span class="subs-card-date">До ${fmtDate(expires)}</span>
-                <span class="subs-card-days ${daysClass}">${days === null ? '—' : days + ' дн.'}</span>
+            <div class="subs-right-col">
+                ${active
+                    ? `<span class="subs-date">${fmtDate(expires)}</span>`
+                    : `<span class="subs-date subs-muted">—</span>`}
+                ${days !== null
+                    ? `<span class="subs-days ${daysClass}">${days} дн.</span>`
+                    : ''}
             </div>
         </div>
     `;
 }
 
 function renderSubsEmpty(text, isError = false) {
-    const cls = isError ? 'subs-empty subs-warn' : 'subs-empty';
-    const cardCls = isError ? 'subs-card subs-card-empty subs-warn' : 'subs-card subs-card-empty';
+    const list = document.getElementById('subsList');
+    if (!list) return;
+    list.innerHTML = `<div class="subs-row subs-empty ${isError ? 'subs-warn' : ''}">${text}</div>`;
+}
 
-    const tableEl = document.getElementById('subsOverviewBody');
-    if (tableEl) tableEl.innerHTML = `<tr><td colspan="5" class="${cls}">${text}</td></tr>`;
+function renderSubsPage() {
+    const list = document.getElementById('subsList');
+    const info = document.getElementById('subsOverviewInfo');
+    const pageLabel = document.getElementById('subsPage');
+    const prevBtn = document.getElementById('subsPrev');
+    const nextBtn = document.getElementById('subsNext');
 
-    const cardsEl = document.getElementById('subsOverviewCards');
-    if (cardsEl) cardsEl.innerHTML = `<div class="${cardCls}">${text}</div>`;
+    const items = subsState.items;
+    const totalPages = Math.max(1, Math.ceil(items.length / SUBS_PAGE_SIZE));
+    const page = Math.min(subsState.page, totalPages - 1);
+    subsState.page = page;
+
+    const start = page * SUBS_PAGE_SIZE;
+    const pageItems = items.slice(start, start + SUBS_PAGE_SIZE);
+
+    if (pageItems.length === 0) {
+        renderSubsEmpty('Подписок нет');
+    } else {
+        list.innerHTML = pageItems.map((it, i) => subRowHtml(it, start + i)).join('');
+    }
+
+    if (info) {
+        const activeCount = items.filter(subIsActive).length;
+        info.textContent = `Всего: ${items.length} · Активных: ${activeCount}`;
+    }
+    if (pageLabel) pageLabel.textContent = `${page + 1} / ${totalPages}`;
+    if (prevBtn) prevBtn.disabled = page <= 0;
+    if (nextBtn) nextBtn.disabled = page >= totalPages - 1;
 }
 
 export async function loadSubscriptionsOverview(force = false) {
-    const tableEl = document.getElementById('subsOverviewBody');
-    const cardsEl = document.getElementById('subsOverviewCards');
-    const info = document.getElementById('subsOverviewInfo');
-    if (!tableEl && !cardsEl) return;
+    const list = document.getElementById('subsList');
+    if (!list) return;
 
-    if (subState.loaded && !force) return;
-    if (subState.loading) return;
+    if (subsState.loaded && !force) {
+        renderSubsPage();
+        return;
+    }
+    if (subsState.loading) return;
 
-    subState.loading = true;
+    subsState.loading = true;
     renderSubsEmpty('Загрузка...');
-    if (info) info.textContent = 'Загрузка...';
 
     try {
         const data = await AdminAPI.getAllSubscriptions();
-        const list = Array.isArray(data) ? data : (data?.content || []);
-        subState.items = list;
-        subState.loaded = true;
+        const raw = Array.isArray(data) ? data : (data?.content || []);
 
-        if (list.length === 0) {
-            renderSubsEmpty('Подписок нет');
-        } else {
-            if (tableEl) tableEl.innerHTML = list.map(subRowHtml).join('');
-            if (cardsEl) cardsEl.innerHTML = list.map(subCardHtml).join('');
-        }
+        const items = raw.slice().sort((a, b) => {
+            const aAct = subIsActive(a) ? 1 : 0;
+            const bAct = subIsActive(b) ? 1 : 0;
+            if (aAct !== bAct) return bAct - aAct;
+            const aExp = subExpires(a) ? new Date(subExpires(a)).getTime() : 0;
+            const bExp = subExpires(b) ? new Date(subExpires(b)).getTime() : 0;
+            return bExp - aExp;
+        });
 
-        if (info) {
-            const activeCount = list.filter(subIsActive).length;
-            info.textContent = `Всего: ${list.length} · Активных: ${activeCount}`;
-        }
+        subsState.items = items;
+        subsState.loaded = true;
+        subsState.page = 0;
+
+        renderSubsPage();
     } catch (e) {
         renderSubsEmpty(`Ошибка: ${e.message || 'не удалось загрузить'}`, true);
+        const info = document.getElementById('subsOverviewInfo');
         if (info) info.textContent = 'Ошибка загрузки';
     } finally {
-        subState.loading = false;
+        subsState.loading = false;
+    }
+}
+
+export function subsPrevPage() {
+    if (subsState.page > 0) {
+        subsState.page -= 1;
+        renderSubsPage();
+    }
+}
+
+export function subsNextPage() {
+    const totalPages = Math.max(1, Math.ceil(subsState.items.length / SUBS_PAGE_SIZE));
+    if (subsState.page < totalPages - 1) {
+        subsState.page += 1;
+        renderSubsPage();
     }
 }
 

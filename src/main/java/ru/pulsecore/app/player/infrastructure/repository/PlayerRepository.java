@@ -36,7 +36,7 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     @Query("""
             SELECT p.name AS name, p.lastLoginAt AS lastLoginAt
             FROM Player p
-            ORDER BY p.lastLoginAt DESC
+            ORDER BY p.lastLoginAt DESC NULLS LAST
             """)
     Page<PlayerLastLoginProjection> getLastLogin(Pageable pageable);
 

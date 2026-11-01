@@ -87,19 +87,76 @@ function togglePassword(id, btn) {
     btn.textContent = isPwd ? "Скрыть" : "Показать";
 }
 
-// Хелпер: безопасно читает {message, type} из ответа бэка.
+// Хелпер: безопасно читает {message, type, telegramUrl} из ответа бэка.
 // Если тело не JSON (прокси, HTML-ошибка) — возвращает fallback.
 async function readError(res, fallback) {
     try {
         const data = await res.json();
         return {
             message: data.message || fallback,
-            type: data.type || null
+            type: data.type || null,
+            telegramUrl: data.telegramUrl || null
         };
     } catch (_) {
-        return { message: fallback, type: null };
+        return { message: fallback, type: null, telegramUrl: null };
     }
 }
+
+// ===== TELEGRAM =====
+
+function openTelegram(telegramUrl, text = '') {
+    if (!telegramUrl) return;
+    const username = telegramUrl
+        .replace(/^https?:\/\/t\.me\//, '')
+        .replace(/^@/, '');
+
+    const native = `tg://resolve?domain=${username}` +
+        (text ? `&text=${encodeURIComponent(text)}` : '');
+    const web = `https://t.me/${username}`;
+
+    const now = Date.now();
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = native;
+    document.body.appendChild(iframe);
+    setTimeout(() => iframe.remove(), 2000);
+
+    setTimeout(() => {
+        if (Date.now() - now < 2000 && !document.hidden) {
+            window.location.href = web;
+        }
+    }, 1500);
+}
+
+function showTelegramButton(errEl, telegramUrl) {
+    // Удаляем старую кнопку, если была
+    const old = document.getElementById('regTelegramBtn');
+    if (old) old.remove();
+
+    if (!telegramUrl || !errEl) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'regTelegramBtn';
+    btn.className = 'auth-btn auth-btn-ghost';
+    btn.style.marginTop = '8px';
+    btn.textContent = 'Написать в Telegram';
+
+    btn.addEventListener('click', () => {
+        const ln = document.getElementById('regLastName')?.value?.trim() || '';
+        const fn = document.getElementById('regFirstName')?.value?.trim() || '';
+        const email = document.getElementById('regEmail')?.value?.trim() || '';
+        const msg =
+            `Здравствуйте! Хочу привязать профиль.\n` +
+            `Имя: ${fn} ${ln}\n` +
+            `Email: ${email}`;
+        openTelegram(telegramUrl, msg);
+    });
+
+    errEl.parentNode.insertBefore(btn, errEl.nextSibling);
+}
+
+// ===== ОСНОВНЫЕ ФУНКЦИИ =====
 
 async function login() {
     const email = document.getElementById("loginEmailInput").value.trim();
@@ -147,6 +204,10 @@ async function register() {
     const err = document.getElementById("regError");
     err.classList.add("hidden");
 
+    // Убираем старую кнопку Telegram (если была от прошлой попытки)
+    const oldTg = document.getElementById('regTelegramBtn');
+    if (oldTg) oldTg.remove();
+
     if (!ln || !fn || !email || !password) {
         err.textContent = "Заполните все поля";
         err.classList.remove("hidden");
@@ -171,13 +232,20 @@ async function register() {
         });
 
         if (!r.ok) {
-            const {message, type} = await readError(r, "Ошибка регистрации");
+            const {message, type, telegramUrl} = await readError(r, "Ошибка регистрации");
+
             if (type === "OAUTH_EMAIL" || type === "OAUTH_ONLY") {
                 err.innerHTML = `${message}<br><br><a href="/oauth2/authorization/yandex" style="color: #ff9f0a;">Войти через Яндекс</a>`;
             } else {
                 err.textContent = message;
             }
             err.classList.remove("hidden");
+
+            // Если бэк прислал telegramUrl — показываем кнопку
+            if (telegramUrl) {
+                showTelegramButton(err, telegramUrl);
+            }
+
             btn.disabled = false;
             btn.textContent = "Зарегистрироваться";
             return;
@@ -352,7 +420,6 @@ export function bindLoginUI() {
     setupCodeInputs("verifyCodeInputs");
     setupCodeInputs("resetCodeInputs");
 
-    // Вешаем на window — разметка в index.html использует onclick="..."
     window.showLogin = showLogin;
     window.showRegister = showRegister;
     window.showVerify = showVerify;
@@ -364,4 +431,5 @@ export function bindLoginUI() {
     window.verifyEmail = verifyEmail;
     window.forgotPassword = forgotPassword;
     window.resetPassword = resetPassword;
+    window.openTelegram = openTelegram;
 }

@@ -1,11 +1,11 @@
-package ru.pulsecore.app.admin.client;
+package ru.pulsecore.app.shared.api.payment;
 
 
 
 import ru.pulsecore.app.shared.dto.response.PricesResponse;
 
 
-public interface PaymentClient {
+public interface PaymentAdminClient {
 
     PricesResponse updatePrices(int oneMonth,int twoMonths);
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.admin.api.AdminApi;
-import ru.pulsecore.app.admin.client.PaymentClient;
+import ru.pulsecore.app.shared.api.payment.PaymentAdminClient;
 import ru.pulsecore.app.shared.dto.response.PricesResponse;
 import ru.pulsecore.app.admin.api.dto.request.UpdatePricesRequest;
 
@@ -18,7 +18,7 @@ import ru.pulsecore.app.admin.api.dto.request.UpdatePricesRequest;
 @AdminController
 public class AdminPriceController {
 
-    private final PaymentClient paymentClient;
+    private final PaymentAdminClient paymentClient;
 
     @Operation(summary = "Обновить цены подписки")
     @PutMapping(AdminApi.UPDATE_SUB_PRICE)

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
-import ru.pulsecore.app.admin.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerAdminClient;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.SubscriptionStatusResponse;
 
@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdminSubscriptionController {
 
-    private final PlayerClient playerClient;
+    private final PlayerAdminClient playerClient;
 
     @Operation(summary = "Активировать подписку игроку")
     @PostMapping(AdminApi.SUBSCRIBE)

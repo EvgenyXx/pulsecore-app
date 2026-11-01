@@ -1,16 +1,16 @@
-package ru.pulsecore.app.payment.infrastructure.internal;
+package ru.pulsecore.app.payment.api.internal;
 
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.admin.client.PaymentClient;
+import ru.pulsecore.app.shared.api.payment.PaymentAdminClient;
 import ru.pulsecore.app.payment.application.price.PriceService;
 import ru.pulsecore.app.shared.dto.response.PricesResponse;
 
 @Service
 @RequiredArgsConstructor
-public class AdminPaymentClientImp implements PaymentClient {
+public class AdminPaymentClientImp implements PaymentAdminClient {
 
     private final PriceService priceService;
 

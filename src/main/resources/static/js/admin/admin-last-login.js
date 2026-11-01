@@ -8,26 +8,22 @@ let isLoading = false;
 
 const PAGE_SIZE = 20;
 
-/**
- * Загрузить страницу последних входов.
- * @param {number} page — номер страницы (с 0)
- */
 export async function loadLastLogin(page = 0) {
     if (isLoading) return;
     isLoading = true;
 
-    const tbody = document.getElementById('lastLoginTableBody');
+    const list = document.getElementById('lastLoginList');
     const info = document.getElementById('lastLoginInfo');
     const pageLabel = document.getElementById('lastLoginPage');
     const prevBtn = document.getElementById('lastLoginPrev');
     const nextBtn = document.getElementById('lastLoginNext');
 
-    if (!tbody) {
+    if (!list) {
         isLoading = false;
         return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="2" class="text-center text-zinc-500 py-4">Загрузка...</td></tr>';
+    list.innerHTML = '<div class="last-login-row last-login-empty">Загрузка...</div>';
     if (info) info.textContent = 'Загрузка...';
 
     try {
@@ -35,9 +31,11 @@ export async function loadLastLogin(page = 0) {
 
         currentPage = data.number ?? 0;
         totalPages = data.totalPages ?? 0;
+        const items = data.content || [];
+        const total = data.totalElements ?? 0;
 
-        if (!data.content || data.content.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="2" class="text-center text-zinc-500 py-4">Нет данных</td></tr>';
+        if (items.length === 0) {
+            list.innerHTML = '<div class="last-login-row last-login-empty">Нет данных</div>';
             if (info) info.textContent = 'Всего: 0';
             if (pageLabel) pageLabel.textContent = '— / —';
             if (prevBtn) prevBtn.disabled = true;
@@ -45,25 +43,33 @@ export async function loadLastLogin(page = 0) {
             return;
         }
 
-        tbody.innerHTML = data.content.map(item => `
-            <tr class="border-b border-white/5">
-                <td class="py-2 text-zinc-200">${escapeHtml(item.name || '—')}</td>
-                <td class="py-2 text-right text-zinc-400">${formatLastLogin(item.lastLoginAt)}</td>
-            </tr>
-        `).join('');
+        const startIdx = currentPage * PAGE_SIZE;
 
-        if (info) info.textContent = `Всего: ${data.totalElements ?? 0}`;
+        list.innerHTML = items.map((item, i) => {
+            const name = escapeHtml(item.name || '—');
+            const email = item.email ? escapeHtml(item.email) : '';
+            const last = formatLastLogin(item.lastLoginAt);
+            const num = startIdx + i + 1;
+            return `
+                <div class="last-login-row">
+                    <span class="last-login-idx">${num}</span>
+                    <div class="last-login-main">
+                        <span class="last-login-name">${name}</span>
+                        ${email ? `<span class="last-login-email">${email}</span>` : ''}
+                    </div>
+                    <span class="last-login-date">${last}</span>
+                </div>
+            `;
+        }).join('');
 
-        if (pageLabel) {
-            pageLabel.textContent = `${currentPage + 1} / ${Math.max(totalPages, 1)}`;
-        }
-
+        if (info) info.textContent = `Всего: ${total}`;
+        if (pageLabel) pageLabel.textContent = `${currentPage + 1} / ${Math.max(totalPages, 1)}`;
         if (prevBtn) prevBtn.disabled = currentPage <= 0;
         if (nextBtn) nextBtn.disabled = currentPage >= totalPages - 1;
 
     } catch (e) {
         console.error('Ошибка загрузки последних входов:', e);
-        tbody.innerHTML = '<tr><td colspan="2" class="text-center text-red-400 py-4">Ошибка загрузки</td></tr>';
+        list.innerHTML = '<div class="last-login-row last-login-empty last-login-error">Ошибка загрузки</div>';
         if (info) info.textContent = 'Ошибка';
         if (prevBtn) prevBtn.disabled = true;
         if (nextBtn) nextBtn.disabled = true;
@@ -84,9 +90,6 @@ export function loadLastLoginNext() {
     }
 }
 
-/**
- * Форматирует дату последнего входа.
- */
 function formatLastLogin(dateStr) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);

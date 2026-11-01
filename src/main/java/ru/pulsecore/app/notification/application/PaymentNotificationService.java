@@ -7,7 +7,7 @@ import ru.pulsecore.app.notification.application.mail.MailTemplateService;
 import ru.pulsecore.app.notification.application.mail.UniversalMailSender;
 import ru.pulsecore.app.notification.application.mail.template.MailFormat;
 import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
-import ru.pulsecore.app.notification.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerNotificationClient;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.SubscriptionWebhookEvent;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class PaymentNotificationService {
 
-    private final PlayerClient playerClient;
+    private final PlayerNotificationClient playerClient;
     private final UniversalMailSender mailSender;
     private final MailTemplateService templates;
 

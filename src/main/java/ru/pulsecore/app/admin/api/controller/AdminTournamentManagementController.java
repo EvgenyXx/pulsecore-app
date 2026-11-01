@@ -30,11 +30,7 @@ public class AdminTournamentManagementController {
         return ResponseEntity.ok(tournamentAdminService.getByDate(targetDate));
     }
 
-    @Operation(summary = "Получить турнир по ID")
-    @GetMapping(AdminApi.TOURNAMENT_BY_ID)
-    public ResponseEntity<AdminTournamentResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(tournamentAdminService.getById(id));
-    }
+
 
     @Operation(summary = "Обновить турнир")
     @PatchMapping(AdminApi.TOURNAMENT_UPDATE)

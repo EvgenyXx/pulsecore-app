@@ -9,7 +9,7 @@ import ru.pulsecore.app.player.api.dto.response.LastResultDto;
 import ru.pulsecore.app.player.api.dto.response.SubscriptionInfoDto;
 import ru.pulsecore.app.player.api.dto.response.UpcomingLineupDto;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.repository.LineupRepository;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class PlayerSummaryService {
 
 
-    private final PlayerClient  playerClient;
+    private final PlayerTournamentClient playerClient;
     private final TournamentResultRepository tournamentResultRepository;
     private final LineupRepository lineupRepository;
 

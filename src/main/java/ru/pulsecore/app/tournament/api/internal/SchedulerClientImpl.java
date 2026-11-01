@@ -1,13 +1,13 @@
-package ru.pulsecore.app.tournament.infrastructure.internal;
+package ru.pulsecore.app.tournament.api.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.admin.client.SchedulerClient;
+import ru.pulsecore.app.shared.api.tournament.SchedulerAdminClient;
 import ru.pulsecore.app.tournament.application.admin.SchedulerPauseService;
 
 @Service
 @RequiredArgsConstructor
-public class SchedulerClientImpl implements SchedulerClient {
+public class SchedulerClientImpl implements SchedulerAdminClient {
 
     private final SchedulerPauseService schedulerPauseService;
 

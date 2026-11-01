@@ -7,16 +7,20 @@ import org.springframework.http.HttpStatus;
 public class BaseException extends RuntimeException {
     private final HttpStatus status;
     private final String type;
+    private final String telegramUrl;
 
     public BaseException(HttpStatus status, String message) {
-        super(message);
-        this.status = status;
-        this.type = null;
+        this(status, message, null, null);
     }
 
     public BaseException(HttpStatus status, String message, String type) {
+        this(status, message, type, null);
+    }
+
+    public BaseException(HttpStatus status, String message, String type, String telegramUrl) {
         super(message);
         this.status = status;
         this.type = type;
+        this.telegramUrl = telegramUrl;
     }
 }

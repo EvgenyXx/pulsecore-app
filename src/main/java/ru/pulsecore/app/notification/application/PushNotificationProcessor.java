@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.notification.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerNotificationClient;
 import ru.pulsecore.app.notification.infrastructure.config.NotificationAsyncConfig;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.PushContent;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class PushNotificationProcessor {
 
     private final WebPushService webPushService;
-    private final PlayerClient playerClient;
+    private final PlayerNotificationClient playerClient;
 
     @Async(NotificationAsyncConfig.PUSH_EXECUTOR)
     public void dispatch(PushNotificationEvent event) {

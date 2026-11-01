@@ -1,7 +1,6 @@
-package ru.pulsecore.app.notification.client;
+package ru.pulsecore.app.shared.api.player;
 
 
-import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 
 import java.util.List;
@@ -11,8 +10,10 @@ import java.util.UUID;
 /**
  * Клиент модуля игроков
  */
-public interface PlayerClient {
+public interface PlayerNotificationClient {
+
     boolean togglePushEnabled(UUID playerId);
+
     boolean isPushEnabled(UUID playerId);
 
     PlayerData getPlayer(UUID playerId);

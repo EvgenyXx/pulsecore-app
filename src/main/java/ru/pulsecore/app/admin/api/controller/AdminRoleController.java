@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
-import ru.pulsecore.app.admin.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerAdminClient;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +16,7 @@ import java.util.UUID;
 @AdminController
 public class AdminRoleController {
 
-    private final PlayerClient playerClient;
+    private final PlayerAdminClient playerClient;
 
     @Operation(summary = "Выдать роль игроку")
     @PostMapping(AdminApi.ROLES_GRANT)
