@@ -3,7 +3,7 @@ package ru.pulsecore.app.admin.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.admin.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerAdminClient;
 import ru.pulsecore.app.notification.application.mail.MailType;
 import ru.pulsecore.app.notification.application.mail.context.BroadcastContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BroadcastService {
 
-    private final PlayerClient playerClient;
+    private final PlayerAdminClient playerClient;
     private final MailDispatcher mailDispatcher;
 
     public BroadcastResult broadcast(String message) {

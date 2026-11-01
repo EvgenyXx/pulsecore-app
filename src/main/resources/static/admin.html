@@ -15,6 +15,7 @@
     <meta name="apple-mobile-web-app-title" content="PulseCore">
     <link rel="icon" type="image/png" href="/img.png">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/bottom-tab.css">
     <link rel="stylesheet" href="/css/admin/admin-base.css">
     <link rel="stylesheet" href="/css/admin/admin-sidebar.css">
     <link rel="stylesheet" href="/css/admin/admin-accordion.css">
@@ -26,6 +27,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
+<div id="appRoot" style="display:contents">
 <div class="bg-mesh"></div><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div>
 <div class="nebula"></div>
 <div class="stars" id="starsContainer"></div>
@@ -55,7 +57,6 @@
                     <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                     <span>Обзор подписок</span>
                 </button>
-
                 <div class="submenu-group-label">Операции</div>
                 <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this)">
                     <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
@@ -127,57 +128,48 @@
 
 <main class="flex-1 relative z-10 p-3 sm:p-6 md:p-7 lg:p-9 xl:p-10">
     <div class="max-w-3xl mx-auto">
-        <div class="compare-header md:hidden">
-            <h1 class="compare-title">Админ-панель</h1>
-            <div class="compare-actions">
-                <a href="/dashboard" class="period-toggle">Назад</a>
-                <button class="period-toggle" onclick="toggleAdminSheet()">Меню</button>
-            </div>
-        </div>
 
         <div id="section-players" class="hidden">
-            <div class="sheet-accordion" id="acc-players-wrapper" style="display:none;">
-                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-players')">
-                    <span class="sheet-section-title" style="margin:0;">Поиск и управление</span>
-                    <svg class="sheet-accordion-arrow" id="arrow-acc-players" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="segmented" id="seg-players">
+                <button class="segmented-btn active" data-sub="acc-players">Поиск</button>
+                <button class="segmented-btn" data-sub="acc-subs-overview">Подписки</button>
+                <button class="segmented-btn" data-sub="acc-calculate">Расчёт</button>
+                <button class="segmented-btn" data-sub="acc-broadcast">Рассылка</button>
+                <button class="segmented-btn" data-sub="acc-last-login">Входы</button>
+            </div>
+
+            <div class="sub-panel" id="acc-players-panel">
+                <div class="widget-card">
+                    <input id="playerSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('players')">
+                    <div id="playerSearchResults" class="mt-3 space-y-1 hidden"></div>
                 </div>
-                <div class="sheet-accordion-body" id="acc-players" style="display:none;">
-                    <div class="widget-card">
-                        <input id="playerSearchInput" type="text" placeholder="Поиск игрока..." class="input" oninput="searchPlayers('players')">
-                        <div id="playerSearchResults" class="mt-3 space-y-1 hidden"></div>
+
+                <div id="playerSelected" class="widget-card mt-3 hidden">
+                    <div class="player-card-head">
+                        <div class="avatar-circle"><span id="playerAvatar"></span></div>
+                        <div style="min-width:0;flex:1;">
+                            <p class="text-white font-semibold" id="playerSelName"></p>
+                            <p class="text-xs text-zinc-500" id="playerSelEmail"></p>
+                        </div>
                     </div>
-                    <div id="playerSelected" class="widget-card mt-3 hidden">
-                        <div class="player-card-head">
-                            <div class="avatar-circle"><span id="playerAvatar"></span></div>
-                            <div>
-                                <p class="text-white font-semibold" id="playerSelName"></p>
-                                <p class="text-xs text-zinc-500" id="playerSelEmail"></p>
-                            </div>
-                        </div>
+                    <div class="flex gap-1 flex-wrap mb-3" id="playerSelBadges"></div>
 
-                        <div class="flex gap-1 flex-wrap mb-3" id="playerSelBadges"></div>
+                    <div class="segmented" id="seg-player-card">
+                        <button class="segmented-btn active" data-pc="main">Основное</button>
+                        <button class="segmented-btn" data-pc="sub">Подписка</button>
+                        <button class="segmented-btn" data-pc="status">Статусы</button>
+                        <button class="segmented-btn" data-pc="service">Служебное</button>
+                    </div>
 
-                        <div class="subscription-controls mb-3">
-                            <div class="subscription-row">
-                                <button onclick="giveSub(30)" id="playerGiveSub30" class="sub-btn sub-btn-emerald">30 дней</button>
-                                <button onclick="giveSub(60)" id="playerGiveSub60" class="sub-btn sub-btn-indigo">60 дней</button>
-                            </div>
-                            <div class="subscription-row">
-                                <input id="playerCustomDays" type="number" min="1" max="3650" placeholder="Дней" class="sub-input">
-                                <button onclick="giveSubCustom()" class="sub-btn sub-btn-amber">Выдать</button>
-                            </div>
-                            <button onclick="enableSub()" id="playerEnableSub" class="sub-btn sub-btn-emerald hidden">Включить подписку</button>
-                            <button onclick="removeSub()" id="playerRemoveSub" class="sub-btn sub-btn-danger hidden">Отключить подписку</button>
-                        </div>
-
+                    <div class="pc-panel" id="pc-main">
                         <div class="player-info-grid">
                             <div class="player-info-item" style="grid-column: 1 / -1;">
                                 <span class="player-info-label">Имя</span>
-                                <input id="playerName" class="player-info-input" type="text" placeholder="Имя игрока" style="width: 100%; min-height: 45px; font-size: 16px; padding: 10px 15px;">
+                                <input id="playerName" class="player-info-input" type="text" placeholder="Имя игрока">
                             </div>
                             <div class="player-info-item" style="grid-column: 1 / -1;">
                                 <span class="player-info-label">Email</span>
-                                <input id="playerEmail" class="player-info-input" type="email" placeholder="Email" style="width: 100%; min-height: 45px; font-size: 16px; padding: 10px 15px;">
+                                <input id="playerEmail" class="player-info-input" type="email" placeholder="Email">
                             </div>
                             <div class="player-info-item">
                                 <span class="player-info-label">Лига</span>
@@ -187,234 +179,230 @@
                                 <span class="player-info-label">Избранные залы</span>
                                 <input id="playerHalls" class="player-info-input" type="text" placeholder="—">
                             </div>
-                            <div class="player-info-item">
+                            <div class="player-info-item" style="grid-column: 1 / -1;">
                                 <span class="player-info-label">Live залы</span>
                                 <input id="playerLiveHalls" class="player-info-input" type="text" placeholder="—">
                             </div>
-                            <div class="player-info-item">
-                                <span class="player-info-label">Push</span>
-                                <div class="status-item" onclick="togglePlayerStatus('playerPush')">
-                                    <span class="status-checkbox" id="playerPushCheckbox"></span>
-                                    <span class="status-label" id="playerPushLabel">Выкл</span>
-                                </div>
-                            </div>
-                            <div class="player-info-item">
-                                <span class="player-info-label">Уведомления</span>
-                                <div class="status-item" onclick="togglePlayerStatus('playerNotifications')">
-                                    <span class="status-checkbox" id="playerNotificationsCheckbox"></span>
-                                    <span class="status-label" id="playerNotificationsLabel">Выкл</span>
-                                </div>
-                            </div>
-                            <div class="player-info-item">
-                                <span class="player-info-label">Последний вход</span>
-                                <span id="playerLastLogin" class="player-info-value">—</span>
-                            </div>
-
-                            <div class="player-info-item" style="grid-column: 1 / -1; display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
-                                <div style="flex: 1; min-width: 130px;">
-                                    <span class="player-info-label">С даты</span>
-                                    <input id="resyncFrom" type="date" class="player-info-input" style="width: 100%;">
-                                </div>
-                                <div style="flex: 1; min-width: 130px;">
-                                    <span class="player-info-label">По дату</span>
-                                    <input id="resyncTo" type="date" class="player-info-input" style="width: 100%;">
-                                </div>
-                                <button onclick="resyncPlayerTournaments()" class="btn btn-indigo" style="height: 42px; flex-shrink: 0;">Пересинхронизация</button>
-                            </div>
                         </div>
-
                         <div class="player-actions-grid mt-3">
-                            <button onclick="updatePlayer()" class="btn btn-indigo">Сохранить</button>
-                            <button onclick="togglePlayerRole('ROLE_ADMIN')" id="toggleAdminBtn" class="btn btn-amber hidden">Сделать админом</button>
-                            <button onclick="deletePlayerTournaments()" class="btn btn-danger">Удалить турниры</button>
-                            <button onclick="deletePlayerAccount()" class="btn btn-danger">Удалить аккаунт</button>
-                        </div>
-                        <p id="playerMsg" class="text-xs text-center mt-2 hidden"></p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ОБЗОР ПОДПИСОК -->
-            <div class="sheet-accordion" id="acc-subs-overview-wrapper" style="display:none;">
-                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-subs-overview')">
-                    <span class="sheet-section-title" style="margin:0;">Обзор подписок</span>
-                    <svg class="sheet-accordion-arrow" id="arrow-acc-subs-overview" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </div>
-                <div class="sheet-accordion-body" id="acc-subs-overview" style="display:none;">
-                    <div class="widget-card">
-                        <div class="subs-overview-top">
-                            <span class="subs-overview-info" id="subsOverviewInfo">Загрузка...</span>
-                            <button onclick="refreshSubscriptionsOverview()" class="btn btn-ghost subs-overview-refresh">Обновить</button>
-                        </div>
-
-                        <!-- Desktop: таблица -->
-                        <div class="subs-table-wrap">
-                            <table class="subs-table">
-                                <thead>
-                                <tr>
-                                    <th class="subs-th-idx">#</th>
-                                    <th>Игрок</th>
-                                    <th>Статус</th>
-                                    <th class="subs-th-right">До</th>
-                                    <th class="subs-th-right">Осталось</th>
-                                </tr>
-                                </thead>
-                                <tbody id="subsOverviewBody">
-                                <tr><td colspan="5" class="subs-empty">Загрузка...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Mobile: карточки -->
-                        <div id="subsOverviewCards" class="subs-cards">
-                            <div class="subs-card subs-card-empty">Загрузка...</div>
+                            <button onclick="updatePlayer()" class="btn btn-indigo" style="grid-column: 1 / -1;">Сохранить</button>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="sheet-accordion" id="acc-calculate-wrapper" style="display:none;">
-                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-calculate')">
-                    <span class="sheet-section-title" style="margin:0;">Расчёт</span>
-                    <svg class="sheet-accordion-arrow" id="arrow-acc-calculate" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </div>
-                <div class="sheet-accordion-body" id="acc-calculate" style="display:none;">
-                    <div class="widget-card">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                            <div>
-                                <label class="text-xs text-zinc-400 mb-1 block">Имя игрока</label>
-                                <input id="calcName" type="text" class="input" placeholder="Иван Петров">
+                    <div class="pc-panel" id="pc-sub" style="display:none;">
+                        <div class="subscription-controls">
+                            <div class="subscription-row">
+                                <button onclick="giveSub(30)" id="playerGiveSub30" class="sub-btn sub-btn-emerald">30 дней</button>
+                                <button onclick="giveSub(60)" id="playerGiveSub60" class="sub-btn sub-btn-indigo">60 дней</button>
                             </div>
-                            <div>
-                                <label class="text-xs text-zinc-400 mb-1 block">Дата с</label>
-                                <input id="calcStartDate" type="date" class="input">
+                            <div class="subscription-row">
+                                <input id="playerCustomDays" type="number" min="1" max="3650" placeholder="Дней" class="sub-input">
+                                <button onclick="giveSubCustom()" class="sub-btn sub-btn-amber">Выдать</button>
                             </div>
-                            <div>
-                                <label class="text-xs text-zinc-400 mb-1 block">Дата по</label>
-                                <input id="calcEndDate" type="date" class="input">
-                            </div>
-                        </div>
-                        <button onclick="adminCalculate()" id="calcBtn" class="btn btn-indigo">Посчитать</button>
-                        <p id="calcError" class="text-xs text-red-400 text-center mt-2 hidden"></p>
-                        <div id="calcLoading" class="text-center py-4 hidden">
-                            <div class="spinner"></div>
-                        </div>
-                        <div id="calcResult" class="hidden mt-4">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="flex-1 text-center">
-                                    <p class="text-xs text-zinc-400">Всего</p>
-                                    <p class="text-xl font-bold text-white" id="calcTotal">0 ₽</p>
+
+                            <!-- НОВОЕ: выдать на период -->
+                            <div class="sub-period">
+                                <div class="sub-period-dates">
+                                    <div class="sub-period-field">
+                                        <label>С</label>
+                                        <input id="subPeriodStart" type="date">
+                                    </div>
+                                    <div class="sub-period-field">
+                                        <label>По</label>
+                                        <input id="subPeriodEnd" type="date">
+                                    </div>
                                 </div>
-                                <div class="flex-1 text-center">
-                                    <p class="text-xs text-zinc-400">Турниров</p>
-                                    <p class="text-xl font-bold text-white" id="calcCount">0</p>
-                                </div>
+                                <button onclick="giveSubPeriod()" class="sub-btn sub-btn-indigo sub-period-btn">
+                                    Выдать на период
+                                </button>
                             </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-xs">
-                                    <thead>
-                                    <tr class="text-zinc-500">
-                                        <th class="text-left py-1">#</th>
-                                        <th class="text-left py-1">Дата</th>
-                                        <th class="text-left py-1">Турнир</th>
-                                        <th class="text-right py-1">Сумма</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="calcTableBody"></tbody>
-                                </table>
+
+                            <button onclick="enableSub()" id="playerEnableSub" class="sub-btn sub-btn-emerald hidden">Включить подписку</button>
+                            <button onclick="removeSub()" id="playerRemoveSub" class="sub-btn sub-btn-danger hidden">Отключить подписку</button>
+                        </div>
+                    </div>
+
+                    <div class="pc-panel" id="pc-status" style="display:none;">
+                        <div class="status-row">
+                            <span class="player-info-label">Push</span>
+                            <div class="status-item" onclick="togglePlayerStatus('playerPush')">
+                                <span class="status-checkbox" id="playerPushCheckbox"></span>
+                                <span class="status-label" id="playerPushLabel">Выкл</span>
                             </div>
                         </div>
+                        <div class="status-row">
+                            <span class="player-info-label">Уведомления</span>
+                            <div class="status-item" onclick="togglePlayerStatus('playerNotifications')">
+                                <span class="status-checkbox" id="playerNotificationsCheckbox"></span>
+                                <span class="status-label" id="playerNotificationsLabel">Выкл</span>
+                            </div>
+                        </div>
+                        <div class="status-row">
+                            <span class="player-info-label">Последний вход</span>
+                            <span id="playerLastLogin" class="player-info-value">—</span>
+                        </div>
+                        <div class="player-actions-grid mt-3">
+                            <button onclick="togglePlayerRole('ROLE_ADMIN')" id="toggleAdminBtn" class="btn btn-amber hidden" style="grid-column: 1 / -1;">Сделать админом</button>
+                        </div>
+                    </div>
+
+                    <div class="pc-panel" id="pc-service" style="display:none;">
+                        <div class="resync-row" style="margin-bottom:12px;">
+                            <div class="resync-date-field">
+                                <span class="resync-date-caption">С</span>
+                                <input id="resyncFrom" type="date" class="resync-date-input">
+                            </div>
+                            <div class="resync-date-field">
+                                <span class="resync-date-caption">По</span>
+                                <input id="resyncTo" type="date" class="resync-date-input">
+                            </div>
+                        </div>
+                        <button onclick="resyncPlayerTournaments()" class="btn btn-indigo" style="width:100%;margin-bottom:12px;">Пересинхронизация</button>
+                        <div class="danger-zone">
+                            <p class="danger-zone-title">Удаление</p>
+                            <button onclick="deletePlayerTournaments()" class="btn btn-danger" style="width:100%;margin-bottom:8px;">Удалить турниры</button>
+                            <button onclick="deletePlayerAccount()" class="btn btn-danger" style="width:100%;">Удалить аккаунт</button>
+                        </div>
+                    </div>
+
+                    <p id="playerMsg" class="text-xs text-center mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <div class="sub-panel" id="acc-subs-overview-panel" style="display:none;">
+                <div class="widget-card subs-widget">
+                    <div class="subs-top">
+                        <span class="subs-info" id="subsOverviewInfo">Загрузка...</span>
+                        <button onclick="refreshSubscriptionsOverview()" class="btn btn-ghost subs-refresh">Обновить</button>
+                    </div>
+                    <div class="subs-list" id="subsList">
+                        <div class="subs-row subs-empty">Загрузка...</div>
+                    </div>
+                    <div class="subs-pager">
+                        <button class="subs-page-btn" id="subsPrev" onclick="subsPrevPage()" type="button">Назад</button>
+                        <span class="subs-page-label" id="subsPage">— / —</span>
+                        <button class="subs-page-btn" id="subsNext" onclick="subsNextPage()" type="button">Вперёд</button>
                     </div>
                 </div>
             </div>
 
-            <div class="sheet-accordion" id="acc-broadcast-wrapper" style="display:none;">
-                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-broadcast')">
-                    <span class="sheet-section-title" style="margin:0;">Рассылка</span>
-                    <svg class="sheet-accordion-arrow" id="arrow-acc-broadcast" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </div>
-                <div class="sheet-accordion-body" id="acc-broadcast" style="display:none;">
-                    <div class="widget-card">
-                        <textarea id="broadcastMessage" class="input" rows="4" placeholder="Текст рассылки..."></textarea>
-                        <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-indigo mt-3">Отправить</button>
-                        <p id="broadcastMsg" class="text-xs text-center mt-2 hidden"></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sheet-accordion" id="acc-last-login-wrapper" style="display:none;">
-                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-last-login')">
-                    <span class="sheet-section-title" style="margin:0;">Последние входы</span>
-                    <svg class="sheet-accordion-arrow" id="arrow-acc-last-login" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </div>
-                <div class="sheet-accordion-body" id="acc-last-login" style="display:none;">
-                    <div class="widget-card">
-                        <div class="mb-3">
-                            <span class="text-xs text-zinc-400" id="lastLoginInfo">Загрузка...</span>
+            <div class="sub-panel" id="acc-calculate-panel" style="display:none;">
+                <div class="widget-card">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="text-xs text-zinc-400 mb-1 block">Имя игрока</label>
+                            <input id="calcName" type="text" class="input" placeholder="Иван Петров">
                         </div>
-
-                        <div class="overflow-y-auto" id="lastLoginScroll" style="max-height: 500px;">
+                        <div>
+                            <label class="text-xs text-zinc-400 mb-1 block">Дата с</label>
+                            <input id="calcStartDate" type="date" class="input">
+                        </div>
+                        <div>
+                            <label class="text-xs text-zinc-400 mb-1 block">Дата по</label>
+                            <input id="calcEndDate" type="date" class="input">
+                        </div>
+                    </div>
+                    <button onclick="adminCalculate()" id="calcBtn" class="btn btn-indigo">Посчитать</button>
+                    <p id="calcError" class="text-xs text-red-400 text-center mt-2 hidden"></p>
+                    <div id="calcLoading" class="text-center py-4 hidden">
+                        <div class="spinner"></div>
+                    </div>
+                    <div id="calcResult" class="hidden mt-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="flex-1 text-center">
+                                <p class="text-xs text-zinc-400">Всего</p>
+                                <p class="text-xl font-bold text-white" id="calcTotal">0 ₽</p>
+                            </div>
+                            <div class="flex-1 text-center">
+                                <p class="text-xs text-zinc-400">Турниров</p>
+                                <p class="text-xl font-bold text-white" id="calcCount">0</p>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
                             <table class="w-full text-xs">
                                 <thead>
                                 <tr class="text-zinc-500">
-                                    <th class="text-left py-2 sticky top-0" style="background: #12121f;">Имя</th>
-                                    <th class="text-right py-2 sticky top-0" style="background: #12121f;">Последний вход</th>
+                                    <th class="text-left py-1">#</th>
+                                    <th class="text-left py-1">Дата</th>
+                                    <th class="text-left py-1">Турнир</th>
+                                    <th class="text-right py-1">Сумма</th>
                                 </tr>
                                 </thead>
-                                <tbody id="lastLoginTableBody">
-                                <tr><td colspan="2" class="text-center text-zinc-500 py-4">Загрузка...</td></tr>
-                                </tbody>
+                                <tbody id="calcTableBody"></tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-panel" id="acc-broadcast-panel" style="display:none;">
+                <div class="widget-card">
+                    <textarea id="broadcastMessage" class="input" rows="4" placeholder="Текст рассылки..."></textarea>
+                    <button onclick="sendBroadcast()" id="broadcastBtn" class="btn btn-indigo mt-3">Отправить</button>
+                    <p id="broadcastMsg" class="text-xs text-center mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <div class="sub-panel" id="acc-last-login-panel" style="display:none;">
+                <div class="widget-card last-login-widget">
+                    <div class="last-login-top">
+                        <span class="last-login-info" id="lastLoginInfo">Загрузка...</span>
+                    </div>
+                    <div class="last-login-list" id="lastLoginList">
+                        <div class="last-login-row last-login-empty">Загрузка...</div>
+                    </div>
+                    <div class="last-login-pager">
+                        <button class="last-login-page-btn" id="lastLoginPrev" onclick="loadLastLoginPrev()" type="button">Назад</button>
+                        <span class="last-login-page-label" id="lastLoginPage">— / —</span>
+                        <button class="last-login-page-btn" id="lastLoginNext" onclick="loadLastLoginNext()" type="button">Вперёд</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="section-subscriptions" class="hidden">
-            <div class="sheet-accordion" id="acc-prices-wrapper" style="display:none;">
-                <div class="sheet-accordion-header" onclick="toggleAccordion('acc-prices')">
-                    <span class="sheet-section-title" style="margin:0;">Управление ценами</span>
-                    <svg class="sheet-accordion-arrow" id="arrow-acc-prices" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="widget-card">
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div><label class="text-xs text-zinc-400 mb-1 block">1 мес (₽)</label><input id="price1Input" type="number" min="1" class="input"></div>
+                    <div><label class="text-xs text-zinc-400 mb-1 block">2 мес (₽)</label><input id="price2Input" type="number" min="1" class="input"></div>
                 </div>
-                <div class="sheet-accordion-body" id="acc-prices" style="display:none;">
-                    <div class="widget-card">
-                        <div class="grid grid-cols-2 gap-3 mb-3">
-                            <div><label class="text-xs text-zinc-400 mb-1 block">1 мес (₽)</label><input id="price1Input" type="number" min="1" class="input"></div>
-                            <div><label class="text-xs text-zinc-400 mb-1 block">2 мес (₽)</label><input id="price2Input" type="number" min="1" class="input"></div>
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <button onclick="loadCurrentPrices()" class="btn btn-ghost">Загрузить текущие</button>
-                            <button onclick="updatePrices()" id="updatePricesBtn" class="btn btn-amber">Сохранить</button>
-                        </div>
-                        <p id="pricesMsg" class="text-xs text-center mt-2 hidden"></p>
-                    </div>
+                <div class="flex flex-col gap-2">
+                    <button onclick="loadCurrentPrices()" class="btn btn-ghost">Загрузить текущие</button>
+                    <button onclick="updatePrices()" id="updatePricesBtn" class="btn btn-amber">Сохранить</button>
                 </div>
+                <p id="pricesMsg" class="text-xs text-center mt-2 hidden"></p>
             </div>
         </div>
 
         <div id="section-tournaments" class="hidden">
-            <div class="widget-card">
-                <div class="flex items-center gap-2 mb-3">
-                    <input type="date" id="tournamentDateInput" class="input w-auto" onchange="loadTournaments(this.value)">
-                    <span id="tournamentDateLabel" class="text-xs text-zinc-400"></span>
-                </div>
-                <div id="tournamentList">
-                    <p class="text-center text-zinc-500 py-8">Загрузка...</p>
+            <div class="segmented" id="seg-tournaments">
+                <button class="segmented-btn active" data-sub="scheduler">Шедулеры</button>
+                <button class="segmented-btn" data-sub="tournaments">Турниры</button>
+            </div>
+
+            <div id="sub-scheduler" class="sub-panel">
+                <div class="widget-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <p class="text-white font-semibold">Планировщик</p>
+                            <p id="schedulerStatusText" class="text-xs text-zinc-400">Загрузка...</p>
+                        </div>
+                        <span id="schedulerStatusDot" class="scheduler-dot"></span>
+                    </div>
+                    <button id="schedulerToggleBtn" class="btn btn-amber" onclick="toggleScheduler()">Приостановить</button>
                 </div>
             </div>
-        </div>
 
-        <div id="section-scheduler" class="hidden">
-            <div class="widget-card">
-                <div class="flex items-center justify-between mb-3">
-                    <div>
-                        <p class="text-white font-semibold">Планировщик</p>
-                        <p id="schedulerStatusText" class="text-xs text-zinc-400">Загрузка...</p>
+            <div id="sub-tournaments" class="sub-panel" style="display:none;">
+                <div class="widget-card">
+                    <div class="flex items-center gap-2 mb-3">
+                        <input type="date" id="tournamentDateInput" class="input w-auto" onchange="loadTournaments(this.value)">
+                        <span id="tournamentDateLabel" class="text-xs text-zinc-400"></span>
                     </div>
-                    <span id="schedulerStatusDot" class="scheduler-dot"></span>
+                    <div id="tournamentList">
+                        <p class="text-center text-zinc-500 py-8">Загрузка...</p>
+                    </div>
                 </div>
-                <button id="schedulerToggleBtn" class="btn btn-amber" onclick="toggleScheduler()">Приостановить</button>
             </div>
         </div>
 
@@ -440,75 +428,7 @@
 
     </div>
 </main>
-
-<div class="period-sheet-overlay" id="adminSheetOverlay" onclick="toggleAdminSheet()">
-    <div class="period-sheet" onclick="event.stopPropagation()">
-        <div class="period-sheet-handle"></div>
-
-        <div class="sheet-accordion">
-            <div class="sheet-accordion-header" onclick="toggleSubmenu('submenu-mobile-players')">
-                <span class="sheet-section-title" style="margin:0;">Игроки</span>
-                <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-players" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="sheet-accordion-body" id="submenu-mobile-players" style="display:none;">
-                <div class="submenu-group-label">Управление</div>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-players', this); toggleAdminSheet()">
-                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <span>Поиск и управление</span>
-                </button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-subs-overview', this); toggleAdminSheet()">
-                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                    <span>Обзор подписок</span>
-                </button>
-                <div class="submenu-group-label">Операции</div>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-calculate', this); toggleAdminSheet()">
-                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
-                    <span>Расчёт</span>
-                </button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-broadcast', this); toggleAdminSheet()">
-                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
-                    <span>Рассылка</span>
-                </button>
-                <button class="submenu-btn" onclick="selectAction('players', 'acc-last-login', this); toggleAdminSheet()">
-                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span>Последние входы</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="sheet-accordion">
-            <div class="sheet-accordion-header" onclick="toggleSubmenu('submenu-mobile-subscriptions')">
-                <span class="sheet-section-title" style="margin:0;">Подписки</span>
-                <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-subscriptions" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="sheet-accordion-body" id="submenu-mobile-subscriptions" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('subscriptions', 'acc-prices', this); toggleAdminSheet()">
-                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    <span>Управление ценами</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="sheet-accordion">
-            <div class="sheet-accordion-header" onclick="toggleSubmenu('submenu-mobile-tournaments')">
-                <span class="sheet-section-title" style="margin:0;">Турниры</span>
-                <svg class="sheet-accordion-arrow" id="arrow-submenu-mobile-tournaments" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="sheet-accordion-body" id="submenu-mobile-tournaments" style="display:none;">
-                <button class="submenu-btn" onclick="selectAction('tournaments', null, this); toggleAdminSheet()">
-                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
-                    <span>Управление турнирами</span>
-                </button>
-                <button class="submenu-btn" onclick="selectAction('scheduler', null, this); toggleAdminSheet()">
-                    <svg class="submenu-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span>Управление шедулерами</span>
-                </button>
-            </div>
-        </div>
-
-        <button class="period-sheet-btn" onclick="showSection('stats'); toggleAdminSheet()">Статистика</button>
-    </div>
-</div>
+</div><!-- /#appRoot -->
 
 <script type="module" src="/js/admin/admin-app.js"></script>
 <script type="module">
@@ -521,14 +441,24 @@
     window.loadSchedulerStatus = loadSchedulerStatus;
     window.toggleScheduler = toggleScheduler;
 
+    import { subsPrevPage, subsNextPage, giveSubPeriod } from '/js/admin/admin-players.js';
+    window.subsPrevPage = subsPrevPage;
+    window.subsNextPage = subsNextPage;
+    window.giveSubPeriod = giveSubPeriod;
+
     import { initBurgerMenu } from '/js/modules/burger-menu.js';
     import { initRoleCheck } from '/js/modules/role-check.js';
     import { initStars } from '/js/modules/stars.js';
     import { initThemePicker, toggleThemeSheet, setTheme } from '/js/modules/theme-picker.js';
+    import { initAdminBottomTab, initAdminSegments } from '/js/admin/admin-bottom-tab.js';
+
     initBurgerMenu();
     initRoleCheck();
     initStars();
     initThemePicker();
+    initAdminBottomTab('players');
+    initAdminSegments();
+
     window.toggleThemeSheet = toggleThemeSheet;
     window.setTheme = setTheme;
 </script>

@@ -8,7 +8,7 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
 import ru.pulsecore.app.tournament.application.roster.change.info.TournamentHashChecker;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 import ru.pulsecore.app.tournament.infrastructure.util.NumberUtils;
 
@@ -24,7 +24,7 @@ public class TournamentChangeService {
 
     private final TournamentDataProvider tournamentDataProvider;
     private final TournamentHashChecker tournamentHashChecker;
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
 
     @Transactional
     public void checkChangedTournaments() {

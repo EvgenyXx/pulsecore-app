@@ -5,7 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.player.client.TournamentClient;
+import ru.pulsecore.app.shared.api.tournament.TournamentPlayerClient;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import ru.pulsecore.app.shared.dto.response.PriorityLeagueResponse;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class PrimaryLeagueService {
 
     private final PlayerRepository playerRepository;
-    private final TournamentClient tournamentClient;
+    private final TournamentPlayerClient tournamentClient;
 
 
     @Transactional

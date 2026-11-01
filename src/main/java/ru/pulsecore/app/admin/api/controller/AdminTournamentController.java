@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.admin.api.dto.request.AdminCalculateRequest;
 import ru.pulsecore.app.admin.api.dto.request.ResyncRequest;
-import ru.pulsecore.app.admin.client.TournamentClient;
+import ru.pulsecore.app.shared.api.tournament.TournamentAdminClient;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
 
@@ -24,7 +24,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdminTournamentController {
 
-    private final TournamentClient tournamentClient;
+    private final TournamentAdminClient tournamentClient;
 
     @Operation(summary = "Рассчитать результаты игрока за период")
     @PostMapping(AdminApi.TOURNAMENT_CALCULATE)

@@ -4,9 +4,20 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import ru.pulsecore.app.tournament.infrastructure.util.NumberUtils;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+
+/**
+ * DTO, описывающее перенос игрока из одного турнира в другой.
+ *
+ * <p>Создается при парсинге, когда игрок исчезает из старого турнира и появляется в новом.
+ * Содержит данные обоих турниров (from/to) и флаги изменений (время, дата, зал и т.д.).</p>
+ *
+ * <p>Используется для формирования письма игроку (шаблон "Было/Стало/Изменения")
+ * в {@link ru.pulsecore.app.tournament.application.roster.change.remove.PlayerChangeNotificationPublisher}.</p>
+ */
 public record TransferInfo(
         TournamentDto from,
         TournamentDto to,
@@ -40,16 +51,19 @@ public record TransferInfo(
                 .toList();
     }
 
-    public boolean hasAnyChange() {
-        return timeChanged || dateChanged || leagueChanged || hallChanged;
+
+    private static String parseTime(TournamentDto tournament) {
+        if (tournament.getDate() == null) {
+            return null;
+        }
+        return DateTimeUtils.parseTime(tournament.getDate().getDate());
     }
 
-    private static String parseTime(TournamentDto t) {
-        return t.getDate() != null ? DateTimeUtils.parseTime(t.getDate().getDate()) : null;
-    }
-
-    private static java.time.LocalDate parseDate(TournamentDto t) {
-        return t.getDate() != null ? DateTimeUtils.parseDate(t.getDate().getDate()) : null;
+    private static LocalDate parseDate(TournamentDto tournament) {
+        if (tournament.getDate() == null) {
+            return null;
+        }
+        return DateTimeUtils.parseDate(tournament.getDate().getDate());
     }
 
     private static Integer extractHall(TournamentDto t) {

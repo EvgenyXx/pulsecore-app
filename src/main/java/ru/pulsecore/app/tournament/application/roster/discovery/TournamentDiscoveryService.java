@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 public class TournamentDiscoveryService {
 
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final TournamentDataProvider tournamentDataProvider;
     private final TournamentFilter filter;
     private final TournamentSaver saver;

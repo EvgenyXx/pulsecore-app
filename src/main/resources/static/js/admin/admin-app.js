@@ -38,6 +38,7 @@ window.loadLastLoginPrev = loadLastLoginPrev;
 window.loadLastLoginNext = loadLastLoginNext;
 window.logout = logout;
 window.showSection = showSection;
+window.showAdminSection = showAdminSection;
 window.toggleAdminSheet = toggleAdminSheet;
 window.closeAdminSheet = closeAdminSheet;
 window.toggleSubmenu = toggleSubmenu;
@@ -50,6 +51,7 @@ function getTodayString() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+/* ===== ДЕСКТОП: старая навигация через sidebar ===== */
 function showSection(s) {
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
 
@@ -78,17 +80,44 @@ function showSection(s) {
     }
 
     if (s === 'scheduler') loadSchedulerStatus();
-
     if (s === 'stats') loadPageStats();
 }
 
-function toggleAdminSheet() {
-    document.getElementById('adminSheetOverlay').classList.toggle('open');
+/* ===== МОБИЛКА: панель снизу вызывает эту ===== */
+function showAdminSection(tabId) {
+    document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('hidden'));
+    const target = document.getElementById(`section-${tabId}`);
+    if (target) target.classList.remove('hidden');
+
+    if (tabId === 'tournaments') {
+        // По умолчанию открыт шедулер
+        const subT = document.getElementById('sub-tournaments');
+        const subS = document.getElementById('sub-scheduler');
+        if (subT) subT.style.display = 'none';
+        if (subS) subS.style.display = 'block';
+
+        const seg = document.getElementById('seg-tournaments');
+        if (seg) {
+            seg.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+            const first = seg.querySelector('[data-sub="scheduler"]');
+            if (first) first.classList.add('active');
+        }
+
+        if (window.loadSchedulerStatus) window.loadSchedulerStatus();
+    }
+
+    if (tabId === 'subscriptions') {
+        if (window.loadCurrentPrices) window.loadCurrentPrices();
+    }
+
+    if (tabId === 'stats' && window.loadPageStats) window.loadPageStats();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function closeAdminSheet() {
-    document.getElementById('adminSheetOverlay').classList.remove('open');
-}
+/* ===== Заглушки для десктопного selectAction ===== */
+function toggleAdminSheet() {}
+function closeAdminSheet() {}
 
 function toggleSubmenu(id) {
     const sub = document.getElementById(id);

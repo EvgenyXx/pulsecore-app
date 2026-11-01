@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.DailyIncomeResponse;
 import ru.pulsecore.app.player.api.dto.response.MonthlyIncomeResponse;
 
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.application.mapping.AnalyticsMapper;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.DailyIncomeProjection;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.MonthlyIncomeProjection;
@@ -28,7 +28,7 @@ public class TournamentIncomeService {
 
     private final TournamentResultRepository repository;
     private final AnalyticsMapper mapper;
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
 
     public MonthlyIncomeResponse getMonthlyIncome(UUID playerId, int year) {
         var player = playerClient.getPlayerById(playerId);
