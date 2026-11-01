@@ -10,7 +10,7 @@ import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriCon
 import ru.pulsecore.app.notification.application.mail.context.MailContext;
 import ru.pulsecore.app.notification.application.mail.template.MailFormat;
 import ru.pulsecore.app.notification.application.mail.template.MailTemplate;
-import ru.pulsecore.app.notification.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerNotificationClient;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import java.util.stream.Collectors;
 
@@ -21,7 +21,7 @@ public class BrokenUriStrategy implements MailStrategy {
 
     private final UniversalMailSender mailSender;
     private final MailTemplateService templates;
-    private final PlayerClient  playerClient;
+    private final PlayerNotificationClient playerClient;
 
     @Override
     public MailType type() {

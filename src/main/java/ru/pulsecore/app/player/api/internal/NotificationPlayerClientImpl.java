@@ -1,9 +1,9 @@
-package ru.pulsecore.app.player.infrastructure.internal;
+package ru.pulsecore.app.player.api.internal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.notification.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerNotificationClient;
 import ru.pulsecore.app.player.application.player.PlayerPushService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class NotificationPlayerClientImpl implements PlayerClient {
+public class NotificationPlayerClientImpl implements PlayerNotificationClient {
 
 
     private final PlayerSearchService searchService;

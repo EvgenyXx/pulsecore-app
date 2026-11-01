@@ -1,4 +1,4 @@
-package ru.pulsecore.app.player.infrastructure.internal;
+package ru.pulsecore.app.player.api.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,11 +9,13 @@ import ru.pulsecore.app.player.application.admin.PlayerUpdateAdminService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;
 import ru.pulsecore.app.shared.dto.response.*;
-import ru.pulsecore.app.admin.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerAdminClient;
 import ru.pulsecore.app.player.application.analytic.PageViewStatsService;
 import ru.pulsecore.app.player.application.admin.PlayerAdminService;
 import ru.pulsecore.app.player.application.role.RoleManagementService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionCommandService;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +25,7 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
-public class AdminPlayerClientImpl implements PlayerClient {
+public class AdminPlayerClientImpl implements PlayerAdminClient {
 
 
     private final PlayerAdminService playerAdminService;
@@ -113,5 +115,11 @@ public class AdminPlayerClientImpl implements PlayerClient {
     @Override
     public List<PageViewStats> getStats(int days) {
         return pageViewStatsService.getStats(days);
+    }
+
+
+    @Override
+    public MessageResponse activateSubscriptionForPeriod(UUID playerId,LocalDateTime start, LocalDateTime end) {
+        return subscriptionCommandService.activateSubscriptionForPeriod(playerId, start, end);
     }
 }

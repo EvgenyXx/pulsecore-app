@@ -12,7 +12,7 @@ import ru.pulsecore.app.tournament.infrastructure.repository.projection.PeriodSt
 import ru.pulsecore.app.player.api.dto.response.SumResponse;
 
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 
 import java.time.LocalDate;
@@ -23,7 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SumService {
 
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final TournamentResultQueryService tournamentResultQueryService;
     private final TournamentResultRepository tournamentResultRepository;
 

@@ -13,7 +13,7 @@ import ru.pulsecore.app.shared.event.PushContent;
 import ru.pulsecore.app.shared.util.PushMessageBuilder;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TournamentCanceledNotificationService {
 
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final PushDispatcher pushDispatcher;
     private final MailDispatcher mailDispatcher;
 

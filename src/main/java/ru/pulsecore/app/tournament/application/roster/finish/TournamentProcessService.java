@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.application.match.TournamentMatchService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
@@ -26,7 +26,7 @@ public class TournamentProcessService {
 
     private final TournamentResultProcessor resultProcessor;
     private final TournamentRepository tournamentRepository;
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final TournamentMatchService matchService;
 
     public List<TournamentResultEntity> processTournament(

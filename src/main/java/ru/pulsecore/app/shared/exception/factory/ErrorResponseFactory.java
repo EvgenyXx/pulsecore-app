@@ -17,6 +17,7 @@ public final class ErrorResponseFactory {
                 .error(e.getStatus().getReasonPhrase())
                 .message(e.getMessage())
                 .type(e.getType())
+                .telegramUrl(e.getTelegramUrl())
                 .timestamp(LocalDateTime.now())
                 .build());
     }

@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.application.roster.reminder;
 
 
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import java.time.ZoneId;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public class MoscowReminderService extends RegionalReminderService {
 
     public MoscowReminderService(PlayerNotificationRepository notificationRepository,
-                                 PlayerClient playerClient,
+                                 PlayerTournamentClient playerClient,
                                  ReminderNotificationSender notificationSender) {
         super(notificationRepository, playerClient, notificationSender);
     }

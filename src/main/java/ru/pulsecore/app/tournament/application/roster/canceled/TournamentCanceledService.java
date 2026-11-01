@@ -14,7 +14,7 @@ import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.exception.PageNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
@@ -43,7 +43,7 @@ public class TournamentCanceledService {
     private final DocumentLoader documentLoader;
     private final Bucket canceledRateLimiter;
     private final BrokenUriService brokenUriService;
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final AuditWriter auditWriter;
     private final Map<String, Integer> stats = new ConcurrentHashMap<>();
 
@@ -54,7 +54,7 @@ public class TournamentCanceledService {
                                      PlayerNotificationRepository notificationRepository,
                                      DocumentLoader documentLoader,
                                      @Qualifier(RateLimiterConfig.CANCELED_RATE_LIMITER) Bucket canceledRateLimiter,
-                                     BrokenUriService brokenUriService, PlayerClient playerClient, AuditWriter auditWriter) {
+                                     BrokenUriService brokenUriService, PlayerTournamentClient playerClient, AuditWriter auditWriter) {
         this.tournamentRepository = tournamentRepository;
         this.jsonTournamentParser = jsonTournamentParser;
         this.jsonTournamentStatusParser = jsonTournamentStatusParser;

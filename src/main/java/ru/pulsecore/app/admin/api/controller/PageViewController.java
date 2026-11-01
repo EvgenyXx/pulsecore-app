@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.shared.dto.response.PageViewStats;
 import ru.pulsecore.app.shared.dto.response.PlayerPageViewStats;
-import ru.pulsecore.app.admin.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerAdminClient;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PageViewController {
 
-    private final PlayerClient playerClient;
+    private final PlayerAdminClient playerClient;
 
     @Operation(summary = "Статистика по страницам")
     @GetMapping(AdminApi.PAGE_VIEWS_STATS)

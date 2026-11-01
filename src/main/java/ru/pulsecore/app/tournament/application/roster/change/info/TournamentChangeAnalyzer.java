@@ -7,7 +7,7 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.change.remove.PlayerReplacementService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
@@ -20,7 +20,7 @@ public class TournamentChangeAnalyzer {
 
     private final TournamentRepository tournamentRepository;
     private final PlayerNotificationRepository notificationRepository;
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final PlayerReplacementService replacementService;
     private final TournamentScheduleChangeService scheduleChangeService;
 

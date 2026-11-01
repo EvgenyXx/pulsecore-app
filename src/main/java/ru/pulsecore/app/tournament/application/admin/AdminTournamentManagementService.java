@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.application.cascade.TournamentCascadeSyncService;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentResultRepository;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public class AdminTournamentManagementService {
 
     private final TournamentResultRepository tournamentResultRepository;
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final TournamentCascadeSyncService cascadeSyncService;
     private final TournamentRepository tournamentRepository;
     private final PlayerNotificationRepository playerNotificationRepository;

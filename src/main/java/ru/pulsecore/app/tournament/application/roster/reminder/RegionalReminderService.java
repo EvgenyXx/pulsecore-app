@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 
 import java.time.LocalDate;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public abstract class RegionalReminderService {
 
     private final PlayerNotificationRepository notificationRepository;
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final ReminderNotificationSender reminderNotificationSender;
 
     protected abstract List<Integer> getHalls();

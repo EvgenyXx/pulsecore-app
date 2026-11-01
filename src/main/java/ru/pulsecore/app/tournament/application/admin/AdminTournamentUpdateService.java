@@ -11,6 +11,8 @@ import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.exception.TournamentNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,15 +23,25 @@ public class AdminTournamentUpdateService {
     private final AdminTournamentQueryService queryService;
 
     @Transactional
-    public AdminTournamentResponse update(Long id, UpdateTournamentRequest request) {
-        log.info("Обновление турнира id={}", id);
+public AdminTournamentResponse update(Long id, UpdateTournamentRequest request) {
+    log.info("Обновление турнира id={}", id);
 
-        TournamentEntity tournament = tournamentRepository.findById(id)
-                .orElseThrow(() -> new TournamentNotFoundException(id.toString()));
+    TournamentEntity tournament = tournamentRepository.findById(id)
+            .orElseThrow(() -> new TournamentNotFoundException(id.toString()));
 
-        mapper.updateEntity(request, tournament);
-        tournamentRepository.save(tournament);
+    mapper.updateEntity(request, tournament);
+    tournamentRepository.saveAndFlush(tournament);
 
-        return queryService.getTournamentById(id);
-    }
+    return new AdminTournamentResponse(
+            tournament.getId(),
+            tournament.getLink(),
+            tournament.getDate(),
+            tournament.getTime(),
+            tournament.isStarted(),
+            tournament.isFinished(),
+            tournament.isCancelled(),
+            tournament.isProcessed(),
+            List.of()
+    );
+}
 }

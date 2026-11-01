@@ -64,6 +64,14 @@ export const AdminAPI = {
     enableSubscription: (playerId) =>
         apiRequest(`/admin/players/${playerId}/subscription/enable`, { method: 'POST' }),
 
+    // ===== НОВОЕ: выдать подписку на период =====
+    activateSubscriptionForPeriod: (playerId, start, end) =>
+        apiRequest(`/admin/players/${playerId}/subscription/period`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ start, end })
+        }),
+
     // ===== ОБНОВЛЕНИЕ ИГРОКА =====
     updatePlayer: (playerId, data) =>
         apiRequest(`/admin/players/${playerId}`, {

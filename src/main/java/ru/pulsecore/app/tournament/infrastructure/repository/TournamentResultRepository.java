@@ -139,4 +139,8 @@ public interface TournamentResultRepository extends JpaRepository<TournamentResu
             ) t
             """, nativeQuery = true)
     double getPlayerAverageLastGames(@Param("playerId") UUID playerId, @Param("limit") int limit);
+
+
+    @Query("SELECT r FROM TournamentResultEntity r WHERE r.tournament.id IN :ids")
+    List<TournamentResultEntity> findByTournamentIds(@Param("ids") List<Long> ids);
 }

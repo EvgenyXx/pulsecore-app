@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.application.mapper.SubscriptionMapper;
 import ru.pulsecore.app.player.application.player.PlayerCommandService;
-import ru.pulsecore.app.player.client.TournamentClient;
+import ru.pulsecore.app.shared.api.tournament.TournamentPlayerClient;
 import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import ru.pulsecore.app.player.infrastructure.session.SessionService;
 import ru.pulsecore.app.shared.dto.response.LastLoginResponse;
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class PlayerAdminService {
 
     private final PlayerRepository playerRepository;
-    private final TournamentClient tournamentClient;
+    private final TournamentPlayerClient tournamentClient;
     private final RedisIndexedSessionRepository sessionRepository;
     private final SessionService sessionService;
     private final PlayerCommandService playerCommandService;

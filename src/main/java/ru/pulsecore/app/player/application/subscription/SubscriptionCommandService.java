@@ -3,6 +3,7 @@ package ru.pulsecore.app.player.application.subscription;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,9 @@ import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.domain.Subscription;
 import ru.pulsecore.app.player.infrastructure.repository.SubscriptionRepository;
+import ru.pulsecore.app.shared.dto.response.MessageResponse;
+import ru.pulsecore.app.shared.exception.BaseException;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,6 +27,23 @@ public class SubscriptionCommandService {
     private final SubscriptionRepository subscriptionRepository;
     private final PlayerSearchService playerSearchService;
     private final PaymentService paymentService;
+
+    @Transactional
+    public MessageResponse activateSubscriptionForPeriod(UUID playerId, LocalDateTime start, LocalDateTime end) {
+        log.debug("activateSubscriptionForPeriod: playerId={}, start={}, end={}", playerId, start, end);
+        if (start.isAfter(end)) {
+            throw new BaseException(HttpStatus.BAD_REQUEST, "Дата начала позже даты окончания");
+        }
+        Player player = playerSearchService.getById(playerId);
+        Subscription subscription = player.getSubscription();
+        subscription.setStartedAt(start);
+        subscription.setExpiresAt(end);
+        subscriptionRepository.save(subscription);
+
+        return new MessageResponse(
+                String.format("Подписка выдана с %s  по %s", start, end)
+        );
+    }
 
     @CacheEvict(value = CacheNames.SUBSCRIPTION, key = CacheNames.KEY_PLAYER_ID)
     @Transactional

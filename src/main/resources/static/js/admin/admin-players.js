@@ -64,15 +64,22 @@ async function refreshPlayerUI(section) {
     let badges = '';
     let subActive = false;
     let subExpired = false;
+    let subStart = null;
+    let subEnd = null;
 
     try {
         const sub = await AdminAPI.getPlayerSubscription(selectedPlayerId);
         playersCache[selectedPlayerId] = sub;
+
         if (sub && sub.activeNow) {
             subActive = true;
             const expiresDate = new Date(sub.expiresAt);
             const daysLeft = Math.ceil((expiresDate - new Date()) / (1000 * 60 * 60 * 24));
-            badges += `<span class="badge badge-active">Подписка до ${expiresDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`;
+            const expiresStr = expiresDate.toLocaleString('ru-RU', {
+                day: 'numeric', month: 'long', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+            badges += `<span class="badge badge-active">Подписка до ${expiresStr}</span>`;
             badges += `<span class="badge badge-admin">${daysLeft} дн.</span>`;
         } else {
             badges += '<span class="badge badge-inactive">Нет подписки</span>';
@@ -80,64 +87,110 @@ async function refreshPlayerUI(section) {
                 subExpired = new Date(sub.expiresAt) < new Date();
             }
         }
+
+        // Период для инпутов (YYYY-MM-DD)
+        if (sub?.startedAt) subStart = sub.startedAt.slice(0, 10);
+        if (sub?.expiresAt) subEnd = sub.expiresAt.slice(0, 10);
     } catch (e) {}
 
     if (section === 'sub') {
         document.getElementById('subSelBadges').innerHTML = badges;
         document.getElementById('removeSubBtn').classList.toggle('hidden', !subActive);
-    } else {
+        return;
+    }
+
+    document.getElementById('playerSelBadges').innerHTML = badges;
+
+    document.getElementById('playerGiveSub30').classList.toggle('hidden', false);
+    document.getElementById('playerGiveSub60').classList.toggle('hidden', false);
+    document.getElementById('playerRemoveSub').classList.toggle('hidden', !subActive);
+
+    const showEnable = !subActive && !subExpired && playersCache[selectedPlayerId] && playersCache[selectedPlayerId].expiresAt;
+    document.getElementById('playerEnableSub').classList.toggle('hidden', !showEnable);
+
+    // Период — подставить в инпуты
+    const startEl = document.getElementById('subPeriodStart');
+    const endEl = document.getElementById('subPeriodEnd');
+    if (startEl) startEl.value = subStart || '';
+    if (endEl) endEl.value = subEnd || '';
+
+    try {
+        const roles = await AdminAPI.getPlayerRoles(selectedPlayerId);
+        if (roles.includes('ROLE_ADMIN')) {
+            badges += ' <span class="badge badge-admin">Админ</span>';
+        }
         document.getElementById('playerSelBadges').innerHTML = badges;
 
-        document.getElementById('playerGiveSub30').classList.toggle('hidden', false);
-        document.getElementById('playerGiveSub60').classList.toggle('hidden', false);
-        document.getElementById('playerRemoveSub').classList.toggle('hidden', !subActive);
-
-        const showEnable = !subActive && !subExpired && playersCache[selectedPlayerId] && playersCache[selectedPlayerId].expiresAt;
-        document.getElementById('playerEnableSub').classList.toggle('hidden', !showEnable);
-
-        try {
-            const roles = await AdminAPI.getPlayerRoles(selectedPlayerId);
+        const toggleBtn = document.getElementById('toggleAdminBtn');
+        if (toggleBtn) {
+            toggleBtn.classList.remove('hidden');
             if (roles.includes('ROLE_ADMIN')) {
-                badges += ' <span class="badge badge-admin">Админ</span>';
+                toggleBtn.textContent = 'Разжаловать';
+                toggleBtn.className = 'btn btn-danger';
+            } else {
+                toggleBtn.textContent = 'Сделать админом';
+                toggleBtn.className = 'btn btn-amber';
             }
-            document.getElementById('playerSelBadges').innerHTML = badges;
+        }
+    } catch (e) {}
 
-            const toggleBtn = document.getElementById('toggleAdminBtn');
-            if (toggleBtn) {
-                toggleBtn.classList.remove('hidden');
-                if (roles.includes('ROLE_ADMIN')) {
-                    toggleBtn.textContent = 'Разжаловать';
-                    toggleBtn.className = 'btn btn-danger';
-                } else {
-                    toggleBtn.textContent = 'Сделать админом';
-                    toggleBtn.className = 'btn btn-amber';
-                }
-            }
-        } catch (e) {}
+    try {
+        const players = await AdminAPI.searchPlayers(selectedPlayerData?.name || '');
+        const playerData = players.find(p => p.id === selectedPlayerId);
+        if (playerData) {
+            selectedPlayerData = playerData;
+            document.getElementById('playerName').value = playerData.name || '';
+            document.getElementById('playerEmail').value = playerData.email || '';
+            document.getElementById('playerLeague').value = playerData.primaryLeague || '';
+            document.getElementById('playerHalls').value = playerData.selectedHalls || '';
+            document.getElementById('playerLiveHalls').value = playerData.liveSelectedHalls || '';
+            setStatusCheckbox('playerPush', playerData.pushEnabled);
+            setStatusCheckbox('playerNotifications', playerData.notificationsEnabled);
+            document.getElementById('playerLastLogin').textContent = formatLastLogin(playerData.lastLoginAt);
+        }
+    } catch (e) {}
 
-        try {
-            const players = await AdminAPI.searchPlayers(selectedPlayerData?.name || '');
-            const playerData = players.find(p => p.id === selectedPlayerId);
-            if (playerData) {
-                selectedPlayerData = playerData;
-                document.getElementById('playerName').value = playerData.name || '';
-                document.getElementById('playerEmail').value = playerData.email || '';
-                document.getElementById('playerLeague').value = playerData.primaryLeague || '';
-                document.getElementById('playerHalls').value = playerData.selectedHalls || '';
-                document.getElementById('playerLiveHalls').value = playerData.liveSelectedHalls || '';
-                setStatusCheckbox('playerPush', playerData.pushEnabled);
-                setStatusCheckbox('playerNotifications', playerData.notificationsEnabled);
-                document.getElementById('playerLastLogin').textContent = formatLastLogin(playerData.lastLoginAt);
-            }
-        } catch (e) {}
+    initPlayerCardSegments();
+}
+
+function initPlayerCardSegments() {
+    const seg = document.getElementById('seg-player-card');
+    if (!seg) return;
+
+    const panels = {
+        main: document.getElementById('pc-main'),
+        sub: document.getElementById('pc-sub'),
+        status: document.getElementById('pc-status'),
+        service: document.getElementById('pc-service')
+    };
+
+    function show(key) {
+        Object.entries(panels).forEach(([k, el]) => {
+            if (el) el.style.display = (k === key) ? 'block' : 'none';
+        });
     }
+
+    seg.querySelectorAll('.segmented-btn').forEach(btn => {
+        btn.onclick = () => {
+            seg.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            show(btn.dataset.pc);
+        };
+    });
+
+    seg.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+    const first = seg.querySelector('[data-pc="main"]');
+    if (first) first.classList.add('active');
+    show('main');
 }
 
 function formatLastLogin(dateStr) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
-    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) + ' ' +
-        d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleString('ru-RU', {
+        day: 'numeric', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
 }
 
 function setStatusCheckbox(prefix, value) {
@@ -177,96 +230,114 @@ function isStatusChecked(prefix) {
     return checkbox ? checkbox.classList.contains('checked') : false;
 }
 
-// ===== ПОДПИСКА =====
+function showPlayerMsg(text, type = 'ok') {
+    const msg = document.getElementById('playerMsg');
+    if (!msg) return;
+    msg.textContent = text;
+    msg.className = 'text-xs text-center mt-2 ' + (type === 'ok'
+        ? 'text-emerald-400'
+        : type === 'warn'
+            ? 'text-zinc-400'
+            : 'text-red-400');
+    msg.classList.remove('hidden');
+}
 
 export async function giveSub(days) {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Выдача...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Выдача...', 'warn');
 
     try {
         await AdminAPI.giveSubscription(selectedPlayerId, days);
-        msg.textContent = `Подписка выдана на ${days} дней`;
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(`Подписка выдана на ${days} дней`);
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка при выдаче';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка при выдаче', 'error');
     }
 }
 
 export async function giveSubCustom() {
     if (!selectedPlayerId) return;
     const days = parseInt(document.getElementById('playerCustomDays').value);
-    const msg = document.getElementById('playerMsg');
 
     if (!days || days < 1 || days > 3650) {
-        msg.textContent = 'Введите число от 1 до 3650';
-        msg.className = 'text-xs text-center text-red-400';
-        msg.classList.remove('hidden');
+        showPlayerMsg('Введите число от 1 до 3650', 'error');
         return;
     }
 
-    msg.textContent = 'Выдача...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Выдача...', 'warn');
 
     try {
         await AdminAPI.giveSubscription(selectedPlayerId, days);
-        msg.textContent = `Подписка выдана на ${days} дней`;
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(`Подписка выдана на ${days} дней`);
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка при выдаче';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка при выдаче', 'error');
+    }
+}
+
+// ===== Выдать подписку на период (две даты) =====
+export async function giveSubPeriod() {
+    if (!selectedPlayerId) return;
+
+    const startEl = document.getElementById('subPeriodStart');
+    const endEl = document.getElementById('subPeriodEnd');
+    const start = startEl?.value;
+    const end = endEl?.value;
+
+    if (!start || !end) {
+        showPlayerMsg('Укажите обе даты', 'error');
+        return;
+    }
+
+    if (start >= end) {
+        showPlayerMsg('Дата начала должна быть раньше даты конца', 'error');
+        return;
+    }
+
+    showPlayerMsg('Выдача...', 'warn');
+
+    try {
+        const data = await AdminAPI.activateSubscriptionForPeriod(
+            selectedPlayerId,
+            `${start}T00:00:00`,
+            `${end}T23:59:59`
+        );
+        showPlayerMsg(data.message || 'Подписка выдана на период');
+        await refreshPlayerUI('players');
+    } catch (e) {
+        showPlayerMsg(e.message || 'Ошибка при выдаче', 'error');
     }
 }
 
 export async function removeSub() {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Отключение...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Отключение...', 'warn');
 
     try {
         await AdminAPI.removeSubscription(selectedPlayerId);
-        msg.textContent = 'Подписка отключена';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg('Подписка отключена');
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка при отключении';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка при отключении', 'error');
     }
 }
 
 export async function enableSub() {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Включение...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Включение...', 'warn');
 
     try {
         await AdminAPI.enableSubscription(selectedPlayerId);
-        msg.textContent = 'Подписка включена';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg('Подписка включена');
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка при включении';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка при включении', 'error');
     }
 }
 
 export async function updatePlayer() {
     if (!selectedPlayerId) return;
-
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Сохранение...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Сохранение...', 'warn');
 
     try {
         await AdminAPI.updatePlayer(selectedPlayerId, {
@@ -278,78 +349,57 @@ export async function updatePlayer() {
             pushEnabled: isStatusChecked('playerPush'),
             notificationsEnabled: isStatusChecked('playerNotifications')
         });
-        msg.textContent = 'Сохранено';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg('Сохранено');
 
         document.getElementById('playerSelName').textContent = capitalizeName(document.getElementById('playerName').value);
         document.getElementById('playerSelEmail').textContent = document.getElementById('playerEmail').value;
     } catch (e) {
-        msg.textContent = 'Ошибка сохранения';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка сохранения', 'error');
     }
 }
 
 export async function togglePlayerRole(roleName) {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
     const toggleBtn = document.getElementById('toggleAdminBtn');
     const isGrant = toggleBtn.classList.contains('btn-amber');
 
-    msg.textContent = isGrant ? 'Выдача роли...' : 'Отзыв роли...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg(isGrant ? 'Выдача роли...' : 'Отзыв роли...', 'warn');
 
     try {
         await AdminAPI.togglePlayerRole(selectedPlayerId, roleName, isGrant);
-        msg.textContent = isGrant ? 'Роль выдана' : 'Роль отозвана';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(isGrant ? 'Роль выдана' : 'Роль отозвана');
         await refreshPlayerUI('players');
     } catch (e) {
-        msg.textContent = 'Ошибка';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка', 'error');
     }
 }
 
 export async function deletePlayerTournaments() {
     if (!selectedPlayerId) return;
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Удаление...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Удаление...', 'warn');
 
     try {
         const data = await AdminAPI.deletePlayerTournaments(selectedPlayerId);
-        msg.textContent = data.message;
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(data.message);
     } catch (e) {
-        msg.textContent = 'Ошибка';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка', 'error');
     }
 }
-
-// ===== ПЕРЕСИНХРОНИЗАЦИЯ =====
 
 export async function resyncPlayerTournaments() {
     if (!selectedPlayerId) return;
 
-    const fromEl = document.getElementById('resyncFrom');
-    const toEl = document.getElementById('resyncTo');
-    const from = fromEl?.value || null;
-    const to = toEl?.value || null;
-    const msg = document.getElementById('playerMsg');
-
+    const from = document.getElementById('resyncFrom')?.value || null;
+    const to = document.getElementById('resyncTo')?.value || null;
     const label = from && to ? `${from} – ${to}` : 'весь период';
-    msg.textContent = `Синхронизация ${label}...`;
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+
+    showPlayerMsg(`Синхронизация ${label}...`, 'warn');
 
     try {
         const data = await AdminAPI.resyncPlayerTournaments(selectedPlayerId, from, to);
-        msg.textContent = data.message || `Синхронизация запущена: ${label}`;
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg(data.message || `Синхронизация запущена: ${label}`);
     } catch (e) {
-        msg.textContent = e.message || 'Ошибка синхронизации';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg(e.message || 'Ошибка синхронизации', 'error');
     }
 }
 
@@ -357,31 +407,32 @@ export async function deletePlayerAccount() {
     if (!selectedPlayerId) return;
     if (!confirm('Удалить аккаунт навсегда?')) return;
 
-    const msg = document.getElementById('playerMsg');
-    msg.textContent = 'Удаление...';
-    msg.className = 'text-xs text-center text-zinc-400';
-    msg.classList.remove('hidden');
+    showPlayerMsg('Удаление...', 'warn');
 
     try {
         await AdminAPI.deletePlayerAccount(selectedPlayerId);
-        msg.textContent = 'Аккаунт удалён';
-        msg.className = 'text-xs text-center text-emerald-400';
+        showPlayerMsg('Аккаунт удалён');
         document.getElementById('playerSelected').classList.add('hidden');
     } catch (e) {
-        msg.textContent = 'Ошибка удаления';
-        msg.className = 'text-xs text-center text-red-400';
+        showPlayerMsg('Ошибка удаления', 'error');
     }
 }
 
-// ===== ОБЗОР ПОДПИСОК =====
+/* =====================================================
+   ОБЗОР ПОДПИСОК — ПАГИНАЦИЯ КАК «ВХОДЫ»
+   ===================================================== */
 
-const subState = { loaded: false, loading: false, items: [] };
+const SUBS_PAGE_SIZE = 20;
+const subsState = { loaded: false, loading: false, items: [], page: 0 };
 
 function fmtDate(dateStr) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
     if (isNaN(d)) return '—';
-    return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return d.toLocaleString('ru-RU', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
 }
 
 function subIsActive(item) {
@@ -407,104 +458,121 @@ function subDaysLeft(item) {
     return Math.max(0, Math.ceil((new Date(expires) - new Date()) / 86400000));
 }
 
-function subStatusBadge(item) {
-    return subIsActive(item)
-        ? '<span class="badge badge-active">Активна</span>'
-        : '<span class="badge badge-inactive">Нет</span>';
-}
-
 function subRowHtml(item, idx) {
     const name = subName(item);
     const email = subEmail(item);
     const expires = subExpires(item);
     const days = subDaysLeft(item);
-    const daysClass = days === null ? 'subs-muted' : (days <= 7 ? 'subs-warn' : '');
+    const daysClass = days === null ? '' : (days <= 7 ? 'subs-warn' : '');
+    const active = subIsActive(item);
 
     return `
-        <tr>
-            <td class="subs-idx">${idx + 1}</td>
-            <td>
-                <div class="subs-name">${name}</div>
-                ${email ? `<div class="subs-email">${email}</div>` : ''}
-            </td>
-            <td>${subStatusBadge(item)}</td>
-            <td class="subs-right">${fmtDate(expires)}</td>
-            <td class="subs-right ${daysClass}">${days === null ? '—' : days + ' дн.'}</td>
-        </tr>
-    `;
-}
-
-function subCardHtml(item) {
-    const name = subName(item);
-    const email = subEmail(item);
-    const expires = subExpires(item);
-    const days = subDaysLeft(item);
-    const daysClass = days === null ? 'subs-muted' : (days <= 7 ? 'subs-warn' : '');
-    const badge = subStatusBadge(item);
-
-    return `
-        <div class="subs-card">
-            <div class="subs-card-top">
-                <div style="min-width:0;flex:1;">
-                    <div class="subs-card-name">${name}</div>
-                    ${email ? `<div class="subs-card-email">${email}</div>` : ''}
-                </div>
-                <div style="flex-shrink:0;">${badge}</div>
+        <div class="subs-row ${active ? '' : 'subs-row-inactive'}">
+            <span class="subs-idx">${idx + 1}</span>
+            <div class="subs-main">
+                <span class="subs-name">${name}</span>
+                ${email ? `<span class="subs-email">${email}</span>` : ''}
             </div>
-            <div class="subs-card-bottom">
-                <span class="subs-card-date">До ${fmtDate(expires)}</span>
-                <span class="subs-card-days ${daysClass}">${days === null ? '—' : days + ' дн.'}</span>
+            <div class="subs-right-col">
+                ${active
+                    ? `<span class="subs-date">${fmtDate(expires)}</span>`
+                    : `<span class="subs-date subs-muted">—</span>`}
+                ${days !== null
+                    ? `<span class="subs-days ${daysClass}">${days} дн.</span>`
+                    : ''}
             </div>
         </div>
     `;
 }
 
 function renderSubsEmpty(text, isError = false) {
-    const cls = isError ? 'subs-empty subs-warn' : 'subs-empty';
-    const cardCls = isError ? 'subs-card subs-card-empty subs-warn' : 'subs-card subs-card-empty';
+    const list = document.getElementById('subsList');
+    if (!list) return;
+    list.innerHTML = `<div class="subs-row subs-empty ${isError ? 'subs-warn' : ''}">${text}</div>`;
+}
 
-    const tableEl = document.getElementById('subsOverviewBody');
-    if (tableEl) tableEl.innerHTML = `<tr><td colspan="5" class="${cls}">${text}</td></tr>`;
+function renderSubsPage() {
+    const list = document.getElementById('subsList');
+    const info = document.getElementById('subsOverviewInfo');
+    const pageLabel = document.getElementById('subsPage');
+    const prevBtn = document.getElementById('subsPrev');
+    const nextBtn = document.getElementById('subsNext');
 
-    const cardsEl = document.getElementById('subsOverviewCards');
-    if (cardsEl) cardsEl.innerHTML = `<div class="${cardCls}">${text}</div>`;
+    const items = subsState.items;
+    const totalPages = Math.max(1, Math.ceil(items.length / SUBS_PAGE_SIZE));
+    const page = Math.min(subsState.page, totalPages - 1);
+    subsState.page = page;
+
+    const start = page * SUBS_PAGE_SIZE;
+    const pageItems = items.slice(start, start + SUBS_PAGE_SIZE);
+
+    if (pageItems.length === 0) {
+        renderSubsEmpty('Подписок нет');
+    } else {
+        list.innerHTML = pageItems.map((it, i) => subRowHtml(it, start + i)).join('');
+    }
+
+    if (info) {
+        const activeCount = items.filter(subIsActive).length;
+        info.textContent = `Всего: ${items.length} · Активных: ${activeCount}`;
+    }
+    if (pageLabel) pageLabel.textContent = `${page + 1} / ${totalPages}`;
+    if (prevBtn) prevBtn.disabled = page <= 0;
+    if (nextBtn) nextBtn.disabled = page >= totalPages - 1;
 }
 
 export async function loadSubscriptionsOverview(force = false) {
-    const tableEl = document.getElementById('subsOverviewBody');
-    const cardsEl = document.getElementById('subsOverviewCards');
-    const info = document.getElementById('subsOverviewInfo');
-    if (!tableEl && !cardsEl) return;
+    const list = document.getElementById('subsList');
+    if (!list) return;
 
-    if (subState.loaded && !force) return;
-    if (subState.loading) return;
+    if (subsState.loaded && !force) {
+        renderSubsPage();
+        return;
+    }
+    if (subsState.loading) return;
 
-    subState.loading = true;
+    subsState.loading = true;
     renderSubsEmpty('Загрузка...');
-    if (info) info.textContent = 'Загрузка...';
 
     try {
         const data = await AdminAPI.getAllSubscriptions();
-        const list = Array.isArray(data) ? data : (data?.content || []);
-        subState.items = list;
-        subState.loaded = true;
+        const raw = Array.isArray(data) ? data : (data?.content || []);
 
-        if (list.length === 0) {
-            renderSubsEmpty('Подписок нет');
-        } else {
-            if (tableEl) tableEl.innerHTML = list.map(subRowHtml).join('');
-            if (cardsEl) cardsEl.innerHTML = list.map(subCardHtml).join('');
-        }
+        const items = raw.slice().sort((a, b) => {
+            const aAct = subIsActive(a) ? 1 : 0;
+            const bAct = subIsActive(b) ? 1 : 0;
+            if (aAct !== bAct) return bAct - aAct;
+            const aExp = subExpires(a) ? new Date(subExpires(a)).getTime() : 0;
+            const bExp = subExpires(b) ? new Date(subExpires(b)).getTime() : 0;
+            return bExp - aExp;
+        });
 
-        if (info) {
-            const activeCount = list.filter(subIsActive).length;
-            info.textContent = `Всего: ${list.length} · Активных: ${activeCount}`;
-        }
+        subsState.items = items;
+        subsState.loaded = true;
+        subsState.page = 0;
+
+        renderSubsPage();
     } catch (e) {
         renderSubsEmpty(`Ошибка: ${e.message || 'не удалось загрузить'}`, true);
+        const info = document.getElementById('subsOverviewInfo');
         if (info) info.textContent = 'Ошибка загрузки';
     } finally {
-        subState.loading = false;
+        subsState.loading = false;
+    }
+}
+
+export function subsPrevPage() {
+    if (subsState.page > 0) {
+        subsState.page -= 1;
+        renderSubsPage();
+    }
+}
+
+export function subsNextPage() {
+    const totalPages = Math.max(1, Math.ceil(subsState.items.length / SUBS_PAGE_SIZE));
+    if (subsState.page < totalPages - 1) {
+        subsState.page += 1;
+        renderSubsPage();
     }
 }
 

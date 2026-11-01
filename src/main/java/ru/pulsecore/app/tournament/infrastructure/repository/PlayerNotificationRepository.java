@@ -123,4 +123,7 @@ public interface PlayerNotificationRepository
                   AND pn.pushEveningSent = false
             """)
     List<PlayerNotification> findPendingEveningRemindersByHalls(@Param("halls") List<Integer> halls, @Param("tomorrow") LocalDate tomorrow);
+
+    @Query("SELECT pn.tournament.link FROM PlayerNotification pn WHERE pn.playerId = :playerId")
+    Set<String> findTournamentLinksByPlayerId(@Param("playerId") UUID playerId);
 }

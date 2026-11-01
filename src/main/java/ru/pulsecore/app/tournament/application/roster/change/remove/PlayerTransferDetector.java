@@ -2,10 +2,12 @@ package ru.pulsecore.app.tournament.application.roster.change.remove;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.change.TransferInfo;
+import ru.pulsecore.app.tournament.application.roster.change.TransferResult;
 import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 
@@ -26,31 +28,33 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PlayerTransferDetector {
+public class PlayerTransferDetector implements TransferDetector{
 
     private final PlayerNotificationRepository notificationRepository;
 
     /**
      * Ищет перенос игрока в другой турнир.
      *
-     * @param removedPlayer игрок, которого сняли
-     * @param oldTournament турнир, из которого сняли
+     * @param removedPlayer  игрок, которого сняли
+     * @param oldTournament  турнир, из которого сняли
      * @param allTournaments все турниры за 3 дня (для поиска)
      * @return TransferInfo если перенос найден, иначе null
      */
-    public TransferInfo findTransfer(
+    @Override
+    public TransferResult findTransfer(
             PlayerData removedPlayer,
             TournamentDto oldTournament,
             Map<String, List<TournamentDto>> allTournaments) {
 
         log.debug("Перенос: поиск для игрока={}, из турнира={}",
                 removedPlayer.name(), oldTournament.getLink());
+        log.info("🔍 [STANDARD] Поиск переноса для игрока={}", removedPlayer.name());
 
         TournamentDto newTournament = findNewTournament(removedPlayer, oldTournament, allTournaments);
 
         if (newTournament == null) {
             log.debug("Игрок {} снят, перенос не найден", removedPlayer.name());
-            return null;
+            return TransferResult.removed();
         }
 
         log.info("🔄 Игрок {} перенесён: {} ({}) -> {} ({})",
@@ -58,7 +62,7 @@ public class PlayerTransferDetector {
                 oldTournament.getTitle(), oldTournament.getId(),
                 newTournament.getTitle(), newTournament.getId());
 
-        return TransferInfo.of(oldTournament, newTournament);
+        return TransferResult.transferred(TransferInfo.of(oldTournament, newTournament));
     }
 
     /**

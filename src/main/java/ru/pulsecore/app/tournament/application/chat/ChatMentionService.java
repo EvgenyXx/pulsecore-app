@@ -7,7 +7,7 @@ import ru.pulsecore.app.shared.dispetcher.PushDispatcher;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.PushContent;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
-import ru.pulsecore.app.tournament.infrastructure.client.PlayerClient;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -23,7 +23,7 @@ public class ChatMentionService {
     private static final String PUSH_TITLE = "Вас упомянули в чате";
 
 
-    private final PlayerClient playerClient;
+    private final PlayerTournamentClient playerClient;
     private final PushDispatcher pushDispatcher;
 
     public List<PlayerData> searchPlayers(String query) {
