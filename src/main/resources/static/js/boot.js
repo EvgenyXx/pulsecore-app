@@ -70,6 +70,66 @@ function showApp() {
     if (root) root.style.display = '';
 }
 
+/* =====================================================
+   КНОПКА «ПОДЕЛИТЬСЯ» (красивый тост, без alert)
+   ===================================================== */
+
+function showToast(message, isError = false) {
+    const old = document.getElementById('customToast');
+    if (old) old.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'customToast';
+    toast.className = 'custom-toast' + (isError ? ' error' : '');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+function initShareButton() {
+    const btn = document.getElementById('shareAppBtn');
+    if (!btn || btn.dataset.shareBound === 'true') return;
+    btn.dataset.shareBound = 'true';
+
+    btn.addEventListener('click', async () => {
+        const url = 'https://pulsecore-app.ru';
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'PulseCore',
+                    text: 'Смотри свой заработок и статистику турниров в настольный теннис!',
+                    url: url
+                });
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Ошибка шаринга:', err);
+                    showToast('Не удалось открыть меню. Скопируйте ссылку: ' + url, true);
+                }
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(url);
+                showToast('Ссылка скопирована! Вставьте её в мессенджер.');
+            } catch (err) {
+                showToast('Ссылка: ' + url);
+            }
+        }
+    });
+}
+
+// Вешаем кнопку после DOM
+document.addEventListener('DOMContentLoaded', initShareButton);
+
+/* =====================================================
+   СТАРТ ПРИЛОЖЕНИЯ
+   ===================================================== */
+
 async function startApp() {
     // 1. Показываем разметку
     showApp();
@@ -176,6 +236,9 @@ async function boot() {
     // Расписание текстов — независимо от того, как быстро грузится
     hint('Проверяем сессию…');
     setTimeout(() => hint('Загружаем данные…'), 1200);
+
+    // Кнопку шаринга вешаем СРАЗУ (до всех проверок), чтобы она работала всегда
+    initShareButton();
 
     const me = await fetchMeWithRetry();
 
