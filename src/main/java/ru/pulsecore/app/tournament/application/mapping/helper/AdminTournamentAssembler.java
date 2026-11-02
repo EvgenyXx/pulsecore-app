@@ -1,4 +1,4 @@
-package ru.pulsecore.app.tournament.application.admin.assembler;
+package ru.pulsecore.app.tournament.application.mapping.helper;
 
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
@@ -6,6 +6,7 @@ import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.PlayerEarning;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +15,8 @@ import java.util.stream.Collectors;
 @Component
 public class AdminTournamentAssembler {
 
-    private record PlayerKey(Long tournamentId, UUID playerId) {}
+    private record PlayerKey(Long tournamentId, UUID playerId) {
+    }
 
     public List<AdminTournamentResponse> assemble(
             List<TournamentEntity> tournaments,
@@ -27,7 +29,7 @@ public class AdminTournamentAssembler {
         Map<PlayerKey, Double> earnings = results.stream()
                 .collect(Collectors.toMap(
                         r -> new PlayerKey(r.getTournament().getId(), r.getPlayerId()),
-                        r -> r.getAmount() + r.getBonus(),
+                        TournamentResultEntity::getAmount,
                         Double::sum
                 ));
 
