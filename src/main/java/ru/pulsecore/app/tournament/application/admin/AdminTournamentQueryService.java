@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.tournament.application.admin.assembler.AdminTournamentAssembler;
+import ru.pulsecore.app.tournament.application.mapping.helper.AdminTournamentAssembler;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
