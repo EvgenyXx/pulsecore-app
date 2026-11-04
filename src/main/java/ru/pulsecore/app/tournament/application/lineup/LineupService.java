@@ -14,6 +14,7 @@ import ru.pulsecore.app.tournament.application.mapping.LineupMapper;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.repository.LineupRepository;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -26,16 +27,19 @@ public class LineupService {
     private final LineupRepository lineupRepository;
     private final PlayerTournamentClient playerClient;
     private final LineupMapper lineupMapper;
+    private final AsyncLineupLoader asyncLineupLoader;
 
     @Transactional(readOnly = true)
     public List<String> getAvailableHalls(LocalDate date) {
         return lineupRepository.findDistinctHallsByDate(date);
     }
 
-    @Transactional(readOnly = true)
     public Page<LineupDto> getMyPaged(UUID playerId, LocalDate date, int page, int size) {
+        asyncLineupLoader.loadDayAsync(date);
+
         PlayerData playerData = playerClient.getPlayerById(playerId);
 
+        log.info("Пользователь {} запросил расписание на {}", playerData.name(), date);
         if (playerData.selectedHalls() == null || playerData.selectedHalls().isBlank()) {
             return Page.empty(PageRequest.of(page, size));
         }
@@ -47,4 +51,6 @@ public class LineupService {
 
         return lineups.map(entity -> lineupMapper.toDto(entity, playerData.name()));
     }
+
+
 }

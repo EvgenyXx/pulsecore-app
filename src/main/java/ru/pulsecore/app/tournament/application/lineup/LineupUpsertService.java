@@ -1,5 +1,6 @@
 package ru.pulsecore.app.tournament.application.lineup;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +11,12 @@ import ru.pulsecore.app.tournament.application.mapping.TournamentToLineupMapper;
 import ru.pulsecore.app.tournament.infrastructure.cache.LineupHashCache;
 import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
-import ru.pulsecore.app.tournament.infrastructure.repository.HallStreamRepository;
-import ru.pulsecore.app.tournament.infrastructure.repository.LineupRepository;
-import ru.pulsecore.app.tournament.infrastructure.util.TournamentDateUtils;
-import ru.pulsecore.app.tournament.infrastructure.validator.TournamentValidator;
+import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+
+
 
 /**
  * Загружает, обновляет и сохраняет составы турниров на ближайшие дни.
@@ -26,91 +27,47 @@ import java.util.List;
 @Slf4j
 public class LineupUpsertService {
 
-    private final LineupRepository lineupRepository;
+    private final LineupSaver lineupSaver;
     private final MastersApiClient apiClient;
     private final TournamentToLineupMapper mapper;
-    private final TournamentValidator validator;
-    private final HallStreamRepository hallStreamRepository;
+    private final LineupStreamEnricher enrichStreamUrls;
     private final LineupHashCache lineupHashCache;
     private final ObjectMapper objectMapper;
 
 
     @Transactional
     public void loadDay(LocalDate date) {
-
         List<TournamentDto> all = apiClient.loadTournaments(date.toString());
-        if (all == null || all.isEmpty()) return;
 
-        List<TournamentDto> valid = filterValid(all, date);
-        if (valid.isEmpty()) return;
-
-        String hash = calculateHash(valid);
-        log.debug("📊 Хэш составов за {}: {}", date, hash);
-
-
-        if (lineupHashCache.hasSameHash(date,hash)){
+        String hash = calculateHash(all);
+        if (hash == null) {
+            log.error("Пропуск обновления расписания на {}: не удалось посчитать хеш", date);
             return;
         }
-        clearFutureLineups(date);
-        List<Lineup> lineups = mapToLineups(valid, date);
-        enrichStreamUrls(lineups);
-        saveLineups(lineups);
-        lineupHashCache.update(date,hash);
+        if (lineupHashCache.hasSameHash(date, hash)) {
+            return;
+        }
 
-        log.debug("{} составов сохранено за дату {}", lineups.size(), date);
+        List<Lineup> lineups = all.stream().map(t ->
+                        mapper.toEntity(t, date, DateTimeUtils.formatTime(t.getDate().getDate())))
+                .toList();
+        enrichStreamUrls.enrich(lineups);
+        lineupSaver.saveAll(lineups);
+        lineupHashCache.update(date, hash);
+
+        log.info("{} составов сохранено за дату {}", lineups.size(), date);
     }
 
-    private String calculateHash(List<TournamentDto> tournaments) {
+
+    private String calculateHash(List<TournamentDto> all) {
         try {
-            String json = objectMapper.writeValueAsString(tournaments);
-            return Integer.toHexString(json.hashCode());
-        } catch (Exception e) {
-            return "error";
+            byte[] bytes = objectMapper.writeValueAsBytes(all);
+            return Integer.toHexString(Arrays.hashCode(bytes));
+        } catch (JsonProcessingException e) {
+            log.warn("Не удалось вычислить хеш турниров: {}", e.getMessage());
+            return null;
         }
     }
 
-    private List<TournamentDto> filterValid(List<TournamentDto> all, LocalDate date) {
-        return all.stream()
-                .filter(validator::isValid)
-                .filter(t -> date.equals(TournamentDateUtils.extractDate(t)))
-                .toList();
-    }
 
-    private void clearFutureLineups(LocalDate date) {
-        if (date.isAfter(LocalDate.now())) {
-            lineupRepository.deleteAllByDate(date);
-        }
-    }
-
-    private List<Lineup> mapToLineups(List<TournamentDto> valid, LocalDate date) {
-        return valid.stream()
-                .map(t -> mapper.toEntity(t, date, TournamentDateUtils.extractTime(t)))
-                .toList();
-    }
-
-    private void enrichStreamUrls(List<Lineup> lineups) {
-        lineups.forEach(lineup -> {
-            if (lineup.getStreamUrl() == null || lineup.getStreamUrl().isBlank()) {
-                try {
-                    String url = hallStreamRepository.findStreamUrlByHall(lineup.getHall());
-                    if (url != null) lineup.setStreamUrl(url);
-                } catch (Exception e) {
-                    log.warn("Нет URL стрима для зала {}", lineup.getHall());
-                }
-            }
-        });
-    }
-
-    private void saveLineups(List<Lineup> lineups) {
-        lineups.forEach(lineup -> lineupRepository.upsertLineup(
-                lineup.getDate(),
-                lineup.getLeague(),
-                lineup.getTime(),
-                lineup.getHall(),
-                lineup.getPlayers(),
-                lineup.getStreamUrl(),
-                lineup.getLink(),
-                lineup.getType() != null ? lineup.getType().name() : null
-        ));
-    }
 }

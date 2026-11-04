@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
+import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
 import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 import ru.pulsecore.app.tournament.infrastructure.util.PlayerIdentity;
-
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class TournamentSearchService {
 
     private static final long API_DELAY_MS = 500;
 
-    private final MastersApiClient mastersApiClient;
+    private final TournamentDataProvider tournamentDataProvider;
 
 
 
@@ -66,7 +65,7 @@ public class TournamentSearchService {
         LocalDate end = LocalDate.parse(endDate);
 
         for (LocalDate current = start; !current.isAfter(end); current = current.plusDays(1)) {
-            List<TournamentDto> dayTournaments = loadDayTournaments(current.toString());
+            List<TournamentDto> dayTournaments = tournamentDataProvider.getTournamentByDate(current);
             allTournaments.addAll(filterByPlayer(dayTournaments, searchName));
             sleepBetweenRequests();
         }
@@ -74,14 +73,7 @@ public class TournamentSearchService {
         return allTournaments;
     }
 
-    private List<TournamentDto> loadDayTournaments(String date) {
-        try {
-            return mastersApiClient.loadTournaments(date);
-        } catch (Exception e) {
-            log.error("Failed to load tournaments for {}: {}", date, e.getMessage());
-            return List.of();
-        }
-    }
+
 
     private List<TournamentDto> filterByPlayer(List<TournamentDto> tournaments, String searchName) {
         return tournaments.stream()

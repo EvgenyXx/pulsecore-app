@@ -8,10 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
 import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
-
-import ru.pulsecore.app.admin.application.TournamentAdminService;
+import ru.pulsecore.app.shared.api.tournament.TournamentAdminClient;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,14 +18,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminTournamentManagementController {
 
-    private final TournamentAdminService tournamentAdminService;
+     private final TournamentAdminClient tournamentClient;
 
     @Operation(summary = "Получить турниры по дате")
     @GetMapping(AdminApi.TOURNAMENTS_BY_DATE)
     public ResponseEntity<List<AdminTournamentResponse>> getByDate(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         LocalDate targetDate = date != null ? date : LocalDate.now();
-        return ResponseEntity.ok(tournamentAdminService.getByDate(targetDate));
+        return ResponseEntity.ok(tournamentClient.getTournamentsByDate(targetDate));
     }
 
 
@@ -37,6 +35,6 @@ public class AdminTournamentManagementController {
     public ResponseEntity<AdminTournamentResponse> update(
             @PathVariable Long id,
             @RequestBody UpdateTournamentRequest request) {
-        return ResponseEntity.ok(tournamentAdminService.update(id, request));
+        return ResponseEntity.ok(tournamentClient.updateTournament(id, request));
     }
 }

@@ -14,10 +14,8 @@ import java.util.UUID;
 
 /**
  * Сервис для управления данными игроков из админки.
- *
  * deleteAllTournaments — удаляет все результаты игрока.
  * resyncPeriod — запускает пересинхронизацию турниров за период.
- *
  * Используется в AdminPlayerController.
  */
 @Service
@@ -38,10 +36,6 @@ public class AdminTournamentManagementService {
         return deletedResults + deletedNotifications + deletedTournaments;
     }
 
-    /**
-     * Пересинхронизация за указанный период.
-     * Даты приходят из админки.
-     */
     @Transactional
     public void resyncPeriod(UUID playerId, LocalDate from, LocalDate to) {
         var player = playerClient.getPlayerById(playerId);

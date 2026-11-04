@@ -14,6 +14,7 @@ public class DiscoveryHashCache {
 
     private final StringRedisTemplate redisTemplate;
     private static final Duration TTL = Duration.ofHours(6);
+    private static final String HASH_KEY_PREFIX = "discovery:hash:";
 
     public boolean hasSameHash(String date, Long tournamentId, String hash) {
         String cached = redisTemplate.opsForValue().get(key(date, tournamentId));
@@ -32,7 +33,9 @@ public class DiscoveryHashCache {
         return redisTemplate.opsForValue().get(key(date, tournamentId));
     }
 
+
+
     private String key(String date, Long tournamentId) {
-        return "discovery:hash:" + date + ":" + tournamentId;
+        return HASH_KEY_PREFIX + date + ":" + tournamentId;
     }
 }

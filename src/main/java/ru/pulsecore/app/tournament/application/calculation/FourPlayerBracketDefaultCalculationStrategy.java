@@ -12,13 +12,14 @@ import ru.pulsecore.app.tournament.domain.enums.StrategyType;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
-import ru.pulsecore.app.tournament.infrastructure.util.DateConstants;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
-
+import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +37,8 @@ public class FourPlayerBracketDefaultCalculationStrategy implements MatchCalcula
     @Override
     public MatchProcessingResult process(TournamentContext ctx) {
         PlacePointsCalculator calculator = placePointsCalculatorFactory.getCalculator(ctx.getLeague());
-        LocalDate tournamentDate = parseDate(ctx.getDate());
+        log.info("ВРЕМЯ {}",ctx.getDate());
+        LocalDate tournamentDate = DateTimeUtils.parseDate(ctx.getDate());
 
         log.debug("🔍 [4pl_new] id={}, лига={}, дата={}, матчей={}",
                 ctx.getTournamentId(), ctx.getLeague(), tournamentDate, ctx.getMatches().size());
@@ -74,13 +76,5 @@ public class FourPlayerBracketDefaultCalculationStrategy implements MatchCalcula
         return places;
     }
 
-    private LocalDate parseDate(String date) {
-        if (date == null) return null;
-        try {
-            return LocalDate.parse(date, DateConstants.TOURNAMENT_DATE_FORMAT);
-        } catch (Exception e) {
-            log.warn("Не удалось распарсить дату турнира: {}", date);
-            return null;
-        }
-    }
+
 }

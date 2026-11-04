@@ -10,12 +10,13 @@ import ru.pulsecore.app.tournament.domain.enums.Place;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
-import ru.pulsecore.app.tournament.infrastructure.util.DateConstants;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
-
+import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public abstract class AbstractFourPlayerRemovedStrategy implements MatchCalculat
     @Override
     public MatchProcessingResult process(TournamentContext ctx) {
         PlacePointsCalculator calculator = placePointsCalculatorFactory.getCalculator(ctx.getLeague());
-        LocalDate tournamentDate = parseDate(ctx.getDate());
+        LocalDate tournamentDate = DateTimeUtils.parseDate(ctx.getDate());
 
         log.debug("🔍 [4pl_new / {}] id={}, лига={}, дата={}, матчей={}",
                 logTag(), ctx.getTournamentId(), ctx.getLeague(),
@@ -81,13 +82,5 @@ public abstract class AbstractFourPlayerRemovedStrategy implements MatchCalculat
         return PlayerNameUtils.normalizeSearch(name);
     }
 
-    protected LocalDate parseDate(String date) {
-        if (date == null) return null;
-        try {
-            return LocalDate.parse(date, DateConstants.TOURNAMENT_DATE_FORMAT);
-        } catch (Exception e) {
-            log.warn("Не удалось распарсить дату турнира: {}", date);
-            return null;
-        }
-    }
+
 }

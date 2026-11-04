@@ -10,6 +10,7 @@ import ru.pulsecore.app.tournament.application.resolution.ResultService;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.application.cascade.TournamentSearchService;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
+import ru.pulsecore.app.tournament.infrastructure.util.PlayerIdentity;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -82,7 +83,7 @@ public class AdminCalculateService {
 
     private double extractPlayerAmount(ParsedResult parsed, String searchName) {
         return parsed.results().stream()
-                .filter(r -> NameNormalizer.normalizeForSearch(r.getPlayer()).contains(searchName))
+                .filter(r -> PlayerIdentity.isSamePlayer(r.getPlayer(),searchName))
                 .mapToDouble(ResultDto::getTotal)
                 .sum();
     }

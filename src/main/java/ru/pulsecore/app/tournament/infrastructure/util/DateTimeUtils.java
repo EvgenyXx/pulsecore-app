@@ -1,102 +1,115 @@
 package ru.pulsecore.app.tournament.infrastructure.util;
 
 import lombok.experimental.UtilityClass;
+import ru.pulsecore.app.shared.dto.response.TournamentDto;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
+/**
+ * Утилиты для парсинга и форматирования дат и времени турниров.
+ */
 @UtilityClass
 public class DateTimeUtils {
 
-    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter INPUT_FORMAT =
+            new DateTimeFormatterBuilder()
+                    .appendPattern("yyyy-MM-dd")
+                    .optionalStart()
+                    .appendPattern(" HH:mm:ss.SSSSSS")
+                    .optionalEnd()
+                    .toFormatter();
+
+    private static final DateTimeFormatter DATE_FORMAT =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+    private static final DateTimeFormatter TIME_FORMAT =
+            DateTimeFormatter.ofPattern("HH:mm");
 
     /**
-     * Форматирует период для отображения на фронте.
-     * Возвращает строку вида "01.05.2026 - 31.05.2026".
+     * Форматирует период дат для отображения на фронте.
+     *
+     * @param start начало периода
+     * @param end   конец периода
+     * @return период в формате {@code dd.MM.yyyy - dd.MM.yyyy}
+     *         или пустая строка, если одна из дат отсутствует
      */
     public static String formatPeriod(LocalDate start, LocalDate end) {
         if (start == null || end == null) return "";
         return start.format(DATE_FORMAT) + " - " + end.format(DATE_FORMAT);
     }
 
+    /**
+     * Форматирует дату из строки API.
+     *
+     * @param raw дата в формате {@code yyyy-MM-dd} или
+     *            {@code yyyy-MM-dd HH:mm:ss.SSSSSS}
+     * @return дата в формате {@code dd.MM.yyyy}
+     */
     public static String formatDate(String raw) {
-        if (raw == null) return "—";
-        try {
-            LocalDateTime dt = LocalDateTime.parse(raw, INPUT_FORMAT);
-            return dt.format(DATE_FORMAT);
-        } catch (Exception e) {
-            return raw.split(" ")[0];
-        }
+        return LocalDate.parse(raw, INPUT_FORMAT).format(DATE_FORMAT);
     }
-
-    public static String formatTime(String raw) {
-        if (raw == null) return "—";
-        try {
-            LocalDateTime dt = LocalDateTime.parse(raw, INPUT_FORMAT);
-            return dt.format(TIME_FORMAT);
-        } catch (Exception e) {
-            try {
-                return raw.split(" ")[1].substring(0, 5);
-            } catch (Exception ex) {
-                return "—";
-            }
-        }
-    }
-
 
     /**
-     * Извлекает LocalDate из строки API.
-     * Формат входа: "yyyy-MM-dd HH:mm:ss.SSSSSS"
+     * Форматирует время из строки API.
+     *
+     * @param raw дата и время в формате {@code yyyy-MM-dd HH:mm:ss.SSSSSS}
+     * @return время в формате {@code HH:mm} или {@code —}, если значение отсутствует
+     */
+    public static String formatTime(String raw) {
+        if (raw == null) return "—";
+        return LocalDateTime.parse(raw, INPUT_FORMAT).format(TIME_FORMAT);
+    }
+
+    /**
+     * Извлекает дату из строки с датой или датой и временем.
+     *
+     * @param raw дата в формате {@code yyyy-MM-dd} или
+     *            {@code yyyy-MM-dd HH:mm:ss.SSSSSS}
+     * @return дата без времени или {@code null}, если значение отсутствует
      */
     public static LocalDate parseDate(String raw) {
         if (raw == null) return null;
-        try {
-            return LocalDateTime.parse(raw, INPUT_FORMAT).toLocalDate();
-        } catch (Exception e) {
-            return LocalDate.parse(raw.split(" ")[0]);
-        }
+        return LocalDate.parse(raw, INPUT_FORMAT);
     }
 
     /**
-     * Извлекает время "HH:mm" из строки API.
-     * Формат входа: "yyyy-MM-dd HH:mm:ss.SSSSSS"
+     * Извлекает время из строки API.
+     *
+     * @param raw дата и время в формате {@code yyyy-MM-dd HH:mm:ss.SSSSSS}
+     * @return время в формате {@code HH:mm} или {@code null}, если значение отсутствует
      */
     public static String parseTime(String raw) {
         if (raw == null) return null;
-        try {
-            return LocalDateTime.parse(raw, INPUT_FORMAT).format(TIME_FORMAT);
-        } catch (Exception e) {
-            return raw.split(" ")[1].substring(0, 5);
-        }
+        return LocalDateTime.parse(raw, INPUT_FORMAT).format(TIME_FORMAT);
     }
 
-    public static boolean isFuture(String raw) {
-        if (raw == null) return false;
-        try {
-            LocalDateTime dt = LocalDateTime.parse(raw, INPUT_FORMAT);
-            return dt.isAfter(LocalDateTime.now());
-        } catch (Exception e) {
-            return false;
-        }
+    /**
+     * Проверяет, находится ли турнир в будущем.
+     *
+     * @param tournamentDto данные турнира
+     * @return {@code true}, если дата и время турнира позже текущего момента
+     */
+    public static boolean isFuture(TournamentDto tournamentDto) {
+        LocalDateTime dateTime = LocalDateTime.parse(
+                tournamentDto.getDate().getDate(), INPUT_FORMAT);
+        return dateTime.isAfter(LocalDateTime.now());
     }
 
+    /**
+     * Вычисляет количество минут до указанного времени турнира.
+     *
+     * @param time время турнира в формате {@code HH:mm}
+     * @param now  текущее время
+     * @return количество минут до турнира или {@code null}, если время турнира отсутствует
+     */
     public static Long parseMinutesUntil(String time, LocalTime now) {
         if (time == null) return null;
-        try {
-            LocalTime tournamentTime = LocalTime.parse(time, TIME_FORMAT);
-            return java.time.Duration.between(now, tournamentTime).toMinutes();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static boolean shouldSendHourReminder(String time, LocalTime now) {
-        if (time == null || time.isEmpty()) return false;
-        Long minutes = parseMinutesUntil(time, now);
-        return minutes != null && minutes > 0 && minutes <= 60;
+        LocalTime tournamentTime = LocalTime.parse(time, TIME_FORMAT);
+        return Duration.between(now, tournamentTime).toMinutes();
     }
 }
