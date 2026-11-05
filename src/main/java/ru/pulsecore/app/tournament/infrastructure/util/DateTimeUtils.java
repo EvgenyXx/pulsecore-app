@@ -17,12 +17,15 @@ import java.time.format.DateTimeFormatterBuilder;
 public class DateTimeUtils {
 
     private static final DateTimeFormatter INPUT_FORMAT =
-            new DateTimeFormatterBuilder()
-                    .appendPattern("yyyy-MM-dd")
-                    .optionalStart()
-                    .appendPattern(" HH:mm:ss.SSSSSS")
-                    .optionalEnd()
-                    .toFormatter();
+        new DateTimeFormatterBuilder()
+                .appendPattern("yyyy-MM-dd")
+                .optionalStart()
+                .appendPattern(" HH:mm:ss")
+                .optionalStart() // <-- Добавляем еще один optional
+                .appendPattern(".SSSSSS")
+                .optionalEnd()   // <-- Закрываем
+                .optionalEnd()
+                .toFormatter();
 
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("dd.MM.yyyy");

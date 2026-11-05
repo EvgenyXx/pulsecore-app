@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
+import ru.pulsecore.app.tournament.infrastructure.client.MastersApi;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,10 +22,10 @@ import java.util.Map;
 public class TournamentDataProvider {
 
     private static final int FORECAST_DAYS = 3;
-    private final MastersApiClient apiClient;
+    private final MastersApi mastersApi;
 
     public List<TournamentDto>getTournamentByDate(LocalDate day){
-        return apiClient.loadTournaments(day.toString());
+        return mastersApi.loadTournaments(day.toString());
     }
 
     public List<TournamentDto> getTournamentsFor3days() {
@@ -42,7 +42,7 @@ public class TournamentDataProvider {
         for (int i = 0; i < FORECAST_DAYS; i++) {
             String date = today.plusDays(i).toString();
 
-            all.put(date, apiClient.loadTournaments(date));
+            all.put(date, mastersApi.loadTournaments(date));
         }
         return all;
     }

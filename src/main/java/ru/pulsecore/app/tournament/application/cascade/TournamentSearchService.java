@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
-import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 import ru.pulsecore.app.tournament.infrastructure.util.PlayerIdentity;
 import java.time.LocalDate;
@@ -16,9 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Сервис поиска и фильтрации турниров во внешнем API Лиги Мастерс.
- *
- * <p>Класс является связующим звеном между внешним API ({@link MastersApiClient})
- * и внутренней бизнес-логикой приложения. Он не сохраняет данные в БД, а только
+* и внутренней бизнес-логикой приложения. Он не сохраняет данные в БД, а только
  * загружает их и отдает тем, кому они нужны.</p>
  *
  * <p><b>Кто с ним работает:</b></p>

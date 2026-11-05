@@ -35,6 +35,7 @@ public class JsonTournamentParser {
             return null;
         }
 
+
         return new TournamentPage(doc, json);
     }
 

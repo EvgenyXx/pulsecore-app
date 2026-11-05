@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.mapping.TournamentToLineupMapper;
+import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
 import ru.pulsecore.app.tournament.infrastructure.cache.LineupHashCache;
-import ru.pulsecore.app.tournament.infrastructure.client.MastersApiClient;
 import ru.pulsecore.app.tournament.domain.entity.Lineup;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import java.time.LocalDate;
@@ -28,7 +28,7 @@ import java.util.List;
 public class LineupUpsertService {
 
     private final LineupSaver lineupSaver;
-    private final MastersApiClient apiClient;
+    private final TournamentDataProvider tournamentDataProvider;
     private final TournamentToLineupMapper mapper;
     private final LineupStreamEnricher enrichStreamUrls;
     private final LineupHashCache lineupHashCache;
@@ -37,7 +37,7 @@ public class LineupUpsertService {
 
     @Transactional
     public void loadDay(LocalDate date) {
-        List<TournamentDto> all = apiClient.loadTournaments(date.toString());
+        List<TournamentDto> all = tournamentDataProvider.getTournamentByDate(date);
 
         String hash = calculateHash(all);
         if (hash == null) {

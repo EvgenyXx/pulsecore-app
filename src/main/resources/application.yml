@@ -123,6 +123,7 @@ app:
     return-url: ${YOOKASSA_RETURN_URL}
     yookassa-api-url: ${YOOKASSA_API_URL}
     currency: ${YOOKASSA_CURRENCY}
+
   masters-api:
     url: ${MASTERS_API_URL}
     method: POST
@@ -130,5 +131,7 @@ app:
     action: tourslist
     country: RUS
     timeout: 90000
+
+
   mail:
     from: ${MAIL_FROM}
