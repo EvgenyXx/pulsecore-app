@@ -10,7 +10,6 @@ import ru.pulsecore.app.tournament.infrastructure.util.PlayerIdentity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -48,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class TournamentSearchService {
 
-    private static final long API_DELAY_MS = 500;
+
 
     private final TournamentDataProvider tournamentDataProvider;
 
@@ -62,9 +61,9 @@ public class TournamentSearchService {
         LocalDate end = LocalDate.parse(endDate);
 
         for (LocalDate current = start; !current.isAfter(end); current = current.plusDays(1)) {
-            List<TournamentDto> dayTournaments = tournamentDataProvider.getTournamentByDate(current);
+            List<TournamentDto> dayTournaments = tournamentDataProvider.getTournamentForSync(current);
             allTournaments.addAll(filterByPlayer(dayTournaments, searchName));
-            sleepBetweenRequests();
+
         }
 
         return allTournaments;
@@ -79,11 +78,5 @@ public class TournamentSearchService {
                 .toList();
     }
 
-    private void sleepBetweenRequests() {
-        try {
-            TimeUnit.MILLISECONDS.sleep(API_DELAY_MS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
+
 }

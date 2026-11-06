@@ -3,6 +3,7 @@ package ru.pulsecore.app.tournament.application.admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.application.cascade.TournamentCascadeSyncService;
 import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
@@ -38,7 +39,7 @@ public class AdminTournamentManagementService {
 
     @Transactional
     public void resyncPeriod(UUID playerId, LocalDate from, LocalDate to) {
-        var player = playerClient.getPlayerById(playerId);
+        PlayerData player = playerClient.getPlayerById(playerId);
         cascadeSyncService.syncPeriod(player.id(), player.name(), from, to);
     }
 }

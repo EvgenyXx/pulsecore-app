@@ -17,7 +17,8 @@ import java.util.Optional;
 public interface TournamentRepository extends JpaRepository<TournamentEntity, Long> {
 
 
-
+    @Query("SELECT t FROM TournamentEntity t WHERE t.date = :date AND t.started = false")
+    List<TournamentEntity> findNotStartedTournaments(@Param("date") LocalDate date);
 
 
     Optional<TournamentEntity> findByLink(String link);

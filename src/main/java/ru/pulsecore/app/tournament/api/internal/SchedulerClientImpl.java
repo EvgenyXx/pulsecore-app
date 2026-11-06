@@ -8,7 +8,7 @@ import ru.pulsecore.app.tournament.application.roster.canceled.TournamentCancele
 import ru.pulsecore.app.tournament.application.roster.change.TournamentChangeService;
 import ru.pulsecore.app.tournament.application.roster.discovery.TournamentDiscoveryService;
 import ru.pulsecore.app.tournament.application.roster.finish.TournamentFinishProcessor;
-import ru.pulsecore.app.tournament.application.roster.start.TournamentStartProcessor;
+import ru.pulsecore.app.tournament.application.roster.start.TournamentStartService;
 
 
 @Service
@@ -18,7 +18,7 @@ public class SchedulerClientImpl implements SchedulerAdminClient {
     private final SchedulerPauseService schedulerPauseService;
     private final TournamentFinishProcessor tournamentFinishProcessor;
     private final TournamentDiscoveryService discoveryService;
-    private final TournamentStartProcessor startProcessor;
+    private final TournamentStartService startService;
     private final TournamentCanceledProcessor processCanceled;
     private final TournamentChangeService changeService;
 
@@ -40,7 +40,7 @@ public class SchedulerClientImpl implements SchedulerAdminClient {
 
     @Override
     public void checkStart() {
-        startProcessor.checkStart();
+        startService.checkStart();
     }
 
     @Override

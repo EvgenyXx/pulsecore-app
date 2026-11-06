@@ -26,18 +26,23 @@ public class AdminCalculateService {
 
 
     public AdminCalculateResponse calculate(String name, String startDate, String endDate) {
-        if (endDate == null || endDate.isBlank()) {
-            endDate = startDate;
-        }
+    log.info("ЗАПРОС НА РАСЧЕТ: name={}, startDate={}, endDate={}", name, startDate, endDate);
 
-        List<TournamentDto> tournaments = tournamentSearchService.findByDateRangeAndPlayer(startDate, endDate, name);
-
-        if (tournaments.isEmpty()) {
-            return buildEmptyResponse(name, startDate, endDate);
-        }
-
-        return buildResponse(name, startDate, endDate, tournaments);
+    if (endDate == null || endDate.isBlank()) {
+        endDate = startDate;
+        log.info("endDate был пустой, установлен = startDate: {}", endDate);
     }
+
+    List<TournamentDto> tournaments = tournamentSearchService.findByDateRangeAndPlayer(startDate, endDate, name);
+
+    log.info("НАЙДЕНО ТУРНИРОВ: {}", tournaments.size());
+
+    if (tournaments.isEmpty()) {
+        return buildEmptyResponse(name, startDate, endDate);
+    }
+
+    return buildResponse(name, startDate, endDate, tournaments);
+}
 
     private AdminCalculateResponse buildEmptyResponse(String name, String startDate, String endDate) {
         return AdminCalculateResponse.builder()

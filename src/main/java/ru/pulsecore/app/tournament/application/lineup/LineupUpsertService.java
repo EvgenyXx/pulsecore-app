@@ -37,7 +37,7 @@ public class LineupUpsertService {
 
     @Transactional
     public void loadDay(LocalDate date) {
-        List<TournamentDto> all = tournamentDataProvider.getTournamentByDate(date);
+        List<TournamentDto> all = tournamentDataProvider.getTournamentForView(date);
 
         String hash = calculateHash(all);
         if (hash == null) {

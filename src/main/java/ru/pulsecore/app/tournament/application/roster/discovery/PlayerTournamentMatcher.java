@@ -36,14 +36,12 @@ public class PlayerTournamentMatcher {
         for (TournamentDto t : tournamentDtos) {
             if (t.getPlayers() == null) continue;
             t.setHallNumber(NumberUtils.extractInt(t.getHall()));
+
             for (String player : t.getPlayers()) {
                 String normalized = PlayerIdentity.cleanName(player);
                 String originalName = normalizedNames.get(normalized);
-
                 if (originalName != null) {
                     result.get(originalName).add(t);
-                    log.debug("Сравнение: API='{}' (очищено='{}') -> СОВПАЛО с БД='{}'. Ссылка: {}",
-                            player, normalized, originalName, t.getLink());
                 }
             }
         }

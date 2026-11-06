@@ -6,6 +6,13 @@ const LEAGUES = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
 const LABELS = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
 
 let isExpanded = false;
+let activeDetailId = null;
+
+function getLeagueBadge(league) {
+    if (!league) return '';
+    const label = league === 'SUPER_LEAGUE' ? 'SL' : league;
+    return `<span class="league-badge">${label}</span>`;
+}
 
 export async function loadTopWeek(league) {
     const panel = document.getElementById('topWeekPanel');
@@ -45,7 +52,6 @@ export async function loadTopWeek(league) {
 
     html += `<div id="topWeekWrapper" class="top-list-wrapper"><div id="topWeekList" class="top-list-container"></div></div>`;
 
-    // Блок с моей позицией (скрыт по умолчанию)
     html += `
         <div id="myPositionBlock" class="my-position-block hidden">
             <div class="my-position-label">Твоя позиция</div>
@@ -63,7 +69,14 @@ export async function loadTopWeek(league) {
 
     panel.innerHTML = html;
 
+    const list = document.getElementById('topWeekList');
+    if (list && !list.dataset.bound) {
+        list.dataset.bound = 'true';
+        list.addEventListener('click', handleCardClick);
+    }
+
     isExpanded = false;
+    activeDetailId = null;
     await refreshTopListOnly(league);
 }
 
@@ -79,6 +92,7 @@ export function switchLeague(league) {
         if (pill.getAttribute('data-league') === key) pill.classList.add('active');
     });
 
+    activeDetailId = null;
     refreshTopListOnly(league);
 }
 
@@ -92,6 +106,7 @@ export function switchPeriod(period) {
     const target = document.querySelector(`.period-pill[onclick*="'${period}'"]`);
     if (target) target.classList.add('active');
 
+    activeDetailId = null;
     refreshTopListOnly(state.currentLeague);
 }
 
@@ -130,18 +145,25 @@ async function refreshTopListOnly(league) {
                 const isMe = currentPlayerName && name.toLowerCase() === currentPlayerName.toLowerCase();
                 const position = i + 1;
                 const isFirst = position === 1;
+                const badge = getLeagueBadge(p.primaryLeague);
 
                 const isHiddenClass = (!isExpanded && position > 5) ? 'hidden-item' : '';
 
+                const detailJson = p.detailPeriod ? JSON.stringify(p.detailPeriod) : '';
+                const safeDetails = detailJson.replace(/"/g, '&quot;');
+
                 html += `
-                    <div class="rank-card hof-item ${isMe ? 'mine' : ''} ${isFirst ? 'first' : ''} ${isHiddenClass}" data-pos="${position}">
+                    <div class="rank-card hof-item ${isMe ? 'mine' : ''} ${isFirst ? 'first' : ''} ${isHiddenClass}" 
+                         data-pos="${position}" 
+                         data-details="${safeDetails}"
+                         data-player-id="${p.playerId || ''}"
+                         data-no-swipe="true">
                         <div class="rank-number">${position}</div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-[15px] font-medium text-white truncate">${name}</span>
                                 <div class="rank-meta">
-                                    <span class="text-[13px] font-semibold text-zinc-400">${p.tournaments}</span>
-                                    <span class="rank-meta-label">тур.</span>
+                                    ${badge}
                                 </div>
                             </div>
                         </div>
@@ -149,19 +171,18 @@ async function refreshTopListOnly(league) {
                 `;
             });
 
-            // Логика для отображения моей карточки отдельно (если я вне топ-5)
             if (myPosBlock && myPosCard) {
                 if (data.playerPosition > 5 && !isExpanded) {
                     myPosBlock.classList.remove('hidden');
+                    const myBadge = data.playerLeague ? getLeagueBadge(data.playerLeague) : '';
                     myPosCard.innerHTML = `
-                        <div class="rank-card mine">
+                        <div class="rank-card mine" data-no-swipe="true">
                             <div class="rank-number">${data.playerPosition}</div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between gap-2">
                                     <span class="text-[15px] font-medium text-white truncate">${currentPlayerName || 'Игрок'}</span>
                                     <div class="rank-meta">
-                                        <span class="text-[13px] font-semibold text-zinc-400">${data.playerTournaments || 0}</span>
-                                        <span class="rank-meta-label">тур.</span>
+                                        ${myBadge}
                                     </div>
                                 </div>
                             </div>
@@ -194,6 +215,83 @@ async function refreshTopListOnly(league) {
     }
 }
 
+function handleCardClick(e) {
+    const card = e.target.closest('.rank-card');
+    if (!card) return;
+
+    e.stopPropagation();
+
+    const container = document.getElementById('topWeekList');
+
+    if (card.classList.contains('expanded')) {
+        const nextSibling = card.nextElementSibling;
+        if (nextSibling && nextSibling.classList.contains('rank-details-wrapper')) {
+            nextSibling.remove();
+        }
+        card.classList.remove('expanded');
+
+        if (!isExpanded && !container.querySelector('.rank-card.expanded')) {
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+        }
+        return;
+    }
+
+    document.querySelectorAll('.rank-card.expanded').forEach(c => {
+        const nextSibling = c.nextElementSibling;
+        if (nextSibling && nextSibling.classList.contains('rank-details-wrapper')) {
+            nextSibling.remove();
+        }
+        c.classList.remove('expanded');
+    });
+
+    const detailJson = card.getAttribute('data-details');
+    if (!detailJson || detailJson === '""') return;
+
+    const data = JSON.parse(detailJson);
+    card.classList.add('expanded');
+
+    container.classList.remove('collapsed');
+    container.classList.add('expanded');
+
+    const detailsWrapper = document.createElement('div');
+    detailsWrapper.className = 'rank-details-wrapper';
+    detailsWrapper.innerHTML = `
+        <div class="rd-grid">
+            <div class="rd-item">
+                <span class="rd-label">ТУРНИРЫ</span>
+                <span class="rd-value">${data.tournaments || 0}</span>
+            </div>
+            <div class="rd-item">
+                <span class="rd-label">ЗАРАБОТАЛ</span>
+                <span class="rd-value text-emerald-400">${(data.totalAmount || 0).toLocaleString()} ₽</span>
+            </div>
+            <div class="rd-item">
+                <span class="rd-label">СРЕДНИЙ ЧЕК</span>
+                <span class="rd-value">${(data.averageAmount || 0).toLocaleString()} ₽</span>
+            </div>
+            <div class="rd-item">
+                <span class="rd-label">МАТЧИ</span>
+                <span class="rd-value">${data.matchesCount || 0}</span>
+            </div>
+            <div class="rd-item">
+                <span class="rd-label">ПОБЕДЫ</span>
+                <span class="rd-value text-emerald-400">${data.wins || 0}</span>
+            </div>
+            <div class="rd-item">
+                <span class="rd-label">ПОРАЖЕНИЯ</span>
+                <span class="rd-value text-red-400">${data.loses || 0}</span>
+            </div>
+            <div class="rd-item rd-full">
+                <span class="rd-label">ВИНРЕЙТ</span>
+                <span class="rd-value">${data.matchesCount > 0 ? Math.round((data.wins / data.matchesCount) * 100) : 0}%</span>
+            </div>
+        </div>
+    `;
+
+    card.parentNode.insertBefore(detailsWrapper, card.nextSibling);
+}
+
 window.toggleTopList = function() {
     const container = document.getElementById('topWeekList');
     const btn = document.getElementById('topToggleBtn');
@@ -201,21 +299,24 @@ window.toggleTopList = function() {
 
     if (!container || !btn) return;
 
+    document.querySelectorAll('.rank-card.expanded').forEach(c => {
+        const nextSibling = c.nextElementSibling;
+        if (nextSibling && nextSibling.classList.contains('rank-details-wrapper')) {
+            nextSibling.remove();
+        }
+        c.classList.remove('expanded');
+    });
+
     if (container.classList.contains('collapsed')) {
-        // РАСКРЫТЬ
         isExpanded = true;
         container.classList.remove('collapsed');
         container.classList.add('expanded');
         btn.textContent = 'Свернуть';
 
-        // Показываем все карточки
         container.querySelectorAll('.hidden-item').forEach(el => el.classList.remove('hidden-item'));
-
-        // Скрываем блок "моя позиция"
         if (myPosBlock) myPosBlock.classList.add('hidden');
 
     } else {
-        // СВЕРНУТЬ
         isExpanded = false;
         container.classList.remove('expanded');
         container.classList.add('collapsed');
@@ -224,7 +325,6 @@ window.toggleTopList = function() {
         container.scrollTo({ top: 0, behavior: 'smooth' });
 
         setTimeout(() => {
-            // Скрываем всё, что > 5
             const items = container.querySelectorAll('.hof-item');
             items.forEach((el) => {
                 const pos = parseInt(el.getAttribute('data-pos'));
@@ -232,8 +332,6 @@ window.toggleTopList = function() {
                     el.classList.add('hidden-item');
                 }
             });
-
-            // Перерисовываем (обновляем блок "моя позиция")
             refreshTopListOnly(state.currentLeague);
         }, 400);
     }

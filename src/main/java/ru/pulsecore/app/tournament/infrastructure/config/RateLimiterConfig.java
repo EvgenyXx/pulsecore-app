@@ -13,7 +13,29 @@ public class RateLimiterConfig {
 
     public static final String CANCELED_RATE_LIMITER = "canceledRateLimiter";
     public static final String FINISH_RATE_LIMITER = "finishRateLimiter";
-    public static final String HISTORY_SYNC_RATE_LIMITER = "historySyncRateLimiter";
+    public static final String HTML_PARSE_RATE_LIMITER = "historySyncRateLimiter";
+    public static final String API_SYNC_RATE_LIMITER = "apiSyncRateLimiter";
+
+    @Bean(HTML_PARSE_RATE_LIMITER)
+    public Bucket htmlParseRateLimiter() {
+        return Bucket.builder()
+                .addLimit(Bandwidth.builder()
+                        .capacity(1)
+                        .refillIntervally(1, Duration.ofSeconds(2))
+                        .build())
+                .build();
+    }
+
+
+    @Bean(API_SYNC_RATE_LIMITER)
+    public Bucket apiSyncRateLimiter() {
+        return Bucket.builder()
+                .addLimit(Bandwidth.builder()
+                        .capacity(4)
+                        .refillIntervally(1, Duration.ofSeconds(1))
+                        .build())
+                .build();
+    }
 
     @Bean(CANCELED_RATE_LIMITER)
     public Bucket canceledRateLimiter() {
@@ -36,13 +58,4 @@ public class RateLimiterConfig {
     }
 
 
-    @Bean(HISTORY_SYNC_RATE_LIMITER)
-    public Bucket tournamentRateLimiter() {
-        return Bucket.builder()
-                .addLimit(Bandwidth.builder()
-                        .capacity(1)
-                        .refillIntervally(1, Duration.ofSeconds(2))
-                        .build())
-                .build();
-    }
 }

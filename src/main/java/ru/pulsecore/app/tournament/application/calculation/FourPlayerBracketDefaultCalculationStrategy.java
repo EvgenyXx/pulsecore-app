@@ -37,7 +37,7 @@ public class FourPlayerBracketDefaultCalculationStrategy implements MatchCalcula
     @Override
     public MatchProcessingResult process(TournamentContext ctx) {
         PlacePointsCalculator calculator = placePointsCalculatorFactory.getCalculator(ctx.getLeague());
-        log.info("ВРЕМЯ {}",ctx.getDate());
+
         LocalDate tournamentDate = DateTimeUtils.parseDate(ctx.getDate());
 
         log.debug("🔍 [4pl_new] id={}, лига={}, дата={}, матчей={}",
