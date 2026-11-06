@@ -2,6 +2,7 @@ package ru.pulsecore.app.tournament.infrastructure.parser.league;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.pulsecore.app.shared.util.RegexUtils;
 import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.enums.LeagueType;
 
@@ -12,6 +13,7 @@ public class JsonLeagueResolver implements LeagueResolver {
     @Override
     public LeagueType resolve(TournamentPage page) {
         if (page == null) return null;
+
 
         String league = page.json().leagueTitle();
         if (league == null || league.isBlank()) return null;
@@ -27,17 +29,21 @@ public class JsonLeagueResolver implements LeagueResolver {
 
     @Override
     public int order() {
-        return 20;
+        return 5;
     }
 
     private LeagueType fromLetter(String letter) {
-        return switch (letter) {
-            case "A" -> LeagueType.A;
-            case "B" -> LeagueType.B;
-            case "C" -> LeagueType.C;
+        String clean = RegexUtils.ONLY_LETTERS.matcher(letter).replaceAll("").toUpperCase();
+        return switch (clean) {
+            case "А", "A" -> LeagueType.A;
+            case "В", "B" -> LeagueType.B;
+            case "С", "C" -> LeagueType.C;
             case "D" -> LeagueType.D;
-            case "СУПЕРЛИГА", "SUPER", "SUPER_LEAGUE", "SUPERLEAGUE" -> LeagueType.SUPER_LEAGUE;
-            default -> null;
+            case "СУПЕРЛИГА", "SUPER", "SUPERLEAGUE" -> LeagueType.SUPER_LEAGUE;
+            default -> {
+                log.warn("Неизвестная лига: '{}' (очищено: '{}')", letter, clean);
+                yield null;
+            }
         };
     }
 }

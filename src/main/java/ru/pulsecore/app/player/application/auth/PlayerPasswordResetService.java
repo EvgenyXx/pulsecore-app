@@ -12,6 +12,7 @@ import ru.pulsecore.app.notification.application.mail.context.PasswordResetConte
 import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
+
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class PlayerPasswordResetService {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final PlayerRepository playerRepository;
-    private final PlayerSearchService  searchService;
+    private final PlayerSearchService searchService;
     private final PasswordEncoder passwordEncoder;
     private final MailDispatcher mailDispatcher;
 
@@ -41,12 +42,13 @@ public class PlayerPasswordResetService {
                 Map.of()
         );
         mailDispatcher.send(
-            normalizedEmail,
-            new MailContent(
-                    MailType.PASSWORD_RESET,
-                    new PasswordResetContext(normalizedEmail, code)
-            )
-    );
+                null,
+                normalizedEmail,
+                new MailContent(
+                        MailType.PASSWORD_RESET,
+                        new PasswordResetContext(normalizedEmail, code)
+                )
+        );
         return new Pending(normalizedEmail, code);
     }
 

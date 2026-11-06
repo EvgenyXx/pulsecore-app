@@ -11,12 +11,12 @@ import ru.pulsecore.app.tournament.domain.enums.StrategyType;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.MatchProcessingResult;
 import ru.pulsecore.app.tournament.domain.model.TournamentContext;
-import ru.pulsecore.app.tournament.infrastructure.util.DateConstants;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
-
+import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class StandardDefaultMatchCalculationStrategy implements MatchCalculation
     @Override
     public MatchProcessingResult process(TournamentContext ctx) {
         PointsCalculator calculator = factory.getCalculator(ctx.getLeague());
-        LocalDate tournamentDate = parseDate(ctx.getDate());
+        LocalDate tournamentDate = DateTimeUtils.parseDate(ctx.getDate());
 
         Map<String, Integer> pointsMap = new HashMap<>();
         Map<String, Integer> placeMap = new HashMap<>();
@@ -83,13 +83,5 @@ public class StandardDefaultMatchCalculationStrategy implements MatchCalculation
                 && (m.getScore1() + m.getScore2() > 0);
     }
 
-    private LocalDate parseDate(String date) {
-        if (date == null) return null;
-        try {
-            return LocalDate.parse(date, DateConstants.TOURNAMENT_DATE_FORMAT);
-        } catch (Exception e) {
-            log.warn("Не удалось распарсить дату турнира: {}", date);
-            return null;
-        }
-    }
+
 }

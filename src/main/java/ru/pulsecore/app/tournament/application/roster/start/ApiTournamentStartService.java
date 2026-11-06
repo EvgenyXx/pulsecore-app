@@ -3,6 +3,7 @@ package ru.pulsecore.app.tournament.application.roster.start;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
@@ -19,10 +20,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Profile("start-api")
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TournamentStartProcessor {
+public class ApiTournamentStartService implements TournamentStartService {
 
     private static final long REQUEST_DELAY_MS = 3000;
 
@@ -32,6 +34,7 @@ public class TournamentStartProcessor {
     private final TournamentStatusParser tournamentStatusParser;
 
     @Transactional
+    @Override
     public void checkStart() {
         String moscowTime = LocalTime.now(ZoneId.of("Europe/Moscow")).format(DateTimeFormatter.ofPattern("HH:mm"));
 
@@ -44,7 +47,7 @@ public class TournamentStartProcessor {
             return;
         }
 
-        log.info("Проверка старта: найдено {} турниров", tournamentLinks.size());
+        log.info("Проверка старта API: найдено {} турниров", tournamentLinks.size());
 
         for (int i = 0; i < tournamentLinks.size(); i++) {
             processLink(tournamentLinks.get(i));

@@ -97,7 +97,7 @@ public class TournamentCanceledService {
     }
 
     private void processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
-        TournamentPage page = jsonTournamentParser.parse(doc);   // ← один раз
+        TournamentPage page = jsonTournamentParser.parse(doc);
         if (page == null) {
             log.warn("Не удалось распарсить страницу для турнира {} (ID={})", t.getExternalId(), t.getId());
             return;

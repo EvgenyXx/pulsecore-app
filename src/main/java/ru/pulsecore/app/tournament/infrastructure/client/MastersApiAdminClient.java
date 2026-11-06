@@ -1,12 +1,14 @@
 package ru.pulsecore.app.tournament.infrastructure.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 
@@ -20,10 +22,11 @@ import java.time.Duration;
 import java.util.List;
 
 
+@Profile("masters-client-admin")
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MastersApiClient {
+public class MastersApiAdminClient implements MastersApi {
 
     private final MastersApiProperties properties;
     private final ObjectMapper mapper;
@@ -31,6 +34,7 @@ public class MastersApiClient {
     private final MastersApiGate apiGate;
 
 
+    @Override
     public List<TournamentDto> loadTournaments(String date) {
         if (breaker.isBlocked()) {
             return List.of();
@@ -61,7 +65,13 @@ public class MastersApiClient {
                     continue;
                 }
 
-                List<TournamentDto> tournaments = mapper.readValue(res.body(), new TypeReference<>() {});
+                // 1. Парсим в дерево
+                JsonNode root = mapper.readTree(res.body());
+
+// 2. Выводим в лог с отступами (pretty print)
+                log.info("JSON от API:\n{}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
+                List<TournamentDto> tournaments = mapper.readValue(res.body(), new TypeReference<>() {
+                });
                 breaker.recordSuccess();
 
                 if (tournaments != null) {

@@ -21,6 +21,7 @@ public class RegistrationMailPublisher {
 
     public void sendVerificationCode(String email, String code) {
         mailDispatcher.send(
+                null,
                 email,
                 new MailContent(
                         MailType.VERIFICATION,

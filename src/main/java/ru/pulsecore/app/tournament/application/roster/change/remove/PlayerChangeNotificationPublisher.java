@@ -26,6 +26,7 @@ public class PlayerChangeNotificationPublisher {
                 player.name(), tournament.getLink());
 
         mailDispatcher.send(
+                player,
                 player.email(),
                 new MailContent(
                         MailType.PLAYER_REPLACED,
@@ -51,6 +52,7 @@ public class PlayerChangeNotificationPublisher {
                 transferInfo.to().getLink());
 
         mailDispatcher.send(
+                player,
                 player.email(),
                 new MailContent(
                         MailType.PLAYER_TRANSFERRED,

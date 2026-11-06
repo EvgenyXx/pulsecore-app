@@ -11,10 +11,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+
+/**
+ * Реализация контракта для модуля уведомлений.
+ * Предоставляет доступ к данным игроков и управлению push-уведомлениями.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class NotificationPlayerClientImpl implements PlayerNotificationClient {
+public class PlayerNotificationClientImpl implements PlayerNotificationClient {
 
 
     private final PlayerSearchService searchService;

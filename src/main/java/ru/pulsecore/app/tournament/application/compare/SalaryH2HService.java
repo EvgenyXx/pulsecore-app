@@ -51,13 +51,11 @@ public class SalaryH2HService {
         double avg2 = leagueAverages.getOrDefault(p2.getLeague(), 1.0);
         calculator.calculateScores(p1, p2, avg1, avg2);
 
-        String periodStr = DateTimeUtils.formatPeriod(start, end);
-
         return SalaryH2HResponseDto.builder()
                 .player1(p1)
                 .player2(p2)
                 .winnerName(calculator.determineWinner(p1, p2))
-                .period(periodStr)
+                .period(DateTimeUtils.formatPeriod(start, end))
                 .build();
     }
 }

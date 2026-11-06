@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
 import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ import java.util.Map;
 public class TournamentDiscoveryService {
 
     private final PlayerTournamentClient playerClient;
-    private final TournamentDataProvider tournamentDataProvider;
+    private final PlayerTournamentMatcher playerTournamentMatcher;
     private final TournamentFilter filter;
     private final TournamentSaver saver;
     private final NewTournamentEventPublisher publisher;
@@ -37,7 +37,6 @@ public class TournamentDiscoveryService {
         saver.saveAll(newTournaments);
         publisher.publish(newTournaments);
 
-        logIfNotEmpty(newTournaments);
     }
 
     private Map<PlayerData, List<TournamentDto>> findNewTournaments(List<PlayerData> players) {
@@ -45,7 +44,8 @@ public class TournamentDiscoveryService {
                 .map(PlayerData::name)
                 .toList();
 
-        Map<String, List<TournamentDto>> allFound = tournamentDataProvider.findPlayerTournaments(playerNames);
+        Map<String, List<TournamentDto>> allFound =
+                playerTournamentMatcher.match(playerNames);
 
         Map<PlayerData, List<TournamentDto>> result = new HashMap<>();
         for (PlayerData player : players) {
@@ -59,11 +59,5 @@ public class TournamentDiscoveryService {
         return result;
     }
 
-    private void logIfNotEmpty(Map<PlayerData, List<TournamentDto>> notification) {
-        if (!notification.isEmpty()) {
-            log.info("Новые турниры: игроков={}, всего турниров={}",
-                    notification.size(),
-                    notification.values().stream().mapToInt(List::size).sum());
-        }
-    }
+
 }

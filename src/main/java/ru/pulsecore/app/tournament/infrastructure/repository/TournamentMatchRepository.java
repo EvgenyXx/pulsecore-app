@@ -17,6 +17,31 @@ import java.util.UUID;
 @Repository
 public interface TournamentMatchRepository extends JpaRepository<TournamentMatchEntity, UUID> {
 
+    @Query(value = """
+            SELECT 
+                name AS playerName,
+                COUNT(*) AS totalMatches,
+                SUM(CASE WHEN LOWER(winner_name) = name THEN 1 ELSE 0 END) AS wins
+            FROM (
+                SELECT LOWER(player1_name) AS name, winner_name 
+                FROM tournament_match 
+                WHERE played_at >= :start AND played_at <= :end
+            
+                UNION ALL
+            
+                SELECT LOWER(player2_name) AS name, winner_name 
+                FROM tournament_match 
+                WHERE played_at >= :start AND played_at <= :end
+            ) AS matches
+            WHERE name IN (:playerNames)
+            GROUP BY name
+            """, nativeQuery = true)
+    List<PlayerMatchStatsProjection> getMatchStatsByPlayerNames(
+            @Param("playerNames") List<String> playerNames,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
     @Query("""
                 SELECT m.score AS score, m.winnerName AS winnerName
                 FROM TournamentMatchEntity m

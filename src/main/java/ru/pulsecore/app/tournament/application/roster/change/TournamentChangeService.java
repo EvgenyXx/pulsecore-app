@@ -9,13 +9,14 @@ import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.application.roster.TournamentDataProvider;
 import ru.pulsecore.app.tournament.application.roster.change.info.TournamentHashChecker;
 import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
-import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
 import ru.pulsecore.app.tournament.infrastructure.util.NumberUtils;
+import ru.pulsecore.app.tournament.infrastructure.util.PlayerIdentity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Service
@@ -43,36 +44,33 @@ public class TournamentChangeService {
     }
 
     private void playerTournaments(List<String> names) {
-        log.debug("Изменения: загрузка турниров за 3 дня");
         Map<String, List<TournamentDto>> all = tournamentDataProvider.getAllTournamentsFor3Days();
-        log.debug("Изменения: загружено дней={}, всего турниров={}",
-                all.size(),
-                all.values().stream().mapToInt(List::size).sum());
 
         Map<String, String> normalizedNames = names.stream()
-                .collect(Collectors.toMap(NameNormalizer::normalizeForSearch, name -> name));
+                .collect(Collectors.toMap(PlayerIdentity::cleanName,
+                        name -> name, (n1, n2) -> n1));
 
         Map<String, List<TournamentDto>> result = names.stream()
-                .collect(Collectors.toMap(name -> name, name -> new ArrayList<>()));
+                .collect(Collectors.toMap(name ->
+                        name, name -> new ArrayList<>(),
+                        (n1, n2) -> n1));
 
-        for (List<TournamentDto> dayTournaments : all.values()) {
-            for (TournamentDto t : dayTournaments) {
-                if (t.getPlayers() == null) continue;
+        List<TournamentDto> dayTournaments = all.values().stream()
+                .flatMap(List::stream)
+                .toList();
 
-                for (String player : t.getPlayers()) {
-                    String normalized = NameNormalizer.normalizeForSearch(player);
-                    String originalName = normalizedNames.get(normalized);
-
-                    if (originalName != null) {
-                        t.setHallNumber(NumberUtils.extractInt(t.getHall()));
-                        result.get(originalName).add(t);
-
-                    }
+        for (TournamentDto t : dayTournaments) {
+            if (t.getPlayers() == null) continue;
+            t.setHallNumber(NumberUtils.extractInt(t.getHall()));
+            for (String player : t.getPlayers()) {
+                String normalized = PlayerIdentity.cleanName(player);
+                String originalName = normalizedNames.get(normalized);
+                if (originalName != null) {
+                    result.get(originalName).add(t);
                 }
             }
         }
 
-        log.debug("Изменения: проверка хэшей для {} игроков", result.size());
         tournamentHashChecker.checkAndUpdateHashes(result, all);
         log.debug("Изменения: проверка завершена");
     }

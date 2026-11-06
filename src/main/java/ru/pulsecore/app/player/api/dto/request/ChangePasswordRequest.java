@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class ChangePasswordRequest {
 
-    @NotBlank(message = "Старый пароль обязателен")
+    @NotBlank(message = "Введите текущий пароль")
     private String oldPassword;
 
-    @NotBlank(message = "Новый пароль обязателен")
-    @Size(min = 6, message = "Новый пароль минимум 6 символов")
+    @NotBlank(message = "Введите новый пароль")
+    @Size(min = 6, message = "Новый пароль должен содержать не менее 6 символов")
     private String newPassword;
 }
