@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.*;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +17,23 @@ import java.util.UUID;
 
 @Repository
 public interface TournamentResultRepository extends JpaRepository<TournamentResultEntity, Long> {
+
+    @Query(value = """
+            SELECT 
+                player_id AS playerId, 
+                COUNT(id) AS tournaments, 
+                COALESCE(SUM(amount), 0) AS totalAmount,
+                CAST(ROUND(CAST(COALESCE(AVG(amount), 0) AS numeric), 0) AS double precision) AS averageAmount
+            FROM tournament_results
+            WHERE player_id IN (:playerIds) 
+              AND date BETWEEN :start AND :end
+            GROUP BY player_id
+            """, nativeQuery = true)
+    List<PlayerTopStatsProjection> getStatsForPlayers(
+            @Param("playerIds") Set<UUID> playerIds,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
 
     @Query(value = """
                 SELECT player_id AS playerId, league

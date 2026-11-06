@@ -68,8 +68,9 @@ services:
       YOOKASSA_CURRENCY: RUB
       APP_BASE_URL: ${APP_BASE_URL}
       QR_COLOR: "#6366f1"
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       AUDIT_DIR: /app/audit
+      TZ: Europe/Moscow
 
 volumes:
   pgdata:

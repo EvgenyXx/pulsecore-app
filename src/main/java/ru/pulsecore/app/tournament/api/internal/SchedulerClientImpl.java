@@ -4,12 +4,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.api.tournament.SchedulerAdminClient;
 import ru.pulsecore.app.tournament.application.admin.SchedulerPauseService;
+import ru.pulsecore.app.tournament.application.roster.canceled.TournamentCanceledProcessor;
+import ru.pulsecore.app.tournament.application.roster.change.TournamentChangeService;
+import ru.pulsecore.app.tournament.application.roster.discovery.TournamentDiscoveryService;
+import ru.pulsecore.app.tournament.application.roster.finish.TournamentFinishProcessor;
+import ru.pulsecore.app.tournament.application.roster.start.TournamentStartService;
+
 
 @Service
 @RequiredArgsConstructor
 public class SchedulerClientImpl implements SchedulerAdminClient {
 
     private final SchedulerPauseService schedulerPauseService;
+    private final TournamentFinishProcessor tournamentFinishProcessor;
+    private final TournamentDiscoveryService discoveryService;
+    private final TournamentStartService startService;
+    private final TournamentCanceledProcessor processCanceled;
+    private final TournamentChangeService changeService;
+
 
     @Override
     public void pauseScheduler() {
@@ -24,5 +36,30 @@ public class SchedulerClientImpl implements SchedulerAdminClient {
     @Override
     public boolean isSchedulerPaused() {
         return schedulerPauseService.isPaused();
+    }
+
+    @Override
+    public void checkStart() {
+        startService.checkStart();
+    }
+
+    @Override
+    public void processFinishedTournaments() {
+        tournamentFinishProcessor.processFinish();
+    }
+
+    @Override
+    public void checkNewTournaments() {
+        discoveryService.checkNewTournaments();
+    }
+
+    @Override
+    public void checkChangedTournament() {
+        changeService.checkChangedTournaments();
+    }
+
+    @Override
+    public void checkCanceled() {
+        processCanceled.processCanceled();
     }
 }

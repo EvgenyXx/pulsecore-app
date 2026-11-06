@@ -72,7 +72,6 @@ public final class AdminApi {
      * Admin.
      */
     public static final String TOURNAMENTS_BY_DATE = "/tournaments";
-    public static final String TOURNAMENT_BY_ID = "/tournaments/{id}";
     public static final String TOURNAMENT_UPDATE = "/tournaments/{id}";
 
     /**
@@ -108,4 +107,20 @@ public final class AdminApi {
      * Admin.
      */
     public static final String LAST_LOGIN = "/stats/last-login";
+
+
+        /**
+     * Управление планировщиком (Ручной запуск).
+     * SCHEDULER_CHECK_START — /scheduler/check-start, проверить старт.
+     * SCHEDULER_PROCESS_FINISHED — /scheduler/process-finished, обработать завершенные.
+     * SCHEDULER_CHECK_NEW — /scheduler/check-new, проверить новые.
+     * SCHEDULER_CHECK_CHANGED — /scheduler/check-changed, проверить измененные.
+     * SCHEDULER_CHECK_CANCELED — /scheduler/check-canceled, проверить отмененные.
+     * Admin.
+     */
+    public static final String SCHEDULER_CHECK_START = "/scheduler/check-start";
+    public static final String SCHEDULER_PROCESS_FINISHED = "/scheduler/process-finished";
+    public static final String SCHEDULER_CHECK_NEW = "/scheduler/check-new";
+    public static final String SCHEDULER_CHECK_CHANGED = "/scheduler/check-changed";
+    public static final String SCHEDULER_CHECK_CANCELED = "/scheduler/check-canceled";
 }

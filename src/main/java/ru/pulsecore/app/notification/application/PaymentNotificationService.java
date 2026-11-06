@@ -11,7 +11,6 @@ import ru.pulsecore.app.shared.api.player.PlayerNotificationClient;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.shared.event.SubscriptionWebhookEvent;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

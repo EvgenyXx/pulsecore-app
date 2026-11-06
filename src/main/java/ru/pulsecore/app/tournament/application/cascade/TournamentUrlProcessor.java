@@ -26,7 +26,7 @@ public class TournamentUrlProcessor {
     public TournamentUrlProcessor(ResultService resultService,
                                   TournamentSingleProcessor singleProcessor,
                                   TournamentResultProcessor resultProcessor,
-                                  @Qualifier(RateLimiterConfig.HISTORY_SYNC_RATE_LIMITER) Bucket tournamentRateLimiter) {
+                                  @Qualifier(RateLimiterConfig.HTML_PARSE_RATE_LIMITER) Bucket tournamentRateLimiter) {
         this.resultService = resultService;
         this.singleProcessor = singleProcessor;
         this.resultProcessor = resultProcessor;

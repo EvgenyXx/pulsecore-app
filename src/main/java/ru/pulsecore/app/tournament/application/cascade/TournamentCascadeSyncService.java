@@ -44,7 +44,7 @@ public class TournamentCascadeSyncService {
         YearMonth endMonth = YearMonth.from(to);
 
         while (!month.isBefore(endMonth)) {
-            syncMonth(playerId, playerName, month, from, to);
+            syncMonth(playerId, playerName, month);
             month = month.minusMonths(1);
             if (!month.isBefore(endMonth)) {
                 sleepBetweenMonths();
@@ -52,15 +52,10 @@ public class TournamentCascadeSyncService {
         }
     }
 
-    private void syncMonth(UUID playerId, String playerName, YearMonth month, LocalDate from, LocalDate to) {
+    private void syncMonth(UUID playerId, String playerName, YearMonth month) {
         try {
             LocalDate start = month.atDay(1);
             LocalDate end = month.atEndOfMonth();
-
-            if (start.isBefore(to)) start = to;
-            if (end.isAfter(from)) end = from;
-            if (start.isAfter(end)) return;
-
             log.debug("{} — синхронизация {}", playerName, MonthUtils.toRussianMonthYear(start));
             tournamentAutoAddService.addTournamentsForPeriod(playerId, playerName, start, end);
         } catch (Exception e) {

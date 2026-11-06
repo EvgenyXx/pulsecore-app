@@ -4,11 +4,18 @@ const BASE = '/api';
 
 async function apiRequest(endpoint, options = {}) {
     const res = await fetch(`${BASE}${endpoint}`, { credentials: 'same-origin', ...options });
+
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || `HTTP ${res.status}`);
     }
-    return res.json();
+
+    // Фикс для пустых ответов (например, ResponseEntity<Void>)
+    if (res.status === 204 || res.headers.get('content-length') === '0') {
+        return null;
+    }
+
+    return res.json().catch(() => null);
 }
 
 export const AdminAPI = {
@@ -136,6 +143,13 @@ export const AdminAPI = {
 
     resumeScheduler: () =>
         apiRequest('/admin/scheduler/resume', { method: 'POST' }),
+
+    // ===== РУЧНОЙ ЗАПУСК ШЕДУЛЕРА =====
+    checkStart: () => apiRequest('/admin/scheduler/check-start', { method: 'POST' }),
+    processFinished: () => apiRequest('/admin/scheduler/process-finished', { method: 'POST' }),
+    checkNew: () => apiRequest('/admin/scheduler/check-new', { method: 'POST' }),
+    checkChanged: () => apiRequest('/admin/scheduler/check-changed', { method: 'POST' }),
+    checkCanceled: () => apiRequest('/admin/scheduler/check-canceled', { method: 'POST' }),
 
     // ===== ОБЗОР ПОДПИСОК ВСЕХ ИГРОКОВ =====
     /**

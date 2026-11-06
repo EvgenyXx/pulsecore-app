@@ -2,9 +2,10 @@ package ru.pulsecore.app.tournament.application.calculation.league.place;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.shared.exception.BaseException;
 import ru.pulsecore.app.tournament.domain.PlacePointsCalculator;
 import ru.pulsecore.app.tournament.domain.enums.LeagueType;
+
+
 
 @Component
 @RequiredArgsConstructor

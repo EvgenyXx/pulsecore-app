@@ -10,7 +10,7 @@ import ru.pulsecore.app.tournament.application.roster.canceled.TournamentCancele
 import ru.pulsecore.app.tournament.application.roster.change.TournamentChangeService;
 import ru.pulsecore.app.tournament.application.roster.discovery.TournamentDiscoveryService;
 import ru.pulsecore.app.tournament.application.roster.finish.TournamentFinishProcessor;
-import ru.pulsecore.app.tournament.application.roster.start.TournamentStartProcessor;
+import ru.pulsecore.app.tournament.application.roster.start.TournamentStartService;
 import ru.pulsecore.app.tournament.infrastructure.circuit.MastersApiCircuitBreaker;
 
 import java.util.concurrent.TimeUnit;
@@ -22,7 +22,7 @@ public class RosterOrchestrationScheduler {
 
     private final TournamentFinishProcessor tournamentFinishProcessor;
     private final TournamentDiscoveryService discoveryService;
-    private final TournamentStartProcessor startProcessor;
+    private final TournamentStartService startService;
     private final TournamentCanceledProcessor processCanceled;
     private final MastersApiCircuitBreaker circuitBreaker;
     private final TournamentChangeService changeService;
@@ -35,7 +35,7 @@ public class RosterOrchestrationScheduler {
             scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
     public void checkStart() {
         if (circuitBreaker.isBlocked()) return;
-        startProcessor.checkStart();
+        startService.checkStart();
     }
 
     @Scheduled(

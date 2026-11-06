@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.infrastructure.config.NotificationAsyncConfig;
+import ru.pulsecore.app.notification.infrastructure.util.MailSendPolicy;
 import ru.pulsecore.app.shared.event.SingleMailEvent;
 
 @Slf4j
@@ -16,6 +17,9 @@ public class MailSingleProcessor {
 
     @Async(NotificationAsyncConfig.MAIL_EXECUTOR)
     public void process(SingleMailEvent event) {
+        if (!MailSendPolicy.canSend(event.content().emailType(), event.playerData())) {
+            return;
+        }
         mailStrategyRegistry.send(event.content().emailType(), event.content().context());
     }
 }

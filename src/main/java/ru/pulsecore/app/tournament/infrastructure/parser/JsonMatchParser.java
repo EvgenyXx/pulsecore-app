@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.pulsecore.app.tournament.api.dto.TournamentJson;
 import ru.pulsecore.app.tournament.domain.TournamentPage;
 import ru.pulsecore.app.tournament.domain.model.Match;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class JsonMatchParser {
             Match m = new Match();
             m.setStage(gameJson.groupTitle());
             m.setStatus(gameJson.statusTitle());
-            m.setStatusType(gameJson.statusType());   // ← добавили
+            m.setStatusType(gameJson.statusType());
             m.setPlayer1(gameJson.player1().name());
             m.setPlayer2(gameJson.player2().name());
             m.setScore1(gameJson.player1().result());

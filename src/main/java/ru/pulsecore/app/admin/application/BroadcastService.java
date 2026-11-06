@@ -9,11 +9,11 @@ import ru.pulsecore.app.notification.application.mail.context.BroadcastContext;
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 
 /**
  * Сервис массовых рассылок.
@@ -33,13 +33,12 @@ public class BroadcastService {
 
         int emailSent = 0;
 
-        Map<UUID, MailContent>content = new HashMap<>();
+        Map<UUID, MailContent> content = new HashMap<>();
         for (PlayerData player : players) {
-            content.put(player.id(),new MailContent(
+            content.put(player.id(), new MailContent(
                     MailType.BROADCAST,
-                    new BroadcastContext(player.email(),message)
+                    new BroadcastContext(player.email(), message)
             ));
-
         }
 
         mailDispatcher.send(content);
@@ -48,5 +47,12 @@ public class BroadcastService {
         return new BroadcastResult(players.size(), emailSent);
     }
 
-
+    public record BroadcastResult(int totalPlayers, int emailSent) {
+        public String toMessage() {
+            return String.format(
+                    "Рассылка завершена. Всего игроков: %d. Email: %d.",
+                    totalPlayers, emailSent
+            );
+        }
+    }
 }

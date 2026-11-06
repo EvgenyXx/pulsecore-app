@@ -15,10 +15,21 @@ public class AsyncConfig {
 
     public static final String TASK_EXECUTOR = "taskExecutor";
     public static final String TOURNAMENT_EXECUTOR = "tournamentExecutor";
-    public static final String CANCELED_EXECUTOR = "canceledExecutor" ;
+    public static final String CANCELED_EXECUTOR = "canceledExecutor";
+    public static final String LINEUP_EXECUTOR = "lineupExecutor";
 
 
-
+    @Bean(LINEUP_EXECUTOR)
+    public Executor lineupExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("lineup-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.initialize();
+        return executor;
+    }
 
 
     @Bean(TASK_EXECUTOR)
@@ -32,7 +43,6 @@ public class AsyncConfig {
         executor.initialize();
         return executor;
     }
-
 
 
     @Bean(TOURNAMENT_EXECUTOR)

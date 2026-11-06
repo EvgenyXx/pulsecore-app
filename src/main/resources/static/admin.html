@@ -389,7 +389,18 @@
                         </div>
                         <span id="schedulerStatusDot" class="scheduler-dot"></span>
                     </div>
-                    <button id="schedulerToggleBtn" class="btn btn-amber" onclick="toggleScheduler()">Приостановить</button>
+                    <button id="schedulerToggleBtn" class="btn btn-amber mb-4" onclick="toggleScheduler()">Приостановить</button>
+
+                    <div class="border-t border-white/10 pt-4">
+                        <p class="text-white font-semibold mb-3 text-sm">Ручной запуск</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="btn btn-ghost btn-sm" onclick="runSchedulerTask('checkStart')">Проверить старт</button>
+                            <button class="btn btn-ghost btn-sm" onclick="runSchedulerTask('processFinished')">Завершенные</button>
+                            <button class="btn btn-ghost btn-sm" onclick="runSchedulerTask('checkNew')">Новые</button>
+                            <button class="btn btn-ghost btn-sm" onclick="runSchedulerTask('checkChanged')">Измененные</button>
+                            <button class="btn btn-ghost btn-sm col-span-2" onclick="runSchedulerTask('checkCanceled')">Отмененные</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -433,13 +444,15 @@
 <script type="module" src="/js/admin/admin-app.js"></script>
 <script type="module">
     import { loadTournaments, toggleTournamentExpand, toggleStatus, saveTournament } from '/js/admin/admin-tournaments.js';
-    import { loadSchedulerStatus, toggleScheduler } from '/js/admin/admin-scheduler.js';
+    import { loadSchedulerStatus, toggleScheduler, runSchedulerTask } from '/js/admin/admin-scheduler.js';
+
     window.loadTournaments = loadTournaments;
     window.toggleTournamentExpand = toggleTournamentExpand;
     window.toggleStatus = toggleStatus;
     window.saveTournament = saveTournament;
     window.loadSchedulerStatus = loadSchedulerStatus;
     window.toggleScheduler = toggleScheduler;
+    window.runSchedulerTask = runSchedulerTask;
 
     import { subsPrevPage, subsNextPage, giveSubPeriod } from '/js/admin/admin-players.js';
     window.subsPrevPage = subsPrevPage;

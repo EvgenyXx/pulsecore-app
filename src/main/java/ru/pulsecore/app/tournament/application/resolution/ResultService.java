@@ -39,12 +39,7 @@ public class ResultService {
         return calculate(doc);
     }
 
-    /**
-     * Считает результат по уже загруженной странице.
-     */
-    public ParsedResult calculateAll(Document doc) {
-        return calculate(doc);
-    }
+
 
     /**
      * Считает результат по уже распарсенной странице (без повторного парсинга).

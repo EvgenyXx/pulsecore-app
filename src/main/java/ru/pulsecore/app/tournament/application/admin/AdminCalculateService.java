@@ -10,6 +10,7 @@ import ru.pulsecore.app.tournament.application.resolution.ResultService;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.application.cascade.TournamentSearchService;
 import ru.pulsecore.app.tournament.infrastructure.util.NameNormalizer;
+import ru.pulsecore.app.tournament.infrastructure.util.PlayerIdentity;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,18 +26,23 @@ public class AdminCalculateService {
 
 
     public AdminCalculateResponse calculate(String name, String startDate, String endDate) {
-        if (endDate == null || endDate.isBlank()) {
-            endDate = startDate;
-        }
+    log.info("ЗАПРОС НА РАСЧЕТ: name={}, startDate={}, endDate={}", name, startDate, endDate);
 
-        List<TournamentDto> tournaments = tournamentSearchService.findByDateRangeAndPlayer(startDate, endDate, name);
-
-        if (tournaments.isEmpty()) {
-            return buildEmptyResponse(name, startDate, endDate);
-        }
-
-        return buildResponse(name, startDate, endDate, tournaments);
+    if (endDate == null || endDate.isBlank()) {
+        endDate = startDate;
+        log.info("endDate был пустой, установлен = startDate: {}", endDate);
     }
+
+    List<TournamentDto> tournaments = tournamentSearchService.findByDateRangeAndPlayer(startDate, endDate, name);
+
+    log.info("НАЙДЕНО ТУРНИРОВ: {}", tournaments.size());
+
+    if (tournaments.isEmpty()) {
+        return buildEmptyResponse(name, startDate, endDate);
+    }
+
+    return buildResponse(name, startDate, endDate, tournaments);
+}
 
     private AdminCalculateResponse buildEmptyResponse(String name, String startDate, String endDate) {
         return AdminCalculateResponse.builder()
@@ -82,7 +88,7 @@ public class AdminCalculateService {
 
     private double extractPlayerAmount(ParsedResult parsed, String searchName) {
         return parsed.results().stream()
-                .filter(r -> NameNormalizer.normalizeForSearch(r.getPlayer()).contains(searchName))
+                .filter(r -> PlayerIdentity.isSamePlayer(r.getPlayer(),searchName))
                 .mapToDouble(ResultDto::getTotal)
                 .sum();
     }
