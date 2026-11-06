@@ -37,7 +37,6 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     flex-shrink: 0;
-    /* Убрали max-height: 60px и overflow: hidden, чтобы не резало контент */
 }
 
 .rank-card:hover {
@@ -53,20 +52,51 @@
     border-bottom-right-radius: 0;
     border-bottom-color: transparent;
     background: rgba(255, 255, 255, 0.06);
-    transform: none; /* Отключаем сдвиг, чтобы не было щелей */
+    transform: none;
     margin-bottom: 0;
 }
 
-/* Твоя карточка (своя лига) */
-.rank-card.mine {
-    background: linear-gradient(180deg, color-mix(in srgb, var(--accent, #6366f1) 8%, transparent) 0%, color-mix(in srgb, var(--accent, #6366f1) 3%, transparent) 100%);
+/* ================= ПОДСВЕТКА СВОЕЙ ЛИГИ ================= */
+
+.rank-card-details.mine .rank-card {
+    background: transparent;
     border: 1px solid color-mix(in srgb, var(--accent, #6366f1) 40%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 12px color-mix(in srgb, var(--accent, #6366f1) 15%, transparent);
+    /* Убрана тень, чтобы не было эффекта "поверх фона" */
+    box-shadow: none;
 }
 
-.rank-card.mine:hover {
+.rank-card-details.mine .rank-card:hover {
     border-color: color-mix(in srgb, var(--accent, #6366f1) 60%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 18px color-mix(in srgb, var(--accent, #6366f1) 30%, transparent);
+}
+
+.rank-card-details.mine[open] .rank-card {
+    background: transparent;
+    border-bottom-color: transparent;
+}
+
+/* ================= СТИЛЬНЫЙ БЕЙДЖ ЛИГИ (ПЛАТИНА) ================= */
+
+.league-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        0 0 12px rgba(255, 255, 255, 0.15);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    letter-spacing: 0.5px;
 }
 
 /* Панель деталей */
@@ -127,7 +157,7 @@
     align-items: center;
     padding-top: 14px;
     margin-top: 2px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06); /* Очень тонкая линия */
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* Делаем винрейт чуть жирнее */
@@ -251,7 +281,7 @@
     overflow: hidden;
     overscroll-behavior-y: contain;
     transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    max-height: 275px;
+    max-height: 310px;
 }
 
 .top-list-container.expanded {
@@ -273,7 +303,7 @@
 
 /* Твой оригинальный класс скрытия */
 .hidden-item {
-    display: none !important; /* Заменили opacity: 0 на display: none, чтобы не было артефактов */
+    display: none !important;
 }
 
 /* Кнопка снизу */
