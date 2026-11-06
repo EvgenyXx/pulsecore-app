@@ -70,6 +70,7 @@ services:
       QR_COLOR: "#6366f1"
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       AUDIT_DIR: /app/audit
+      TZ: Europe/Moscow
 
 volumes:
   pgdata:
