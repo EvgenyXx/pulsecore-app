@@ -34,6 +34,6 @@ public class DatabaseTournamentStartService implements TournamentStartService {
                 .toList();
 
         tournamentRepository.saveAll(started);
-        log.info("Старт DB: запущено {} турниров", started.size());
+        log.debug("Старт DB: запущено {} турниров", started.size());
     }
 }
