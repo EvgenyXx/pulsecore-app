@@ -152,22 +152,26 @@ async function refreshTopListOnly(league) {
                 const detailJson = p.detailPeriod ? JSON.stringify(p.detailPeriod) : '';
                 const safeDetails = detailJson.replace(/"/g, '&quot;');
 
+                // Используем <details> и <summary> для нативного аккордеона
                 html += `
-                    <div class="rank-card hof-item ${isMe ? 'mine' : ''} ${isFirst ? 'first' : ''} ${isHiddenClass}" 
+                    <details class="rank-card-details hof-item ${isMe ? 'mine' : ''} ${isFirst ? 'first' : ''} ${isHiddenClass}" 
                          data-pos="${position}" 
                          data-details="${safeDetails}"
                          data-player-id="${p.playerId || ''}"
                          data-no-swipe="true">
-                        <div class="rank-number">${position}</div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="text-[15px] font-medium text-white truncate">${name}</span>
-                                <div class="rank-meta">
-                                    ${badge}
+                        <summary class="rank-card">
+                            <div class="rank-number">${position}</div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-[15px] font-medium text-white truncate">${name}</span>
+                                    <div class="rank-meta">
+                                        ${badge}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </summary>
+                        <div class="rank-details-wrapper"></div>
+                    </details>
                 `;
             });
 
@@ -216,80 +220,64 @@ async function refreshTopListOnly(league) {
 }
 
 function handleCardClick(e) {
-    const card = e.target.closest('.rank-card');
-    if (!card) return;
+    const summary = e.target.closest('.rank-card');
+    if (!summary) return;
 
-    e.stopPropagation();
+    const detailsEl = summary.parentElement;
+    const wrapper = detailsEl.querySelector('.rank-details-wrapper');
 
-    const container = document.getElementById('topWeekList');
+    // Если уже открыто — браузер закроет сам (или мы просто очистим)
+    if (!detailsEl.open) {
+        e.preventDefault(); // Блокируем стандартное открытие, чтобы вставить контент
+        detailsEl.open = true;
 
-    if (card.classList.contains('expanded')) {
-        const nextSibling = card.nextElementSibling;
-        if (nextSibling && nextSibling.classList.contains('rank-details-wrapper')) {
-            nextSibling.remove();
-        }
-        card.classList.remove('expanded');
+        const detailJson = detailsEl.getAttribute('data-details');
+        if (!detailJson || detailJson === '""') return;
 
-        if (!isExpanded && !container.querySelector('.rank-card.expanded')) {
-            container.classList.add('collapsed');
-            container.classList.remove('expanded');
-        }
-        return;
+        const data = JSON.parse(detailJson);
+
+        wrapper.innerHTML = `
+            <div class="rd-grid">
+                <div class="rd-item">
+                    <span class="rd-label">ТУРНИРЫ</span>
+                    <span class="rd-value">${data.tournaments || 0}</span>
+                </div>
+                <div class="rd-item">
+                    <span class="rd-label">ЗАРАБОТАЛ</span>
+                    <span class="rd-value text-emerald-400">${(data.totalAmount || 0).toLocaleString()} ₽</span>
+                </div>
+                <div class="rd-item">
+                    <span class="rd-label">СРЕДНИЙ ЧЕК</span>
+                    <span class="rd-value">${(data.averageAmount || 0).toLocaleString()} ₽</span>
+                </div>
+                <div class="rd-item">
+                    <span class="rd-label">МАТЧИ</span>
+                    <span class="rd-value">${data.matchesCount || 0}</span>
+                </div>
+                <div class="rd-item">
+                    <span class="rd-label">ПОБЕДЫ</span>
+                    <span class="rd-value text-emerald-400">${data.wins || 0}</span>
+                </div>
+                <div class="rd-item">
+                    <span class="rd-label">ПОРАЖЕНИЯ</span>
+                    <span class="rd-value text-red-400">${data.loses || 0}</span>
+                </div>
+                <div class="rd-item rd-full">
+                    <span class="rd-label">ВИНРЕЙТ</span>
+                    <span class="rd-value">${data.matchesCount > 0 ? Math.round((data.wins / data.matchesCount) * 100) : 0}%</span>
+                </div>
+            </div>
+        `;
+
+        // Закрываем остальные
+        document.querySelectorAll('.rank-card-details').forEach(el => {
+            if (el !== detailsEl) el.open = false;
+        });
+
+        const container = document.getElementById('topWeekList');
+        container.classList.remove('collapsed');
+        container.classList.add('expanded');
     }
-
-    document.querySelectorAll('.rank-card.expanded').forEach(c => {
-        const nextSibling = c.nextElementSibling;
-        if (nextSibling && nextSibling.classList.contains('rank-details-wrapper')) {
-            nextSibling.remove();
-        }
-        c.classList.remove('expanded');
-    });
-
-    const detailJson = card.getAttribute('data-details');
-    if (!detailJson || detailJson === '""') return;
-
-    const data = JSON.parse(detailJson);
-    card.classList.add('expanded');
-
-    container.classList.remove('collapsed');
-    container.classList.add('expanded');
-
-    const detailsWrapper = document.createElement('div');
-    detailsWrapper.className = 'rank-details-wrapper';
-    detailsWrapper.innerHTML = `
-        <div class="rd-grid">
-            <div class="rd-item">
-                <span class="rd-label">ТУРНИРЫ</span>
-                <span class="rd-value">${data.tournaments || 0}</span>
-            </div>
-            <div class="rd-item">
-                <span class="rd-label">ЗАРАБОТАЛ</span>
-                <span class="rd-value text-emerald-400">${(data.totalAmount || 0).toLocaleString()} ₽</span>
-            </div>
-            <div class="rd-item">
-                <span class="rd-label">СРЕДНИЙ ЧЕК</span>
-                <span class="rd-value">${(data.averageAmount || 0).toLocaleString()} ₽</span>
-            </div>
-            <div class="rd-item">
-                <span class="rd-label">МАТЧИ</span>
-                <span class="rd-value">${data.matchesCount || 0}</span>
-            </div>
-            <div class="rd-item">
-                <span class="rd-label">ПОБЕДЫ</span>
-                <span class="rd-value text-emerald-400">${data.wins || 0}</span>
-            </div>
-            <div class="rd-item">
-                <span class="rd-label">ПОРАЖЕНИЯ</span>
-                <span class="rd-value text-red-400">${data.loses || 0}</span>
-            </div>
-            <div class="rd-item rd-full">
-                <span class="rd-label">ВИНРЕЙТ</span>
-                <span class="rd-value">${data.matchesCount > 0 ? Math.round((data.wins / data.matchesCount) * 100) : 0}%</span>
-            </div>
-        </div>
-    `;
-
-    card.parentNode.insertBefore(detailsWrapper, card.nextSibling);
 }
 
 window.toggleTopList = function() {
@@ -299,13 +287,7 @@ window.toggleTopList = function() {
 
     if (!container || !btn) return;
 
-    document.querySelectorAll('.rank-card.expanded').forEach(c => {
-        const nextSibling = c.nextElementSibling;
-        if (nextSibling && nextSibling.classList.contains('rank-details-wrapper')) {
-            nextSibling.remove();
-        }
-        c.classList.remove('expanded');
-    });
+    document.querySelectorAll('.rank-card-details').forEach(el => el.open = false);
 
     if (container.classList.contains('collapsed')) {
         isExpanded = true;
