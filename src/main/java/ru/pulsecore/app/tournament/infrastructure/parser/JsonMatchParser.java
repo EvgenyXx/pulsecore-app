@@ -25,7 +25,7 @@ public class JsonMatchParser {
     private Match parseGame(TournamentJson.GameJson gameJson) {
         try {
             Match m = new Match();
-            m.setStage(gameJson.groupTitle());
+            m.setStage(gameJson.groupType());
             m.setStatus(gameJson.statusTitle());
             m.setStatusType(gameJson.statusType());
             m.setPlayer1(gameJson.player1().name());
