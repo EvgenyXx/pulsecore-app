@@ -35,13 +35,6 @@ public class TournamentFinishService {
 
         ParsedResult parsed = resultService.calculateAll(page);
 
-        if (parsed == null) {
-            log.warn("Турнир {} пропущен: невозможно проанализировать", t.getLink());
-            return;
-        }
-        if (parsed.league() == null) {
-            return;
-        }
         if (parsed.status() != TournamentStatus.FINISHED) return;
 
         List<TournamentResultEntity> resultEntities = processService.processTournament(notifications, parsed);

@@ -1,13 +1,18 @@
 package ru.pulsecore.app.tournament.application.match;
 
-import org.springframework.context.annotation.Profile;
+
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.domain.enums.MatchStage;
 import ru.pulsecore.app.tournament.domain.enums.LegacyMatchStage;
+import ru.pulsecore.app.tournament.domain.enums.TournamentVersion;
 
 @Component
-@Profile("stage-legacy")
 public class LegacyStageParser implements StageParser {
+
+    @Override
+    public boolean supports(TournamentVersion version) {
+        return version == TournamentVersion.STANDARD;
+    }
 
     @Override
     public MatchStage parse(String stage) {

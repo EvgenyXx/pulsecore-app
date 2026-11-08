@@ -22,21 +22,23 @@ public class PlayerNotificationCreator {
 
     public void createNotificationForTransfer(PlayerData player, TournamentDto to) {
         log.debug("Создание связи: player={}, link={}", player.name(), to.getLink());
+        try {
+            TournamentEntity newTournamentEntity = tournamentRepository
+                    .findByLink(to.getLink())
+                    .orElseThrow(() -> new TournamentNotFoundException(to.getLink()));
 
-        TournamentEntity newTournamentEntity = tournamentRepository
-                .findByLink(to.getLink())
-                .orElseThrow(()-> new TournamentNotFoundException(to.getLink()));
 
+            PlayerNotification pn = PlayerNotification.builder()
+                    .playerId(player.id())
+                    .tournament(newTournamentEntity)
+                    .hall(NumberUtils.extractInt(to.getHall()))
+                    .build();
 
-
-        PlayerNotification pn = PlayerNotification.builder()
-                .playerId(player.id())
-                .tournament(newTournamentEntity)
-                .hall(NumberUtils.extractInt(to.getHall()))
-                .build();
-
-        notificationRepository.save(pn);
-        log.info("Создана новая связь: player={}, tournament={}, hall={}",
-                player.name(), newTournamentEntity.getExternalId(), pn.getHall());
+            notificationRepository.save(pn);
+            log.info("Создана новая связь: player={}, tournament={}, hall={}",
+                    player.name(), newTournamentEntity.getExternalId(), pn.getHall());
+        } catch (TournamentNotFoundException e) {
+            log.error(e.getMessage());
+        }
     }
 }

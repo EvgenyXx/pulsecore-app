@@ -15,16 +15,18 @@ public class JsonMatchParser {
     public List<Match> parseMatches(TournamentPage page) {
         List<Match> result = new ArrayList<>();
         TournamentJson json = page.json();
+         String typeId = json.typeId();
         for (TournamentJson.GameJson gameJson : json.games()) {
-            Match m = parseGame(gameJson);
+            Match m = parseGame(gameJson,typeId);
             if (m != null) result.add(m);
         }
         return result;
     }
 
-    private Match parseGame(TournamentJson.GameJson gameJson) {
+    private Match parseGame(TournamentJson.GameJson gameJson,String typeId) {
         try {
             Match m = new Match();
+            m.setTypeId(typeId);
             m.setStage(gameJson.groupType());
             m.setStatus(gameJson.statusTitle());
             m.setStatusType(gameJson.statusType());

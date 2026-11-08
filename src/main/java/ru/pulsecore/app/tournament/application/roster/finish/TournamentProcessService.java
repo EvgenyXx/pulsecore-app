@@ -11,7 +11,6 @@ import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
