@@ -26,50 +26,35 @@ public class TournamentResultPersistence {
     private final CacheEvictionService cacheEvictionService;
 
 
-
     public Page<TournamentResultEntity> getResultsByPeriod(
             UUID playerId, LocalDate start, LocalDate end, Pageable pageable) {
         return tournamentResultRepository.findByPlayerIdAndDateBetweenOrderByDateAsc(playerId, start, end, pageable);
     }
 
     @Transactional
-    public void saveRoster(List<TournamentResultEntity> entities) {
+    public void saveResults(List<TournamentResultEntity> entities) {
         log.debug("Результаты: сохранение {} записей", entities.size());
 
         List<TournamentResultEntity> toSave = new ArrayList<>();
         for (TournamentResultEntity entity : entities) {
-            if (!existsByPlayerAndTournament(entity)) {
+            if (!tournamentResultRepository.existsByPlayerIdAndTournament_ExternalId(
+                    entity.getPlayerId(), entity.getTournament().getExternalId())) {
                 toSave.add(entity);
-                log.debug("Результаты: новая запись player={}, tournament={}",
-                        entity.getPlayerId(), entity.getTournament().getExternalId());
-            } else {
-                log.debug("Результаты: запись уже существует player={}, tournament={}",
-                        entity.getPlayerId(), entity.getTournament().getExternalId());
             }
         }
+        tournamentResultRepository.saveAll(toSave);
+        cacheEvictionService.evictHallOfFame();
+        cacheEvictionService.evictAnalytics();
+        log.info("Результаты: сохранено={}", toSave.size());
 
-        if (!toSave.isEmpty()) {
-            tournamentResultRepository.saveAll(toSave);
-            evictCaches();
-            log.info("Результаты: сохранено={}", toSave.size());
-        }
     }
-
-
 
 
     public PeriodStatsProjection getStatsByPeriod(UUID player, LocalDate start, LocalDate end) {
         return tournamentResultRepository.getStats(player, start, end);
     }
 
-    public void evictCaches() {
-        cacheEvictionService.evictHallOfFame();
-        cacheEvictionService.evictAnalytics();
-        log.debug("Результаты: кэши очищены");
-    }
 
-    private boolean existsByPlayerAndTournament(TournamentResultEntity entity) {
-        return tournamentResultRepository.existsByPlayerIdAndTournament_ExternalId(
-                entity.getPlayerId(), entity.getTournament().getExternalId());
-    }
+
+
 }

@@ -32,9 +32,10 @@ public class TournamentFinishService {
     private final ResultService resultService;
     private final TournamentRepository tournamentRepository;
     private final TournamentResultNotifier tournamentResultNotifier;
-    private final TournamentResultProcessor resultProcessor;
+    private final TournamentResultResolver resultProcessor;
     private final PlayerTournamentClient playerClient;
     private final TournamentMatchService matchService;
+    private final TournamentResultPersistence tournamentResultPersistence;
 
     @Transactional
     public void handleFinished(String link,
@@ -64,6 +65,7 @@ public class TournamentFinishService {
                 parsed.hasRemoved(),
                 parsed.league());
 
+        tournamentResultPersistence.saveResults(resultEntities);
         matchService.createMatches(parsed, tournament);
 
         tournament.setFinished(true);

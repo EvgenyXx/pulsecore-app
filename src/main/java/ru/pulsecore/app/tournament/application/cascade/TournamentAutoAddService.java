@@ -27,24 +27,15 @@ public class TournamentAutoAddService {
 
 
     public void addTournamentsForPeriod(UUID playerId, String playerName, LocalDate start, LocalDate end) {
-        List<TournamentDto> tournaments;
-        try {
-            tournaments = tournamentSearchService.findByDateRangeAndPlayer(
-                    start.toString(), end.toString(), playerName);
-        } catch (Exception e) {
-            log.error("Ошибка поиска турниров для {}: {}", playerName, e.getMessage());
-            throw new RuntimeException(e);
-        }
+        List<TournamentDto> tournaments = tournamentSearchService.findByDateRangeAndPlayer(
+                                                                    start.toString(), end.toString(), playerName);
 
 
-        List<String>urls = new ArrayList<>();
+        List<String> urls = new ArrayList<>();
         for (TournamentDto t : tournaments) {
             urls.add(t.getLink());
         }
-        tournamentUrlProcessor.processUrlsForPlayer(urls, playerId,playerName);
-        log.info("{} — загружено {} турниров за {}",
-                playerName,
-                urls.size(),
-                MonthUtils.toRussianMonthYear(start));
+        tournamentUrlProcessor.processUrlsForPlayer(urls, playerId, playerName);
+        log.info("{} — загружено {} турниров за {}", playerName, urls.size(), MonthUtils.toRussianMonthYear(start));
     }
 }

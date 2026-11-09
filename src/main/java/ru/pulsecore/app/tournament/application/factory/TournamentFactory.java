@@ -5,12 +5,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
+import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 
 import java.time.LocalDate;
 
 @Slf4j
 @Component
 public class TournamentFactory {
+
+    public TournamentEntity createFromParsed(ParsedResult parsed, String url) {
+        return TournamentEntity.builder()
+                .externalId(parsed.tournamentId())
+                .time(parsed.time())
+                .cancelled(false)
+                .finished(true)
+                .processed(true)
+                .started(true)
+                .date(parsed.date() != null ? LocalDate.parse(parsed.date()) : null)
+                .link(url)
+                .build();
+    }
 
     public TournamentEntity create(TournamentDto t) {
 
