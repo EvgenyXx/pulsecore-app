@@ -38,7 +38,11 @@ public class TournamentSingleProcessor {
 
         if (parsed.status() == TournamentStatus.CANCELLED) {
             statusService.markAsCancelled(tournament, parsed, url);
+            notificationService.createIfAbsent(playerId, tournament);
+            return List.of();
         }
+
+        if (parsed.status() != TournamentStatus.FINISHED) return List.of();
 
         notificationService.createIfAbsent(playerId, tournament);
 

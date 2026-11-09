@@ -51,13 +51,9 @@ public class TournamentResultProcessor {
                                      Map<UUID, String> roster,
                                      TournamentEntity tournament,
                                      double bonus,
-                                     boolean isFinished,
                                      boolean hasRemoved,
                                      String league) {
-        if (!isFinished) {
-            log.debug("Результаты: турнир не завершён, пропуск roster");
-            return List.of();
-        }
+
 
         List<TournamentResultEntity> entities = new ArrayList<>();
         for (ResultDto r : results) {

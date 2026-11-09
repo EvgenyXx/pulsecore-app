@@ -36,18 +36,7 @@ public interface PlayerNotificationRepository
             " t.date = CURRENT_DATE AND t.time <= :currentTime")
     List<String> findStartingSoonLinks(@Param("currentTime") String currentTime);
 
-    @Query(value = """
-                 select distinct
-                     t.link
-                     from player_notification p
-                 left join tournament t on p.tournament_id = t.id
-                 where t.started = true
-                 and  t.processed=false
-                 and t.finished = false
-                 and t.cancelled= false
-                 and t.date <= current_date
-            """, nativeQuery = true)
-    List<String> findStartedNotFinishedLinks();
+
 
     @Query("SELECT pn FROM PlayerNotification pn JOIN FETCH pn.tournament WHERE pn.tournament.link = :link")
     List<PlayerNotification> findByTournamentLink(@Param("link") String link);

@@ -12,6 +12,7 @@ import ru.pulsecore.app.tournament.domain.enums.MatchStatus;
 @NoArgsConstructor
 public class Match {
 
+    private String typeId;
     private String stage;
     private String player1;
     private String player2;

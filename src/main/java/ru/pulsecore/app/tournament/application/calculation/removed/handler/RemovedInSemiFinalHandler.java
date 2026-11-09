@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
-import ru.pulsecore.app.tournament.domain.enums.MatchStage;
+import ru.pulsecore.app.tournament.domain.enums.LegacyMatchStage;
 import ru.pulsecore.app.tournament.application.calculation.StandardDefaultMatchCalculationStrategy;
 import ru.pulsecore.app.tournament.domain.RemovedPlayerHandler;
 import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
@@ -33,13 +33,13 @@ public class RemovedInSemiFinalHandler implements RemovedPlayerHandler {
         MatchProcessingResult result = defaultStrategy.process(ctx);
 
         List<Match> semis = ctx.getMatches().stream()
-                .filter(m -> MatchStage.SEMI_FINAL.matches(m.getStage()))
+                .filter(m -> LegacyMatchStage.SEMI_FINAL.matches(m.getStage()))
                 .toList();
 
         if (semis.size() < 2) return result;
 
         Match finalMatch = ctx.getMatches().stream()
-                .filter(m -> MatchStage.FINAL.matches(m.getStage()))
+                .filter(m -> LegacyMatchStage.FINAL.matches(m.getStage()))
                 .findFirst()
                 .orElse(null);
 

@@ -84,7 +84,8 @@ public class ResultService {
                 ctx.getLeague().name(),
                 ctx.getTime(),
                 ctx.getDate(),
-                ctx.getMatches()
+                ctx.getMatches(),
+                ctx.getTypeId()
         );
     }
 

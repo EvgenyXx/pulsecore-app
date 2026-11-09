@@ -27,8 +27,12 @@
 * `hash-sha256` — `Sha256TournamentHashCalculator`. Новый алгоритм.
 * `hash-legacy` — `DiscoveryHashUtil`. Старый алгоритм.
 
+### 2.5. Парсинг стадий матчей (`StageParser`)
+* `stage-mesh` — `NewStageParser`. Новый формат (сетки `top_mesh`, `lower_mesh`).
+* `stage-legacy` — `LegacyStageParser`. Старый формат (текстовые названия).
+
 ## 3. Конфигурация `SPRING_PROFILES_ACTIVE`
 
 **Локальная разработка (все актуальные реализации):**
 ```env
-SPRING_PROFILES_ACTIVE=local,start-db,transfer-optimized,masters-client-get,hash-sha256
+SPRING_PROFILES_ACTIVE=local,start-db,transfer-optimized,masters-client-get,hash-sha256,stage-mesh

@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.calculation.removed.handler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
-import ru.pulsecore.app.tournament.domain.enums.MatchStage;
+import ru.pulsecore.app.tournament.domain.enums.LegacyMatchStage;
 import ru.pulsecore.app.tournament.application.calculation.StandardDefaultMatchCalculationStrategy;
 import ru.pulsecore.app.tournament.domain.RemovedPlayerHandler;
 import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
@@ -46,7 +46,7 @@ public class RemovedInGroupHandler implements RemovedPlayerHandler {
         Set<String> finalists = new HashSet<>();
 
         ctx.getMatches().stream()
-                .filter(m -> MatchStage.FINAL.matches(m.getStage()))
+                .filter(m -> LegacyMatchStage.FINAL.matches(m.getStage()))
                 .findFirst()
                 .ifPresent(finalMatch -> {
                     finalists.add(PlayerNameUtils.normalizeSearch(finalMatch.getPlayer1()));

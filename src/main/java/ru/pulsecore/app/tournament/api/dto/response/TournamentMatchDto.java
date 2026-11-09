@@ -1,7 +1,7 @@
 package ru.pulsecore.app.tournament.api.dto.response;
 
 import lombok.Builder;
-import ru.pulsecore.app.tournament.domain.entity.MatchStage;
+import ru.pulsecore.app.tournament.domain.enums.MatchStage;
 
 import java.time.LocalDateTime;
 
