@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
-import ru.pulsecore.app.tournament.domain.enums.MatchStage;
+import ru.pulsecore.app.tournament.domain.enums.LegacyMatchStage;
 import ru.pulsecore.app.tournament.domain.model.RemovedResult;
 import ru.pulsecore.app.tournament.domain.enums.RemovedStage;
 
@@ -28,14 +28,14 @@ public class RemovedPlayerDetector {
         }
 
         if (stage == RemovedStage.NONE) {
-            removedPlayer = detectCanceledMatch(matches, MatchStage.FINAL);
+            removedPlayer = detectCanceledMatch(matches, LegacyMatchStage.FINAL);
             if (removedPlayer != null) {
                 stage = RemovedStage.FINAL;
             }
         }
 
         if (stage == RemovedStage.NONE) {
-            removedPlayer = detectCanceledMatch(matches, MatchStage.THIRD_PLACE);
+            removedPlayer = detectCanceledMatch(matches, LegacyMatchStage.THIRD_PLACE);
             if (removedPlayer != null) {
                 stage = RemovedStage.THIRD_PLACE;
             }
@@ -44,7 +44,7 @@ public class RemovedPlayerDetector {
         return new RemovedResult(removedPlayer, stage);
     }
 
-    private String detectCanceledMatch(List<Match> matches, MatchStage targetStage) {
+    private String detectCanceledMatch(List<Match> matches, LegacyMatchStage targetStage) {
         return matches.stream()
                 .filter(m -> targetStage.matches(m.getStage()))
                 .filter(this::isCanceled)
@@ -55,7 +55,7 @@ public class RemovedPlayerDetector {
 
     private String detectRemovedPlayerFromSemi(List<Match> matches) {
         List<Match> semiMatches = matches.stream()
-                .filter(m -> MatchStage.SEMI_FINAL.matches(m.getStage()))
+                .filter(m -> LegacyMatchStage.SEMI_FINAL.matches(m.getStage()))
                 .toList();
 
         Match canceledSemi = semiMatches.stream()
@@ -69,7 +69,7 @@ public class RemovedPlayerDetector {
         String p2 = PlayerNameUtils.normalizeSearch(canceledSemi.getPlayer2());
 
         Match finalMatch = matches.stream()
-                .filter(m -> MatchStage.FINAL.matches(m.getStage()))
+                .filter(m -> LegacyMatchStage.FINAL.matches(m.getStage()))
                 .findFirst()
                 .orElse(null);
 

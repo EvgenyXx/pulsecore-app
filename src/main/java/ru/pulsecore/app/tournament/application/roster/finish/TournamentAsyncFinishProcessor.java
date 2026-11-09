@@ -8,20 +8,17 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.AsyncConfig;
 import ru.pulsecore.app.tournament.domain.TournamentPage;
-import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.infrastructure.cache.TournamentStatusCache;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
+import ru.pulsecore.app.tournament.infrastructure.exception.TournamentNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
-import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
-
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 @Service
 @Slf4j
@@ -29,7 +26,6 @@ public class TournamentAsyncFinishProcessor {
 
     private final DocumentLoader documentLoader;
     private final TournamentFinishService finishService;
-    private final PlayerNotificationRepository repo;
     private final JsonTournamentParser jsonTournamentParser;
     private final JsonTournamentStatusParser jsonTournamentStatusParser;
     private final TournamentStatusCache tournamentStatusCache;
@@ -39,14 +35,12 @@ public class TournamentAsyncFinishProcessor {
 
     public TournamentAsyncFinishProcessor(DocumentLoader documentLoader,
                                           TournamentFinishService finishService,
-                                          PlayerNotificationRepository repo,
                                           JsonTournamentParser jsonTournamentParser,
                                           JsonTournamentStatusParser jsonTournamentStatusParser,
                                           TournamentStatusCache tournamentStatusCache,
                                           @Qualifier(RateLimiterConfig.FINISH_RATE_LIMITER) Bucket finishRateLimiter) {
         this.documentLoader = documentLoader;
         this.finishService = finishService;
-        this.repo = repo;
         this.jsonTournamentParser = jsonTournamentParser;
         this.jsonTournamentStatusParser = jsonTournamentStatusParser;
         this.tournamentStatusCache = tournamentStatusCache;
@@ -70,10 +64,7 @@ public class TournamentAsyncFinishProcessor {
         Document doc = documentLoader.load(link);
 
         TournamentPage page = jsonTournamentParser.parse(doc);
-        if (page == null) {
-            log.warn("Турнир {} — не удалось распарсить страницу", link);
-            return;
-        }
+
 
         TournamentStatus status = jsonTournamentStatusParser.parseStatus(page);
 
@@ -86,13 +77,11 @@ public class TournamentAsyncFinishProcessor {
         tournamentStatusCache.remove(link);
         stats.merge("ЗАВЕРШЁН", 1, Integer::sum);
 
-        List<PlayerNotification> notifications = repo.findByTournamentLink(link);
-        if (notifications.isEmpty()) {
-            log.warn("Турнир {} — нет уведомлений", link);
-            return;
+        try {
+            finishService.handleFinished(link, page);
+        } catch (TournamentNotFoundException e) {
+            log.warn(e.getMessage());
         }
-        TournamentEntity t = notifications.get(0).getTournament();
-        finishService.handleFinished(t, notifications, page);
     }
 
     public void logSummary() {

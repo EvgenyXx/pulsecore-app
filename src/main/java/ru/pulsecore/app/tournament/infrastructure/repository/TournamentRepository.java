@@ -16,6 +16,18 @@ import java.util.Optional;
 @Repository
 public interface TournamentRepository extends JpaRepository<TournamentEntity, Long> {
 
+    @Query(value = """
+            select distinct
+            t.link
+            from tournament t
+            where t.started = true
+                             and  t.processed=false
+                             and t.finished = false
+                             and t.cancelled= false
+                             and t.date <= current_date
+            """,nativeQuery = true)
+    List<String> findStartedNotFinishedLinks();
+
 
     @Query("SELECT t FROM TournamentEntity t WHERE t.date = :date AND t.started = false")
     List<TournamentEntity> findNotStartedTournaments(@Param("date") LocalDate date);

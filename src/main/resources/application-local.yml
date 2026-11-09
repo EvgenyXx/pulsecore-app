@@ -44,6 +44,8 @@ logging:
 
 
 app:
+  cache:
+    discovery-hash-ttl: 2h
   base-url: http://localhost:8080
   qr-color: "#14b8a6"
 

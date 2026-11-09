@@ -69,6 +69,7 @@ services:
       APP_BASE_URL: ${APP_BASE_URL}
       QR_COLOR: "#6366f1"
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      APP_CACHE_DISCOVERY_HASH_TTL: ${DISCOVERY_HASH_TTL}
       AUDIT_DIR: /app/audit
       TZ: Europe/Moscow
 

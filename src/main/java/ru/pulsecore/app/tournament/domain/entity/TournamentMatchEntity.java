@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import ru.pulsecore.app.tournament.domain.enums.MatchStage;
 
 
 import java.time.LocalDateTime;
