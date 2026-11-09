@@ -10,46 +10,30 @@ import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
+//todo на удаление
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TournamentProcessService {
 
     private final TournamentResultProcessor resultProcessor;
-    private final TournamentRepository tournamentRepository;
     private final PlayerTournamentClient playerClient;
     private final TournamentMatchService matchService;
 
     public List<TournamentResultEntity> processTournament(
-            List<PlayerNotification> notifications,
+            TournamentEntity tournament,
             ParsedResult parsed) {
-        if (notifications == null || notifications.isEmpty()) {
-            log.debug("Финиш: нет уведомлений для обработки");
-            return List.of();
-        }
 
-        TournamentEntity tournament = notifications.get(0).getTournament();
-        if (tournament == null) {
-            log.debug("Финиш: турнир не найден");
-            return List.of();
-        }
+        Set<UUID>playerIds = tournament.getNotifications()
+                .stream().map(PlayerNotification::getPlayerId).collect(Collectors.toSet());
 
-        log.debug("Финиш: обработка турнира={}, уведомлений={}",
-                tournament.getExternalId(), notifications.size());
-
-        updateTournamentDates(tournament, parsed);
-
-        Set<UUID> playerIds = notifications.stream()
-                .map(PlayerNotification::getPlayerId)
-                .collect(Collectors.toSet());
 
         List<PlayerData> roster = playerClient.getPlayerDataByIds(playerIds);
 
@@ -59,44 +43,15 @@ public class TournamentProcessService {
                         PlayerData::name
                 ));
 
-        log.debug("Финиш: состав игроков={}", rosterData.values());
+
 
         List<TournamentResultEntity> resultEntities = processPlayerResults(rosterData, parsed, tournament);
 
         matchService.createMatches(parsed, tournament);
 
 
-        tournament.setFinished(true);
-
-        log.debug("Финиш: турнир={} обработан, игроков={}",
-                tournament.getExternalId(), rosterData.size());
 
         return resultEntities;
-    }
-
-
-    private void updateTournamentDates(TournamentEntity tournament, ParsedResult parsed) {
-        if (tournament.getDate() == null) {
-            tournament.setDate(extractDate(parsed));
-            log.debug("Финиш: установлена дата={}", tournament.getDate());
-        }
-        if (tournament.getTime() == null && parsed.time() != null && !parsed.time().isEmpty()) {
-            tournament.setTime(parsed.time());
-            log.debug("Финиш: установлено время={}", parsed.time());
-        }
-        tournamentRepository.save(tournament);
-    }
-
-    private LocalDate extractDate(ParsedResult parsed) {
-        if (parsed.results().isEmpty()) return null;
-        String dateStr = parsed.results().get(0).getDate();
-        if (dateStr == null || dateStr.isEmpty()) return null;
-        try {
-            return LocalDate.parse(dateStr);
-        } catch (Exception e) {
-            log.warn("Финиш: не удалось распарсить дату={}", dateStr);
-            return null;
-        }
     }
 
     private List<TournamentResultEntity> processPlayerResults(
@@ -106,7 +61,6 @@ public class TournamentProcessService {
         return resultProcessor.processResultsRoster(
                 parsed.results(), roster, tournament,
                 parsed.nightBonus(),
-                parsed.isFinished() || parsed.isFinalRemoved(),
                 parsed.hasRemoved(),
                 parsed.league());
     }

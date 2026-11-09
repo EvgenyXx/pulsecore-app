@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.PeriodStatsProjection;
 import ru.pulsecore.app.tournament.infrastructure.cache.CacheEvictionService;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
@@ -31,6 +32,7 @@ public class TournamentResultPersistence {
         return tournamentResultRepository.findByPlayerIdAndDateBetweenOrderByDateAsc(playerId, start, end, pageable);
     }
 
+    @Transactional
     public void saveRoster(List<TournamentResultEntity> entities) {
         log.debug("Результаты: сохранение {} записей", entities.size());
 
