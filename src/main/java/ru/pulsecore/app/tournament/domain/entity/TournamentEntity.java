@@ -38,6 +38,8 @@ public class TournamentEntity {
 
     private boolean processed;
 
+    private boolean broken;
+
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlayerNotification> notifications = new ArrayList<>();
 

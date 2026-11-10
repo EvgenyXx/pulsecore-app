@@ -8,7 +8,8 @@ public record PlayerCreatedEvent(
         String email,
         int days,
         String ip,
-        String userAgent
+        String userAgent,
+        boolean silent
 ) {
 
 }

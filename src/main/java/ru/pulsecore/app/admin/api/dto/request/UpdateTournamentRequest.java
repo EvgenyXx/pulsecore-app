@@ -8,5 +8,6 @@ public record UpdateTournamentRequest(
         Boolean started,
         Boolean finished,
         Boolean cancelled,
-        Boolean processed
+        Boolean processed,
+        Boolean broken
 ) {}

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.shared.config.CacheNames;
@@ -14,10 +13,11 @@ import ru.pulsecore.app.player.domain.Subscription;
 import ru.pulsecore.app.player.infrastructure.repository.SubscriptionRepository;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 import ru.pulsecore.app.shared.exception.BaseException;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+
 
 @Slf4j
 @Service
@@ -113,10 +113,7 @@ public class SubscriptionCommandService {
     }
 
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    public void save(Subscription subscription) {
-        subscriptionRepository.save(subscription);
-    }
+
 
 
 }

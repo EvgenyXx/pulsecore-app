@@ -16,6 +16,10 @@ import java.util.Optional;
 @Repository
 public interface TournamentRepository extends JpaRepository<TournamentEntity, Long> {
 
+
+    List<TournamentEntity> findByBrokenTrueAndDateBetween(LocalDate start, LocalDate end);
+
+
     @Query(value = """
             select distinct
             t.link
@@ -25,7 +29,7 @@ public interface TournamentRepository extends JpaRepository<TournamentEntity, Lo
                              and t.finished = false
                              and t.cancelled= false
                              and t.date <= current_date
-            """,nativeQuery = true)
+            """, nativeQuery = true)
     List<String> findStartedNotFinishedLinks();
 
 
@@ -59,8 +63,9 @@ public interface TournamentRepository extends JpaRepository<TournamentEntity, Lo
 
 
     @Modifying
-    @Query("UPDATE TournamentEntity t SET t.started = true," +
-            " t.finished = true, t.cancelled = true, t.processed = true WHERE t.link = :uri")
+    @Query("UPDATE TournamentEntity t SET t.started = true, " +
+            "t.finished = true, t.cancelled = true, t.processed = true, t.broken = true " +
+            "WHERE t.link = :uri")
     void markAsBroken(@Param("uri") String uri);
 
 

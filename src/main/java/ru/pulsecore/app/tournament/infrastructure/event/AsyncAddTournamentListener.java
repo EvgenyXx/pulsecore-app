@@ -21,13 +21,8 @@ public class AsyncAddTournamentListener {
     @EventListener
     private void addTournaments(PlayerCreatedEvent event) {
         log.info("Началась асинхронная обработка для {}", event.playerName());
-        try {
-            LocalDate from = LocalDate.now().minusDays(1); // вчера (старт)
+        LocalDate from = LocalDate.now().minusDays(1);
+        cascadeSyncService.syncPeriod(event.playerId(), event.playerName(), from, DEFAULT_END);
 
-
-            cascadeSyncService.syncPeriod(event.playerId(), event.playerName(), from, DEFAULT_END);
-        } catch (Exception e) {
-            log.error("Произошла ошибка при асинхронной обработке турниров {}", e.getMessage());
-        }
     }
 }

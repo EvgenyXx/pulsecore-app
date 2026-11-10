@@ -21,15 +21,17 @@ public class PlayerCreatedHandler {
 
 
     public void process(PlayerCreatedEvent event) {
-        log.info("Player created: id={}", event.playerId());
+        if (event.silent()) {
+            log.debug("Пропуск отправки письма: создано из админки");
+            return;
+        }
 
-        // Welcome
         if (event.email() != null && !event.email().isBlank()) {
             mailStrategyRegistry.send(MailType.WELCOME,
                     new WelcomeContext(event.email(), event.playerName()));
         }
 
-        // Admin
+
         String agent = event.userAgent() != null ? event.userAgent() : "Неизвестно";
         Client client = uaParser.parse(agent);
         mailStrategyRegistry.send(MailType.ADMIN_NEW_USER,
