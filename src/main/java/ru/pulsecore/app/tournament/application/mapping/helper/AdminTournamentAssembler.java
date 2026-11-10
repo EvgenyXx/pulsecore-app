@@ -36,7 +36,7 @@ public class AdminTournamentAssembler {
         return tournaments.stream()
                 .map(t -> new AdminTournamentResponse(
                         t.getId(), t.getLink(), t.getDate(), t.getTime(),
-                        t.isStarted(), t.isFinished(), t.isCancelled(), t.isProcessed(),
+                        t.isStarted(), t.isFinished(), t.isCancelled(), t.isProcessed(), t.isBroken(),
                         t.getNotifications().stream()
                                 .map(pn -> new PlayerEarning(
                                         names.get(pn.getPlayerId()),

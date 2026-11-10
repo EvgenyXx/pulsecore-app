@@ -92,7 +92,7 @@ function updateExpandedCard() {
 
     const players = parsePlayers(t.players);
 
-    const statuses = ['started', 'finished', 'cancelled', 'processed'];
+    const statuses = ['started', 'finished', 'cancelled', 'processed', 'broken'];
     statuses.forEach(key => {
         const statusEl = document.getElementById(`status-${key}-${expandedTournamentId}`);
         if (statusEl) {
@@ -174,6 +174,7 @@ function buildExpandedView(t, players, numericId) {
                 ${buildStatusBox('finished', 'Завершён', t.finished, numericId)}
                 ${buildStatusBox('cancelled', 'Отменён', t.cancelled, numericId)}
                 ${buildStatusBox('processed', 'Обработан', t.processed, numericId)}
+                ${buildStatusBox('broken', 'Битый', t.broken, numericId)}
             </div>
 
             <div class="tournament-card-section-title">Участники (${players.length})</div>
@@ -197,7 +198,6 @@ function renderPlayersList(players) {
     }
 
     return players.map(p => {
-        // Новый формат: объект { name, earned }
         if (typeof p === 'object' && p !== null) {
             const name = (p.name || '—').replace(/"/g, '');
             const earned = Number(p.earned ?? 0);
@@ -206,7 +206,6 @@ function renderPlayersList(players) {
                         <span class="player-badge-earned-value">${formatMoney(earned)}</span>
                     </span>`;
         }
-        // Старый формат: строка
         return `<span class="player-badge">${String(p).replace(/"/g, '')}</span>`;
     }).join('');
 }
@@ -268,7 +267,8 @@ export async function saveTournament(id) {
         started: t.started,
         finished: t.finished,
         cancelled: t.cancelled,
-        processed: t.processed
+        processed: t.processed,
+        broken: t.broken
     };
 
     try {
@@ -288,6 +288,7 @@ export async function saveTournament(id) {
 }
 
 function getStatusLabel(t) {
+    if (t.broken) return 'Битый';
     if (t.cancelled) return 'Отменён';
     if (t.finished) return 'Завершён';
     if (t.started) return 'Идёт';
@@ -295,6 +296,7 @@ function getStatusLabel(t) {
 }
 
 function getStatusBadge(t) {
+    if (t.broken) return 'badge-broken';
     if (t.cancelled) return 'badge-inactive';
     if (t.finished) return 'badge-active';
     if (t.started) return 'badge-admin';

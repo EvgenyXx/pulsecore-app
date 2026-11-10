@@ -22,13 +22,12 @@ public class TournamentMatchBuilder {
             return List.of();
         }
 
-        // Берем дату турнира (или текущую, если нет)
         LocalDateTime playedAt = parsed.date() != null
                 ? DateTimeUtils.parseDate(parsed.date()).atStartOfDay()
                 : LocalDateTime.now();
 
         return parsed.matches().stream()
-                .filter(Match::isCompleted) // Только завершенные матчи
+                .filter(Match::isCompleted)
                 .map(m -> matchFactory.create(tournament, m, playedAt))
                 .toList();
     }

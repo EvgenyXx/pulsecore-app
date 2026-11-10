@@ -9,10 +9,7 @@ import ru.pulsecore.app.tournament.infrastructure.util.PlayerIdentity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,23 +18,26 @@ public class TournamentResultResolver {
 
     private final TournamentResultMapper tournamentResultMapper;
 
-    public List<TournamentResultEntity> processResults(List<ResultDto> results,
-                                                       UUID playerId, String playerName,
-                                                       TournamentEntity tournament,
-                                                       double bonus, boolean isFinished,
-                                                       boolean hasRemoved, String league) {
+    public Optional<TournamentResultEntity> processResults(List<ResultDto> results,
+                                                           UUID playerId, String playerName,
+                                                           TournamentEntity tournament,
+                                                           double bonus, boolean isFinished,
+                                                           boolean hasRemoved, String league) {
         if (!isFinished) {
             log.debug("Результаты: турнир не завершён, пропуск");
-            return List.of();
+            return Optional.empty();
         }
 
-        List<TournamentResultEntity> entities = new ArrayList<>();
         for (ResultDto r : results) {
             if (PlayerIdentity.isSamePlayer(playerName, r.getPlayer())) {
-                entities.add(tournamentResultMapper.buildEntity(playerId, tournament, r, bonus, hasRemoved, league));
+                TournamentResultEntity entity = tournamentResultMapper.buildEntity(
+                        playerId, tournament, r, bonus, hasRemoved, league
+                );
+                return Optional.of(entity);
             }
         }
-        return entities;
+
+        return Optional.empty();
     }
 
 

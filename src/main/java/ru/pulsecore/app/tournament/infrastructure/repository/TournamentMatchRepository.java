@@ -11,6 +11,7 @@ import ru.pulsecore.app.tournament.infrastructure.repository.projection.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -154,4 +155,9 @@ public interface TournamentMatchRepository extends JpaRepository<TournamentMatch
             nativeQuery = true
     )
     Page<String> searchPlayerNames(@Param("query") String query, Pageable pageable);
+
+
+
+    @Query("SELECT DISTINCT m.tournament.id FROM TournamentMatchEntity m WHERE m.tournament.id IN :tournamentIds")
+    Set<Long> findExistingTournamentIds(@Param("tournamentIds") List<Long> tournamentIds);
 }

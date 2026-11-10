@@ -1,5 +1,13 @@
+// js/admin/admin-app.js
+
 import { AdminAPI } from './admin-api.js';
-import { searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments, resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus, giveSub, giveSubCustom, removeSub, enableSub, loadSubscriptionsOverview, refreshSubscriptionsOverview } from './admin-players.js';
+import {
+    searchPlayers, selectPlayer, togglePlayerRole, deletePlayerTournaments,
+    resyncPlayerTournaments, deletePlayerAccount, updatePlayer, togglePlayerStatus,
+    giveSub, giveSubCustom, removeSub, enableSub,
+    loadSubscriptionsOverview, refreshSubscriptionsOverview,
+    createPlayer
+} from './admin-players.js';
 import { loadCurrentPrices, updatePrices } from './admin-prices.js';
 import { adminCalculate } from './admin-calculate.js';
 import { sendBroadcast } from './admin-broadcast.js';
@@ -22,6 +30,7 @@ window.removeSub = removeSub;
 window.enableSub = enableSub;
 window.loadSubscriptionsOverview = loadSubscriptionsOverview;
 window.refreshSubscriptionsOverview = refreshSubscriptionsOverview;
+window.createPlayer = createPlayer;
 window.loadCurrentPrices = loadCurrentPrices;
 window.updatePrices = updatePrices;
 window.adminCalculate = adminCalculate;
@@ -51,7 +60,6 @@ function getTodayString() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-/* ===== ДЕСКТОП: старая навигация через sidebar ===== */
 function showSection(s) {
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
 
@@ -83,14 +91,12 @@ function showSection(s) {
     if (s === 'stats') loadPageStats();
 }
 
-/* ===== МОБИЛКА: панель снизу вызывает эту ===== */
 function showAdminSection(tabId) {
     document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('hidden'));
     const target = document.getElementById(`section-${tabId}`);
     if (target) target.classList.remove('hidden');
 
     if (tabId === 'tournaments') {
-        // По умолчанию открыт шедулер
         const subT = document.getElementById('sub-tournaments');
         const subS = document.getElementById('sub-scheduler');
         if (subT) subT.style.display = 'none';
@@ -115,7 +121,6 @@ function showAdminSection(tabId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ===== Заглушки для десктопного selectAction ===== */
 function toggleAdminSheet() {}
 function closeAdminSheet() {}
 
