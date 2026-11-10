@@ -1,21 +1,20 @@
 package ru.pulsecore.app.tournament.application.cascade;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.tournament.application.match.TournamentMatchService;
-import ru.pulsecore.app.tournament.application.roster.finish.TournamentResultProcessor;
+import ru.pulsecore.app.tournament.application.factory.TournamentFactory;
+import ru.pulsecore.app.tournament.application.match.TournamentMatchBuilder;
+import ru.pulsecore.app.tournament.application.roster.finish.TournamentResultResolver;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
+import ru.pulsecore.app.tournament.domain.entity.TournamentMatchEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,57 +25,37 @@ public class TournamentSingleProcessor {
     private final TournamentRepository tournamentRepository;
     private final TournamentNotificationService notificationService;
     private final TournamentStatusService statusService;
-    private final TournamentResultProcessor resultProcessor;
-    private final TournamentMatchService matchService;
+    private final TournamentResultResolver resultResolver;
+    private final TournamentMatchBuilder matchBuilder;
+    private final TournamentFactory tournamentFactory;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<TournamentResultEntity> processSingleUrl(ParsedResult parsed,
-                                                         String url, UUID playerId,
-                                                         String playerName) {
+    public ProcessedTournament processSingleUrl(ParsedResult parsed, String url, UUID playerId, String playerName) {
+
         TournamentEntity tournament = tournamentRepository.findByLink(url)
-                .orElseGet(() -> tournamentRepository.save(buildTournament(parsed, url)));
+                .orElseGet(() -> tournamentRepository.save(
+                        tournamentFactory.createFromParsed(parsed, url)
+                ));
 
         if (parsed.status() == TournamentStatus.CANCELLED) {
             statusService.markAsCancelled(tournament, parsed, url);
             notificationService.createIfAbsent(playerId, tournament);
-            return List.of();
+            return new ProcessedTournament(tournament, List.of(), Optional.empty());
         }
 
-        if (parsed.status() != TournamentStatus.FINISHED) return List.of();
+        if (parsed.status() != TournamentStatus.FINISHED) {
+            notificationService.createIfAbsent(playerId, tournament);
+            return new ProcessedTournament(tournament, List.of(), Optional.empty());
+        }
 
         notificationService.createIfAbsent(playerId, tournament);
 
-        List<TournamentResultEntity> entities = processResults(parsed, playerId, playerName, tournament);
-
-        matchService.createMatches(parsed, tournament);
-
-        return entities;
-    }
-
-    private List<TournamentResultEntity> processResults(
-            ParsedResult parsed, UUID playerId, String playerName, TournamentEntity tournament) {
-        return resultProcessor.processResults(
-                parsed.results(),
-                playerId,
-                playerName,
-                tournament,
-                parsed.nightBonus(),
-                parsed.isFinished() || parsed.isFinalRemoved(),
-                parsed.hasRemoved(),
-                parsed.league()
+        List<TournamentMatchEntity> matches = matchBuilder.buildMatches(parsed, tournament);
+        Optional<TournamentResultEntity> result = resultResolver.processResults(
+                parsed.results(), playerId, playerName, tournament,
+                parsed.nightBonus(), parsed.isFinished() || parsed.isFinalRemoved(),
+                parsed.hasRemoved(), parsed.league()
         );
-    }
 
-    private TournamentEntity buildTournament(ParsedResult parsed, String url) {
-        return TournamentEntity.builder()
-                .externalId(parsed.tournamentId())
-                .time(parsed.time())
-                .cancelled(false)
-                .finished(true)
-                .processed(true)
-                .started(true)
-                .date(parsed.date() != null ? LocalDate.parse(parsed.date()) : null)
-                .link(url)
-                .build();
+        return new ProcessedTournament(tournament, matches, result);
     }
 }

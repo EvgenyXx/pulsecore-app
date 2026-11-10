@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.config.SchedulerConfig;
 import ru.pulsecore.app.tournament.application.admin.SchedulerPauseService;
+import ru.pulsecore.app.tournament.application.roster.broken.BrokenTournamentCleanupService;
 import ru.pulsecore.app.tournament.application.roster.canceled.TournamentCanceledProcessor;
 import ru.pulsecore.app.tournament.application.roster.change.TournamentChangeService;
 import ru.pulsecore.app.tournament.application.roster.discovery.TournamentDiscoveryService;
@@ -27,6 +28,17 @@ public class RosterOrchestrationScheduler {
     private final MastersApiCircuitBreaker circuitBreaker;
     private final TournamentChangeService changeService;
     private final SchedulerPauseService schedulerPauseService;
+    private final BrokenTournamentCleanupService brokenTournamentCleanupService;
+
+
+    @Scheduled(
+            initialDelay = 1,
+            fixedDelay = 5,
+            timeUnit = TimeUnit.MINUTES,
+            scheduler = SchedulerConfig.TOURNAMENT_SCHEDULER)
+    public void cleanupBrokenTournaments() {
+        brokenTournamentCleanupService.cleanupBrokenTournament();
+    }
 
     @Scheduled(
             initialDelay = 1,

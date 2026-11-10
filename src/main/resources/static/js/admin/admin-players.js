@@ -37,6 +37,50 @@ export async function searchPlayers(section) {
     }
 }
 
+// ===== СОЗДАНИЕ ИГРОКА =====
+export async function createPlayer() {
+    const nameEl = document.getElementById('createPlayerName');
+    const msg = document.getElementById('createPlayerMsg');
+    const btn = document.getElementById('createPlayerBtn');
+
+    function showMsg(text, type = 'ok') {
+        if (!msg) return;
+        msg.textContent = text;
+        msg.className = 'text-xs text-center mt-2 ' + (
+            type === 'ok' ? 'text-emerald-400' :
+            type === 'warn' ? 'text-zinc-400' : 'text-red-400'
+        );
+        msg.classList.remove('hidden');
+    }
+
+    const name = nameEl?.value.trim() || '';
+
+    if (name.length < 2) {
+        showMsg('Имя минимум 2 символа', 'error');
+        return;
+    }
+
+    if (btn) btn.disabled = true;
+    showMsg('Создание...', 'warn');
+
+    try {
+        const data = await AdminAPI.createPlayer({ name });
+        showMsg(data?.message || 'Игрок успешно создан');
+
+        if (nameEl) nameEl.value = '';
+
+        const searchInput = document.getElementById('playerSearchInput');
+        if (searchInput) {
+            searchInput.value = name;
+            searchPlayers('players');
+        }
+    } catch (e) {
+        showMsg(e.message || 'Ошибка создания', 'error');
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+}
+
 export async function selectPlayer(id, name, email, section) {
     selectedPlayerId = id;
     selectedPlayerData = { id, name, email };
@@ -88,7 +132,6 @@ async function refreshPlayerUI(section) {
             }
         }
 
-        // Период для инпутов (YYYY-MM-DD)
         if (sub?.startedAt) subStart = sub.startedAt.slice(0, 10);
         if (sub?.expiresAt) subEnd = sub.expiresAt.slice(0, 10);
     } catch (e) {}
@@ -108,7 +151,6 @@ async function refreshPlayerUI(section) {
     const showEnable = !subActive && !subExpired && playersCache[selectedPlayerId] && playersCache[selectedPlayerId].expiresAt;
     document.getElementById('playerEnableSub').classList.toggle('hidden', !showEnable);
 
-    // Период — подставить в инпуты
     const startEl = document.getElementById('subPeriodStart');
     const endEl = document.getElementById('subPeriodEnd');
     if (startEl) startEl.value = subStart || '';
@@ -275,7 +317,6 @@ export async function giveSubCustom() {
     }
 }
 
-// ===== Выдать подписку на период (две даты) =====
 export async function giveSubPeriod() {
     if (!selectedPlayerId) return;
 

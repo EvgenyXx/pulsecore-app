@@ -21,10 +21,8 @@ export async function saveTournamentEdit() {
         await API.updateResult(state.editingTournamentResultId, amount, 0);
         closeEditTournamentModal();
 
-        // Задержка — бэк коммитит транзакцию
         await new Promise(r => setTimeout(r, 300));
 
-        // Перезагружаем главную через прямой динамический импорт
         try {
             const mod = await import('../dashboard/dashboard.js');
             await mod.loadDashboardWidgets();
@@ -32,7 +30,6 @@ export async function saveTournamentEdit() {
             console.error('Не удалось обновить главную:', err);
         }
 
-        // Если открыта «Сумма за период» — обновляем её
         const actionPage = document.getElementById('actionPage');
         if (actionPage && !actionPage.classList.contains('hidden')) {
             executeSum();
@@ -65,48 +62,75 @@ window.toggleTournamentMatches = async function (resultId, el) {
 
         const matches = await response.json();
 
+        // 1. Разворачиваем массив (Финал станет первым, группы уйдут в конец)
+        const reversedMatches = [...matches].reverse();
+
+        // 2. Разбиваем на пары (по 2 штуки в слайд)
+        const slides = [];
+        for (let i = 0; i < reversedMatches.length; i += 2) {
+            slides.push(reversedMatches.slice(i, i + 2));
+        }
+
         container.innerHTML = `
             <div class="matches-divider"></div>
-            ${matches.map((m, i) => {
-            const winnerName = m.winnerName || m.winnerShortName;
-            const p1Name = m.player1Name || m.player1ShortName;
-            const p2Name = m.player2Name || m.player2ShortName;
-            const isPlayer1Winner = winnerName === p1Name;
-            const isPlayer2Winner = winnerName === p2Name;
+            <div class="matches-carousel">
+                ${slides.map((slide, slideIndex) => `
+                    <div class="carousel-slide">
+                        ${slide.map((m, i) => {
+                            const winnerName = m.winnerName || m.winnerShortName;
+                            const p1Name = m.player1Name || m.player1ShortName;
+                            const p2Name = m.player2Name || m.player2ShortName;
+                            const isPlayer1Winner = winnerName === p1Name;
+                            const isPlayer2Winner = winnerName === p2Name;
+                            
+                            const rawScore = m.score || '—';
+                            const parts = rawScore.split(':');
+                            const s1 = parts[0] || '—';
+                            const s2 = parts[1] || '—';
 
-            return `
-                <div class="match-card" style="animation-delay: ${i * 50}ms">
-                    <div class="match-stage-badge">${getStageLabel(m.stage)}</div>
-                    <div class="match-score-row-centered">
-                        <span class="match-player-name ${isPlayer1Winner ? 'winner' : ''}">${p1Name}</span>
-                        <span class="match-score-badge">${m.score || '—'}</span>
-                        <span class="match-player-name ${isPlayer2Winner ? 'winner' : ''}">${p2Name}</span>
+                            return `
+                                <div class="carousel-match-card" style="animation-delay: ${slideIndex * 50 + i * 25}ms">
+                                    <div class="carousel-match-stage">${getStageLabel(m.stage)}</div>
+                                    <div class="carousel-match-players">
+                                        <div class="carousel-player-row ${isPlayer1Winner ? 'winner' : ''}">
+                                            <span class="c-name">${p1Name}</span>
+                                            <span class="c-score">${s1}</span>
+                                        </div>
+                                        <div class="carousel-player-row ${isPlayer2Winner ? 'winner' : ''}">
+                                            <span class="c-name">${p2Name}</span>
+                                            <span class="c-score">${s2}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
-                </div>
-                `;
-        }).join('')}
+                `).join('')}
+            </div>
         `;
 
         container.classList.remove('hidden');
     } catch (e) {
         console.error('Ошибка загрузки матчей:', e);
-        container.innerHTML = '<p class="text-zinc-500 text-sm">Не удалось загрузить матчи</p>';
+        container.innerHTML = '<p class="text-zinc-500 text-sm p-3">Не удалось загрузить матчи</p>';
         container.classList.remove('hidden');
     }
 };
 
 function getStageLabel(stage) {
-    switch (stage) {
-        case 'GROUP':
-            return 'Группа';
-        case 'SEMIFINAL':
-            return 'Полуфинал';
-        case 'THIRD_PLACE':
-            return 'За 3-е место';
-        case 'FINAL':
-            return 'Финал';
-        default:
-            return stage;
+    if (!stage) return 'Группа';
+    switch (stage.toUpperCase()) {
+        case 'GROUP': return 'Группа';
+        case 'SEMIFINAL': return '1/2 финала';
+        case 'THIRD_PLACE': return 'За 3-е место';
+        case 'FINAL': return 'Финал';
+        case 'TOP_MESH_1': return 'Верхняя 1';
+        case 'TOP_MESH_2': return 'Верхняя 2';
+        case 'TOP_MESH_3': return 'Верхняя 3';
+        case 'LOWER_MESH_1': return 'Нижняя 1';
+        case 'LOWER_MESH_2': return 'Нижняя 2';
+        case 'LOWER_MESH_3': return 'Нижняя 3';
+        default: return stage;
     }
 }
 
@@ -153,12 +177,16 @@ export async function executeSum() {
 
         html += '<div class="space-y-1.5">';
         data.tournaments.forEach((t, i) => {
+            const isRemoved = t.hasRemoved === true;
+            const removedClass = isRemoved ? ' tour-row-removed' : '';
+
             html += `
-                <div class="apple-card tournament-row" onclick="toggleTournamentMatches(${t.resultId || 0}, this)">
+                <div class="apple-card tournament-row${removedClass}" onclick="toggleTournamentMatches(${t.resultId || 0}, this)">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="tournament-number">${state.currentSumPage * 20 + i + 1}</span>
                             <span class="tournament-date">${t.date || '—'}</span>
+                            ${isRemoved ? '<span class="removed-badge">снятие</span>' : ''}
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="tournament-amount">${formatMoney(t.amount)}</span>

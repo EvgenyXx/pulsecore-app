@@ -36,6 +36,14 @@ export const AdminAPI = {
                 lastLoginAt: p.lastLoginAt
             }))),
 
+    // ===== СОЗДАНИЕ ИГРОКА =====
+    createPlayer: (payload) =>
+        apiRequest('/admin/players/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }),
+
     getPlayerSubscription: (playerId) =>
         apiRequest(`/admin/players/${playerId}/subscription`),
 
@@ -71,7 +79,6 @@ export const AdminAPI = {
     enableSubscription: (playerId) =>
         apiRequest(`/admin/players/${playerId}/subscription/enable`, { method: 'POST' }),
 
-    // ===== НОВОЕ: выдать подписку на период =====
     activateSubscriptionForPeriod: (playerId, start, end) =>
         apiRequest(`/admin/players/${playerId}/subscription/period`, {
             method: 'POST',
@@ -79,7 +86,6 @@ export const AdminAPI = {
             body: JSON.stringify({ start, end })
         }),
 
-    // ===== ОБНОВЛЕНИЕ ИГРОКА =====
     updatePlayer: (playerId, data) =>
         apiRequest(`/admin/players/${playerId}`, {
             method: 'PATCH',
@@ -96,7 +102,6 @@ export const AdminAPI = {
             body: JSON.stringify(prices)
         }),
 
-    // ===== РАСЧЁТ РЕЗУЛЬТАТОВ (DTO) =====
     calculatePlayer: ({ name, startDate, endDate }) =>
         apiRequest('/admin/tournaments/calculate', {
             method: 'POST',
@@ -120,7 +125,6 @@ export const AdminAPI = {
     getLastLogin: (page = 0, size = 20) =>
         apiRequest(`/admin/stats/last-login?page=${page}&size=${size}`),
 
-    // ===== ТУРНИРЫ =====
     getTournamentsByDate: (date) =>
         apiRequest(`/admin/tournaments?date=${date}`),
 
@@ -134,7 +138,6 @@ export const AdminAPI = {
             body: JSON.stringify(data)
         }),
 
-    // ===== ПЛАНИРОВЩИК =====
     getSchedulerStatus: () =>
         apiRequest('/admin/scheduler/status'),
 
@@ -144,17 +147,12 @@ export const AdminAPI = {
     resumeScheduler: () =>
         apiRequest('/admin/scheduler/resume', { method: 'POST' }),
 
-    // ===== РУЧНОЙ ЗАПУСК ШЕДУЛЕРА =====
     checkStart: () => apiRequest('/admin/scheduler/check-start', { method: 'POST' }),
     processFinished: () => apiRequest('/admin/scheduler/process-finished', { method: 'POST' }),
     checkNew: () => apiRequest('/admin/scheduler/check-new', { method: 'POST' }),
     checkChanged: () => apiRequest('/admin/scheduler/check-changed', { method: 'POST' }),
     checkCanceled: () => apiRequest('/admin/scheduler/check-canceled', { method: 'POST' }),
 
-    // ===== ОБЗОР ПОДПИСОК ВСЕХ ИГРОКОВ =====
-    /**
-     * @returns {Promise<Array<PlayerSubscriptionResponse>>}
-     */
     getAllSubscriptions: () =>
         apiRequest('/admin/subscriptions/overview'),
 

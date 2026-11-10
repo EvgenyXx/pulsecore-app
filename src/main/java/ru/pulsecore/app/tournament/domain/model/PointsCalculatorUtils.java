@@ -8,8 +8,8 @@ import java.util.Set;
 public final class PointsCalculatorUtils {
 
     private static final Set<MonthDay> DOUBLE_DAYS = Set.of(
-            MonthDay.of(12, 31), // Новогодняя ночь
-            MonthDay.of(1, 1)     // Новый год
+            MonthDay.of(12, 31),
+            MonthDay.of(1, 1)
     );
 
     private PointsCalculatorUtils() {}

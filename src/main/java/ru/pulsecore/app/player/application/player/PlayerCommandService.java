@@ -6,10 +6,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.pulsecore.app.player.application.role.RoleService;
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.player.domain.Role;
 import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;
 import ru.pulsecore.app.shared.util.PlayerNameUtils;
+
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Set;
@@ -25,6 +27,7 @@ public class PlayerCommandService {
 
     private final PlayerRepository playerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
 
     @Transactional(propagation = Propagation.MANDATORY)
@@ -33,6 +36,20 @@ public class PlayerCommandService {
     }
 
 
+    @Transactional
+    public Player createForPlayer(String name, String email, String rawPassword) {
+        return playerRepository.saveAndFlush(Player.builder()
+                .name(PlayerNameUtils.cleanName(name))
+                .nameNormalized(PlayerNameUtils.normalizeName(name))
+                .email(email.trim().toLowerCase(Locale.ROOT))
+                .password(passwordEncoder.encode(rawPassword))
+                .verified(true)
+                .createdAt(LocalDateTime.now())
+                .roles(Set.of(roleService.findRoleUser()))
+                .pushEnabled(false)
+                .notificationsEnabled(false)
+                .build());
+    }
 
     @Transactional(propagation = Propagation.MANDATORY)
     public Player create(String name, String email, String rawPassword, Role defaultRole) {

@@ -8,6 +8,19 @@ public final class AdminApi {
     public static final String BASE = "/api/admin";
 
     /**
+     * Управление игроками.
+     * CREATE_PLAYER — /players/create, создать игрока.
+     * DELETE_PLAYER — /players/{id}, удалить игрока.
+     * SEARCH_BY_NAME — /search, поиск по имени.
+     * PLAYER_UPDATE — /players/{id}, обновить игрока.
+     * Admin.
+     */
+    public static final String CREATE_PLAYER = "/players/create";
+    public static final String DELETE_PLAYER = "/players/{id}";
+    public static final String SEARCH_BY_NAME = "/search";
+    public static final String PLAYER_UPDATE = "/players/{id}";
+
+    /**
      * Цены подписки.
      * UPDATE_SUB_PRICE — /update, обновить цены.
      * GET_PRICE_SUB — /prices, получить текущие цены.
@@ -26,17 +39,6 @@ public final class AdminApi {
     public static final String ROLES_GRANT = "/players/{id}/roles/grant";
     public static final String ROLES_REVOKE = "/players/{id}/roles/revoke";
     public static final String ROLES = "/players/{id}/roles";
-
-    /**
-     * Управление игроками.
-     * DELETE_PLAYER — /players/{id}, удалить игрока.
-     * SEARCH_BY_NAME — /search, поиск по имени.
-     * PLAYER_UPDATE — /players/{id}, обновить игрока.
-     * Admin.
-     */
-    public static final String DELETE_PLAYER = "/players/{id}";
-    public static final String SEARCH_BY_NAME = "/search";
-    public static final String PLAYER_UPDATE = "/players/{id}";
 
     /**
      * Подписка игрока.
@@ -108,8 +110,7 @@ public final class AdminApi {
      */
     public static final String LAST_LOGIN = "/stats/last-login";
 
-
-        /**
+    /**
      * Управление планировщиком (Ручной запуск).
      * SCHEDULER_CHECK_START — /scheduler/check-start, проверить старт.
      * SCHEDULER_PROCESS_FINISHED — /scheduler/process-finished, обработать завершенные.

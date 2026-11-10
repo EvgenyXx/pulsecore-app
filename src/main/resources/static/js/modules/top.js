@@ -147,24 +147,30 @@ async function refreshTopListOnly(league) {
                 const isFirst = position === 1;
                 const badge = getLeagueBadge(p.primaryLeague);
 
+                const winrate = p.winrate ?? 0;
+
+                let wrClass = 'wr-low';
+                if (winrate >= 55) wrClass = 'wr-high';
+                else if (winrate >= 45) wrClass = 'wr-mid';
+
                 const isHiddenClass = (!isExpanded && position > 5) ? 'hidden-item' : '';
 
                 const detailJson = p.detailPeriod ? JSON.stringify(p.detailPeriod) : '';
                 const safeDetails = detailJson.replace(/"/g, '&quot;');
 
-                // Используем <details> и <summary> для нативного аккордеона
                 html += `
                     <details class="rank-card-details hof-item ${isMe ? 'mine' : ''} ${isFirst ? 'first' : ''} ${isHiddenClass}" 
                          data-pos="${position}" 
                          data-details="${safeDetails}"
                          data-player-id="${p.playerId || ''}"
                          data-no-swipe="true">
-                        <summary class="rank-card">
+                        <summary class="rank-card ${wrClass}" style="--winrate: ${winrate}%;">
                             <div class="rank-number">${position}</div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between gap-2">
                                     <span class="text-[15px] font-medium text-white truncate">${name}</span>
-                                    <div class="rank-meta">
+                                    <div class="rank-meta flex items-center gap-2">
+                                        <span class="rank-winrate">${winrate}%</span>
                                         ${badge}
                                     </div>
                                 </div>
@@ -226,9 +232,8 @@ function handleCardClick(e) {
     const detailsEl = summary.parentElement;
     const wrapper = detailsEl.querySelector('.rank-details-wrapper');
 
-    // Если уже открыто — браузер закроет сам (или мы просто очистим)
     if (!detailsEl.open) {
-        e.preventDefault(); // Блокируем стандартное открытие, чтобы вставить контент
+        e.preventDefault();
         detailsEl.open = true;
 
         const detailJson = detailsEl.getAttribute('data-details');
@@ -262,14 +267,9 @@ function handleCardClick(e) {
                     <span class="rd-label">ПОРАЖЕНИЯ</span>
                     <span class="rd-value text-red-400">${data.loses || 0}</span>
                 </div>
-                <div class="rd-item rd-full">
-                    <span class="rd-label">ВИНРЕЙТ</span>
-                    <span class="rd-value">${data.matchesCount > 0 ? Math.round((data.wins / data.matchesCount) * 100) : 0}%</span>
-                </div>
             </div>
         `;
 
-        // Закрываем остальные
         document.querySelectorAll('.rank-card-details').forEach(el => {
             if (el !== detailsEl) el.open = false;
         });

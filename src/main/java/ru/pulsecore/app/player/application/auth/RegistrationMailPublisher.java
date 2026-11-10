@@ -39,7 +39,8 @@ public class RegistrationMailPublisher {
                         player.getEmail(),
                         RECENT_DAYS,
                         ip,
-                        userAgent
+                        userAgent,
+                        false
                 )
         );
     }

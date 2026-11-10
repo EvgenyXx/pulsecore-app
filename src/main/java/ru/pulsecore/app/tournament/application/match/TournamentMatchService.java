@@ -10,8 +10,10 @@ import ru.pulsecore.app.tournament.domain.model.Match;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentMatchRepository;
 import ru.pulsecore.app.tournament.infrastructure.util.DateTimeUtils;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,22 @@ public class TournamentMatchService {
 
     private final TournamentMatchRepository matchRepository;
     private final TournamentMatchFactory matchFactory;
+
+    @Transactional
+    public void saveAllMatches(List<TournamentMatchEntity> matches, List<Long> tournamentIds) {
+        if (matches == null || matches.isEmpty()) return;
+
+        Set<Long> existingIds = matchRepository.findExistingTournamentIds(tournamentIds);
+
+
+        List<TournamentMatchEntity> toSave = matches.stream()
+                .filter(m -> !existingIds.contains(m.getTournament().getId()))
+                .toList();
+
+        if (!toSave.isEmpty()) {
+            matchRepository.saveAll(toSave);
+        }
+    }
 
     @Transactional
     public void createMatches(ParsedResult parsed, TournamentEntity tournament) {
