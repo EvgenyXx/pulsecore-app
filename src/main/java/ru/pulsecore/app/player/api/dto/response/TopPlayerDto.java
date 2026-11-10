@@ -18,4 +18,5 @@ public class TopPlayerDto implements Serializable {
     private String name;
     private DetailPeriod detailPeriod;
     private String primaryLeague;
+    private Integer winrate;
 }
