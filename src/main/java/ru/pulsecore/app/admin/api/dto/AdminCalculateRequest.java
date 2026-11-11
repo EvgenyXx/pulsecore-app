@@ -1,4 +1,4 @@
-package ru.pulsecore.app.admin.api.dto.request;
+package ru.pulsecore.app.admin.api.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

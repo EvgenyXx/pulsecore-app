@@ -25,7 +25,7 @@ public class ScoreStatsService {
         List<MatchScoreProjection> matches = fetchMatches(player1Name, player2Name, start, end);
 
         if (matches.isEmpty()) {
-            log.debug("No matches found for score stats");
+
             return Collections.emptyList();
         }
 

@@ -81,7 +81,7 @@ public class ProfileController {
 
     @Operation(summary = "Получить QR-код для авторизации")
     @GetMapping(PlayerApi.QR)
-    public ResponseEntity<byte[]> getQrCode() throws Exception {
+    public ResponseEntity<byte[]> getQrCode(){
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(profileFacade.generateQrCode());

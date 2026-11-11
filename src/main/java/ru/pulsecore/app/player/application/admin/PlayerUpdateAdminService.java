@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
+import ru.pulsecore.app.admin.api.dto.UpdatePlayerRequest;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.application.mapper.PlayerMapper;
 import ru.pulsecore.app.player.infrastructure.repository.PlayerRepository;

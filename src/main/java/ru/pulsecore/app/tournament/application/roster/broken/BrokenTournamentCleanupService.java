@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
+import ru.pulsecore.app.tournament.infrastructure.properties.TournamentSettingProperties;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
 import java.time.LocalDate;
@@ -17,11 +18,12 @@ import java.util.List;
 public class BrokenTournamentCleanupService {
 
     private final TournamentRepository tournamentRepository;
+    private final TournamentSettingProperties settingProperties;
 
     @Transactional
     public void cleanupBrokenTournament() {
-        LocalDate end = LocalDate.now();
-        LocalDate start = end.minusDays(30);
+        LocalDate end = LocalDate.now().plusDays(settingProperties.cleanup().end());
+        LocalDate start = end.minusDays(settingProperties.cleanup().start());
 
         List<TournamentEntity> broken = tournamentRepository.findByBrokenTrueAndDateBetween(start, end);
         if (broken.isEmpty()) {

@@ -1,7 +1,7 @@
 package ru.pulsecore.app.player.application.mapper;
 
 import org.mapstruct.*;
-import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
+import ru.pulsecore.app.admin.api.dto.UpdatePlayerRequest;
 import ru.pulsecore.app.player.api.dto.response.AuthResponse;
 import ru.pulsecore.app.player.api.dto.response.PlayerProfileResponse;
 import ru.pulsecore.app.player.domain.Player;

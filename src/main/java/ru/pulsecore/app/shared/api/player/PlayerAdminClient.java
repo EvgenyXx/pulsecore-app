@@ -2,7 +2,7 @@ package ru.pulsecore.app.shared.api.player;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
+import ru.pulsecore.app.admin.api.dto.UpdatePlayerRequest;
 import ru.pulsecore.app.shared.dto.response.*;
 
 import java.time.LocalDateTime;

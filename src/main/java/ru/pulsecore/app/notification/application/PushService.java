@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.shared.api.player.PlayerNotificationClient;
 import ru.pulsecore.app.notification.api.dto.PushSubscriptionRequest;
-import ru.pulsecore.app.notification.infrastructure.config.VapidConfig;
+import ru.pulsecore.app.notification.infrastructure.properties.VapidProperties;
 import ru.pulsecore.app.notification.domain.PushSubscription;
 import ru.pulsecore.app.notification.infrastructure.repository.PushSubscriptionRepository;
 
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class PushService {
 
     private final PushSubscriptionRepository repository;
-    private final VapidConfig vapidConfig;
+    private final VapidProperties vapidConfig;
     private final PlayerNotificationClient playerClient;
 
     @Transactional(readOnly = true)
@@ -29,7 +29,7 @@ public class PushService {
 
     @Transactional(readOnly = true)
     public String getVapidPublicKey() {
-        return vapidConfig.getPublicKey();
+        return vapidConfig.publicKey();
     }
 
     public void subscribe(UUID playerId, PushSubscriptionRequest request) {

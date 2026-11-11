@@ -1,6 +1,6 @@
 package ru.pulsecore.app.shared.api.tournament;
 
-import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
+import ru.pulsecore.app.admin.api.dto.UpdateTournamentRequest;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;

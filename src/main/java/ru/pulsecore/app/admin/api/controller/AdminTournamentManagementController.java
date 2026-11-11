@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.admin.api.AdminApi;
-import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
+import ru.pulsecore.app.admin.api.dto.UpdateTournamentRequest;
 import ru.pulsecore.app.shared.api.tournament.TournamentAdminClient;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
 import java.time.LocalDate;

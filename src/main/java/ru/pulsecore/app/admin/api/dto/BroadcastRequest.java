@@ -1,4 +1,4 @@
-package ru.pulsecore.app.admin.api.dto.request;
+package ru.pulsecore.app.admin.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -25,7 +25,7 @@ public class RememberMeService {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) return Optional.empty();
         return Arrays.stream(cookies)
-                .filter(c -> rememberMeProperties.getCookieName().equals(c.getName()))
+                .filter(c -> rememberMeProperties.cookieName().equals(c.getName()))
                 .map(Cookie::getValue)
                 .filter(v -> v != null && !v.isBlank())
                 .findFirst();

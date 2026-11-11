@@ -16,6 +16,8 @@ import java.util.Optional;
 @Repository
 public interface TournamentRepository extends JpaRepository<TournamentEntity, Long> {
 
+    Optional<TournamentEntity> findByExternalId(Long externalId);
+
 
     List<TournamentEntity> findByBrokenTrueAndDateBetween(LocalDate start, LocalDate end);
 

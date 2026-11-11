@@ -40,31 +40,31 @@ public class SecurityConfig {
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .maximumSessions(securityProperties.getMaximumSessions())
+                        .maximumSessions(securityProperties.maximumSessions())
                         .maxSessionsPreventsLogin(false))
                 .authorizeHttpRequests(auth -> {
-                    securityProperties.getPublicUrls().forEach(url -> auth.requestMatchers(url).permitAll());
-                    securityProperties.getAuthenticatedUrls().forEach(url -> auth.requestMatchers(url).authenticated());
-                    securityProperties.getAdminUrls().forEach(url ->
-                            auth.requestMatchers(url).hasAuthority(securityProperties.getAdminAuthority()));
+                    securityProperties.publicUrls().forEach(url -> auth.requestMatchers(url).permitAll());
+                    securityProperties.authenticatedUrls().forEach(url -> auth.requestMatchers(url).authenticated());
+                    securityProperties.adminUrls().forEach(url ->
+                            auth.requestMatchers(url).hasAuthority(securityProperties.adminAuthority()));
                     auth.anyRequest().authenticated();
                 })
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage(securityProperties.getLoginPage())
+                        .loginPage(securityProperties.loginPage())
                         .successHandler(oAuth2SuccessHandler))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout
-                        .logoutUrl(securityProperties.getLogoutUrl())
+                        .logoutUrl(securityProperties.logoutUrl())
                         .logoutSuccessHandler(logoutSuccessHandler)
                         .invalidateHttpSession(true)
-                        .deleteCookies(securityProperties.getSessionCookieName()))
+                        .deleteCookies(securityProperties.sessionCookieName()))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            if (request.getRequestURI().startsWith(securityProperties.getApiPathPrefix())) {
-                                response.sendError(securityProperties.getApiErrorStatus(),
-                                        securityProperties.getApiErrorMessage());
+                            if (request.getRequestURI().startsWith(securityProperties.apiPathPrefix())) {
+                                response.sendError(securityProperties.apiErrorStatus(),
+                                        securityProperties.apiErrorMessage());
                             } else {
-                                response.sendRedirect(securityProperties.getLoginPage());
+                                response.sendRedirect(securityProperties.loginPage());
                             }
                         }));
 

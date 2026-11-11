@@ -31,7 +31,7 @@ public class ScheduledReportProcessor {
         List<ScheduledReportProjection> ready = reportService.findPendingBefore(LocalDateTime.now());
         if (ready.isEmpty()) return;
 
-        // 1. Батч игроков — 1 HTTP
+
         Set<UUID> playerIds = ready.stream()
                 .map(ScheduledReportProjection::getPlayerId)
                 .collect(Collectors.toSet());
@@ -39,7 +39,7 @@ public class ScheduledReportProcessor {
         Map<UUID, PlayerData> playerMap = playerClient.getPlayerDataByIds(playerIds).stream()
                 .collect(Collectors.toMap(PlayerData::id, p -> p));
 
-        // 2. Сбор mail-контента и id для markAsSent
+
         Map<UUID, MailContent> mailContent = new HashMap<>();
         List<UUID> sentIds = new ArrayList<>();
 

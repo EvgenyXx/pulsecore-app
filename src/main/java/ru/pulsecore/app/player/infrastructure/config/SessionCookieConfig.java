@@ -15,10 +15,10 @@ public class SessionCookieConfig {
     @Bean
     public DefaultCookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setCookieName(sessionProperties.getName());
-        serializer.setUseSecureCookie(sessionProperties.isSecure());
-        serializer.setUseHttpOnlyCookie(sessionProperties.isHttpOnly());
-        serializer.setSameSite(sessionProperties.getSameSite());
+        serializer.setCookieName(sessionProperties.name());
+        serializer.setUseSecureCookie(sessionProperties.secure());
+        serializer.setUseHttpOnlyCookie(sessionProperties.httpOnly());
+        serializer.setSameSite(sessionProperties.sameSite());
         return serializer;
     }
 }

@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.domain.Player;
 
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
