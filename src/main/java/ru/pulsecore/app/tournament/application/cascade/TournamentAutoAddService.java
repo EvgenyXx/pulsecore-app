@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.dto.response.TournamentDto;
-import ru.pulsecore.app.tournament.infrastructure.util.MonthUtils;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +34,6 @@ public class TournamentAutoAddService {
             urls.add(t.getLink());
         }
         tournamentUrlProcessor.processUrlsForPlayer(urls, playerId, playerName);
-        log.info("{} — загружено {} турниров за {}", playerName, urls.size(), MonthUtils.toRussianMonthYear(start));
+
     }
 }
