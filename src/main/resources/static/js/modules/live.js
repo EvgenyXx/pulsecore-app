@@ -45,15 +45,7 @@ function initTabListeners() {
 
 async function loadLive() {
     try {
-        const hasSub = await checkSubscription();
-        if (!hasSub) {
-            document.querySelectorAll('#livePage > *').forEach(el => {
-                if (el.id !== 'noSubBlock') el.style.display = 'none';
-            });
-            document.getElementById('noSubBlock').innerHTML = subBlockHtml();
-            document.getElementById('noSubBlock').classList.remove('hidden');
-            return;
-        }
+        // ПРОВЕРКА ПОДПИСКИ УБРАНА. Теперь доступно всем.
 
         document.querySelectorAll('#livePage > *').forEach(el => {
             el.style.display = '';

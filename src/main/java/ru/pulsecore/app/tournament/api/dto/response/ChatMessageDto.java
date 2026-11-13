@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.pulsecore.app.tournament.domain.enums.ChatMessageType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,4 +24,7 @@ public class ChatMessageDto {
     private String replyToContent;
     private String replyToSenderName;
     private boolean edited;
+    private ChatMessageType type;
+
+    private UUID mentionedPlayerId;
 }

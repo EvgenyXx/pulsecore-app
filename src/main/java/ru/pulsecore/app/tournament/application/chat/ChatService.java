@@ -4,17 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.shared.dispetcher.PushDispatcher;
-import ru.pulsecore.app.shared.event.PushContent;
 import ru.pulsecore.app.shared.exception.ForbiddenException;
 import ru.pulsecore.app.tournament.infrastructure.exception.MessageNotFoundException;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
 import ru.pulsecore.app.tournament.application.mapping.ChatMessageMapper;
 import ru.pulsecore.app.tournament.domain.entity.ChatMessage;
 import ru.pulsecore.app.tournament.infrastructure.repository.ChatMessageRepository;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -24,8 +20,6 @@ public class ChatService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMessageMapper chatMessageMapper;
-    private final ChatMentionService chatMentionService;
-    private final PushDispatcher pushDispatcher;
 
 
     @Transactional(readOnly = true)
@@ -35,45 +29,6 @@ public class ChatService {
                 .map(chatMessageMapper::toDto)
                 .toList();
     }
-
-    @Transactional
-    public ChatMessageDto sendMessage(Long lineupId, ChatMessageDto msg) {
-        ChatMessage entity = ChatMessage.builder()
-                .lineupId(lineupId)
-                .playerId(msg.getPlayerId())
-                .playerName(msg.getPlayerName())
-                .message(msg.getMessage())
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        if (msg.getReplyToId() != null) {
-            chatMessageRepository.findById(msg.getReplyToId()).ifPresent(replyTo -> {
-                entity.setReplyTo(replyTo);
-                entity.setReplyToContent(replyTo.getMessage());
-                entity.setReplyToSenderName(replyTo.getPlayerName());
-                sendReplyPush(replyTo, msg);
-            });
-        }
-
-        ChatMessage saved = chatMessageRepository.save(entity);
-        ChatMessageDto result = chatMessageMapper.toDto(saved);
-        chatMentionService.processMentions(lineupId, result);
-
-        return result;
-    }
-
-    private void sendReplyPush(ChatMessage originalMsg, ChatMessageDto replyMsg) {
-         String targetUrl = "/#/live/" + originalMsg.getLineupId();
-        pushDispatcher.send(Map.of(
-                originalMsg.getPlayerId(),
-                new PushContent(
-                        "Ответ в чате",
-                        replyMsg.getPlayerName() + ": " + replyMsg.getMessage(),
-                        targetUrl
-                ))
-        );
-    }
-
 
     @Transactional(readOnly = true)
     public List<ChatMessageDto> getMessagesAfter(Long lineupId, Long afterId) {
