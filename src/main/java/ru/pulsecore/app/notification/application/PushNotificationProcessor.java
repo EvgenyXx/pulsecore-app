@@ -26,7 +26,7 @@ public class PushNotificationProcessor {
     public void dispatch(PushNotificationEvent event) {
         Map<UUID, PushContent> contentByPlayer = event.contentByPlayer();
 
-        Set<UUID> allowed = filterAllowed(playerClient.getPlayers(contentByPlayer.keySet()));
+        Set<UUID> allowed = filterAllowed(playerClient.getPlayers(contentByPlayer.keySet()), contentByPlayer);
 
         if (allowed.isEmpty()) {
             log.debug("Пуш-рассылка: нет получателей");
@@ -40,10 +40,10 @@ public class PushNotificationProcessor {
 
     }
 
-
-    private Set<UUID> filterAllowed(List<PlayerData> players) {
+    private Set<UUID> filterAllowed(List<PlayerData> players, Map<UUID, PushContent> contentByPlayer) {
         return players.stream()
-                .filter(playerData -> playerData.pushEnabled() && playerData.hasActiveSubscription())
+                .filter(PlayerData::pushEnabled)
+                .filter(playerData -> contentByPlayer.get(playerData.id()).isLiveChat() || playerData.hasActiveSubscription())
                 .map(PlayerData::id)
                 .collect(Collectors.toSet());
     }

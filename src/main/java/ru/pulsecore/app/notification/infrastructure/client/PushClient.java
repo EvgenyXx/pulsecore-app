@@ -7,7 +7,7 @@ import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.notification.domain.PushSubscription;
-import ru.pulsecore.app.notification.infrastructure.config.VapidConfig;
+import ru.pulsecore.app.notification.infrastructure.properties.VapidProperties;
 
 
 @Service
@@ -15,7 +15,7 @@ import ru.pulsecore.app.notification.infrastructure.config.VapidConfig;
 @Slf4j
 public class PushClient {
 
-    private final VapidConfig vapidConfig;
+    private final VapidProperties vapidConfig;
     private final ObjectMapper objectMapper;
 
 
@@ -24,8 +24,8 @@ public class PushClient {
         String payload = objectMapper.writeValueAsString(new PushPayload(title, body, url));
 
         PushService pushService = new PushService()
-                .setPublicKey(vapidConfig.getPublicKey())
-                .setPrivateKey(vapidConfig.getPrivateKey())
+                .setPublicKey(vapidConfig.publicKey())
+                .setPrivateKey(vapidConfig.privateKey())
                 .setSubject("mailto:noreply@pulsecore-app.ru");
 
         pushService.send(new Notification(sub.getEndpoint(), sub.getP256dh(), sub.getAuth(), payload));

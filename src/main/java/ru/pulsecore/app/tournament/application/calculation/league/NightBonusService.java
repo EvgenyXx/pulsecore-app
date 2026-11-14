@@ -15,8 +15,7 @@ public class NightBonusService {
         return switch (league) {
             case "A" -> 1000;
             case "B" -> 750;
-            case "C" -> 500;
-            case "D" -> 500;
+            case "C", "D" -> 500;
             default -> 0;
         };
     }

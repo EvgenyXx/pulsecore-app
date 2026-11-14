@@ -13,6 +13,8 @@ import ru.pulsecore.app.tournament.domain.entity.TournamentMatchEntity;
 import ru.pulsecore.app.tournament.domain.entity.TournamentResultEntity;
 import ru.pulsecore.app.tournament.domain.model.ParsedResult;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
+import ru.pulsecore.app.tournament.infrastructure.util.MonthUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -67,7 +69,6 @@ public class TournamentUrlProcessor {
         }
 
         if (allTournaments.isEmpty()) {
-            log.info("Нет турниров для сохранения");
             return;
         }
         List<Long> tournamentIds = allTournaments.stream().map(TournamentEntity::getId).toList();
@@ -75,7 +76,11 @@ public class TournamentUrlProcessor {
 
         resultPersistence.saveResults(allResults);
 
-        log.info("БАТЧ: Сохранение {} турниров, {} матчей, {} результатов",
-                allTournaments.size(), allMatches.size(), allResults.size());
+        log.info("{} — сохранение за {}: {} турниров, {} матчей, {} результатов (активных: {})",
+                playerName,
+                MonthUtils.toRussianMonthYear(allTournaments.stream().findFirst().map(
+                        TournamentEntity::getDate).orElse(null)),
+                allTournaments.size(), allMatches.size(), allResults.size(),
+                TournamentSyncExecutor.getActive());
     }
 }

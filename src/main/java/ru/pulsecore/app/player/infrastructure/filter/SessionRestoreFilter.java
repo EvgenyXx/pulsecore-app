@@ -45,7 +45,7 @@ public class SessionRestoreFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return securityProperties.getSessionRestoreExcludeUrls().stream()
+        return securityProperties.sessionRestoreExcludeUrls().stream()
                 .anyMatch(path::startsWith);
     }
 

@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.pulsecore.app.admin.api.AdminApi;
-import ru.pulsecore.app.admin.api.dto.request.BroadcastRequest;
+import ru.pulsecore.app.admin.api.dto.BroadcastRequest;
 import ru.pulsecore.app.admin.application.BroadcastService;
 import ru.pulsecore.app.shared.dto.response.MessageResponse;
 

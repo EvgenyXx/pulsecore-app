@@ -29,11 +29,12 @@ public class ChatController {
         return chatFacade.getMessages(lineupId, after);
     }
 
-    @Operation(summary = "Отправить сообщение в чат")
-    @PostMapping(TournamentApi.LINEUP_ID)
-    public ChatMessageDto send(@PathVariable(TournamentApi.PARAM_LINEUP_ID) Long lineupId, @RequestBody ChatMessageDto msg) {
-        return chatFacade.sendMessage(lineupId, msg);
-    }
+//    @Operation(summary = "Отправить сообщение в чат")
+//    @PostMapping(TournamentApi.LINEUP_ID)
+//    public ChatMessageDto send(@PathVariable(TournamentApi.PARAM_LINEUP_ID) Long lineupId,
+//                               @RequestBody ChatMessageDto msg) {
+//        return chatFacade.sendMessage(lineupId, msg);
+//    }
 
     @Operation(summary = "Поиск игроков для упоминаний")
     @GetMapping(TournamentApi.PLAYERS_SEARCH)

@@ -1,5 +1,7 @@
 package ru.pulsecore.app.player.infrastructure.repository.projection;
 
+import ru.pulsecore.app.player.domain.enums.City;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,4 +16,5 @@ public interface PlayerDataProjection {
     String getSelectedHalls();
     String getLiveSelectedHalls();
     LocalDateTime getLastLoginAt();
+    City getCity();
 }

@@ -21,6 +21,7 @@ import java.util.UUID;
 public interface TopLeagueMapper {
 
     @Mapping(target = "detailPeriod", expression = "java(details.get(view.getPlayerId()))")
+    @Mapping(target = "city", source = "city")
     @Mapping(target = "winrate", expression = "java(TopPlayerMapperHelper.calculateWinrate(details.get(view.getPlayerId())))")
     TopPlayerDto toDto(TopPlayersView view, @Context Map<UUID, DetailPeriod> details);
 

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import ru.pulsecore.app.tournament.infrastructure.properties.CacheProperties;
+import ru.pulsecore.app.tournament.infrastructure.properties.TournamentSettingProperties;
 
 @Slf4j
 @Component
@@ -12,7 +12,7 @@ import ru.pulsecore.app.tournament.infrastructure.properties.CacheProperties;
 public class DiscoveryHashCache {
 
     private final StringRedisTemplate redisTemplate;
-    private final CacheProperties cacheProperties;
+    private final TournamentSettingProperties settingProperties;
     private static final String HASH_KEY_PREFIX = "discovery:hash:";
 
     public boolean hasSameHash(String date, Long tournamentId, String hash) {
@@ -21,7 +21,7 @@ public class DiscoveryHashCache {
     }
 
     public void update(String date, Long tournamentId, String hash) {
-        redisTemplate.opsForValue().set(key(date, tournamentId), hash, cacheProperties.getDiscoveryHashTtl());
+        redisTemplate.opsForValue().set(key(date, tournamentId), hash, settingProperties.cache().discoveryHashTtl());
     }
 
     public void delete(String date, Long tournamentId) {

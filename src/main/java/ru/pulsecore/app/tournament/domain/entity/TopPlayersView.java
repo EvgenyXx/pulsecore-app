@@ -1,13 +1,11 @@
 package ru.pulsecore.app.tournament.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
+import ru.pulsecore.app.player.domain.enums.City;
 
 import java.util.UUID;
 
@@ -25,4 +23,8 @@ public class TopPlayersView {
     private String period;
     private Double total;
     private Long tournaments;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "city")
+    private City city;
 }

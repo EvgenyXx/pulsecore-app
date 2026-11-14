@@ -25,7 +25,7 @@ public class PlayerNameUtils {
      * normalizeName("  ЧЕРНОВ   АЛЕКСАНДР ") → "александр чернов"
      * normalizeName(null) → ""
      */
-     public String normalizeName(String name) {
+    public String normalizeName(String name) {
         if (name == null || name.isBlank()) return "";
         return Arrays.stream(name.toLowerCase().trim().split("\\s+"))
                 .map(t -> RegexUtils.ONLY_LETTERS.matcher(t).replaceAll(""))
@@ -106,5 +106,28 @@ public class PlayerNameUtils {
                 .replace("\u00A0", " ")
                 .replaceAll("\\s+", " ")
                 .trim();
+    }
+
+        /**
+     * Возвращает Имя + инициал Фамилии (без отчества).
+     * Примеры:
+     * formatName("степанова анастасия") → "Анастасия С."
+     * formatName("ЧЕРНОВ АЛЕКСАНДР ИВАНОВИЧ") → "Александр Ч."
+     * formatName("карпенко") → "Карпенко"
+     */
+    public String formatName(String fullName) {
+        if (fullName == null || fullName.isBlank()) return fullName;
+
+        String[] parts = fullName.trim().split("\\s+");
+        if (parts.length == 1) return capitalize(parts[0]);
+
+        // Берем Имя (parts[1]) и инициал Фамилии (parts[0])
+        StringBuilder sb = new StringBuilder();
+        sb.append(capitalize(parts[1])); // Имя
+        sb.append(" ");
+        sb.append(Character.toUpperCase(parts[0].charAt(0))); // Первая буква фамилии
+        sb.append(".");
+
+        return sb.toString();
     }
 }

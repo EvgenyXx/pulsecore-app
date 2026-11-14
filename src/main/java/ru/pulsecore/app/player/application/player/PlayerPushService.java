@@ -17,6 +17,8 @@ public class PlayerPushService {
 
     private final PlayerSearchService playerSearchService;
     private final PlayerRepository playerRepository;
+
+
     @Transactional
     public boolean togglePushEnabled(UUID playerId) {
         Player player = playerSearchService.getById(playerId);

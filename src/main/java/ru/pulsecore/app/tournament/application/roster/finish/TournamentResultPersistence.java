@@ -33,7 +33,7 @@ public class TournamentResultPersistence {
 
     @Transactional
     public void saveResults(List<TournamentResultEntity> entities) {
-        log.debug("Результаты: сохранение {} записей", entities.size());
+
 
         List<TournamentResultEntity> toSave = new ArrayList<>();
         for (TournamentResultEntity entity : entities) {
@@ -45,7 +45,7 @@ public class TournamentResultPersistence {
         tournamentResultRepository.saveAll(toSave);
         cacheEvictionService.evictHallOfFame();
         cacheEvictionService.evictAnalytics();
-        log.info("Результаты: сохранено={}", toSave.size());
+        log.debug("Результаты: сохранено={}", toSave.size());
 
     }
 

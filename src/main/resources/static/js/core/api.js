@@ -16,14 +16,15 @@ export const API = {
         body: JSON.stringify({ halls: hallsStr })
     }),
 
-    // Пагинация: возвращает объект Page { content: [...], last: true/false }
     getMyLineups: (date, page = 0, size = 7) => apiRequest(`/api/tournament/my?date=${date}&page=${page}&size=${size}`),
 
-    // Возвращает ПРОСТО МАССИВ СТРОК (названия залов): ["Зал 1", "Зал 2"]
     getAllLineups: (date) => apiRequest(`/api/tournament/all?date=${date}`),
 
-    getTop: (period, league) => {
-        const url = league ? `/api/tournament/top/${period}/${league}` : `/api/tournament/top/${period}`;
+    getTop: (period, league, city) => {
+        let url = league ? `/api/tournament/top/${period}/${league}` : `/api/tournament/top/${period}`;
+        if (city) {
+            url += `?city=${city}`;
+        }
         return apiRequest(url);
     },
     getSum: (params) => {

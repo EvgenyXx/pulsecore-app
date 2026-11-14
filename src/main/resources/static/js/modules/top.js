@@ -1,9 +1,27 @@
 import { API } from '../core/api.js';
 import { state } from '../core/state.js';
 import { capitalizeName } from '../core/utils.js';
+import { checkSubscription, subBlockHtml } from './subscription-block.js'; // <--- ДОБАВЛЕН ИМПОРТ
 
 const LEAGUES = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
 const LABELS = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
+
+const CITY_CODES = {
+    'PITER': 'SPB',
+    'ROSTOV': 'RND',
+    'ORENBURG': 'ORB',
+    'SARANSK': 'SRN',
+    'USSURIYSK': 'USS'
+};
+
+const CITIES = [
+    { code: '', label: 'Все города' },
+    { code: 'PITER', label: 'Питер' },
+    { code: 'ROSTOV', label: 'Ростов' },
+    { code: 'ORENBURG', label: 'Оренбург' },
+    { code: 'SARANSK', label: 'Саранск' },
+    { code: 'USSURIYSK', label: 'Уссурийск' }
+];
 
 let isExpanded = false;
 let activeDetailId = null;
@@ -14,11 +32,26 @@ function getLeagueBadge(league) {
     return `<span class="league-badge">${label}</span>`;
 }
 
+function getCityBadge(city) {
+    if (!city) return '';
+    const code = CITY_CODES[city] || city.substring(0, 3).toUpperCase();
+    return `<span class="city-badge">${code}</span>`;
+}
+
 export async function loadTopWeek(league) {
     const panel = document.getElementById('topWeekPanel');
     if (!panel) return;
 
+    // ПРОВЕРКА ПОДПИСКИ
+    const hasSub = await checkSubscription();
+    if (!hasSub) {
+        panel.innerHTML = subBlockHtml();
+        return;
+    }
+
     state.currentLeague = league;
+    if (state.currentCity === undefined) state.currentCity = '';
+
     const activeLeagueIndex = league === null ? 0 : LEAGUES.indexOf(league) + 1;
 
     let html = `
@@ -29,6 +62,10 @@ export async function loadTopWeek(league) {
                 </div>
                 <h3 class="text-[17px] font-semibold text-white tracking-tight">Зал славы</h3>
             </div>
+            
+            <select id="citySelect" class="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-3 py-1.5 focus:outline-none" onchange="switchCity(this.value)">
+                ${CITIES.map(c => `<option value="${c.code}" ${state.currentCity === c.code ? 'selected' : ''}>${c.label}</option>`).join('')}
+            </select>
         </div>
 
         <div class="period-switcher mb-4">
@@ -110,6 +147,12 @@ export function switchPeriod(period) {
     refreshTopListOnly(state.currentLeague);
 }
 
+export function switchCity(cityCode) {
+    state.currentCity = cityCode;
+    activeDetailId = null;
+    refreshTopListOnly(state.currentLeague);
+}
+
 async function refreshTopListOnly(league) {
     const container = document.getElementById('topWeekList');
     const toggleWrapper = document.getElementById('topToggleWrapper');
@@ -123,7 +166,7 @@ async function refreshTopListOnly(league) {
     const periodLabel = period === 'WEEK' ? '7 дней' : period === 'MONTH' ? '30 дней' : '365 дней';
 
     try {
-        const data = await API.getTop(period, league);
+        const data = await API.getTop(period, league, state.currentCity || null);
         const currentPlayerName = state.playerName || '';
         const fullList = data.all || data.top5 || [];
 
@@ -145,7 +188,11 @@ async function refreshTopListOnly(league) {
                 const isMe = currentPlayerName && name.toLowerCase() === currentPlayerName.toLowerCase();
                 const position = i + 1;
                 const isFirst = position === 1;
-                const badge = getLeagueBadge(p.primaryLeague);
+
+                const leagueBadge = getLeagueBadge(p.primaryLeague);
+
+                const showCity = !state.currentCity && p.city;
+                const cityBadge = showCity ? getCityBadge(p.city) : '';
 
                 const winrate = p.winrate ?? 0;
 
@@ -171,7 +218,8 @@ async function refreshTopListOnly(league) {
                                     <span class="text-[15px] font-medium text-white truncate">${name}</span>
                                     <div class="rank-meta flex items-center gap-2">
                                         <span class="rank-winrate">${winrate}%</span>
-                                        ${badge}
+                                        ${leagueBadge}
+                                        ${cityBadge}
                                     </div>
                                 </div>
                             </div>
@@ -185,6 +233,9 @@ async function refreshTopListOnly(league) {
                 if (data.playerPosition > 5 && !isExpanded) {
                     myPosBlock.classList.remove('hidden');
                     const myBadge = data.playerLeague ? getLeagueBadge(data.playerLeague) : '';
+
+                    const myCityBadge = (!state.currentCity && data.playerCity) ? getCityBadge(data.playerCity) : '';
+
                     myPosCard.innerHTML = `
                         <div class="rank-card mine" data-no-swipe="true">
                             <div class="rank-number">${data.playerPosition}</div>
@@ -193,6 +244,7 @@ async function refreshTopListOnly(league) {
                                     <span class="text-[15px] font-medium text-white truncate">${currentPlayerName || 'Игрок'}</span>
                                     <div class="rank-meta">
                                         ${myBadge}
+                                        ${myCityBadge}
                                     </div>
                                 </div>
                             </div>
@@ -322,3 +374,4 @@ window.toggleTopList = function() {
 window.loadTopWeek = loadTopWeek;
 window.switchLeague = switchLeague;
 window.switchPeriod = switchPeriod;
+window.switchCity = switchCity;

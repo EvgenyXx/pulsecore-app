@@ -10,11 +10,11 @@ import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.shared.event.PlayerCreatedEvent;
 
+
 @Component
 @RequiredArgsConstructor
 public class RegistrationMailPublisher {
 
-    private static final int RECENT_DAYS = 30;
 
     private final MailDispatcher mailDispatcher;
     private final ApplicationEventPublisher eventPublisher;
@@ -37,7 +37,6 @@ public class RegistrationMailPublisher {
                         player.getId(),
                         player.getName(),
                         player.getEmail(),
-                        RECENT_DAYS,
                         ip,
                         userAgent,
                         false

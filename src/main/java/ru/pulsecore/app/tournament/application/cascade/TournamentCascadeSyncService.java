@@ -2,17 +2,13 @@ package ru.pulsecore.app.tournament.application.cascade;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.shared.config.AsyncConfig;
-import ru.pulsecore.app.shared.util.SleepUtils;
+import ru.pulsecore.app.tournament.infrastructure.cache.SyncStateRepository;
+import ru.pulsecore.app.tournament.infrastructure.cache.dto.SyncState;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-
 
 
 @Slf4j
@@ -20,40 +16,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class TournamentCascadeSyncService {
 
-    private final TournamentAutoAddService tournamentAutoAddService;
-    private final Set<UUID> syncingPlayers = ConcurrentHashMap.newKeySet();
 
-    @Async(AsyncConfig.TASK_EXECUTOR)
+    private final SyncStateRepository stateRepository;
+    private final TournamentSyncExecutor tournamentSyncExecutor;
+
     public void syncPeriod(UUID playerId, String playerName, LocalDate from, LocalDate to) {
-        if (!syncingPlayers.add(playerId)) {
-            return;
-        }
-        try {
-            syncMonthsBetween(playerId, playerName, from, to);
-            log.info("{} — синхронизация завершена: {} – {}", playerName, from, to);
-        } finally {
-            syncingPlayers.remove(playerId);
-        }
+        if (stateRepository.find(playerId).isPresent()) return;
+
+        YearMonth currentMonth = YearMonth.from(from);
+        YearMonth endMonth = YearMonth.from(to);
+
+        stateRepository.save(playerId, new SyncState(playerName, currentMonth, endMonth, Instant.now()));
+        tournamentSyncExecutor.runAsync(playerId, playerName, currentMonth, endMonth);
     }
-
-    /**
-     * Идём по месяцам от start (вчера) до end (2023) в обратном порядке.
-     */
-    private void syncMonthsBetween(UUID playerId, String playerName, LocalDate start, LocalDate end) {
-        YearMonth currentMonth = YearMonth.from(start);
-        YearMonth endMonth = YearMonth.from(end);
-
-        while (!currentMonth.isBefore(endMonth)) {
-            LocalDate monthStart = currentMonth.atDay(1);
-            LocalDate monthEnd = currentMonth.atEndOfMonth();
-            tournamentAutoAddService.addTournamentsForPeriod(playerId, playerName, monthStart, monthEnd);
-            currentMonth = currentMonth.minusMonths(1);
-            if (!currentMonth.isBefore(endMonth)) {
-                SleepUtils.sleepSeconds(30);
-            }
-        }
-    }
-
 
 
 }

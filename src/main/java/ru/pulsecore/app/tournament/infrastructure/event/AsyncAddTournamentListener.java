@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.event.PlayerCreatedEvent;
 import ru.pulsecore.app.tournament.application.cascade.TournamentCascadeSyncService;
+import ru.pulsecore.app.tournament.infrastructure.properties.TournamentSettingProperties;
 
 import java.time.LocalDate;
 
@@ -14,15 +15,15 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class AsyncAddTournamentListener {
 
-    private static final LocalDate DEFAULT_END = LocalDate.of(2023, 1, 1);
-
+    private final TournamentSettingProperties settingProperties;
     private final TournamentCascadeSyncService cascadeSyncService;
 
     @EventListener
     private void addTournaments(PlayerCreatedEvent event) {
         log.info("Началась асинхронная обработка для {}", event.playerName());
-        LocalDate from = LocalDate.now().minusDays(1);
-        cascadeSyncService.syncPeriod(event.playerId(), event.playerName(), from, DEFAULT_END);
+        LocalDate from = LocalDate.now().minusDays(settingProperties.playerHistory().start());
+        cascadeSyncService.syncPeriod(event.playerId(), event.playerName(),
+                                        from, settingProperties.playerHistory().end());
 
     }
 }

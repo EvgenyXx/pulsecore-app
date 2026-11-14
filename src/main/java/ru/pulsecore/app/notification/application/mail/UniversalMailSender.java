@@ -9,6 +9,8 @@ import ru.pulsecore.app.notification.application.mail.sender.MailSendStrategy;
 import ru.pulsecore.app.notification.application.mail.sender.PdfMailSender;
 import ru.pulsecore.app.notification.application.mail.sender.TextMailSender;
 import ru.pulsecore.app.notification.application.mail.template.MailFormat;
+import ru.pulsecore.app.notification.infrastructure.properties.MailProperties;
+
 import java.util.Map;
 
 
@@ -16,12 +18,12 @@ import java.util.Map;
 public class UniversalMailSender {
 
     private final Map<MailFormat, MailSendStrategy> senders;
-    private final MailProperties props;
+    private final MailProperties mailProperties;
     private final AdminProperties adminProps;
 
 
     public UniversalMailSender(TextMailSender text, PdfMailSender pdf, MailProperties props, AdminProperties adminProps) {
-        this.props = props;
+        this.mailProperties = props;
         this.adminProps = adminProps;
         this.senders = Map.of(
                 MailFormat.TEXT, text,
@@ -34,14 +36,14 @@ public class UniversalMailSender {
                      String to, String subject,
                      String text, String fileName,
                      byte[] attachment) {
-        senders.get(format).send(props.getFrom(), to, subject, text, fileName, attachment);
+        senders.get(format).send(mailProperties.from(), to, subject, text, fileName, attachment);
     }
 
     public void adminSendEmail(
             MailFormat format,
             String subject, String text,
             String fileName, byte[] attachment) {
-        senders.get(format).send(props.getFrom(), adminProps.getEmail(), subject, text, fileName, attachment);
+        senders.get(format).send(mailProperties.from(), adminProps.email(), subject, text, fileName, attachment);
 
     }
 }

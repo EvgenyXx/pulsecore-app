@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.DetailPeriod;
 import ru.pulsecore.app.player.api.dto.response.TopLeagueResponse;
+import ru.pulsecore.app.player.domain.enums.City;
 import ru.pulsecore.app.shared.config.CacheNames;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.application.mapping.TopLeagueMapper;
@@ -28,23 +29,26 @@ public class TopPeriodService {
     private final TopLeagueMapper mapper;
     private final TopPlayerDetailsHelper detailsHelper;
 
-    @Cacheable(value = CacheNames.TOP_ALL, key = CacheNames.KEY_PERIOD)
-    public TopLeagueResponse getTopAllLeagues(String period, UUID playerId) {
-        List<TopPlayersView> all = repository.findByPeriodOrderByTotalDesc(period);
+//    @Cacheable(value = CacheNames.TOP_ALL, key = CacheNames.KEY_PERIOD)
+    public TopLeagueResponse getTopAllLeagues(String period, City city, UUID playerId) {
+        List<TopPlayersView> all = repository.findByPeriodOrderByTotalDesc(period, city);
         Map<UUID, DetailPeriod> details = detailsHelper.prepareDetails(all, period);
         return mapper.toLeagueResponse(all, playerId, details);
     }
 
-    @Cacheable(value = CacheNames.TOP_LEAGUE, key = CacheNames.KEY_PERIOD_LEAGUE)
-    public TopLeagueResponse getTopByLeague(String period, String league, UUID playerId) {
+//    @Cacheable(value = CacheNames.TOP_LEAGUE, key = CacheNames.KEY_PERIOD_LEAGUE)
+    public TopLeagueResponse getTopByLeague(String period, String league, City city, UUID playerId) {
 
         PlayerData player = playerClient.getPlayerById(playerId);
         List<TopPlayersView> players =
-                repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league);
+                repository.findByPeriodAndPrimaryLeagueOrderByTotalDesc(period, league, city);
 
         Map<UUID, DetailPeriod> details = detailsHelper.prepareDetails(players, period);
 
-        if (!league.equals(player.primaryLeague())) {
+        boolean leagueMatch = league.equals(player.primaryLeague());
+        boolean cityMatch = (city == null || city == player.city());
+
+        if (!leagueMatch || !cityMatch) {
             return mapper.toLeagueResponseWithoutPlayer(players, details);
         }
 

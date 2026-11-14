@@ -1,27 +1,33 @@
 package ru.pulsecore.app.player.infrastructure.properties;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Getter
-@Setter
-@Component
 @ConfigurationProperties(prefix = "app.security")
-public class SecurityProperties {
-    private List<String> publicUrls;
-    private List<String> authenticatedUrls;
-    private List<String> adminUrls;
-    private String adminAuthority = "ROLE_ADMIN";
-    private int maximumSessions = 1;
-    private String sessionCookieName = "PULSECORE_SESSION";
-    private String logoutUrl = "/api/player/logout";
-    private String loginPage = "/";
-    private String apiPathPrefix = "/api/";
-    private int apiErrorStatus = 403;
-    private String apiErrorMessage = "Forbidden";
-    private List<String> sessionRestoreExcludeUrls = List.of("/api/player/", "/oauth-finish.html");
+public record SecurityProperties(
+        List<String> publicUrls,
+        List<String> authenticatedUrls,
+        List<String> adminUrls,
+        String adminAuthority,
+        int maximumSessions,
+        String sessionCookieName,
+        String logoutUrl,
+        String loginPage,
+        String apiPathPrefix,
+        int apiErrorStatus,
+        String apiErrorMessage,
+        List<String> sessionRestoreExcludeUrls
+) {
+    public SecurityProperties {
+        if (adminAuthority == null) adminAuthority = "ROLE_ADMIN";
+        if (maximumSessions == 0) maximumSessions = 1;
+        if (sessionCookieName == null) sessionCookieName = "PULSECORE_SESSION";
+        if (logoutUrl == null) logoutUrl = "/api/player/logout";
+        if (loginPage == null) loginPage = "/";
+        if (apiPathPrefix == null) apiPathPrefix = "/api/";
+        if (apiErrorStatus == 0) apiErrorStatus = 403;
+        if (apiErrorMessage == null) apiErrorMessage = "Forbidden";
+        if (sessionRestoreExcludeUrls == null) sessionRestoreExcludeUrls = List.of("/api/player/", "/oauth-finish.html");
+    }
 }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.admin.api.dto.request.UpdatePlayerRequest;
+import ru.pulsecore.app.admin.api.dto.UpdatePlayerRequest;
 import ru.pulsecore.app.player.application.admin.PlayerUpdateAdminService;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.application.subscription.SubscriptionQueryService;

@@ -1,23 +1,27 @@
 package ru.pulsecore.app.tournament.infrastructure.properties;
 
-
-import lombok.Data;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
-
-@Configuration
-@Data
 @ConfigurationProperties(prefix = "app.masters-api")
-public class MastersApiProperties {
+public record MastersApiProperties(
+        Admin admin,
+        Get get
+) {
+    public record Admin(
+            String url,
+            String method,
+            String userAgent,
+            String action,
+            String country,
+            int timeout
+    ) {}
 
-
-    private String url;
-    private String method;
-    private String userAgent;
-    private String action;
-    private String country;
-    private int timeout;
-
+    public record Get(
+            String url,
+            String method,
+            String userAgent,
+            String action,
+            String country,
+            int timeout
+    ) {}
 }

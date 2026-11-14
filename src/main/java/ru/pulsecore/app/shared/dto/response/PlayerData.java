@@ -1,5 +1,7 @@
 package ru.pulsecore.app.shared.dto.response;
 
+import ru.pulsecore.app.player.domain.enums.City;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,5 +15,6 @@ public record PlayerData(
         boolean hasActiveSubscription,
         String selectedHalls,
         String liveSelectedHalls,
-        LocalDateTime lastLoginAt
+        LocalDateTime lastLoginAt,
+        City city
 ) {}

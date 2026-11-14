@@ -22,10 +22,10 @@ export async function searchPlayers(section) {
         const players = await AdminAPI.searchPlayers(q);
         results.classList.remove('hidden');
         results.innerHTML = players.map(p => `
-            <div class="player-card flex items-center justify-between" onclick="selectPlayer('${p.id}','${capitalizeName(p.name).replace(/'/g, "\\'")}','${p.email.replace(/'/g, "\\'")}','${section}')">
+            <div class="player-card flex items-center justify-between" onclick="selectPlayer('${p.id}','${capitalizeName(p.name).replace(/'/g, "\\'")}','${(p.email || '').replace(/'/g, "\\'")}','${section}')">
                 <div>
                     <p class="text-white text-sm font-semibold">${capitalizeName(p.name)}</p>
-                    <p class="text-xs text-zinc-500 mt-0.5">${p.email}</p>
+                    <p class="text-xs text-zinc-500 mt-0.5">${p.email || ''}</p>
                 </div>
                 <span class="text-indigo-400 text-sm flex-shrink-0 ml-2">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -184,6 +184,11 @@ async function refreshPlayerUI(section) {
             document.getElementById('playerName').value = playerData.name || '';
             document.getElementById('playerEmail').value = playerData.email || '';
             document.getElementById('playerLeague').value = playerData.primaryLeague || '';
+
+            // ЗАПОЛНЕНИЕ ГОРОДА
+            const citySelect = document.getElementById('playerCity');
+            if (citySelect) citySelect.value = playerData.city || '';
+
             document.getElementById('playerHalls').value = playerData.selectedHalls || '';
             document.getElementById('playerLiveHalls').value = playerData.liveSelectedHalls || '';
             setStatusCheckbox('playerPush', playerData.pushEnabled);
@@ -385,6 +390,10 @@ export async function updatePlayer() {
             name: document.getElementById('playerName').value || null,
             email: document.getElementById('playerEmail').value || null,
             primaryLeague: document.getElementById('playerLeague').value || null,
+
+            // ДОБАВЛЕНО СОХРАНЕНИЕ ГОРОДА
+            city: document.getElementById('playerCity')?.value || null,
+
             selectedHalls: document.getElementById('playerHalls').value || null,
             liveSelectedHalls: document.getElementById('playerLiveHalls').value || null,
             pushEnabled: isStatusChecked('playerPush'),

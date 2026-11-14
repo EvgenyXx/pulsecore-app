@@ -1,6 +1,5 @@
 package ru.pulsecore.app.player.application.admin;
 
-
 import com.ibm.icu.text.Transliterator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,15 +12,15 @@ import ru.pulsecore.app.player.application.subscription.TrialSubscriptionActivat
 import ru.pulsecore.app.player.domain.Player;
 import ru.pulsecore.app.shared.api.player.CreatePlayerRequest;
 import ru.pulsecore.app.shared.event.PlayerCreatedEvent;
-
 import java.util.Locale;
+
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PlayerCreateAdminService {
 
-    private static final int RECENT_DAYS = 30;
+
     private static final String EMAIL_DOMAIN = "@yandex.ru";
     private static final String DEFAULT_PASS = "123456";
     private static final Transliterator TRANSLITERATOR =
@@ -44,7 +43,6 @@ public class PlayerCreateAdminService {
                         player.getId(),
                         player.getName(),
                         player.getEmail(),
-                        RECENT_DAYS,
                         null,
                         null,
                         true

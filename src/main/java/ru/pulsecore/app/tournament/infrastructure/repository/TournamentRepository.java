@@ -16,6 +16,8 @@ import java.util.Optional;
 @Repository
 public interface TournamentRepository extends JpaRepository<TournamentEntity, Long> {
 
+    Optional<TournamentEntity> findByExternalId(Long externalId);
+
 
     List<TournamentEntity> findByBrokenTrueAndDateBetween(LocalDate start, LocalDate end);
 
@@ -80,4 +82,7 @@ public interface TournamentRepository extends JpaRepository<TournamentEntity, Lo
 
 
     List<TournamentEntity> findByDateOrderByTimeAsc(LocalDate date);
+
+    @Query("SELECT t FROM TournamentEntity t WHERE t.date >= :startDate AND t.date <= :endDate")
+    List<TournamentEntity> findTournamentsBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

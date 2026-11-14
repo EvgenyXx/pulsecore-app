@@ -23,12 +23,12 @@ public class YookassaClient {
 
     public PaymentResponse createPayment(CreatePaymentRequest body) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(String.valueOf(props.getShopId()), props.getSecretKey());
+        headers.setBasicAuth(String.valueOf(props.shopId()), props.secretKey());
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Idempotence-Key", UUID.randomUUID().toString());
 
         var response = yookassaRestTemplate.postForEntity(
-                props.getYookassaApiUrl(),
+                props.yookassaApiUrl(),
                 new HttpEntity<>(body, headers),
                 CreatePaymentResponse.class
         );

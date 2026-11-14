@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
+import ru.pulsecore.app.admin.api.dto.UpdateTournamentRequest;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;
 import ru.pulsecore.app.tournament.application.mapping.TournamentMapper;
 import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
