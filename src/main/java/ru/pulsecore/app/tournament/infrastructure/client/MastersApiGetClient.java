@@ -38,12 +38,12 @@ public class MastersApiGetClient implements MastersApi {
 
     private List<TournamentDto> doLoadTournaments(String date) {
             try {
-                Connection connection = Jsoup.connect("https://masters-league.com/api/v1/tours")
+                Connection connection = Jsoup.connect(properties.get().url())
                         .method(Connection.Method.GET)
-                        .header("User-Agent", properties.getUserAgent())
+                        .header("User-Agent", properties.get().userAgent())
                         .ignoreContentType(true)
-                        .timeout(properties.getTimeout());
-                connection.data("country", properties.getCountry());
+                        .timeout(properties.get().timeout());
+                connection.data("country", properties.get().country());
                 connection.data("date", date);
 
                 Connection.Response res = connection.execute();

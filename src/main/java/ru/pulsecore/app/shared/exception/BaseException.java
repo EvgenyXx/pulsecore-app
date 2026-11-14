@@ -23,4 +23,11 @@ public class BaseException extends RuntimeException {
         this.type = type;
         this.telegramUrl = telegramUrl;
     }
+
+    public BaseException(String message) {
+        super(message);
+        this.status = null;
+        this.type = null;
+        this.telegramUrl = null;
+    }
 }

@@ -33,11 +33,7 @@ logging:
     org.hibernate: WARN
 
 
-app:
-  cache:
-    discovery-hash-ttl: ${APP_CACHE_DISCOVERY_HASH_TTL:2h}
-  base-url: ${APP_BASE_URL}
-  qr-color: ${QR_COLOR:#6366f1}
+
 
 server:
   tomcat:

@@ -6,6 +6,9 @@ import { connectChatWebSocket } from './chat-websocket.js';
 window.escapeHtml = escapeHtml;
 window.SEND_ICON = SEND_ICON;
 
+// Инициализируем кэш имен для упоминаний
+window.mentionNamesCache = window.mentionNamesCache || {};
+
 let lineupId = null;
 let playerName = '', playerId = '';
 let replyTo = null;
@@ -14,34 +17,28 @@ let chatSocket = null;
 let lastMessageId = 0;
 let pressTimer = null;
 
+let pendingMentionId = null;
+let pendingMentionString = '';
+let lastRenderedMessage = null;
+
 window.lastMessageId = 0;
 
-// Функция авто-расширения textarea
 function autoResizeTextarea(textarea) {
     if (!textarea) return;
-
-    // Сбрасываем высоту, чтобы правильно рассчитать scrollHeight
     textarea.style.height = 'auto';
-
-    // Максимальная высота (примерно 5-6 строк текста)
     const maxHeight = 120;
-
     if (textarea.scrollHeight > maxHeight) {
         textarea.style.height = maxHeight + 'px';
-        textarea.style.overflowY = 'auto'; // Включаем скролл
+        textarea.style.overflowY = 'auto';
     } else {
         textarea.style.height = textarea.scrollHeight + 'px';
-        textarea.style.overflowY = 'hidden'; // Скрываем скролл
+        textarea.style.overflowY = 'hidden';
     }
 }
 
 function scrollToBottom() {
     const container = document.getElementById('chatMessages');
-    if (container) {
-        setTimeout(() => {
-            container.scrollTop = container.scrollHeight;
-        }, 20);
-    }
+    if (container) { setTimeout(() => { container.scrollTop = container.scrollHeight; }, 20); }
 }
 
 function isUserAtBottom() {
@@ -53,26 +50,14 @@ function attachLongPressHandler(msgElement) {
     const startPress = (e) => {
         if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
         e.preventDefault();
-
         pressTimer = setTimeout(() => {
             if (navigator.vibrate) navigator.vibrate(50);
             const touch = e.touches ? e.touches[0] : e;
-            showContextMenu(touch, msgElement, playerName, {
-                delete: deleteMessage,
-                edit: startEdit,
-                reply: setReply
-            });
+            showContextMenu(touch, msgElement, playerName, { delete: deleteMessage, edit: startEdit, reply: setReply });
             if (window.getSelection) window.getSelection().removeAllRanges();
         }, 500);
     };
-
-    const cancelPress = () => {
-        if (pressTimer) {
-            clearTimeout(pressTimer);
-            pressTimer = null;
-        }
-    };
-
+    const cancelPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
     msgElement.addEventListener('pointerdown', startPress);
     msgElement.addEventListener('pointerup', cancelPress);
     msgElement.addEventListener('pointerleave', cancelPress);
@@ -84,8 +69,10 @@ async function deleteMessage(messageId) {
     try {
         const res = await fetch(`/api/tournament/message/${messageId}`, { method: 'DELETE', credentials: 'same-origin' });
         if (res.ok) {
-            const msgEl = document.querySelector(`.chat-message[data-message-id="${messageId}"]`);
-            if (msgEl) msgEl.remove();
+            const msgEl = document.querySelector(`.tg-message[data-message-id="${messageId}"]`);
+            if (msgEl) {
+                msgEl.closest('.tg-message-wrapper')?.remove() || msgEl.remove();
+            }
         }
     } catch(e) {}
 }
@@ -93,16 +80,16 @@ async function deleteMessage(messageId) {
 function startEdit(messageId, content) {
     editingMessageId = messageId;
     replyTo = null;
+    pendingMentionId = null;
+    pendingMentionString = '';
     document.getElementById('replyBarSender').textContent = 'Редактирование';
     document.getElementById('replyBarText').textContent = content;
     document.getElementById('replyBar').classList.remove('hidden');
-
     const input = document.getElementById('chatInput');
     input.value = content;
     input.placeholder = 'Исправьте сообщение...';
     input.focus();
-    autoResizeTextarea(input); // Растягиваем под текст
-
+    autoResizeTextarea(input);
     document.getElementById('sendBtn').innerHTML = SEND_ICON;
 }
 
@@ -118,45 +105,39 @@ async function sendEditMessage() {
             body: JSON.stringify({ message: newText })
         });
         if (res.ok) {
-            const msgEl = document.querySelector(`.chat-message[data-message-id="${editingMessageId}"]`);
-            if (msgEl) {
-                msgEl.querySelector('.chat-text').textContent = newText;
-                msgEl.dataset.content = newText;
-            }
+            const msgEl = document.querySelector(`.tg-message[data-message-id="${editingMessageId}"]`);
+            if (msgEl) { msgEl.querySelector('.tg-text').textContent = newText; msgEl.dataset.content = newText; }
         }
-    } catch(e) {} finally {
-        btn.disabled = false;
-        cancelReply();
-    }
+    } catch(e) {} finally { btn.disabled = false; cancelReply(); }
 }
 
 function setReply(messageId, sender, content) {
     editingMessageId = null;
+    pendingMentionId = null;
+    pendingMentionString = '';
     replyTo = { id: messageId, sender, content };
     document.getElementById('replyBarSender').textContent = sender;
     document.getElementById('replyBarText').textContent = content;
     document.getElementById('replyBar').classList.remove('hidden');
-
     const input = document.getElementById('chatInput');
     input.placeholder = 'Ответ...';
     input.value = '';
     input.focus();
     autoResizeTextarea(input);
-
     document.getElementById('sendBtn').innerHTML = SEND_ICON;
 }
 
 function cancelReply() {
     replyTo = null;
     editingMessageId = null;
+    pendingMentionId = null;
+    pendingMentionString = '';
     document.getElementById('replyBar').classList.add('hidden');
-
     const input = document.getElementById('chatInput');
     input.placeholder = 'Написать сообщение...';
     input.value = '';
-    input.style.height = 'auto'; // Сброс высоты
+    input.style.height = 'auto';
     input.style.overflowY = 'hidden';
-
     document.getElementById('sendBtn').innerHTML = SEND_ICON;
 }
 
@@ -164,14 +145,18 @@ function addMessageToChat(m) {
     const container = document.getElementById('chatMessages');
     const placeholder = container.querySelector('.text-center');
     if (placeholder) placeholder.remove();
-
     const wasAtBottom = isUserAtBottom();
     const isMine = m.playerName && playerName && m.playerName.toLowerCase() === playerName.toLowerCase();
 
-    container.insertAdjacentHTML('beforeend', renderMessage(m, playerName));
+    container.insertAdjacentHTML('beforeend', renderMessage(m, playerName, lastRenderedMessage));
 
-    const newMsgElement = container.lastElementChild;
-    if (newMsgElement) attachLongPressHandler(newMsgElement);
+    const newMsgWrapper = container.lastElementChild;
+    if (newMsgWrapper) {
+        const msgElement = newMsgWrapper.querySelector('.tg-message');
+        if (msgElement) attachLongPressHandler(msgElement);
+    }
+
+    lastRenderedMessage = m;
 
     if (wasAtBottom || isMine) scrollToBottom();
 }
@@ -180,16 +165,23 @@ async function loadChatHistory() {
     const currentId = lineupId;
     try {
         const msgs = await (await fetch(`/api/tournament/${currentId}`, { credentials: 'same-origin' })).json();
-
         if (lineupId !== currentId) return;
 
         const container = document.getElementById('chatMessages');
         if (msgs.length > 0) {
             lastMessageId = msgs[msgs.length - 1].id || 0;
             window.lastMessageId = lastMessageId;
-            container.innerHTML = msgs.map(m => renderMessage(m, playerName)).join('');
+            lastRenderedMessage = null;
 
-            container.querySelectorAll('.chat-message').forEach(attachLongPressHandler);
+            container.innerHTML = '';
+
+            msgs.forEach((m, index) => {
+                const prevMsg = index > 0 ? msgs[index - 1] : null;
+                container.insertAdjacentHTML('beforeend', renderMessage(m, playerName, prevMsg));
+                lastRenderedMessage = m;
+            });
+
+            container.querySelectorAll('.tg-message').forEach(attachLongPressHandler);
             scrollToBottom();
         }
     } catch(e) {}
@@ -198,12 +190,29 @@ async function loadChatHistory() {
 async function sendMessage() {
     if (editingMessageId) { sendEditMessage(); return; }
 
-    const input = document.getElementById('chatInput'), msg = input.value.trim();
-    if (!msg) return;
+    const input = document.getElementById('chatInput');
+    const msgText = input.value.trim();
+    if (!msgText) return;
+
+    let type = 'SIMPLE';
+
+    if (replyTo) {
+        type = 'REPLY';
+    } else if (pendingMentionId) {
+        type = 'MENTION';
+    }
+
     const btn = document.getElementById('sendBtn'); btn.disabled = true;
     try {
-        const body = { playerId, playerName, message: msg };
+        const body = {
+            playerId,
+            playerName,
+            message: msgText,
+            type: type
+        };
+
         if (replyTo) body.replyToId = replyTo.id;
+        if (pendingMentionId) body.mentionedPlayerId = pendingMentionId;
 
         if (chatSocket) {
             chatSocket.sendMessage(body);
@@ -220,7 +229,7 @@ async function sendMessage() {
         }
 
         input.value = '';
-        input.style.height = 'auto'; // СБРОС ВЫСОТЫ
+        input.style.height = 'auto';
         input.style.overflowY = 'hidden';
         cancelReply();
         scrollToBottom();
@@ -229,11 +238,7 @@ async function sendMessage() {
 
 function toggleFullscreen() {
     const wrapper = document.getElementById('videoWrapper');
-    if (!document.fullscreenElement) {
-        wrapper.requestFullscreen().catch(() => {});
-    } else {
-        document.exitFullscreen();
-    }
+    if (!document.fullscreenElement) { wrapper.requestFullscreen().catch(() => {}); } else { document.exitFullscreen(); }
 }
 
 async function loadData() {
@@ -268,60 +273,38 @@ async function loadData() {
         if (chatSocket) chatSocket.disconnect();
         const currentId = lineupId;
 
-        chatSocket = connectChatWebSocket(
-            currentId,
+        chatSocket = connectChatWebSocket(currentId,
             function(msg) {
                 if (lineupId !== currentId) return;
-
                 if (msg.type === 'DELETE') {
-                    const el = document.querySelector(`.chat-message[data-message-id="${msg.messageId}"]`);
-                    if (el) el.remove();
+                    const el = document.querySelector(`.tg-message[data-message-id="${msg.messageId}"]`);
+                    if (el) el.closest('.tg-message-wrapper')?.remove() || el.remove();
                     return;
                 }
                 if (msg.type === 'EDIT') {
-                    const el = document.querySelector(`.chat-message[data-message-id="${msg.messageId}"]`);
-                    if (el) {
-                        el.querySelector('.chat-text').textContent = msg.message;
-                        el.dataset.content = msg.message;
-                    }
+                    const el = document.querySelector(`.tg-message[data-message-id="${msg.messageId}"]`);
+                    if (el) { el.querySelector('.tg-text').textContent = msg.message; el.dataset.content = msg.message; }
                     return;
                 }
-                if (msg.id > lastMessageId) {
-                    lastMessageId = msg.id;
-                    window.lastMessageId = msg.id;
-                    addMessageToChat(msg);
-                }
+                if (msg.id > lastMessageId) { lastMessageId = msg.id; window.lastMessageId = msg.id; addMessageToChat(msg); }
             },
             function(count) {
                 if (lineupId !== currentId) return;
                 const el = document.getElementById('onlineCount');
-                if (count > 0) {
-                    el.textContent = count + ' онлайн';
-                    el.style.display = 'inline';
-                } else {
-                    el.style.display = 'none';
-                }
+                if (count > 0) { el.textContent = count + ' онлайн'; el.style.display = 'inline'; } else { el.style.display = 'none'; }
             },
             function() {}
         );
 
         window.showContextMenu = function(e, msgElement) {
-            showContextMenu(e, msgElement, playerName, {
-                delete: deleteMessage,
-                edit: startEdit,
-                reply: setReply
-            });
+            showContextMenu(e, msgElement, playerName, { delete: deleteMessage, edit: startEdit, reply: setReply });
         };
 
-        // Инициализация поля ввода
         const chatInput = document.getElementById('chatInput');
         if (chatInput) {
             chatInput.addEventListener('input', () => autoResizeTextarea(chatInput));
             chatInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
             });
         }
 
@@ -347,22 +330,12 @@ function setupMentions() {
         const textBefore = val.substring(0, cursorPos);
         const atIndex = textBefore.lastIndexOf('@');
 
-        if (atIndex === -1 || textBefore.substring(atIndex + 1).includes(' ')) {
-            dropdown.style.display = 'none';
-            return;
-        }
-
+        if (atIndex === -1 || textBefore.substring(atIndex + 1).includes(' ')) { dropdown.style.display = 'none'; return; }
         const query = textBefore.substring(atIndex + 1).trim();
-        if (query.length === 0) {
-            dropdown.style.display = 'none';
-            return;
-        }
+        if (query.length === 0) { dropdown.style.display = 'none'; return; }
 
         fetch('/api/tournament/players/search?q=' + encodeURIComponent(query), { credentials: 'same-origin' })
-            .then(r => {
-                if (!r.ok) throw new Error('Network error');
-                return r.json();
-            })
+            .then(r => { if (!r.ok) throw new Error('Network error'); return r.json(); })
             .then(players => {
                 if (players && players.length > 0) {
                     dropdown.innerHTML = players.map((p, i) => `
@@ -377,39 +350,41 @@ function setupMentions() {
 
                     dropdown.querySelectorAll('.mention-item').forEach(el => {
                         el.addEventListener('click', function() {
+                            const selectedPlayer = players[parseInt(this.dataset.idx)];
+
                             const before = input.value.substring(0, atIndex);
                             const after = input.value.substring(cursorPos);
-                            input.value = before + '@' + players[parseInt(this.dataset.idx)].name + ' ' + after;
+
+                            const insertText = '@' + selectedPlayer.name + ' ';
+                            input.value = before + insertText + after;
+
+                            pendingMentionId = selectedPlayer.id;
+                            pendingMentionString = insertText;
+
+                            // СОХРАНЯЕМ ИМЯ В КЭШ ДЛЯ ОТРИСОВКИ ПЛАШКИ
+                            window.mentionNamesCache[selectedPlayer.id] = selectedPlayer.name;
+
                             dropdown.style.display = 'none';
                             input.focus();
+                            const newPos = (before + insertText).length;
+                            input.setSelectionRange(newPos, newPos);
                             autoResizeTextarea(input);
                         });
                     });
-                } else {
-                    dropdown.style.display = 'none';
-                }
+                } else { dropdown.style.display = 'none'; }
             })
-            .catch(() => {
-                dropdown.style.display = 'none';
-            });
+            .catch(() => { dropdown.style.display = 'none'; });
     });
 }
 
 window.loadTournamentData = async function(externalId) {
-    if (chatSocket) {
-        chatSocket.disconnect();
-        chatSocket = null;
-    }
-
+    if (chatSocket) { chatSocket.disconnect(); chatSocket = null; }
     lineupId = externalId;
-
     document.getElementById('tournamentLoading').classList.remove('hidden');
     document.getElementById('content').classList.add('hidden');
-
-    lastMessageId = 0;
-    window.lastMessageId = 0;
+    lastMessageId = 0; window.lastMessageId = 0;
+    lastRenderedMessage = null;
     document.getElementById('chatMessages').innerHTML = '<div class="text-center text-zinc-600 text-xs py-4">Сообщений пока нет</div>';
-
     await loadData();
 };
 
@@ -422,10 +397,7 @@ export function init() {
     if (chatInput) {
         chatInput.addEventListener('input', () => autoResizeTextarea(chatInput));
         chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
     }
 }

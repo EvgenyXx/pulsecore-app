@@ -2,6 +2,7 @@ package ru.pulsecore.app.player.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.pulsecore.app.player.domain.enums.City;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +20,10 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "city", length = 50)
+    private City city;
 
     @Column(nullable = false, unique = true)
     private String name;

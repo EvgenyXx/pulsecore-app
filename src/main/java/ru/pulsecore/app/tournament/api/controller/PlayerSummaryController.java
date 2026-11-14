@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.pulsecore.app.player.api.dto.response.PlayerSummaryResponse;
 import ru.pulsecore.app.player.api.dto.response.TopLeagueResponse;
+import ru.pulsecore.app.player.domain.enums.City;
 import ru.pulsecore.app.tournament.api.TournamentApi;
 import ru.pulsecore.app.tournament.application.leaderboard.PlayerSummaryFacade;
 import ru.pulsecore.app.shared.security.CurrentPlayer;
@@ -32,8 +33,9 @@ public class PlayerSummaryController {
     @GetMapping(TournamentApi.TOP_ALL)
     public ResponseEntity<TopLeagueResponse> getTopAll(
             @CurrentPlayer PlayerPrincipal principal,
-            @PathVariable String period) {
-        return ResponseEntity.ok(facade.getTopAll(period.toUpperCase(), principal.playerId()));
+            @PathVariable String period,
+            @RequestParam(required = false) City city) {
+        return ResponseEntity.ok(facade.getTopAll(period.toUpperCase(), city, principal.playerId()));
     }
 
     @Operation(summary = "Топ по конкретной лиге за период")
@@ -41,7 +43,8 @@ public class PlayerSummaryController {
     public ResponseEntity<TopLeagueResponse> getTopByLeague(
             @CurrentPlayer PlayerPrincipal principal,
             @PathVariable String period,
-            @PathVariable String league) {
-        return ResponseEntity.ok(facade.getTopByLeague(period.toUpperCase(), league, principal.playerId()));
+            @PathVariable String league,
+            @RequestParam(required = false) City city) {
+        return ResponseEntity.ok(facade.getTopByLeague(period.toUpperCase(), league, city, principal.playerId()));
     }
 }

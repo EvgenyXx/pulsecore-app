@@ -2,7 +2,7 @@ package ru.pulsecore.app.tournament.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.pulsecore.app.player.domain.ReportStatus;
+import ru.pulsecore.app.player.domain.enums.ReportStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;

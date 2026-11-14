@@ -18,7 +18,6 @@ import ru.pulsecore.app.tournament.infrastructure.parser.JsonMatchParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.league.LeagueDetector;
-
 import java.util.List;
 
 @Slf4j

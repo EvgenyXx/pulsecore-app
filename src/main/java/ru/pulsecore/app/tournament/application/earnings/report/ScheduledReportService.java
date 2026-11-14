@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.application.earnings.report;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.player.domain.ReportStatus;
+import ru.pulsecore.app.player.domain.enums.ReportStatus;
 import ru.pulsecore.app.tournament.domain.entity.ScheduledReport;
 import ru.pulsecore.app.tournament.infrastructure.repository.ScheduledReportRepository;
 import ru.pulsecore.app.tournament.infrastructure.repository.projection.ScheduledReportProjection;

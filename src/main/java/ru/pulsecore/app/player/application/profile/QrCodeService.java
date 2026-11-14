@@ -21,10 +21,10 @@ public class QrCodeService {
     private final QrProperties qrProperties;
 
     public byte[] generateQrCode() throws Exception {
-        String url = qrProperties.getBaseUrl();
+        String url = qrProperties.baseUrl();
         log.debug("QR URL: {}", url);
 
-        Color qrColor = parseColor(qrProperties.getQrColor());
+        Color qrColor = parseColor(qrProperties.qrColor());
 
         QRCodeWriter writer = new QRCodeWriter();
         BitMatrix matrix = writer.encode(url, BarcodeFormat.QR_CODE, 900, 900);

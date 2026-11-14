@@ -1,0 +1,2 @@
+ALTER TABLE tournament ADD COLUMN hall_number INTEGER;
+ALTER TABLE players ADD COLUMN city VARCHAR(50);

@@ -3,7 +3,7 @@ package ru.pulsecore.app.tournament.api.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.pulsecore.app.admin.api.dto.request.UpdateTournamentRequest;
+import ru.pulsecore.app.admin.api.dto.UpdateTournamentRequest;
 import ru.pulsecore.app.shared.api.tournament.TournamentAdminClient;
 import ru.pulsecore.app.shared.dto.response.AdminCalculateResponse;
 import ru.pulsecore.app.shared.dto.response.AdminTournamentResponse;

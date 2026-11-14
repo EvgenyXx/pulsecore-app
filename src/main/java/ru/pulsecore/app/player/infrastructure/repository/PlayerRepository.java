@@ -51,14 +51,6 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     Optional<Player> findByOauthProviderAndOauthId(String provider, String oauthId);
 
-    @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
-            "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
-            "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
-            "p.lastLoginAt as lastLoginAt, " +
-            "COALESCE(s.active, false) as hasActiveSubscription " +
-            "FROM Player p LEFT JOIN p.subscription s " +
-            "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
-    Page<PlayerDataProjection> searchByNamePaged(@Param("query") String query, Pageable pageable);
 
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
@@ -97,7 +89,7 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
             "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
-            "p.lastLoginAt as lastLoginAt, " +
+            "p.lastLoginAt as lastLoginAt, p.city as city, " + // <--- ДОБАВЛЕНО
             "COALESCE(p.subscription.active, false) as hasActiveSubscription " +
             "FROM Player p WHERE p.id = :id")
     Optional<PlayerDataProjection> findProjectionById(@Param("id") UUID id);
@@ -127,4 +119,6 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     List<PlayerDataProjection> findAllPlayers();
 
     boolean existsByNameNormalized(String nameNormalized);
+
+    List<Player> findAllByIdIn(Set<UUID> ids);
 }

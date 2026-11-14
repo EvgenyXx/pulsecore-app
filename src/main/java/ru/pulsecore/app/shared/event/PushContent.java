@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public record PushContent(
-            String title,
-            String body,
-            String url
-    ) {
+public record PushContent(String title, String body, String url, boolean isLiveChat) {
+
+    public PushContent(String title, String body, String url) {
+        this(title, body, url, false);
+    }
 
      /**
      * Один и тот же контент для всех указанных игроков.

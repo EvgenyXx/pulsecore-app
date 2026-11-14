@@ -46,14 +46,14 @@ public class MastersApiAdminClient implements MastersApi {
     private List<TournamentDto> doLoadTournaments(String date) {
         for (int i = 1; i <= 2; i++) {
             try {
-                Connection connection = Jsoup.connect(properties.getUrl())
-                        .method(Connection.Method.valueOf(properties.getMethod()))
-                        .header("User-Agent", properties.getUserAgent())
+                Connection connection = Jsoup.connect(properties.admin().url())
+                        .method(Connection.Method.valueOf(properties.admin().method()))
+                        .header("User-Agent", properties.admin().userAgent())
                         .ignoreContentType(true)
-                        .timeout(properties.getTimeout());
+                        .timeout(properties.admin().timeout());
 
-                connection.data("action", properties.getAction());
-                connection.data("country", properties.getCountry());
+                connection.data("action", properties.admin().action());
+                connection.data("country", properties.admin().country());
                 if (date != null) connection.data("date", date);
 
                 Connection.Response res = connection.execute();

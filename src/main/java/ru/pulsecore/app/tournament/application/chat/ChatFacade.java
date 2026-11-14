@@ -2,8 +2,10 @@ package ru.pulsecore.app.tournament.application.chat;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.shared.dto.response.PlayerData;
 import ru.pulsecore.app.tournament.api.dto.response.ChatMessageDto;
+
 import java.util.List;
 
 import java.util.UUID;
@@ -13,8 +15,8 @@ import java.util.UUID;
 public class ChatFacade {
 
     private final ChatService chatService;
-    private final ChatMentionService chatMentionService;
     private final ChatWebSocketService chatWebSocketService;
+    private final PlayerTournamentClient playerClient;
 
     public List<ChatMessageDto> getMessages(Long lineupId, Long after) {
         if (after != null) {
@@ -23,15 +25,11 @@ public class ChatFacade {
         return chatService.getMessages(lineupId);
     }
 
-    public ChatMessageDto sendMessage(Long lineupId, ChatMessageDto msg) {
-        ChatMessageDto saved = chatService.sendMessage(lineupId, msg);
-        chatWebSocketService.sendNewMessage(lineupId, saved);
-        updateOnline(lineupId);
-        return saved;
-    }
-
-    public List<PlayerData> searchPlayers(String q) {
-        return chatMentionService.searchPlayers(q);
+    public List<PlayerData> searchPlayers(String query) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+        return playerClient.searchByName(query);
     }
 
     public void deleteMessage(Long messageId, UUID playerId) {
@@ -44,8 +42,5 @@ public class ChatFacade {
         chatWebSocketService.sendEdit(lineupId, messageId, newText);
     }
 
-    private void updateOnline(Long lineupId) {
-        long count = chatWebSocketService.getOnlineCount(lineupId);
-        chatWebSocketService.sendOnlineCount(lineupId, count);
-    }
+
 }

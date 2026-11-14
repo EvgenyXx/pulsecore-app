@@ -45,9 +45,9 @@ public class WebConfig implements WebMvcConfigurer {
 //                        "/api/tournament/daily-income",
 
                         // Live — защищён
-                        "/api/tournament/live",
-                        "/api/player/live/halls",
-                        "/api/player/live-halls",
+//                        "/api/tournament/live",
+//                        "/api/player/live/halls",
+//                        "/api/player/live-halls",
 
                         // 2×2 — защищён
                         "/api/tournament/compare/**"

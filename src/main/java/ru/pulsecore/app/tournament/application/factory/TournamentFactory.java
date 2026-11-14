@@ -28,8 +28,10 @@ public class TournamentFactory {
 
     public TournamentEntity create(TournamentDto t) {
 
+        int hallNumber = Integer.parseInt(t.getHall().replaceAll("\\D", ""));
         TournamentEntity tournament = new TournamentEntity();
 
+        tournament.setHallNumber(hallNumber);
         tournament.setExternalId(t.getId());
         tournament.setLink(t.getLink());
         tournament.setStarted(false);

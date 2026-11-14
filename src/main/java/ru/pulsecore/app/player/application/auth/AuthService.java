@@ -30,6 +30,8 @@ public class AuthService {
     private final ThemeService themeService;
     private final RememberMeService rememberMeService;
     private final PlayerRepository playerRepository;
+
+
     public AuthResponse login(String email, String rawPassword, HttpSession session, HttpServletResponse response) {
         Player player = authenticationService.authenticate(email, rawPassword);
         AuthResponse authResponse = playerMapper.toAuthResponse(player);

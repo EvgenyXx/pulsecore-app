@@ -1,11 +1,10 @@
-
 package ru.pulsecore.app.tournament.application.leaderboard;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.player.api.dto.response.PlayerSummaryResponse;
-
 import ru.pulsecore.app.player.api.dto.response.TopLeagueResponse;
+import ru.pulsecore.app.player.domain.enums.City;
 
 import java.util.UUID;
 
@@ -16,19 +15,15 @@ public class PlayerSummaryFacade {
     private final PlayerSummaryService playerSummaryService;
     private final TopPeriodService topPeriodService;
 
-
-
     public PlayerSummaryResponse getDashboard(UUID id) {
         return playerSummaryService.getDashboard(id);
     }
 
-    public TopLeagueResponse getTopAll(String period, UUID playerId) {
-        return topPeriodService.getTopAllLeagues(period, playerId);
+    public TopLeagueResponse getTopAll(String period, City city, UUID playerId) {
+        return topPeriodService.getTopAllLeagues(period, city, playerId);
     }
 
-    public TopLeagueResponse getTopByLeague(String period, String league, UUID playerId) {
-        return topPeriodService.getTopByLeague(period, league, playerId);
+    public TopLeagueResponse getTopByLeague(String period, String league, City city, UUID playerId) {
+        return topPeriodService.getTopByLeague(period, league, city, playerId);
     }
-
-
 }

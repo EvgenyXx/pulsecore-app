@@ -1,4 +1,6 @@
-package ru.pulsecore.app.admin.api.dto.request;
+package ru.pulsecore.app.admin.api.dto;
+
+import ru.pulsecore.app.player.domain.enums.City;
 
 public record UpdatePlayerRequest(
         String name,
@@ -7,5 +9,6 @@ public record UpdatePlayerRequest(
         Boolean pushEnabled,
         Boolean notificationsEnabled,
         String selectedHalls,
-        String liveSelectedHalls
+        String liveSelectedHalls,
+        City city
 ) {}
