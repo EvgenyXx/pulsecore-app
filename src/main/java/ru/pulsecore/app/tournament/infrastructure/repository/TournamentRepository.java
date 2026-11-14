@@ -82,4 +82,7 @@ public interface TournamentRepository extends JpaRepository<TournamentEntity, Lo
 
 
     List<TournamentEntity> findByDateOrderByTimeAsc(LocalDate date);
+
+    @Query("SELECT t FROM TournamentEntity t WHERE t.date >= :startDate AND t.date <= :endDate")
+    List<TournamentEntity> findTournamentsBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

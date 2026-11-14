@@ -33,7 +33,7 @@ spring doc:
 logging:
   level:
     root: WARN
-    ru.pulsecore.app: info
+    ru.pulsecore.app: debug
     org.springframework: WARN
     org.hibernate: WARN
 

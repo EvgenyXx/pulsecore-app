@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.pulsecore.app.player.domain.enums.City;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -19,4 +20,5 @@ public class TopPlayerDto implements Serializable {
     private DetailPeriod detailPeriod;
     private String primaryLeague;
     private Integer winrate;
+    private City city;
 }

@@ -24,6 +24,9 @@ public class TournamentEntity {
     @Column(unique = true, nullable = false)
     private Long externalId;
 
+    @Column(name = "hall_number")
+    private Integer hallNumber;
+
     private String link;
 
     private LocalDate date;
