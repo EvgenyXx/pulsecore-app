@@ -63,7 +63,8 @@ public class AuthService {
                 player.getEmail(),
                 player.getCreatedAt(),
                 player.isAdmin(),
-                theme
+                theme,
+                player.getCity().name()
         );
     }
 

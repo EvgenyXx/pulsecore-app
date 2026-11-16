@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.api.tournament.SchedulerAdminClient;
 import ru.pulsecore.app.tournament.application.admin.SchedulerPauseService;
-import ru.pulsecore.app.tournament.application.roster.canceled.TournamentCanceledProcessor;
+import ru.pulsecore.app.tournament.application.roster.canceled.CancelProcessorService;
 import ru.pulsecore.app.tournament.application.roster.change.TournamentChangeService;
 import ru.pulsecore.app.tournament.application.roster.discovery.TournamentDiscoveryService;
 import ru.pulsecore.app.tournament.application.roster.finish.TournamentFinishProcessor;
 import ru.pulsecore.app.tournament.application.roster.start.TournamentStartService;
+
 
 
 @Service
@@ -19,7 +20,7 @@ public class SchedulerClientImpl implements SchedulerAdminClient {
     private final TournamentFinishProcessor tournamentFinishProcessor;
     private final TournamentDiscoveryService discoveryService;
     private final TournamentStartService startService;
-    private final TournamentCanceledProcessor processCanceled;
+    private final CancelProcessorService canceledService;
     private final TournamentChangeService changeService;
 
 
@@ -60,6 +61,6 @@ public class SchedulerClientImpl implements SchedulerAdminClient {
 
     @Override
     public void checkCanceled() {
-        processCanceled.processCanceled();
+        canceledService.processCanceled();
     }
 }

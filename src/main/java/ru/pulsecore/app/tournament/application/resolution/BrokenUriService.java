@@ -9,11 +9,13 @@ import ru.pulsecore.app.notification.application.mail.context.admin.BrokenUriCon
 import ru.pulsecore.app.shared.dispetcher.MailDispatcher;
 import ru.pulsecore.app.shared.event.MailContent;
 import ru.pulsecore.app.shared.infrastructure.audit.AuditWriter;
-import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
+import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
-
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+
 
 @Slf4j
 @Service
@@ -25,24 +27,31 @@ public class BrokenUriService {
     private final AuditWriter auditWriter;
 
     @Transactional
-    public void handle(TournamentEntity tournament, Set<UUID> playerIds) {
-        log.warn("Пришла битая ссылка: {}", tournament.getLink());
-        tournamentRepository.markAsBroken(tournament.getLink());
+    public void handle(String url) {
+        tournamentRepository.findByLink(url).ifPresent(tournament -> {
+            log.warn("Пришла битая ссылка: {}", tournament.getLink());
+            tournamentRepository.markAsBroken(tournament.getLink());
 
-        auditWriter.write("broken",
-                "турнир=" + tournament.getExternalId() +
-                        " | link=" + tournament.getLink() +
-                        " | игроков=" + playerIds.size());
+            Set<UUID> playerIds = tournament.getNotifications()
+                    .stream()
+                    .map(PlayerNotification::getPlayerId)
+                    .collect(Collectors.toSet());
 
-        mailDispatcher.send(new MailContent(
-                MailType.BROKEN_URI,
-                new BrokenUriContext(
-                        tournament.getLink(),
-                        tournament.getDate(),
-                        tournament.getTime(),
-                        tournament.getExternalId(),
-                        playerIds
-                )
-        ));
+            auditWriter.write("broken",
+                    "турнир=" + tournament.getExternalId() +
+                            " | link=" + tournament.getLink() +
+                            " | игроков=" + playerIds.size());
+
+            mailDispatcher.send(new MailContent(
+                    MailType.BROKEN_URI,
+                    new BrokenUriContext(
+                            tournament.getLink(),
+                            tournament.getDate(),
+                            tournament.getTime(),
+                            tournament.getExternalId(),
+                            playerIds
+                    )
+            ));
+        });
     }
 }

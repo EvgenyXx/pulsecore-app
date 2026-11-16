@@ -77,7 +77,7 @@ public record TournamentJson(
             String name,
             String url,
             String thumbnail,
-            @JsonProperty("ratings_ml") Object ratingsMl,   // может быть Integer или String ("")
+            @JsonProperty("ratings_ml") Object ratingsMl,
             @JsonProperty("ratings_fntr") Object ratingsFntr,
             Integer result,
             String className,

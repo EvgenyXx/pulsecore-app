@@ -27,14 +27,10 @@ public class TournamentCanceledNotificationService {
     private final PushDispatcher pushDispatcher;
     private final MailDispatcher mailDispatcher;
 
-    public void sendCancelled(List<PlayerNotification> notifications, TournamentEntity tournamentEntity) {
-        if (notifications == null || notifications.isEmpty()) return;
-
-        log.debug("Отмена: начало отправки уведомлений для {} игроков", notifications.size());
-
-        Set<UUID> playerIds = notifications.stream()
-                .map(PlayerNotification::getPlayerId)
-                .collect(Collectors.toSet());
+    public void sendCancelled( TournamentEntity tournamentEntity) {
+        List<PlayerNotification>notifications = tournamentEntity.getNotifications();
+        Set<UUID> playerIds =  notifications.stream()
+                .map(PlayerNotification::getPlayerId).collect(Collectors.toSet());
 
         Map<UUID, PlayerData> playerMap = playerClient.getPlayerDataByIds(playerIds).stream()
                 .collect(Collectors.toMap(PlayerData::id, p -> p));
