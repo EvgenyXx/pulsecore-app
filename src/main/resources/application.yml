@@ -80,10 +80,8 @@ app:
       - /index.html
       - /js/**
       - /css/**
-      - /register.html
       - /api/players
       - /subscribe.html
-      - /profile.html
       - /favicon.png
       - /apple-touch-icon.png
       - /apple-touch-icon-precomposed.png
@@ -101,8 +99,6 @@ app:
       - /swagger-resources/**
       - /swagger-ui.html
       - /actuator/**
-      - /compare
-      - /compare.html
     authenticated-urls:
       - /api/player/**
     admin-urls:

@@ -15,14 +15,13 @@ public interface PlayerTournamentClient {
 
     List<PlayerData> searchByName(String query);
 
-    PlayerData findByName(String fullName);
 
 
     SubscriptionInfoDto getSubscriptionInfo(UUID playerId);
 
     List<PlayerData> getPlayerDataByIds(Set<UUID> playerIds);
 
-    List<PlayerData>getAllActivePlayers();
+
 
     List<PlayerData> getAll();
 

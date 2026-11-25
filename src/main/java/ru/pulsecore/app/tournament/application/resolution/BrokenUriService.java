@@ -29,7 +29,6 @@ public class BrokenUriService {
     @Transactional
     public void handle(String url) {
         tournamentRepository.findByLink(url).ifPresent(tournament -> {
-            log.warn("Пришла битая ссылка: {}", tournament.getLink());
             tournamentRepository.markAsBroken(tournament.getLink());
 
             Set<UUID> playerIds = tournament.getNotifications()

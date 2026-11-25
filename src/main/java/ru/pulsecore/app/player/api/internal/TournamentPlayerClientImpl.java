@@ -57,13 +57,5 @@ public class TournamentPlayerClientImpl implements PlayerTournamentClient {
         return playerSearchService.searchByName(query);
     }
 
-    @Override
-    public PlayerData findByName(String fullName) {
-        return playerSearchService.findByName(fullName);
-    }
 
-    @Override
-    public List<PlayerData> getAllActivePlayers() {
-        return playerSearchService.getAllActivePlayers();
-    }
 }
