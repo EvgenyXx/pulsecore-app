@@ -7,14 +7,15 @@ import org.springframework.stereotype.Component;
 import ru.pulsecore.app.shared.config.SchedulerConfig;
 import ru.pulsecore.app.tournament.application.admin.SchedulerPauseService;
 import ru.pulsecore.app.tournament.application.roster.broken.BrokenTournamentCleanupService;
-import ru.pulsecore.app.tournament.application.roster.canceled.TournamentCanceledProcessor;
+import ru.pulsecore.app.tournament.application.roster.canceled.CancelProcessorService;
 import ru.pulsecore.app.tournament.application.roster.change.TournamentChangeService;
 import ru.pulsecore.app.tournament.application.roster.discovery.TournamentDiscoveryService;
 import ru.pulsecore.app.tournament.application.roster.finish.TournamentFinishProcessor;
 import ru.pulsecore.app.tournament.application.roster.start.TournamentStartService;
 import ru.pulsecore.app.tournament.infrastructure.circuit.MastersApiCircuitBreaker;
-
 import java.util.concurrent.TimeUnit;
+
+
 
 @Slf4j
 @Component
@@ -24,7 +25,7 @@ public class RosterOrchestrationScheduler {
     private final TournamentFinishProcessor tournamentFinishProcessor;
     private final TournamentDiscoveryService discoveryService;
     private final TournamentStartService startService;
-    private final TournamentCanceledProcessor processCanceled;
+    private final CancelProcessorService  canceledService;
     private final MastersApiCircuitBreaker circuitBreaker;
     private final TournamentChangeService changeService;
     private final SchedulerPauseService schedulerPauseService;
@@ -103,6 +104,6 @@ public class RosterOrchestrationScheduler {
             return;
         }
         if (circuitBreaker.isBlocked()) return;
-        processCanceled.processCanceled();
+        canceledService.processCanceled();
     }
 }

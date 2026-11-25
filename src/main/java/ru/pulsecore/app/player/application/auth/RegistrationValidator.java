@@ -1,6 +1,7 @@
 package ru.pulsecore.app.player.application.auth;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.pulsecore.app.player.application.player.PlayerSearchService;
 import ru.pulsecore.app.player.infrastructure.exception.EmailAlreadyExistsException;
@@ -14,6 +15,7 @@ import ru.pulsecore.app.shared.util.PlayerNameUtils;
  * проверка, что пользователь зарегистрирован не
  * через яндекс
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RegistrationValidator {
@@ -32,6 +34,7 @@ public class RegistrationValidator {
         });
 
         if (playerSearchService.existsByNameNormalized(normalizedName)) {
+            log.warn("Имя уже занято:{}",normalizedName);
             throw new PlayerNameAlreadyExistsException();
         }
     }

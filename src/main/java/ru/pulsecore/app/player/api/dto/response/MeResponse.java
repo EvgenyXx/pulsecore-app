@@ -8,5 +8,7 @@ public record MeResponse(
         String email,
         LocalDateTime createdAt,
         boolean admin,
-        String theme) {
+        String theme,
+        String city
+) {
 }

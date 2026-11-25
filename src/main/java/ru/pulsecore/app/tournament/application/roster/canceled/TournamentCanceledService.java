@@ -7,147 +7,68 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.pulsecore.app.shared.config.AsyncConfig;
-import ru.pulsecore.app.shared.dto.response.PlayerData;
-import ru.pulsecore.app.shared.infrastructure.audit.AuditWriter;
 import ru.pulsecore.app.tournament.application.resolution.BrokenUriService;
 import ru.pulsecore.app.tournament.domain.TournamentPage;
-import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
 import ru.pulsecore.app.tournament.domain.enums.TournamentStatus;
-import ru.pulsecore.app.shared.api.player.PlayerTournamentClient;
 import ru.pulsecore.app.tournament.infrastructure.config.RateLimiterConfig;
 import ru.pulsecore.app.tournament.infrastructure.exception.PageNotFoundException;
 import ru.pulsecore.app.tournament.infrastructure.parser.DocumentLoader;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentParser;
 import ru.pulsecore.app.tournament.infrastructure.parser.JsonTournamentStatusParser;
-import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
-import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class TournamentCanceledService {
 
-    private final TournamentRepository tournamentRepository;
+
     private final JsonTournamentParser jsonTournamentParser;
     private final JsonTournamentStatusParser jsonTournamentStatusParser;
     private final TournamentCancellationService tournamentCancellationService;
-    private final PlayerNotificationRepository notificationRepository;
     private final DocumentLoader documentLoader;
     private final Bucket canceledRateLimiter;
     private final BrokenUriService brokenUriService;
-    private final PlayerTournamentClient playerClient;
-    private final AuditWriter auditWriter;
-    private final Map<String, Integer> stats = new ConcurrentHashMap<>();
+    private final TournamentCanceledAuditor canceledAuditor;
 
-    public TournamentCanceledService(TournamentRepository tournamentRepository,
-                                     JsonTournamentParser jsonTournamentParser,
-                                     JsonTournamentStatusParser jsonTournamentStatusParser,
-                                     TournamentCancellationService tournamentCancellationService,
-                                     PlayerNotificationRepository notificationRepository,
-                                     DocumentLoader documentLoader,
-                                     @Qualifier(RateLimiterConfig.CANCELED_RATE_LIMITER) Bucket canceledRateLimiter,
-                                     BrokenUriService brokenUriService, PlayerTournamentClient playerClient, AuditWriter auditWriter) {
-        this.tournamentRepository = tournamentRepository;
+    public TournamentCanceledService(
+            JsonTournamentParser jsonTournamentParser,
+            JsonTournamentStatusParser jsonTournamentStatusParser,
+            TournamentCancellationService tournamentCancellationService,
+            DocumentLoader documentLoader,
+            @Qualifier(RateLimiterConfig.CANCELED_RATE_LIMITER) Bucket canceledRateLimiter,
+            BrokenUriService brokenUriService, TournamentCanceledAuditor canceledAuditor) {
         this.jsonTournamentParser = jsonTournamentParser;
         this.jsonTournamentStatusParser = jsonTournamentStatusParser;
         this.tournamentCancellationService = tournamentCancellationService;
-        this.notificationRepository = notificationRepository;
         this.documentLoader = documentLoader;
         this.canceledRateLimiter = canceledRateLimiter;
         this.brokenUriService = brokenUriService;
-        this.playerClient = playerClient;
-        this.auditWriter = auditWriter;
+        this.canceledAuditor = canceledAuditor;
     }
+
 
     @Async(AsyncConfig.CANCELED_EXECUTOR)
-    public CompletableFuture<Void> processLink(String link) {
-        stats.merge("всего", 1, Integer::sum);
-
-        List<PlayerNotification> notifications = notificationRepository.findByTournamentLink(link);
-        if (notifications.isEmpty()) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        TournamentEntity t = notifications.get(0).getTournament();
-        if (t == null || t.isProcessed()) {
-            return CompletableFuture.completedFuture(null);
-        }
-
+    public void processLink(String url) {
         canceledRateLimiter.asBlocking().consumeUninterruptibly(1);
         try {
-            Document doc = documentLoader.load(link);
-            processByStatus(t, notifications, doc);
+            Document doc = documentLoader.load(url);
+            processByStatus(doc);
         } catch (PageNotFoundException e) {
-            Set<UUID> playerIds = notifications.stream()
-                    .map(PlayerNotification::getPlayerId)
-                    .collect(Collectors.toSet());
-            brokenUriService.handle(t, playerIds);
-            stats.merge("битые", 1, Integer::sum);
+            log.warn("Пришла битая ссылка:{}", url);
+            brokenUriService.handle(url);
         }
-
-        return CompletableFuture.completedFuture(null);
     }
 
-    private void processByStatus(TournamentEntity t, List<PlayerNotification> notifications, Document doc) {
+    private void processByStatus(Document doc) {
         TournamentPage page = jsonTournamentParser.parse(doc);
-        if (page == null) {
-            log.warn("Не удалось распарсить страницу для турнира {} (ID={})", t.getExternalId(), t.getId());
-            return;
-        }
 
         TournamentStatus status = jsonTournamentStatusParser.parseStatus(page);
 
         if (status == TournamentStatus.CANCELLED) {
-            tournamentCancellationService.handleCancelled(t, notifications);
-            stats.merge("отменено", 1, Integer::sum);
-             logCancelled(t, notifications);
-            return;
+            log.warn("Туринр отменен:{}", doc.baseUri());
+            String url = doc.baseUri();
+            tournamentCancellationService.handleCancelled(url);
+            canceledAuditor.logCancelled(url);
         }
-
-        if (!tournamentRepository.existsById(t.getId())) {
-            log.warn("Турнир {} (ID={}) не найден в БД", t.getExternalId(), t.getId());
-        }
-    }
-
-    public void logSummary() {
-        int total = stats.getOrDefault("всего", 0);
-        int cancelled = stats.getOrDefault("отменено", 0);
-        int broken = stats.getOrDefault("битые", 0);
-
-        String icon;
-        if (cancelled > 0) {
-            icon = "❌";
-        } else {
-            icon = "✅";
-        }
-
-        log.info("{} CANCELED: итог — всего={}, отменено={}, битые={}",
-                icon, total, cancelled, broken);
-    }
-
-    private void logCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
-        Set<UUID> playerIds = notifications.stream()
-                .map(PlayerNotification::getPlayerId)
-                .collect(Collectors.toSet());
-
-        List<PlayerData> players = playerClient.getPlayerDataByIds(playerIds);
-        List<String> names = players.stream().map(PlayerData::name).toList();
-
-        auditWriter.write("cancelled",
-                "турнир=" + t.getExternalId() +
-                        " | link=" + t.getLink() +
-                        " | игроков=" + names);
-    }
-
-    public void clearStats() {
-        stats.clear();
     }
 }

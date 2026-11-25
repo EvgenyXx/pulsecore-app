@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+
 
 @Repository
 public interface PlayerNotificationRepository
@@ -31,20 +32,14 @@ public interface PlayerNotificationRepository
 
     boolean existsByPlayerIdAndTournament_ExternalId(UUID playerId, Long externalId);
 
-    @Query("SELECT DISTINCT t.link FROM PlayerNotification pn JOIN pn.tournament t" +
-            " WHERE t.started = false AND t.finished = false AND t.cancelled = false AND" +
-            " t.date = CURRENT_DATE AND t.time <= :currentTime")
-    List<String> findStartingSoonLinks(@Param("currentTime") String currentTime);
+
 
 
 
     @Query("SELECT pn FROM PlayerNotification pn JOIN FETCH pn.tournament WHERE pn.tournament.link = :link")
     List<PlayerNotification> findByTournamentLink(@Param("link") String link);
 
-    @Query("SELECT DISTINCT t.link FROM PlayerNotification pn" +
-            " JOIN pn.tournament t WHERE t.started = false AND " +
-            "t.cancelled = false AND t.finished = false")
-    List<String> findNotStartedForCancelLinks();
+
 
     Optional<PlayerNotification> findByPlayerIdAndTournamentId(UUID playerId, Long tournamentId);
 

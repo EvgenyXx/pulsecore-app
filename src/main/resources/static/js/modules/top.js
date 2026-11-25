@@ -1,10 +1,10 @@
 import { API } from '../core/api.js';
 import { state } from '../core/state.js';
 import { capitalizeName } from '../core/utils.js';
-import { checkSubscription, subBlockHtml } from './subscription-block.js'; // <--- ДОБАВЛЕН ИМПОРТ
+import { checkSubscription, subBlockHtml } from './subscription-block.js';
 
 const LEAGUES = ['A', 'B', 'C', 'D', 'SUPER_LEAGUE'];
-const LABELS = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'Супер'};
+const LABELS = {'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'SUPER_LEAGUE': 'SL'};
 
 const CITY_CODES = {
     'PITER': 'SPB',
@@ -16,15 +16,97 @@ const CITY_CODES = {
 
 const CITIES = [
     { code: '', label: 'Все города' },
-    { code: 'PITER', label: 'Питер' },
-    { code: 'ROSTOV', label: 'Ростов' },
-    { code: 'ORENBURG', label: 'Оренбург' },
-    { code: 'SARANSK', label: 'Саранск' },
-    { code: 'USSURIYSK', label: 'Уссурийск' }
+    { code: 'PITER', label: 'Питер', badge: 'SPB' },
+    { code: 'ROSTOV', label: 'Ростов', badge: 'RND' },
+    { code: 'ORENBURG', label: 'Оренбург', badge: 'ORB' },
+    { code: 'SARANSK', label: 'Саранск', badge: 'SRN' },
+    { code: 'USSURIYSK', label: 'Уссурийск', badge: 'USS' }
 ];
 
 let isExpanded = false;
 let activeDetailId = null;
+let isCityFetched = false;
+let isCityDropdownOpen = false;
+
+// Управление дропдауном
+window.toggleCityDropdown = function(event) {
+    if (event) event.stopPropagation();
+    const dropdown = document.getElementById('cityDropdown');
+    if (!dropdown) return;
+
+    isCityDropdownOpen = !isCityDropdownOpen;
+    dropdown.classList.toggle('show', isCityDropdownOpen);
+
+    if (isCityDropdownOpen) {
+        setTimeout(() => {
+            window.addEventListener('click', closeCityDropdownOnClickOutside);
+        }, 10);
+    } else {
+        window.removeEventListener('click', closeCityDropdownOnClickOutside);
+    }
+};
+
+function closeCityDropdownOnClickOutside(e) {
+    const container = document.getElementById('cityDropdownContainer');
+    if (container && !container.contains(e.target)) {
+        const dropdown = document.getElementById('cityDropdown');
+        if (dropdown) dropdown.classList.remove('show');
+        isCityDropdownOpen = false;
+        window.removeEventListener('click', closeCityDropdownOnClickOutside);
+    }
+}
+
+window.selectCity = function(cityCode) {
+    // Закрываем дропдаун
+    const dropdown = document.getElementById('cityDropdown');
+    if (dropdown) dropdown.classList.remove('show');
+    isCityDropdownOpen = false;
+    window.removeEventListener('click', closeCityDropdownOnClickOutside);
+
+    // Меняем состояние
+    state.currentCity = cityCode;
+    activeDetailId = null;
+
+    // Обновляем текст на кнопке
+    const btnText = document.querySelector('#cityBtnText');
+    if (btnText) {
+        const city = CITIES.find(c => c.code === cityCode);
+        btnText.textContent = city ? city.label : 'Все города';
+    }
+
+    // ОБНОВЛЯЕМ ПОДСВЕТКУ В ДРОПДАУНЕ (без пересоздания элементов)
+    if (dropdown) {
+        const items = dropdown.querySelectorAll('.city-dropdown-item');
+        items.forEach(item => {
+            const itemCode = item.getAttribute('data-code');
+            if (itemCode === cityCode) {
+                item.classList.add('selected');
+                // Обновляем галочку внутри (если нужно)
+                const checkContainer = item.querySelector('.check-container');
+                if (checkContainer) {
+                    checkContainer.innerHTML = `<svg class="w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                }
+            } else {
+                item.classList.remove('selected');
+                const checkContainer = item.querySelector('.check-container');
+                if (checkContainer) {
+                    checkContainer.innerHTML = `<div class="w-4"></div>`;
+                }
+            }
+        });
+    }
+
+    // Перерисовываем список игроков
+    refreshTopListOnly(state.currentLeague);
+};
+
+window.toggleTopInfoSheet = function() {
+    const overlay = document.getElementById('topInfoSheetOverlay');
+    if (overlay) {
+        overlay.classList.toggle('open');
+        document.body.style.overflow = overlay.classList.contains('open') ? 'hidden' : '';
+    }
+};
 
 function getLeagueBadge(league) {
     if (!league) return '';
@@ -42,30 +124,66 @@ export async function loadTopWeek(league) {
     const panel = document.getElementById('topWeekPanel');
     if (!panel) return;
 
-    // ПРОВЕРКА ПОДПИСКИ
     const hasSub = await checkSubscription();
     if (!hasSub) {
         panel.innerHTML = subBlockHtml();
         return;
     }
 
+    // === УМНАЯ ПОДСТАНОВКА ГОРОДА ===
+    if (!isCityFetched && !state.currentCity) {
+        isCityFetched = true;
+        try {
+            const res = await fetch('/api/player/me', { credentials: 'same-origin' });
+            if (res.ok) {
+                const me = await res.json();
+                if (me.city) {
+                    state.currentCity = me.city;
+                }
+            }
+        } catch (e) {
+            console.warn('Не удалось получить город из профиля', e);
+        }
+    }
+
     state.currentLeague = league;
     if (state.currentCity === undefined) state.currentCity = '';
 
+    const activeCity = CITIES.find(c => c.code === (state.currentCity || '')) || CITIES[0];
     const activeLeagueIndex = league === null ? 0 : LEAGUES.indexOf(league) + 1;
 
     let html = `
         <div class="flex items-center justify-between mb-5">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center flex-shrink-0">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 </div>
                 <h3 class="text-[17px] font-semibold text-white tracking-tight">Зал славы</h3>
+                <button onclick="toggleTopInfoSheet()" class="flex items-center justify-center w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 text-zinc-400 hover:text-white transition-colors text-[10px] font-bold ml-1" aria-label="Информация">?</button>
             </div>
             
-            <select id="citySelect" class="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-3 py-1.5 focus:outline-none" onchange="switchCity(this.value)">
-                ${CITIES.map(c => `<option value="${c.code}" ${state.currentCity === c.code ? 'selected' : ''}>${c.label}</option>`).join('')}
-            </select>
+            <!-- КАСТОМНЫЙ ДРОПДАУН -->
+            <div class="relative" id="cityDropdownContainer">
+                <button onclick="toggleCityDropdown(event)" class="city-selector-btn">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span id="cityBtnText">${activeCity.label}</span>
+                    <svg class="w-3 h-3 text-zinc-500 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                
+                <div id="cityDropdown" class="city-dropdown">
+                    ${CITIES.map(c => `
+                        <div class="city-dropdown-item ${state.currentCity === c.code ? 'selected' : ''}" data-code="${c.code}" onclick="selectCity('${c.code}')">
+                            <span class="city-name">${c.label}</span>
+                            <div class="flex items-center gap-2">
+                                ${c.badge ? `<span class="city-option-badge">${c.badge}</span>` : ''}
+                                <div class="check-container">
+                                    ${state.currentCity === c.code ? `<svg class="w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>` : `<div class="w-4"></div>`}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
         </div>
 
         <div class="period-switcher mb-4">
@@ -143,12 +261,6 @@ export function switchPeriod(period) {
     const target = document.querySelector(`.period-pill[onclick*="'${period}'"]`);
     if (target) target.classList.add('active');
 
-    activeDetailId = null;
-    refreshTopListOnly(state.currentLeague);
-}
-
-export function switchCity(cityCode) {
-    state.currentCity = cityCode;
     activeDetailId = null;
     refreshTopListOnly(state.currentLeague);
 }
@@ -374,4 +486,3 @@ window.toggleTopList = function() {
 window.loadTopWeek = loadTopWeek;
 window.switchLeague = switchLeague;
 window.switchPeriod = switchPeriod;
-window.switchCity = switchCity;

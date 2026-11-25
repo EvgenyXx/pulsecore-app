@@ -99,9 +99,6 @@ public class PlayerSearchService {
         return playerRepository.existsByEmail(email);
     }
 
-    public boolean existsByName(String name) {
-        return playerRepository.existsByNameIgnoreCase(name);
-    }
 
 
     public boolean existsByNameNormalized(String nameNormalized) {
