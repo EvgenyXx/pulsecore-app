@@ -107,6 +107,8 @@
                 </div>
                 <p id="loginError" class="auth-error hidden"></p>
                 <button type="button" onclick="login()" class="auth-btn auth-btn-primary">Войти</button>
+
+                <!--
                 <div class="auth-divider"><span>или</span></div>
                 <a href="/oauth2/authorization/yandex" class="auth-btn auth-btn-yandex">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -117,9 +119,11 @@
                     </svg>
                     Войти через Яндекс
                 </a>
+                -->
+
                 <div class="auth-links">
                     <span onclick="showForgot()">Забыли пароль?</span>
-                    <span onclick="showRegister()">Регистрация</span>
+                    <!-- <span onclick="showRegister()">Регистрация</span> -->
                 </div>
             </div>
             <div id="registerForm" class="hidden">
@@ -1014,6 +1018,63 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ШТОРКА ПОДСКАЗКИ ЗАЛА СЛАВЫ (НОВЫЙ ТЕКСТ) -->
+    <div class="period-sheet-overlay" id="topInfoSheetOverlay" onclick="toggleTopInfoSheet()">
+        <div class="period-sheet" onclick="event.stopPropagation()">
+            <div class="period-sheet-handle"></div>
+            <h3 class="text-base font-bold text-white mb-6 text-center">Зал славы</h3>
+
+            <div style="font-size: 14px; color: #a1a1aa; line-height: 1.5; text-align: left; padding-bottom: 20px; padding-left: 4px; padding-right: 4px;">
+
+                <!-- Блок 1 -->
+                <div style="margin-bottom: 24px;">
+                    <div style="color: #ffffff; font-weight: 600; font-size: 15px; margin-bottom: 6px;">Рейтинг</div>
+                    <div>Игроки сортируются по сумме заработка. Кто больше поднял за выбранный период — тот и на вершине. Список обновляется автоматически.</div>
+                </div>
+
+                <div style="height: 1px; background: rgba(255, 255, 255, 0.08); margin: 20px 0;"></div>
+
+                <!-- Блок 2 -->
+                <div style="margin-bottom: 24px;">
+                    <div style="color: #ffffff; font-weight: 600; font-size: 15px; margin-bottom: 8px;">Цвета и проценты</div>
+                    <div style="margin-bottom: 12px;">Цифра рядом с именем — это процент побед.</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span style="color: #10b981; font-size: 16px;">●</span>
+                            <span><span style="color: #e4e4e7; font-weight: 500;">55% и выше</span> — отличный результат</span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span style="color: #f59e0b; font-size: 16px;">●</span>
+                            <span><span style="color: #e4e4e7; font-weight: 500;">45–54%</span> — средний уровень</span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span style="color: #f43f5e; font-size: 16px;">●</span>
+                            <span><span style="color: #e4e4e7; font-weight: 500;">Ниже 45%</span> — есть куда расти</span>
+                        </div>
+                    </div>
+                    <div style="color: #71717a; font-size: 13px; margin-top: 10px;">Цвета показывают ваш уровень на фоне всех игроков.</div>
+                </div>
+
+                <div style="height: 1px; background: rgba(255, 255, 255, 0.08); margin: 20px 0;"></div>
+
+                <!-- Блок 3 -->
+                <div style="margin-bottom: 24px;">
+                    <div style="color: #ffffff; font-weight: 600; font-size: 15px; margin-bottom: 6px;">Топ-5</div>
+                    <div>Показываем только 5 лучших. Если вас нет в списке — ваша строка закреплена внизу. Нажмите «Показать всех», чтобы увидеть полный рейтинг.</div>
+                </div>
+
+                <div style="height: 1px; background: rgba(255, 255, 255, 0.08); margin: 20px 0;"></div>
+
+                <!-- Блок 4 -->
+                <div>
+                    <div style="color: #ffffff; font-weight: 600; font-size: 15px; margin-bottom: 6px;">Детали</div>
+                    <div>Нажмите на любого игрока, чтобы раскрыть его статистику: заработок, средний чек и количество матчей.</div>
+                </div>
+
             </div>
         </div>
     </div>

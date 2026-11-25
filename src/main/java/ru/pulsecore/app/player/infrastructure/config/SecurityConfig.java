@@ -1,5 +1,6 @@
 package ru.pulsecore.app.player.infrastructure.config;
 
+import org.springframework.http.HttpMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.pulsecore.app.player.application.auth.oauth.OAuth2SuccessHandler;
+//import ru.pulsecore.app.player.application.auth.oauth.OAuth2SuccessHandler;
 import ru.pulsecore.app.player.infrastructure.filter.SessionRestoreFilter;
 import ru.pulsecore.app.player.infrastructure.properties.SecurityProperties;
 
@@ -22,7 +23,7 @@ import ru.pulsecore.app.player.infrastructure.properties.SecurityProperties;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+//    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final SessionRestoreFilter sessionRestoreFilter;
     private final CustomLogoutSuccessHandler logoutSuccessHandler;
     private final SecurityProperties securityProperties;
@@ -43,15 +44,17 @@ public class SecurityConfig {
                         .maximumSessions(securityProperties.maximumSessions())
                         .maxSessionsPreventsLogin(false))
                 .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/api/player/register").hasAuthority(securityProperties.adminAuthority());
+                    auth.requestMatchers(HttpMethod.POST, "/api/player/oauth-finish").hasAuthority(securityProperties.adminAuthority());
                     securityProperties.publicUrls().forEach(url -> auth.requestMatchers(url).permitAll());
                     securityProperties.authenticatedUrls().forEach(url -> auth.requestMatchers(url).authenticated());
                     securityProperties.adminUrls().forEach(url ->
                             auth.requestMatchers(url).hasAuthority(securityProperties.adminAuthority()));
                     auth.anyRequest().authenticated();
                 })
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage(securityProperties.loginPage())
-                        .successHandler(oAuth2SuccessHandler))
+//                .oauth2Login(oauth2 -> oauth2
+//                        .loginPage(securityProperties.loginPage())
+//                        .successHandler(oAuth2SuccessHandler))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout
                         .logoutUrl(securityProperties.logoutUrl())

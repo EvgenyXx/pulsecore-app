@@ -42,6 +42,10 @@ public class TournamentFinishService {
                                TournamentPage page) {
 
         ParsedResult parsed = resultService.calculateAll(page);
+        if (parsed == null) {
+            log.warn("Не удалось распарсить результаты турнира: {}", link);
+            return;
+        }
 
         if (parsed.status() != TournamentStatus.FINISHED) return;
 

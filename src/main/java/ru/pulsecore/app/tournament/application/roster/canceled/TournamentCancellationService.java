@@ -4,12 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.pulsecore.app.tournament.domain.entity.PlayerNotification;
-import ru.pulsecore.app.tournament.domain.entity.TournamentEntity;
-import ru.pulsecore.app.tournament.infrastructure.repository.PlayerNotificationRepository;
 import ru.pulsecore.app.tournament.infrastructure.repository.TournamentRepository;
 
-import java.util.List;
 
 @Service
 @Slf4j
@@ -18,22 +14,19 @@ public class TournamentCancellationService {
 
     private final TournamentCanceledNotificationService notificationService;
     private final TournamentRepository tournamentRepository;
-    private final PlayerNotificationRepository notificationRepository;
 
     @Transactional
-    public void handleCancelled(TournamentEntity t, List<PlayerNotification> notifications) {
-        if (t.isCancelled()) return;
+    public void handleCancelled(String url) {
+        tournamentRepository.findByLink(url).ifPresent(tournament -> {
+            if (tournament.isCancelled()) return;
 
-        t.setStarted(true);
-        t.setCancelled(true);
-        t.setProcessed(true);
-        t.setFinished(true);
-        tournamentRepository.save(t);
+            tournament.setStarted(true);
+            tournament.setCancelled(true);
+            tournament.setProcessed(true);
+            tournament.setFinished(true);
+            tournamentRepository.save(tournament);
 
-        notificationService.sendCancelled(notifications,t);
-        notificationRepository.saveAll(notifications);
-
-        log.info("❌ Tournament cancelled: id={}, players={}", t.getExternalId(), notifications.size());
+            notificationService.sendCancelled(tournament);
+        });
     }
-
 }

@@ -16,6 +16,14 @@ import java.util.Optional;
 @Repository
 public interface TournamentRepository extends JpaRepository<TournamentEntity, Long> {
 
+    @Query("SELECT t.link FROM TournamentEntity t " +
+            "WHERE t.started = false " +
+            "AND t.cancelled = false " +
+            "AND t.finished = false " +
+            "AND t.broken = false " +
+            "AND t.link IS NOT NULL")
+    List<String> findNotStartedForCancelLinks();
+
     Optional<TournamentEntity> findByExternalId(Long externalId);
 
 

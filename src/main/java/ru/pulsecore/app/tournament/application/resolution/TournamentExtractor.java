@@ -60,6 +60,7 @@ public class TournamentExtractor {
         TournamentStatus status = jsonTournamentStatusParser.parseStatus(page);
         List<Match> matches = jsonMatchParser.parseMatches(page);
 
+        //todo возможно подкоректировать обработку не распаршеной страницы
         LeagueType league = leagueDetector.detectLeague(page);
         if (league == null) {
             log.warn("Не удалось определить лигу для турнира id={}", tournamentId);
