@@ -70,6 +70,12 @@
     border: 1px solid rgba(255, 159, 10, 0.25);
 }
 
+.badge-neutral {
+    background: rgba(10, 132, 255, 0.12);
+    color: #409cff;
+    border: 1px solid rgba(10, 132, 255, 0.25);
+}
+
 .player-info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -323,61 +329,139 @@
     max-height: calc(100dvh - 120px - env(safe-area-inset-bottom, 0px));
 }
 
+/* --- Шапка: аватар + имя + почта --- */
+
 #playerSelected .player-card-head {
     margin: 0;
-    padding: 16px 18px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 18px 18px 12px;
+    gap: 14px;
+    border-bottom: none;
     flex-shrink: 0;
+    min-width: 0;
 }
+
+#playerSelected .player-card-head > *:not(.avatar-circle) {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+#playerSelected #playerSelName {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f5f5f7;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#playerSelected #playerSelEmail {
+    margin-top: 2px;
+    font-size: 0.78rem;
+    color: #98989d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Бейджи --- */
 
 #playerSelected #playerSelBadges {
-    padding: 10px 18px 0;
-    margin: 0 0 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 0 18px;
+    margin: 0 0 14px;
     flex-shrink: 0;
 }
 
+#playerSelected #playerSelBadges:empty {
+    display: none;
+}
+
+/* --- Переключатель разделов --- */
+
 #playerSelected #seg-player-card {
-    margin: 0 18px 12px;
+    margin: 0 18px 14px;
     width: calc(100% - 36px);
     padding: 4px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--admin-border);
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 2px;
     box-sizing: border-box;
     flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
 }
 
 #playerSelected #seg-player-card .segmented-btn {
     flex: 1 1 0;
     min-width: 0;
-    padding: 10px 6px;
-    font-size: 0.75rem;
+    padding: 9px 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'Inter', -apple-system, sans-serif;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    border-radius: 10px;
+    border-radius: 9px;
+    border: none;
+    background: transparent;
+    color: #98989d;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
+
+#playerSelected #seg-player-card .segmented-btn:hover {
+    color: #f5f5f7;
+}
+
+#playerSelected #seg-player-card .segmented-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f5f5f7;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Прокручиваемая область --- */
 
 #playerSelected .pc-scroll {
     flex: 1 1 auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 0 18px 14px;
+    overscroll-behavior: contain;
+    padding: 0 18px 16px;
     min-height: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 14px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
+#playerSelected .pc-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+#playerSelected .pc-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+/* --- Панели: равномерные отступы между блоками --- */
+
 #playerSelected .pc-panel {
+    flex-direction: column;
+    gap: 12px;
     animation: pcFade 0.18s ease;
+}
+
+#playerSelected .pc-panel > * {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 @keyframes pcFade {
@@ -385,20 +469,116 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
-#playerSelected .player-actions-grid {
-    position: sticky;
-    bottom: 0;
-    background: rgba(28, 28, 30, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 10px 0 4px;
-    margin-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+/* --- Поля: подпись сверху, поле на всю ширину --- */
+
+#playerSelected .player-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
 }
 
-#playerSelected #playerMsg {
-    margin: 0 0 6px;
+#playerSelected .player-info-item {
+    align-items: stretch;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 6px;
+    padding: 10px 12px 12px;
+    min-height: 0;
+    min-width: 0;
 }
+
+#playerSelected .player-info-item:focus-within {
+    background: rgba(10, 132, 255, 0.06);
+    border-color: rgba(10, 132, 255, 0.3);
+}
+
+/* Длинные поля — на всю ширину */
+#playerSelected .player-info-item:has(#playerEmail),
+#playerSelected .player-info-item:has(#playerHalls),
+#playerSelected .player-info-item:has(#playerLiveHalls),
+#playerSelected .player-info-item:has(#playerLastLogin) {
+    grid-column: 1 / -1;
+}
+
+#playerSelected .player-info-label {
+    padding-left: 2px;
+}
+
+#playerSelected .player-info-input {
+    max-width: none;
+    text-align: left;
+    font-weight: 500;
+    padding: 10px 12px;
+    box-sizing: border-box;
+}
+
+#playerSelected .player-info-input::placeholder {
+    color: #6e6e73;
+}
+
+#playerSelected select.player-info-input {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 34px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2398989d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+#playerSelected select.player-info-input option {
+    background: #1c1c1e;
+    color: #f5f5f7;
+}
+
+#playerSelected #playerLastLogin {
+    font-size: 0.85rem;
+    color: #f5f5f7;
+    font-weight: 500;
+    padding-left: 2px;
+}
+
+/* --- Нижняя панель действий --- */
+
+#playerSelected .player-actions-grid {
+    position: sticky;
+    bottom: -16px;
+    background: rgba(28, 28, 30, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 12px 0 14px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 -8px 16px -8px rgba(0, 0, 0, 0.4);
+    z-index: 2;
+}
+
+#playerSelected .player-actions-grid .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* --- Сообщения --- */
+
+#playerSelected #playerMsg {
+    margin: 0 0 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-weight: 600;
+    animation: pcFade 0.18s ease;
+}
+
+/* --- Блокировка во время запроса --- */
+
+#playerSelected.is-busy .btn,
+#playerSelected.is-busy button:not(.segmented-btn) {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* --- Статусы (переключатели) --- */
 
 .status-row {
     display: flex;
@@ -421,12 +601,35 @@
     padding: 8px 12px;
 }
 
+#playerSelected .status-row,
+#playerSelected .status-row:last-of-type {
+    padding: 8px 8px 8px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    min-height: 52px;
+    box-sizing: border-box;
+}
+
+#playerSelected .status-row .player-info-label {
+    font-size: 0.72rem;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+#playerSelected .status-row .status-item {
+    min-width: 92px;
+    justify-content: center;
+}
+
 .player-info-value {
     font-size: 0.85rem;
     color: #f5f5f7;
     font-weight: 500;
     text-align: right;
 }
+
+/* --- Опасная зона --- */
 
 .danger-zone {
     margin-top: 8px;
@@ -436,6 +639,19 @@
     border: 1px solid rgba(255, 69, 58, 0.15);
 }
 
+#playerSelected .danger-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+    padding: 14px;
+}
+
+#playerSelected .danger-zone > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 .danger-zone-title {
     font-size: 0.68rem;
     font-weight: 700;
@@ -443,6 +659,10 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 10px;
+}
+
+#playerSelected .danger-zone-title {
+    margin-bottom: 2px;
 }
 
 /* =====================================================
@@ -457,11 +677,21 @@
     border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
+#playerSelected .sub-period {
+    margin-top: 0;
+    padding: 14px;
+}
+
 .sub-period-dates {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-bottom: 8px;
+}
+
+#playerSelected .sub-period-dates {
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .sub-period-field {
@@ -481,16 +711,18 @@
 
 .sub-period-field input {
     width: 100%;
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     color: #f5f5f7;
     font-size: 0.85rem;
     font-weight: 500;
-    padding: 8px 10px;
+    padding: 10px 12px;
     outline: none;
     font-family: 'Inter', -apple-system, sans-serif;
     transition: all 0.25s ease;
+    color-scheme: dark;
 }
 
 .sub-period-field input:focus {
@@ -873,24 +1105,30 @@
 
     #playerSelected .player-card-head {
         padding: 14px 14px 10px;
+        gap: 12px;
     }
 
     #playerSelected #playerSelBadges {
-        padding: 8px 14px 0;
+        padding: 0 14px;
+        margin-bottom: 12px;
     }
 
     #playerSelected #seg-player-card {
-        margin: 0 14px 10px;
+        margin: 0 14px 12px;
         width: calc(100% - 28px);
     }
 
     #playerSelected #seg-player-card .segmented-btn {
-        padding: 8px 4px;
+        padding: 9px 4px;
         font-size: 0.72rem;
     }
 
     #playerSelected .pc-scroll {
-        padding: 0 14px 12px;
+        padding: 12px 14px 14px;
+    }
+
+    #playerSelected .pc-panel {
+        gap: 10px;
     }
 
     .player-info-grid {
@@ -908,6 +1146,14 @@
         font-size: 16px;
         padding: 10px 12px;
         max-width: 100%;
+    }
+
+    #playerSelected .player-info-item {
+        padding: 10px 10px 12px;
+    }
+
+    #playerSelected .player-info-input {
+        font-size: 16px;
     }
 
     .player-info-label {
@@ -931,12 +1177,28 @@
     .status-row .status-checkbox { width: 20px; height: 20px; font-size: 0.75rem; }
     .status-row .status-label { font-size: 0.8rem; }
 
+    #playerSelected .status-row,
+    #playerSelected .status-row:last-of-type {
+        padding: 6px 6px 6px 12px;
+        min-height: 48px;
+    }
+
+    #playerSelected .status-row .status-item {
+        min-width: 84px;
+    }
+
     #playerSelected .player-actions-grid {
         grid-template-columns: 1fr;
+        bottom: -14px;
+        padding: 10px 0 12px;
     }
 
     #playerSelected .player-actions-grid .btn {
         width: 100% !important;
+    }
+
+    .sub-period-field input {
+        font-size: 16px;
     }
 
     .last-login-widget {
@@ -976,5 +1238,16 @@
     .subs-page-btn {
         padding: 11px 12px;
         font-size: 0.82rem;
+    }
+}
+
+/* Узкие телефоны — поля в одну колонку */
+@media (max-width: 420px) {
+    #playerSelected .player-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #playerSelected .sub-period-dates {
+        grid-template-columns: 1fr;
     }
 }

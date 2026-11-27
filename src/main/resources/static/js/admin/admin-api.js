@@ -1,4 +1,3 @@
-// js/admin/admin-api.js
 
 const BASE = '/api';
 
@@ -28,6 +27,7 @@ export const AdminAPI = {
                 name: p.name,
                 email: p.email,
                 primaryLeague: p.primaryLeague,
+                city: p.city,
                 pushEnabled: p.pushEnabled,
                 notificationsEnabled: p.notificationsEnabled,
                 activeSubscription: p.activeSubscription,
@@ -152,6 +152,8 @@ export const AdminAPI = {
     checkNew: () => apiRequest('/admin/scheduler/check-new', { method: 'POST' }),
     checkChanged: () => apiRequest('/admin/scheduler/check-changed', { method: 'POST' }),
     checkCanceled: () => apiRequest('/admin/scheduler/check-canceled', { method: 'POST' }),
+    syncUpcomingCities: () =>
+    apiRequest('/admin/players/cities/sync', { method: 'POST' }),
 
     getAllSubscriptions: () =>
         apiRequest('/admin/subscriptions/overview'),
