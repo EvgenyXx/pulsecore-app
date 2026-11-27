@@ -124,4 +124,12 @@ public final class AdminApi {
     public static final String SCHEDULER_CHECK_NEW = "/scheduler/check-new";
     public static final String SCHEDULER_CHECK_CHANGED = "/scheduler/check-changed";
     public static final String SCHEDULER_CHECK_CANCELED = "/scheduler/check-canceled";
+
+
+    /**
+     * Синхронизация городов игроков.
+     * PLAYER_CITIES_SYNC — /players/cities/sync, запустить синхронизацию городов.
+     * Admin.
+     */
+    public static final String PLAYER_CITIES_SYNC = "/players/cities/sync";
 }

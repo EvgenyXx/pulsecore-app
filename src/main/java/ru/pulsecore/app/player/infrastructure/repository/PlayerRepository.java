@@ -64,7 +64,7 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     @Query("SELECT p.id as id, p.name as name, p.email as email, p.primaryLeague as primaryLeague, " +
             "p.pushEnabled as pushEnabled, p.notificationsEnabled as notificationsEnabled, " +
             "p.selectedHalls as selectedHalls, p.liveSelectedHalls as liveSelectedHalls, " +
-            "p.lastLoginAt as lastLoginAt, " +
+            "p.lastLoginAt as lastLoginAt, p.city as city, " +
             "COALESCE(s.active, false) as hasActiveSubscription " +
             "FROM Player p LEFT JOIN p.subscription s " +
             "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")

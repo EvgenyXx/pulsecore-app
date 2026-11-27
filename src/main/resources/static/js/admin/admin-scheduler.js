@@ -62,6 +62,17 @@ function updateSchedulerUI(isPaused) {
     }
 }
 
+export async function syncUpcomingCities() {
+    try {
+        await AdminAPI.syncUpcomingCities();
+        showToast('Синхронизация городов запущена', 'success');
+    } catch (e) {
+        console.error('Ошибка синхронизации городов:', e);
+        showToast('Ошибка запуска: ' + e.message, 'error');
+    }
+}
+
 window.loadSchedulerStatus = loadSchedulerStatus;
 window.toggleScheduler = toggleScheduler;
 window.runSchedulerTask = runSchedulerTask;
+window.syncUpcomingCities = syncUpcomingCities;
